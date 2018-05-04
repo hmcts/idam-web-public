@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>uk.gov.hmcts.reform.idam</groupId>
-    <artifactId>idam-web</artifactId>
+    <artifactId>idam-web-public</artifactId>
     <version>1.0.4</version>
     <packaging>war</packaging>
 

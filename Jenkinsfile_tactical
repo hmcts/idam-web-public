@@ -1,7 +1,7 @@
 #!groovy
 
 properties(
-    [[$class: 'GithubProjectProperty', displayName: 'IDAM Web', projectUrlStr: 'https://git.reform.hmcts.net/idam/idam-web-public/'],
+    [[$class: 'GithubProjectProperty', displayName: 'IDAM Web', projectUrlStr: 'https://github.com/hmcts/idam-web-public/'],
      pipelineTriggers([[$class: 'GitHubPushTrigger']])]
 )
 
