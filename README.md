@@ -1,6 +1,6 @@
 # IdAM Web Public
-IdAM Web Public is a Spring Boot web application that provides the public facing UI for 
-Reform IdAM. This includes: login and sign-up page, page for requesting password reset.
+IdAM Web Public is a Spring Boot web application that provides the public facing UI for  Reform 
+IdAM. This includes: login and sign-up page, page for requesting password reset.
 
 ## Getting started
 
