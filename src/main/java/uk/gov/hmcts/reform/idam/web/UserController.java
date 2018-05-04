@@ -1,0 +1,214 @@
+package uk.gov.hmcts.reform.idam.web;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import lombok.extern.slf4j.Slf4j;
+import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
+import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
+import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
+import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
+import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
+
+/**
+ * @author Ivano
+ */
+@Controller
+@RequestMapping("/users")
+@Slf4j
+public class UserController {
+
+    private static final String ERROR_MSG = "errorMsg";
+    private static final String GENERIC_ERROR_KEY = "public.error.page.generic.error";
+    private static final String ALREADY_ACTIVATED_KEY = "public.error.page.already.activated.description";
+
+    @Autowired
+    private ObjectMapper mapper;
+
+    @Autowired
+    private SPIService spiService;
+
+    @Autowired
+    private ValidationService validationService;
+
+    /**
+     * @should return users view
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    public String users(final Map<String, Object> model) {
+
+        return "users";
+    }
+
+    /**
+     * @should return expiredtoken view and  have redirect_uri attribute in model  if token expired
+     * @should return useractivation view and no redirect_uri attribute in model if the token is valid
+     * @should return errorpage view error message and no redirect_uri attribute in model if api returns server error
+     * @should return errorpage view error message for alredy activated account and no redirect_uri attribute in model if api returns status 409
+     */
+    @RequestMapping(path = "/register", method = RequestMethod.GET)
+    public String userActivation(@RequestParam("token") String token, @RequestParam("code") String code, final Map<String, Object> model) {
+        ValidateRequest validateRequest = new ValidateRequest();
+        validateRequest.setCode(code);
+        validateRequest.setToken(token);
+        ResponseEntity<ActivationResult> responseEntity;
+
+        try {
+            responseEntity = spiService.validateActivationToken(validateRequest);
+
+            ActivationResult activationResult = responseEntity.getBody();
+            if (Objects.nonNull(activationResult)) {
+                log.info("The token {} has expired", token);
+                model.put("redirect_uri", activationResult.getRedirectUri());
+                return "expiredtoken";
+            }
+            model.put("token", token);
+            model.put("code", code);
+
+        } catch (HttpServerErrorException | HttpClientErrorException e) {
+            log.error("An error occurred validating user activation token: {}", token);
+            log.error("Response body: {}", e.getResponseBodyAsString(), e);
+            if (e.getStatusCode().equals(HttpStatus.CONFLICT)) {
+                model.put(ERROR_MSG, ALREADY_ACTIVATED_KEY);
+            } else {
+                model.put(ERROR_MSG, GENERIC_ERROR_KEY);
+            }
+            return "errorpage";
+        }
+        return "useractivation";
+    }
+
+    /**
+     * @should return selfRegister view and  have redirect_uri, selfRegisterCommand, client_id attributes in model
+     */
+
+    @RequestMapping(path = "/selfRegister", method = RequestMethod.GET)
+    public String selfRegister(
+        @RequestParam(name = "redirect_uri", required = false) String redirectUri,
+        @RequestParam(name = "client_id", required = false) String clientId,
+        @RequestParam(name = "state", required = false) String state,
+        Model model) {
+        model.addAttribute("selfRegisterCommand", new SelfRegisterRequest());
+        model.addAttribute("redirectUri", redirectUri);
+        model.addAttribute("clientId", clientId);
+        model.addAttribute("state", state);
+        return "selfRegister";
+    }
+
+    /**
+     * @should return selfRegister view if request mandatory fields validation fails
+     * @should return selfRegister view if email field is invalid
+     * @should return usercreated view  if selfRegisterUser service returns http status 200
+     * @should return errorpage  view and error message in model if selfRegisterUser service throws HttpClientErrorException and Http code is not 409
+     * @should return usercreated view  if selfRegisterUser service throws HttpClientErrorException and Http code is 409
+     * @should return errorpage view and error message in model if selfRegisterUser service throws HttpServerErrorException
+     */
+    @RequestMapping(path = "/selfRegister", method = RequestMethod.POST)
+    public String selfRegisterUser(@ModelAttribute("selfRegisterCommand") @Validated SelfRegisterRequest selfRegisterRequest,
+                                   BindingResult bindingResult,
+                                   Model model) throws JsonProcessingException {
+
+        if (bindingResult.hasErrors()) {
+            return "selfRegister";
+        }
+
+        try {
+            ResponseEntity<String> responseEntity = spiService.selfRegisterUser(selfRegisterRequest);
+
+            if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
+                model.addAttribute("email", selfRegisterRequest.getEmail());
+            }
+
+            return "usercreated";
+
+        } catch (HttpServerErrorException se) {
+            log.error("Server error during user registration, Error body: {}", se.getResponseBodyAsString(), se);
+
+        } catch (HttpClientErrorException ce) {
+            if (ce.getStatusCode().equals(HttpStatus.CONFLICT)) {
+                model.addAttribute("email", selfRegisterRequest.getEmail());
+                return "usercreated";
+            }
+            log.error("Client error during user registration, Error body: {}", ce.getResponseBodyAsString(), ce);
+        }
+        model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
+        return "errorpage";
+    }
+
+    /**
+     * @should return useractivated view and redirect uri in model if returned by spiService if request mandatory fields validation succeeds
+     * @should return useractivation view and blacklisted password error in model if HttpClientErrorException occurs and http status is 400 and password is blacklisted
+     * @should return useractivation view and invalid passowrd error in model if HttpClientErrorException occurs and http status is 400 and password is not blacklisted
+     * @should return expiredtoken view if HttpClientErrorException occurs and http status is 400 and token is invalid
+     * @should return redirect expiredtoken page if selfRegisterUser service throws HttpClientErrorException and Http code is 404
+     */
+    @RequestMapping(path = "/activate", method = RequestMethod.POST)
+    public String activateUser(@RequestParam("token") String token, @RequestParam("code") String code, @RequestParam("password1") String password1, @RequestParam("password2") String password2,
+                               final Map<String, Object> model) throws IOException {
+        model.put("token", token);
+        model.put("code", code);
+        try {
+            if (validationService.validateResetPasswordRequest(password1, password2, model)) {
+                String activation = "{\"token\":\"" + token + "\",\"code\":\"" + code + "\",\"password\":\"" + password1 + "\"}";
+                ResponseEntity<String> response = spiService.activateUser(activation);
+                String redirectUri = getRedirectUri(response.getBody());
+                if (redirectUri != null) {
+                    model.put("redirectUri", redirectUri);
+                }
+
+                return "useractivated";
+            }
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                return "redirect:expiredtoken";
+            }
+
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED)) {
+                    ErrorHelper.showError("Error", "public.common.error.blacklisted.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+                    return "useractivation";
+                }
+                if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.TOKEN_INVALID)) {
+                    return "expiredtoken";
+                }
+            }
+            ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+        }
+
+        return "useractivation";
+    }
+
+    private String getRedirectUri(String json) throws IOException {
+
+        ObjectNode object = mapper.readValue(json, ObjectNode.class);
+        JsonNode node = object.get("redirectUri");
+
+        if (node != null) {
+            return node.textValue();
+        } else {
+            return null;
+        }
+    }
+}

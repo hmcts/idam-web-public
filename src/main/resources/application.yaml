@@ -1,0 +1,42 @@
+server:
+  port: 80
+  connectionTimeout: 10000
+  connectionRequestTimeout: 10000
+  readTimeout: 60000
+  maxConnectionIdleTime: 20
+  maxConnectionsPerRoute: 200
+  maxConnectionsTotal: 200
+
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+authentication:
+  useOAuth2: true
+
+strategic:
+  service:
+    url: https://api-dev1.fridam.reform.hmcts.net
+  endpoint:
+    authorize: authorize
+    loginWithPin: pin
+    uplift: login/uplift
+    forgotPassword: forgotPassword
+    resetPassword: resetPassword
+    validateResetPasswordToken: validateResetPasswordToken
+    users: users
+    validateActivationToken: validate
+    activation: activate
+    userrole: users/{userId}/roles/{roleId}
+    search: users
+    authorizeOauth2: oauth2/authorize
+    selfRegisterUser: users/self
+    selfRegistration: users/selfregister
+    details: details
+
+validation:
+  password:
+    minLength: 8
+    maxLength: 256

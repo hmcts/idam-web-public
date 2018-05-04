@@ -1,0 +1,4 @@
+rootProject.name = 'idam-web'
+include ':idam-web-public'
+
+project(':idam-web-public').projectDir = "$rootDir/idam-web-public" as File

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+
+    <!-- This affects Red Hat Enterprise Linux (RHEL) 7, Fedora, CentOS, Oracle Linux, and
+         possibly other Linux distributions which does not overlap with our Prod environment. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: tomcat-annotations-api-8.5.29.jar
+     ]]></notes>
+        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
+        <cve>CVE-2016-5425</cve>
+    </suppress>
+
+    <!-- This affects Red Hat Enterprise Linux (RHEL) 5 through 7, JBoss Web Server 3.0, and
+         JBoss EWS 2 which does not overlap with our Prod environment. -->
+    <suppress>
+        <notes><![CDATA[
+     file name: tomcat-annotations-api-8.5.29.jar
+     ]]></notes>
+        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
+        <cve>CVE-2016-6325</cve>
+    </suppress>
+
+    <!-- This affects Debian and Ubuntu which does not overlap with our Prod environment. -->
+    <suppress>
+        <notes><![CDATA[
+    file name: tomcat-annotations-api-8.5.29.jar
+    ]]></notes>
+        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
+        <cve>CVE-2017-6056</cve>
+    </suppress>
+
+    <!-- This CVE is about Drupal, no clear link with Java -->
+    <suppress>
+        <notes><![CDATA[
+     file name: mapstruct-1.1.0.Final.jar
+     ]]></notes>
+        <gav regex="true">^org\.mapstruct:mapstruct:.*$</gav>
+        <cve>CVE-2013-4499</cve>
+    </suppress>
+</suppressions>
