@@ -1,11 +1,7 @@
 // Infrastructural variables
-variable "product" {
-  default = "idam"
-}
+variable "product" { }
 
-variable "microservice" {
-  default = "web-public"
-}
+variable "component" { }
 
 variable "location" {
   default = "UK South"
