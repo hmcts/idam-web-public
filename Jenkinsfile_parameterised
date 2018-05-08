@@ -6,7 +6,7 @@ def type = "java"
 
 def product = "idam"
 
-def component = "idam-web-public"
+def component = "web-public"
 
 withPipeline(type, product, component) {
 }
