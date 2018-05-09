@@ -23,11 +23,11 @@ allprojects  {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.0.32'
+  def idamBomVersion = '1.0.33'
 
   dependencyManagement {
     imports {
-      mavenBom "uk.gov.hmcts:idam-bom:${idamBomVersion}"
+      mavenBom "uk.gov.hmcts.reform.idam:idam-bom:${idamBomVersion}"
     }
   }
 

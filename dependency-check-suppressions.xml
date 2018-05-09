@@ -38,4 +38,50 @@
         <gav regex="true">^org\.mapstruct:mapstruct:.*$</gav>
         <cve>CVE-2013-4499</cve>
     </suppress>
+
+    <!-- This CVE is about JSTL in conjunction with XML/XSLT tags, we do not use these tags -->
+    <suppress>
+        <notes><![CDATA[
+   file name: jstl-1.2.jar
+   ]]></notes>
+        <gav regex="true">^.*$</gav>
+        <cve>CVE-2015-0254</cve>
+    </suppress>
+
+    <suppress>
+        <notes>suppress false positives - only relevant to tomcat &lt;= 8.4</notes>
+        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
+        <cve>CVE-2000-0672</cve>
+        <cve>CVE-2000-0760</cve>
+        <cve>CVE-2000-1210</cve>
+        <cve>CVE-2001-0590</cve>
+        <cve>CVE-2002-0493</cve>
+        <cve>CVE-2002-1148</cve>
+        <cve>CVE-2002-2006</cve>
+        <cve>CVE-2003-0042</cve>
+        <cve>CVE-2003-0043</cve>
+        <cve>CVE-2003-0044</cve>
+        <cve>CVE-2003-0045</cve>
+        <cve>CVE-2005-4838</cve>
+        <cve>CVE-2006-7196</cve>
+        <cve>CVE-2007-0450</cve>
+        <cve>CVE-2007-1358</cve>
+        <cve>CVE-2007-2449</cve>
+        <cve>CVE-2008-0128</cve>
+        <cve>CVE-2009-2696</cve>
+        <cve>CVE-2009-3548</cve>
+        <cve>CVE-2012-5568</cve>
+        <cve>CVE-2013-2185</cve>
+        <cve>CVE-2013-4286</cve>
+        <cve>CVE-2013-4322</cve>
+        <cve>CVE-2013-4444</cve>
+        <cve>CVE-2005-0808</cve>
+        <cve>CVE-2013-4590</cve>
+        <cve>CVE-2013-6357</cve>
+        <cve>CVE-2014-0075</cve>
+        <cve>CVE-2014-0096</cve>
+        <cve>CVE-2014-0099</cve>
+        <cve>CVE-2014-0119</cve>
+        <cve>CVE-2016-5388</cve>
+    </suppress>
 </suppressions>
