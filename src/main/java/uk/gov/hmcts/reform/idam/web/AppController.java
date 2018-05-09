@@ -188,6 +188,8 @@ public class AppController {
             ResponseEntity<String> resetPasswordEntity = service.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirectUri(), request.getClientId());
             if (resetPasswordEntity.getStatusCode() == HttpStatus.CREATED) {
                 model.put(EMAIL, request.getUsername());
+                model.put(REDIRECTURI, request.getRedirectUri());
+                model.put(CLIENTID, request.getClientId());
                 return USERCREATED_VIEW;
             } else {
                 return UPLIFT_USER_VIEW;

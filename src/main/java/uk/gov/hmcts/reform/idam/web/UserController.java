@@ -130,7 +130,13 @@ public class UserController {
                                    BindingResult bindingResult,
                                    Model model) throws JsonProcessingException {
 
+        // Preserve query parameters
+        model.addAttribute("redirectUri", selfRegisterRequest.getRedirectUri());
+        model.addAttribute("clientId", selfRegisterRequest.getClientId());
+        model.addAttribute("state", selfRegisterRequest.getState());
+
         if (bindingResult.hasErrors()) {
+
             return "selfRegister";
         }
 
