@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@feature/executable-war-support")
 
 def type = "java"
 
