@@ -2,10 +2,10 @@ module "idam-web-public" {
   source                = "git@github.com:hmcts/moj-module-webapp?ref=master"
   product               = "${var.product}-${var.component}"
   location              = "${var.location}"
-  env                   = "${var.env}"
+  env                   = "idam-sandbox"
   ilbIp                 = "${var.ilbIp}"
   is_frontend           = "${var.env != "preview" ? 1: 0}"
-  subscription          = "${var.subscription}"
+  subscription          = "sandbox"
   additional_host_name  = "${var.external_host_name}"
   https_only            = "true"
 
