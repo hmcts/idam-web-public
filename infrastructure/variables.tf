@@ -13,6 +13,10 @@ variable "ilbIp" { }
 
 variable "subscription" { }
 
-variable "external_host_name" {
-  default = "hmcts-access.sandbox.platform.hmcts.net"
+variable "app" {
+  default = "web-public"
+}
+
+variable "capacity" {
+  default = "1"
 }
