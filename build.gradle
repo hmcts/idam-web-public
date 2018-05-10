@@ -90,6 +90,11 @@ allprojects  {
     group = 'Delivery pipeline'
     description = 'Executes non-destructive smoke tests against a running instance'
   }
+
+  task functional(type: Test) {
+    group = 'Delivery pipeline'
+    description = 'Executes functional tests against a running instance'
+  }
 }
 
 project.tasks['sonarqube'].dependsOn test
