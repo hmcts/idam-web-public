@@ -1,6 +1,18 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure") _
+
+properties([
+    parameters([
+        string(name: 'PRODUCT_NAME', defaultValue: 'idam', description: ''),
+        string(name: 'APP', defaultValue: 'web-public', description: ''),
+        string(name: 'TYPE', defaultValue: 'java', description: ''),
+        string(name: 'ENVIRONMENT', defaultValue: 'idam-sandbox', description: 'Environment where code should be build and deployed'),
+        choice(name: 'SUBSCRIPTION', choices: 'sandbox\nnonprod\nprod', description: 'Azure subscriptions available to build in')
+    ])
+])
+
+def environment = "idam-sandbox"
 
 def type = "java"
 
@@ -8,5 +20,8 @@ def product = "idam"
 
 def component = "web-public"
 
-withPipeline(type, product, component) {
+env.PATH = "$env.PATH:/usr/local/bin"
+def az = { cmd -> return sh(script: "env AZURE_CONFIG_DIR=/opt/jenkins/.azure-$subscription az $cmd", returnStdout: true).trim() }
+
+withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION){
 }
