@@ -85,6 +85,11 @@ allprojects  {
   war {
     archiveName = "${rootProject.name}.war"
   }
+
+  task smoke(type: Test) {
+    group = 'Delivery pipeline'
+    description = 'Executes non-destructive smoke tests against a running instance'
+  }
 }
 
 project.tasks['sonarqube'].dependsOn test
