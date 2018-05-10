@@ -20,7 +20,7 @@ def product = "idam"
 
 def component = "web-public"
 
-var subscription = params.SUBSCRIPTION
+def subscription = params.SUBSCRIPTION
 
 env.PATH = "$env.PATH:/usr/local/bin"
 def az = { cmd -> return sh(script: "env AZURE_CONFIG_DIR=/opt/jenkins/.azure-$subscription az $cmd", returnStdout: true).trim() }
