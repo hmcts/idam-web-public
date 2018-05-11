@@ -23,7 +23,7 @@ allprojects  {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.1.0'
+  def idamBomVersion = '1.0.33'
 
   dependencyManagement {
     imports {
@@ -32,6 +32,9 @@ allprojects  {
   }
 
   repositories {
+    maven {
+        url 'https://artifactory.reform.hmcts.net/artifactory/libs-release/'
+    }
     maven {
        url "https://dl.bintray.com/hmcts/hmcts-maven"
     }
