@@ -4,7 +4,7 @@ module "idam-web-public" {
   location              = "${var.location}"
   env                   = "idam-sandbox"
   ilbIp                 = "${var.ilbIp}"
-  is_frontend           = false
+  is_frontend           = true
   subscription          = "sandbox"
   capacity     = "${var.capacity}"
 
