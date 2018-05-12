@@ -7,6 +7,7 @@ module "idam-web-public" {
   is_frontend           = false
   subscription          = "sandbox"
   capacity              = "${var.capacity}"
+  additional_host_name  = "${var.external_host_name}"
 
   app_settings = {
     STRATEGIC_SERVICE_URL = "http://api-dev1.fridam.reform.hmcts.net"
