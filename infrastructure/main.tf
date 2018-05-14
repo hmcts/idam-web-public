@@ -6,6 +6,7 @@ module "idam-web-public" {
   ilbIp                 = "${var.ilbIp}"
   is_frontend           = true
   subscription          = "${var.subscription}"
+  subscription          = "sandbox"
   capacity              = "${var.capacity}"
   additional_host_name  = "${var.external_host_name}"
 
