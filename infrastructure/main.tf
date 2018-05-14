@@ -1,4 +1,4 @@
-module "idam-web-public" {
+module "idam-web-public2" {
   source                = "git@github.com:hmcts/moj-module-webapp?ref=master"
   product               = "${var.product}-${var.app}"
   location              = "${var.location}"
@@ -6,6 +6,7 @@ module "idam-web-public" {
   ilbIp                 = "${var.ilbIp}"
   is_frontend           = true
   subscription          = "${var.subscription}"
+  subscription          = "sandbox"
   capacity              = "${var.capacity}"
   additional_host_name  = "${var.external_host_name}"
 
