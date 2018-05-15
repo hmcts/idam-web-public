@@ -11,6 +11,6 @@ module "idam-web-public" {
 
   app_settings = {
     STRATEGIC_SERVICE_URL = "https://idam-api-${var.env}.service.core-compute-${var.env}.internal"
-    MANAGEMENT_SECURITY_ENABLED = "${var.spring_management_security_enabled}"
+    MANAGEMENT_SECURITY_ENABLED = "${var.env == "prod" ? "true" : "false"}"
   }
 }
