@@ -7,6 +7,10 @@ server:
   maxConnectionsPerRoute: 200
   maxConnectionsTotal: 200
 
+management:
+  security:
+    enabled: true
+
 spring:
   mvc:
     view:
@@ -18,7 +22,7 @@ authentication:
 
 strategic:
   service:
-    url: https://api-dev1.fridam.reform.hmcts.net
+    url: https://idam-api
   endpoint:
     authorize: authorize
     loginWithPin: pin

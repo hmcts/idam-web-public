@@ -24,3 +24,7 @@ variable "capacity" {
 variable "external_host_name" {
   default = "hmcts-access.sandbox.platform.hmcts.net"
 }
+
+variable "spring_management_security_enabled" {
+  default = true
+}
