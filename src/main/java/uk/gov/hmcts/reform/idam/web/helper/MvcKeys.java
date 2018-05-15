@@ -20,7 +20,7 @@ public class MvcKeys {
     public static final String RESPONSE_TYPE = "response_type";
     public static final String STATE = "state";
     public static final String USERNAME = "username";
-    public static final String EXPIRED_PIN = "expiredPin";
+    public static final String INVALID_PIN = "invalidPin";
 
 
     public static final String ERROR_VIEW = "error";

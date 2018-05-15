@@ -11,7 +11,7 @@
                 <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                     <spring:message code="${errorTitle}" />
                 </h2>
-                <c:if test="${expiredPin}">
+                <c:if test="${invalidPin}">
                   <p><spring:message code="public.login.with.pin.valid.security.code.description" arguments="https://hmcts-access.service.gov.uk/contact-us"/></p>
                 </c:if>
                 <ul class="error-summary-list">
