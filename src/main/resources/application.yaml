@@ -11,6 +11,10 @@ management:
   security:
     enabled: true
 
+ssl:
+  verification:
+    enabled: false
+
 spring:
   mvc:
     view:
