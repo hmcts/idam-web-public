@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_SUB_MSG;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIREDTOKEN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
@@ -188,6 +189,8 @@ public class AppController {
             ResponseEntity<String> resetPasswordEntity = service.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirectUri(), request.getClientId());
             if (resetPasswordEntity.getStatusCode() == HttpStatus.CREATED) {
                 model.put(EMAIL, request.getUsername());
+                model.put(REDIRECTURI, request.getRedirectUri());
+                model.put(CLIENTID, request.getClientId());
                 return USERCREATED_VIEW;
             } else {
                 return UPLIFT_USER_VIEW;
@@ -380,6 +383,7 @@ public class AppController {
             log.error("Problem with pin: {}", e.getMessage());
 
             ErrorHelper.showLoginError("public.login.with.pin.valid.security.code.error", "public.login.with.pin.security.code.incorrect.error", redirectUri, model);
+            model.put(INVALID_PIN, true);
             model.put(REDIRECTURI, redirectUri);
 
             return LOGIN_WITH_PIN_VIEW;
