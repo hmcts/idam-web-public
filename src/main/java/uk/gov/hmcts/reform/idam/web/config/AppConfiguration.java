@@ -14,6 +14,7 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,18 +43,17 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
             .setMaxConnTotal(configurationProperties.getServer().getMaxConnectionsTotal());
 
         if (!configurationProperties.getSsl().getVerification().getEnabled()) {
-            // disable SSL cert name verification
-
             TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-            SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom()
+            SSLContext sslContext = SSLContexts.custom()
                 .loadTrustMaterial(null, acceptingTrustStrategy)
                 .build();
-            HostnameVerifier allowAll = (hostName, session) -> true;
+            HostnameVerifier allowAllHostnameVerifier = (hostName, session) -> true;
 
-            HttpsURLConnection.setDefaultHostnameVerifier(allowAll);
-            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+            SSLConnectionSocketFactory allowAllSslSocketFactory = new SSLConnectionSocketFactory(
+                sslContext,
+                allowAllHostnameVerifier);
 
-            httpClientBuilder.setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext, allowAll));
+            httpClientBuilder.setSSLSocketFactory(allowAllSslSocketFactory);
         }
 
         CloseableHttpClient client = httpClientBuilder.build();
