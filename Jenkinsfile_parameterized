@@ -12,19 +12,10 @@ properties([
     ])
 ])
 
-def environment = "idam-sandbox"
-
-def type = "java"
-
-def product = "idam"
-
-def component = "web-public"
-
 node {
     env.PATH = "$env.PATH:/usr/local/bin"
-    def az = { cmd -> return sh(script: "env AZURE_CONFIG_DIR=/opt/jenkins/.azure-$subscription az $cmd", returnStdout: true).trim() }
-
     env.TF_VAR_product = params.PRODUCT_NAME
+
     withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION){
     }
 }

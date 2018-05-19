@@ -27,13 +27,13 @@
                     <c:when test="${not empty param['jwt']}">
                         <spring:message
                             code="public.common.user.created.re.enter.details"
-                            arguments="/login/uplift?state=${param['state']}&redirect_uri=${param['redirect_uri']}&client_id=${param['client_id']}&jwt=${param['jwt']}"
+                            arguments="/login/uplift?state=${state}&redirect_uri=${redirectUri}&client_id=${clientId}&jwt=${jwt}"
                         />
                     </c:when>
                     <c:otherwise>
                         <spring:message
                             code="public.common.user.created.re.enter.details"
-                            arguments="/users/selfRegister?redirect_uri=${param['redirect_uri']}&client_id=${param['client_id']}"
+                            arguments="/users/selfRegister?redirect_uri=${redirectUri}&client_id=${clientId}"
                         />
                     </c:otherwise>
                 </c:choose>

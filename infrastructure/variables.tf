@@ -20,7 +20,3 @@ variable "app" {
 variable "capacity" {
   default = "1"
 }
-
-variable "external_host_name" {
-  default = "hmcts-access.sandbox.platform.hmcts.net"
-}
