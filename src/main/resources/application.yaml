@@ -13,7 +13,7 @@ management:
 
 ssl:
   verification:
-    enabled: false
+    enabled: true
 
 spring:
   mvc:
