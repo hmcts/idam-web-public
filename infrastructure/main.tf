@@ -1,5 +1,5 @@
 locals {
-  integration_env = "${var.env == "idam-preview" ? "idam-saat" : var.env}"
+  integration_env = "${contains(list("idam-preview", "preview"), var.env) ? "idam-saat" : var.env}"
 }
 
 module "idam-web-public" {
