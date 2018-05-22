@@ -17,7 +17,6 @@ allprojects  {
   apply plugin: 'org.springframework.boot'
 
   group = 'uk.gov.hmcts.reform.idam'
-  version = '1.0.4'
   description = 'idam-web-public'
 
   sourceCompatibility = 1.8
@@ -80,10 +79,6 @@ allprojects  {
 
   bootRun {
     systemProperties = System.properties
-  }
-
-  war {
-    archiveName = "${rootProject.name}.war"
   }
 
   task smoke(type: Test) {
