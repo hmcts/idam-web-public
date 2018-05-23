@@ -11,5 +11,6 @@ public class ConfigurationProperties {
 
     private ServerConfigurationProperties server;
     private StrategicConfigurationProperties strategic;
+    private SSLConfigurationProperties ssl;
 
 }
