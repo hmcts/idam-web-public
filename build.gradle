@@ -17,17 +17,16 @@ allprojects  {
   apply plugin: 'org.springframework.boot'
 
   group = 'uk.gov.hmcts.reform.idam'
-  version = '1.0.4'
   description = 'idam-web-public'
 
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.0.32'
+  def idamBomVersion = '1.1.0'
 
   dependencyManagement {
     imports {
-      mavenBom "uk.gov.hmcts:idam-bom:${idamBomVersion}"
+      mavenBom "uk.gov.hmcts.reform.idam:idam-bom:${idamBomVersion}"
     }
   }
 
@@ -80,6 +79,16 @@ allprojects  {
 
   bootRun {
     systemProperties = System.properties
+  }
+
+  task smoke(type: Test) {
+    group = 'Delivery pipeline'
+    description = 'Executes non-destructive smoke tests against a running instance'
+  }
+
+  task functional(type: Test) {
+    group = 'Delivery pipeline'
+    description = 'Executes functional tests against a running instance'
   }
 }
 

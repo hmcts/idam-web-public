@@ -13,7 +13,7 @@ indent_size=2
 indent_style=space
 indent_size=2
 
-[{*.yml,*.yaml}]
+[{*.yml,*.yaml,*.tf,*.gradle}]
 indent_style=space
 indent_size=2
 
