@@ -83,7 +83,6 @@ public class AppController {
     @Autowired
     private ObjectMapper objectMapper;
 
-
     /**
      * @should return index view
      */
@@ -494,4 +493,23 @@ public class AppController {
         return true;
     }
 
+    @RequestMapping("/cookies")
+    public String cookies() {
+        return "cookies";
+    }
+
+    @RequestMapping("/privacy-policy")
+    public String privacyPolicy() {
+        return "privacypolicy";
+    }
+
+    @RequestMapping("/terms-and-conditions")
+    public String termsAndConditions() {
+        return "tandc";
+    }
+
+    @RequestMapping("/contact-us")
+    public String contactUs() {
+        return "contactus";
+    }
 }
