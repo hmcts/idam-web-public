@@ -39,7 +39,7 @@ strategic:
     activation: activate
     userrole: users/{userId}/roles/{roleId}
     search: users
-    authorizeOauth2: oauth2/authorize
+    authorizeOauth2: authorizationCode
     selfRegisterUser: users/self
     selfRegistration: users/selfregister
     details: details
