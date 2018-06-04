@@ -13,7 +13,7 @@
 
         <h2 class="heading-medium">Divorce</h2>
         <ul class="list">
-            <li>Email: eastmidlandsdivorce@hmcts.gsi.gov.uk</li>
+            <li>Email: divorce@justice.gov.uk</li>
             <li>Phone: 0300 303 0642 </li>
             <li>Monday to Friday, 8:30am to 5pm</li>
             <li> <a href="https://www.gov.uk/call-charges">Find out about call charges</a> </li>
