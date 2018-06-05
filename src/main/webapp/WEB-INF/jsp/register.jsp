@@ -52,7 +52,7 @@
                     </div>
 
                     <div class="form-group">
-                        <a href="/reset/forgotpassword?redirectUri=${param['redirect_uri']}&clientId=${param['client_id']}">
+                        <a href="/reset/forgotpassword?redirectUri=${param['redirect_uri']}&clientId=${param['client_id']}&state=${param['state']}">
                             <spring:message code="public.login.forgotten.password" />
                         </a>
                     </div>
