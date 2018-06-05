@@ -1,5 +1,5 @@
 locals {
-  integration_env = "${contains(list("idam-preview", "preview"), var.env) ? "idam-saat" : var.env}"
+  integration_env = "${contains(list("idam-preview", "preview"), var.env) ? "idam-preview" : var.env}"
 }
 
 module "idam-web-public" {
@@ -8,7 +8,7 @@ module "idam-web-public" {
   location              = "${var.location}"
   env                   = "${var.env}"
   ilbIp                 = "${var.ilbIp}"
-  is_frontend           = true
+  is_frontend           = "${var.env != "preview" ? 1: 0}"
   subscription          = "${var.subscription}"
   capacity              = "${var.capacity}"
   additional_host_name  = "hmcts-access.${replace(var.env, "idam-", "")}.platform.hmcts.net"
