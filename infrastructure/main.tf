@@ -4,7 +4,7 @@ module "idam-web-public" {
   location              = "${var.location}"
   env                   = "${var.env}"
   ilbIp                 = "${var.ilbIp}"
-  is_frontend           = "${var.env == "idam-preview" ? false : true}"
+  is_frontend           = "${var.env == "idam-preview" ? 0 : 1}"
   subscription          = "${var.subscription}"
   capacity              = "${var.capacity}"
   additional_host_name  = "hmcts-access.${replace(var.env, "idam-", "")}.platform.hmcts.net"
