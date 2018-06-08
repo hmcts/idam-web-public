@@ -16,6 +16,8 @@ ssl:
     enabled: true
 
 spring:
+  application:
+    name: IDAM Web Public
   mvc:
     view:
       prefix: /WEB-INF/jsp/
@@ -48,3 +50,7 @@ validation:
   password:
     minLength: 8
     maxLength: 256
+
+azure:
+  application-insights:
+    instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}

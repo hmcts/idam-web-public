@@ -4,12 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>uk.gov.hmcts</groupId>
+        <groupId>uk.gov.hmcts.reform.idam</groupId>
         <artifactId>idam-bom</artifactId>
-        <version>1.0.31</version>
+        <version>1.2.5</version>
     </parent>
 
-    <groupId>uk.gov.hmcts.reform.idam</groupId>
     <artifactId>idam-web-public</artifactId>
     <version>1.0.4</version>
     <packaging>war</packaging>

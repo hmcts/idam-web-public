@@ -8,6 +8,7 @@ module "idam-web-public" {
   subscription          = "${var.subscription}"
   capacity              = "${var.capacity}"
   additional_host_name  = "hmcts-access.${replace(var.env, "idam-", "")}.platform.hmcts.net"
+  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
 
   app_settings = {
     MANAGEMENT_SECURITY_ENABLED   = "${var.env == "idam-prod" ? "true" : "false"}"
