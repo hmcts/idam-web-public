@@ -81,7 +81,7 @@ timestamps {
                     milestone()
                     lock(resource: "idam-web-public-deploy-dev", inversePrecedence: true) {
                         stage('Deploy (Dev1)') {
-                            build job: '/idam/deploy-all/master',
+                            build job: '/hmcts/idam-deploy-all-legacy/master',
                                     propagate: true,
                                     parameters: [
                                         [$class: 'StringParameterValue', name: 'DEPLOY_ENV', value: 'dev1'],

@@ -139,10 +139,10 @@
                 <h2 class="visuallyhidden"><spring:message code="public.template.footer.support.links" /></h2>
                 <c:set var="footerUrl" value="https://hmcts-access.service.gov.uk" />
                 <ul>
-                    <li><a href="${footerUrl}/cookies"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
-                    <li><a href="${footerUrl}/privacy-policy"><spring:message code="public.template.footer.support.link.privacy.policy" /></a></li>
-                    <li><a href="${footerUrl}/terms-and-conditions"><spring:message code="public.template.footer.support.link.terms.and.conditions" /></a></li>
-                    <li><a href="${footerUrl}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" /></a></li>
+                    <li><a href="${pageContext.request.contextPath}/cookies"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
+                    <li><a href="${pageContext.request.contextPath}/privacy-policy"><spring:message code="public.template.footer.support.link.privacy.policy" /></a></li>
+                    <li><a href="${pageContext.request.contextPath}/terms-and-conditions"><spring:message code="public.template.footer.support.link.terms.and.conditions" /></a></li>
+                    <li><a href="${pageContext.request.contextPath}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" /></a></li>
                 </ul>
 
                 <div class="open-government-licence">

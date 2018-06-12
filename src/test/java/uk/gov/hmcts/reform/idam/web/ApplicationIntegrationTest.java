@@ -6,7 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"ssl.verification.enabled=false"})
+@SpringBootTest(properties = {"ssl.verification.enabled=false",
+    "spring.autoconfigure.exclude=com.microsoft.applicationinsights.boot.ApplicationInsightsTelemetryAutoConfiguration"})
 public class ApplicationIntegrationTest {
 
     @Test

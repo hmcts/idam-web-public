@@ -26,5 +26,6 @@ nbdist/
 node_modules/
 build
 .gradle
+out
 
 **/application-local.yaml

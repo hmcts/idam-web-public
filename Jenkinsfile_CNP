@@ -11,7 +11,7 @@ def component = "web-public"
 env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
 env.PROD_ENVIRONMENT_NAME    = 'idam-prod'
 env.DEMO_ENVIRONMENT_NAME    = 'idam-demo'
-env.PREVIEW_ENVIRONMENT_NAME = 'preview'
+env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
 
 withPipeline(type, product, component) {
 }

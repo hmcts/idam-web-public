@@ -18,7 +18,7 @@
                 <p>
                     <spring:message
                         code="public.forgot.password.success.unconnected.account"
-                        arguments="/login"
+                        arguments="/users/selfRegister?redirect_uri=${redirectUri}&client_id=${clientId}&state=${state}"
                     />
                 </p>
             </c:if>
