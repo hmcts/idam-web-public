@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.uplift.user.title">
     <article class="content__body">
         <c:set var="redirectUri" value="${empty param['redirectUri'] ? param['redirect_uri'] : param['redirectUri']}" />
         <c:set var="clientId" value="${empty param['clientId'] ? param['client_id'] : param['clientId']}" />

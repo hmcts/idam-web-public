@@ -3,11 +3,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ tag description="Simple Wrapper Tag" pageEncoding="UTF-8" %>
+<%@attribute name="titleKey" required="true"%>
 <!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
 <!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>IdAM Public</title>
+    <title><spring:message code="${titleKey}"/></title>
 
     <link href="/assets/stylesheets/application.css" media="all" rel="stylesheet"/>
     <!--[if gt IE 8]><!-->

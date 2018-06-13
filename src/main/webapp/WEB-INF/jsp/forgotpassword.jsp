@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.forgot.password.title.text">
     <article class="content__body">
         <form:form name="loginForm"
               class="form form-section"

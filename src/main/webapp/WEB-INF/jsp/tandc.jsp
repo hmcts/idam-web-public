@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.template.footer.support.link.terms.and.conditions">
     <article class="content__body">
         <h1 class="heading-large">Terms and conditions</h1>
         <p>By using this service you're agreeing to these terms of use. This includes the <a href="/privacy-policy">privacy

@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.template.footer.support.link.cookies">
     <article class="content__body">
         <a href="javascript:history.go(-1)" class="link-back">Back</a>
         <h1 class="heading-xlarge">
