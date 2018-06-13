@@ -14,7 +14,13 @@
         <div class="article-container">
             <article role="article" class="group">
                 <p class="lede">
-                    <spring:message code="public.error.page.not.found.description" />
+                    <spring:message code="public.error.page.not.found.description.one" />
+                </p>
+                <p class="lede">
+                    <spring:message code="public.error.page.not.found.description.two" />
+                </p>
+                <p class="lede">
+                    <spring:message code="public.error.page.not.found.description.three" />  <a href="${pageContext.request.contextPath}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" />.
                 </p>
             </article>
         </div>
