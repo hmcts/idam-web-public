@@ -4,7 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.self.register.title.text">
     <article class="content__body">
         <form:form name="selfRegisterForm" class="form form-section"
                    method="post" _lpchecked="1"
