@@ -29,6 +29,15 @@ spring:
 authentication:
   useOAuth2: true
 
+logging:
+  level:
+    root: INFO
+    org:
+      apache:
+        catalina:
+          valves:
+            RemoteIpValve: DEBUG
+
 strategic:
   service:
     url: https://idam-api
