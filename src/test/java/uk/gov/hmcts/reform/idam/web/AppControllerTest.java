@@ -156,7 +156,8 @@ public class AppControllerTest {
      */
     @Test
     public void index_shouldReturnIndexView() throws Exception {
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/")
+                .header("Dummy", "bob"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(view().name(INDEX_VIEW));
