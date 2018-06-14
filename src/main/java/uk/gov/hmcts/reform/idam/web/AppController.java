@@ -90,16 +90,6 @@ public class AppController {
      */
     @RequestMapping("/")
     public String index(HttpServletRequest request, final Map<String, Object> model) {
-
-        log.warn("Remote Address: {}", request.getRemoteAddr());
-        Enumeration enumeration = request.getHeaderNames();
-
-        while (enumeration.hasMoreElements()) {
-            String name = (String) enumeration.nextElement();
-            String value = request.getHeader(name);
-            log.warn("\t {} = {}", name, value);
-        }
-
         return MvcKeys.INDEX_VIEW;
     }
 

@@ -4,7 +4,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <t:wrapper>
-    Remote address: <c:out value="${remoteAddress}" /><br/>
-    X-forwarded-for: <c:out value="${xForwardedFor}" /><br/>
-    X-forwarded-proto: <c:out value="${xForwardedProto}" /><br/>
+    <c:redirect url="/login">
+        <c:forEach var="requestParam" items="${param}">
+            <c:param name="${requestParam.key}" value="${requestParam.value}" />
+        </c:forEach>
+    </c:redirect>
 </t:wrapper>
