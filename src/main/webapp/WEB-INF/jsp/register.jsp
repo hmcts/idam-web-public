@@ -2,6 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <t:wrapper titleKey="public.register.title">
     <article class="content__body">
@@ -59,7 +60,7 @@
 
                     <spring:message code="public.login.form.submit" var="signInCta" />
                     <input class="button" type="submit" value="${signInCta}">
-
+                    <sec:csrfInput />
                     <input type="hidden" id="jwt" name="jwt" value="${param['jwt']}"/>
                     <input type="hidden" id="redirectUri" name="redirectUri" value="${redirectUri}"/>
                     <input type="hidden" id="clientId" name="clientId" value="${clientId}"/>

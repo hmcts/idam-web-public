@@ -2,6 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <t:wrapper titleKey="public.user.activation.title.text">
     <article class="content__body">
@@ -50,7 +51,7 @@
 
             <spring:message code="public.common.button.continue.text" var="formCta" />
             <input class="button" type="submit" value="${formCta}" id="activate">
-
+            <sec:csrfInput />
             <input type="hidden" id="token" name="token" value="${token}">
             <input type="hidden" id="code" name="code" value="${code}">
         </form>

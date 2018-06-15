@@ -2,6 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <t:wrapper titleKey="public.reset.password.title.text">
     <article class="content__body">
@@ -52,7 +53,7 @@
                 </label>
                 <input class="form-control ${hasPassword2Error ? "form-control-error" : ""}" type="password" id="password2" name="password2" value="${password2}" autocomplete="off">
             </div>
-
+            <sec:csrfInput />
             <spring:message code="public.reset.password.form.submit" var="formCta" />
             <input class="button" type="submit" value="${formCta}">
             <input type="hidden" id="token" name="token" value="${param.token}"/>

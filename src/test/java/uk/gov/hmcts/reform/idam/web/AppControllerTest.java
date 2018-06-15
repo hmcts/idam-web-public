@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -213,7 +214,7 @@ public class AppControllerTest {
     @Test
     public void registerUser_shouldPutRightErrorDataInModelIfMandatoryFieldsAreMissingAndReturnUpliftUserView() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -239,7 +240,7 @@ public class AppControllerTest {
 
         given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willReturn(ResponseEntity.badRequest().build());
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -260,7 +261,7 @@ public class AppControllerTest {
     public void registerUser_shouldPutEmailInModelAndReturnUsercreatedViewIfRegisterUserServiceReturnsHttpCode201() throws Exception {
         given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willReturn(ResponseEntity.status(HttpStatus.CREATED).build());
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -283,7 +284,7 @@ public class AppControllerTest {
     public void registerUser_shouldPutRightErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionWith404HttpStatusCode() throws Exception {
         given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -309,7 +310,7 @@ public class AppControllerTest {
     public void registerUser_shouldPutGenericErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionAnHttpStatusCodeDifferentFrom404() throws Exception {
         given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -333,7 +334,7 @@ public class AppControllerTest {
      */
     @Test public void registerUser_shouldRejectRequestIfTheUsernameIsInvalid() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -357,7 +358,7 @@ public class AppControllerTest {
      */
     @Test public void registerUser_shouldRejectRequestIfTheFirstNameIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -381,7 +382,7 @@ public class AppControllerTest {
      */
     @Test public void registerUser_shouldRejectRequestIfTheLastNameIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -404,7 +405,7 @@ public class AppControllerTest {
      */
     @Test public void registerUser_shouldRejectRequestIfTheJwtIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, MISSING)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -427,7 +428,7 @@ public class AppControllerTest {
      */
     @Test public void registerUser_shouldRejectRequestIfTheRedirectURIIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, MISSING)
             .param(STATE_PARAMETER, STATE)
@@ -451,7 +452,7 @@ public class AppControllerTest {
      */
     @Test public void registerUser_shouldRejectRequestIfTheClientIdIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -476,7 +477,7 @@ public class AppControllerTest {
 
         given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE)).willReturn("upliftResult");
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -495,7 +496,7 @@ public class AppControllerTest {
      */
     @Test public void uplift_shouldRejectRequestIfUsernameIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, MISSING)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -513,7 +514,7 @@ public class AppControllerTest {
      */
     @Test public void uplift_shouldRejectRequestIfUsernameIsInvalid() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval!d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -522,7 +523,7 @@ public class AppControllerTest {
             .param(CLIENTID_PARAMETER, CLIENT_ID))
             .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval(d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -531,7 +532,7 @@ public class AppControllerTest {
             .param(CLIENTID_PARAMETER, CLIENT_ID))
             .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval)d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -540,7 +541,7 @@ public class AppControllerTest {
             .param(CLIENTID_PARAMETER, CLIENT_ID))
             .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval%d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -549,7 +550,7 @@ public class AppControllerTest {
             .param(CLIENTID_PARAMETER, CLIENT_ID))
             .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval&d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -558,7 +559,7 @@ public class AppControllerTest {
             .param(CLIENTID_PARAMETER, CLIENT_ID))
             .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval;d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -576,7 +577,7 @@ public class AppControllerTest {
      */
     @Test public void uplift_shouldRejectRequestIfPasswordIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, MISSING)
             .param(JWT_PARAMETER, JWT)
@@ -594,7 +595,7 @@ public class AppControllerTest {
      */
     @Test public void uplift_shouldRejectRequestIfJWTIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, MISSING)
@@ -612,7 +613,7 @@ public class AppControllerTest {
      */
     @Test public void uplift_shouldRejectRequestIfRedirectUriIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -630,7 +631,7 @@ public class AppControllerTest {
      */
     @Test public void uplift_shouldRejectRequestIfClientIdIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -651,7 +652,7 @@ public class AppControllerTest {
         given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE))
             .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -670,7 +671,7 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldReturnErrorPageViewIfOAuth2DetailsAreMissing() throws Exception {
-        mockMvc.perform(post(LOGIN_ENDPOINT)
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(CLIENT_ID_PARAMETER, MISSING))
             .andExpect(status().isOk())
@@ -686,7 +687,7 @@ public class AppControllerTest {
 
         given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE)).willThrow(new RuntimeException());
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT)
+        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
@@ -707,7 +708,7 @@ public class AppControllerTest {
 
         given(spiService.getDetails(JWT)).willReturn(Optional.of(anAuthorizedUser()));
 
-        mockMvc.perform(post(LOGIN_UPLIFT_ENDPOINT)
+        mockMvc.perform(post(LOGIN_UPLIFT_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT))
             .andExpect(status().isOk())
             .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
@@ -723,7 +724,7 @@ public class AppControllerTest {
 
         given(spiService.getDetails(JWT)).willReturn(Optional.of(new User()));
 
-        mockMvc.perform(post(LOGIN_UPLIFT_ENDPOINT)
+        mockMvc.perform(post(LOGIN_UPLIFT_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT))
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
@@ -739,7 +740,7 @@ public class AppControllerTest {
 
         given(spiService.getDetails(JWT)).willReturn(Optional.of(anAuthorizedUser()));
 
-        mockMvc.perform(post(REGISTER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT))
             .andExpect(status().isOk())
             .andExpect(view().name(REGISTER_VIEW_NAME));
@@ -755,7 +756,7 @@ public class AppControllerTest {
 
         given(spiService.getDetails(JWT)).willReturn(Optional.of(new User()));
 
-        mockMvc.perform(post(REGISTER_ENDPOINT)
+        mockMvc.perform(post(REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT))
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
@@ -771,7 +772,7 @@ public class AppControllerTest {
 
         given(spiService.validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE)).willReturn(ResponseEntity.ok("{irrelevant}"));
 
-        mockMvc.perform(post(PASSWORD_RESET_ENDPOINT)
+        mockMvc.perform(post(PASSWORD_RESET_ENDPOINT).with(csrf())
             .param(ACTION_PARAMETER, UNUSED)
             .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
             .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
@@ -789,7 +790,7 @@ public class AppControllerTest {
 
         given(spiService.validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE)).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
-        mockMvc.perform(post(PASSWORD_RESET_ENDPOINT)
+        mockMvc.perform(post(PASSWORD_RESET_ENDPOINT).with(csrf())
             .param(ACTION_PARAMETER, UNUSED)
             .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
             .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
@@ -808,7 +809,7 @@ public class AppControllerTest {
         given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willReturn(ResponseEntity.ok(RESET_PASSWORD_RESPONSE));
 
-        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT)
+        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
             .param(ACTION_PARAMETER, UNUSED)
             .param(PASSWORD_ONE, PASSWORD_ONE)
             .param(PASSWORD_TWO, PASSWORD_TWO)
@@ -831,7 +832,7 @@ public class AppControllerTest {
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willThrow(new HttpClientErrorException(HttpStatus.PRECONDITION_FAILED));
 
 
-        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT)
+        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
             .param(ACTION_PARAMETER, UNUSED)
             .param(PASSWORD_ONE, PASSWORD_ONE)
             .param(PASSWORD_TWO, PASSWORD_TWO)
@@ -859,7 +860,7 @@ public class AppControllerTest {
         given(validationService.isErrorInResponse(eq(PASSWORD_BLACKLISTED_RESPONSE), eq(ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED))).willReturn(true);
 
 
-        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT)
+        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
             .param(ACTION_PARAMETER, UNUSED)
             .param(PASSWORD_ONE, PASSWORD_ONE)
             .param(PASSWORD_TWO, PASSWORD_TWO)
@@ -887,7 +888,7 @@ public class AppControllerTest {
         given(validationService.isErrorInResponse(eq(ERR_LOCKED_FAILED_RESPONSE), eq(ErrorResponse.CodeEnum.ACCOUNT_LOCKED))).willReturn(true);
 
 
-        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT)
+        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
             .param(ACTION_PARAMETER, UNUSED)
             .param(PASSWORD_ONE, PASSWORD_ONE)
             .param(PASSWORD_TWO, PASSWORD_TWO)
@@ -914,7 +915,7 @@ public class AppControllerTest {
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
 
-        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT)
+        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
             .param(ACTION_PARAMETER, UNUSED)
             .param(PASSWORD_ONE, PASSWORD_ONE)
             .param(PASSWORD_TWO, PASSWORD_TWO)
@@ -934,7 +935,7 @@ public class AppControllerTest {
     public void resetPassword_shouldReturnResetPasswordViewIfRequestValidationFails() throws Exception {
         given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(false);
 
-        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT)
+        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
             .param(ACTION_PARAMETER, UNUSED)
             .param(PASSWORD_ONE, PASSWORD_ONE)
             .param(PASSWORD_TWO, PASSWORD_TWO)
@@ -953,7 +954,7 @@ public class AppControllerTest {
      */
     @Test
     public void forgotPassword_shouldCallForgetPasswordWithTheRightParameters() throws Exception {
-        mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT)
+        mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
             .param(USER_EMAIL_PARAMETER, USER_EMAIL)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(CLIENTID_PARAMETER, CLIENT_ID))
@@ -970,7 +971,7 @@ public class AppControllerTest {
     @Test
     public void forgotPassword_shouldNotCallForgetPasswordIfThereAreValidationErrors()
         throws Exception {
-        mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT)
+        mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
             .param(USER_EMAIL_PARAMETER, USER_EMAIL_INVALID))
             .andExpect(status().isOk())
             .andExpect(view().name(FORGOT_PASSWORD_VIEW));
@@ -985,7 +986,7 @@ public class AppControllerTest {
     @Test
     public void forgotPassword_shouldReturnForgotPasswordSuccessViewWhenThereAreNoErrors()
         throws Exception {
-        mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT)
+        mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
             .param(USER_EMAIL_PARAMETER, USER_EMAIL)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(CLIENTID_PARAMETER, CLIENT_ID))
@@ -1002,7 +1003,7 @@ public class AppControllerTest {
     @Test
     public void forgotPassword_shouldReturnForgotPasswordViewWithCorrectModelDataWhenThereAreValidationErrors()
         throws Exception {
-        BindingResult bindingResultForInvalidEmail = (BindingResult) mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT)
+        BindingResult bindingResultForInvalidEmail = (BindingResult) mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
             .param(USER_EMAIL_PARAMETER, USER_EMAIL_INVALID))
             .andExpect(status().isOk())
             .andExpect(view().name(FORGOT_PASSWORD_VIEW))
@@ -1018,7 +1019,7 @@ public class AppControllerTest {
 
         assertThat(errorCodesForInvalidEmail, hasItem("Email.forgotPasswordCommand.email"));
 
-        BindingResult bindingResultForBlankEmail = (BindingResult) mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT)
+        BindingResult bindingResultForBlankEmail = (BindingResult) mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
             .param(USER_EMAIL_PARAMETER, MISSING))
             .andExpect(status().isOk())
             .andExpect(view().name(FORGOT_PASSWORD_VIEW))
@@ -1044,7 +1045,7 @@ public class AppControllerTest {
         given(spiService.forgetPassword(any(), any(), any()))
             .willThrow(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT)
+        mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
             .param(USER_EMAIL_PARAMETER, USER_EMAIL))
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
@@ -1085,7 +1086,7 @@ public class AppControllerTest {
 
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(REDIRECT_URI);
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT)
+        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1104,7 +1105,7 @@ public class AppControllerTest {
      */
     @Test
     public void authorize_shouldPutInModelCorrectDataIfUsernameOrPasswordAreEmpty() throws Exception {
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT)
+        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, BLANK)
             .param(PASSWORD_PARAMETER, BLANK)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1126,7 +1127,7 @@ public class AppControllerTest {
     public void authorize_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(MISSING);
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT)
+        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1146,7 +1147,7 @@ public class AppControllerTest {
     public void authorize_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT)
+        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1161,7 +1162,7 @@ public class AppControllerTest {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
 
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT)
+        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1176,7 +1177,7 @@ public class AppControllerTest {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
 
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT)
+        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1198,7 +1199,7 @@ public class AppControllerTest {
     public void authorize_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT)
+        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1219,7 +1220,7 @@ public class AppControllerTest {
     @Test
     public void loginWithPin_shouldPutInModelCorrectErrorDataAndReturnLoginWithPinViewIfPinIsMissing() throws Exception {
 
-        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT)
+        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT).with(csrf())
             .param(PIN_PARAMETER, "")
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -1237,7 +1238,7 @@ public class AppControllerTest {
 
         given(spiService.loginWithPin(eq(LOGIN_PIN_CODE), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(REDIRECTURI);
 
-        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT)
+        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT).with(csrf())
             .param(PIN_PARAMETER, LOGIN_PIN_CODE)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -1254,7 +1255,7 @@ public class AppControllerTest {
     public void loginWithPin_shouldPutInModelTheRedirectUriParameterAndErrorDataAndReturnLoginWithPinViewIfServiceThrowsAHttpClientErrorExceptionOrBadCredentialException() throws Exception {
         given(spiService.loginWithPin(eq(LOGIN_PIN_CODE), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
-        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT)
+        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT).with(csrf())
             .param(PIN_PARAMETER, LOGIN_PIN_CODE)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -1268,7 +1269,7 @@ public class AppControllerTest {
 
         given(spiService.loginWithPin(eq(LOGIN_PIN_CODE), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new BadCredentialsException(BLANK));
 
-        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT)
+        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT).with(csrf())
             .param(PIN_PARAMETER, LOGIN_PIN_CODE)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -1290,7 +1291,7 @@ public class AppControllerTest {
     public void loginWithPin_shouldPutInModelTheCorrectErrorDetailAndReturnLoginWithPinViewIfAGenericExceptionOccurs() throws Exception {
         given(spiService.loginWithPin(eq(LOGIN_PIN_CODE), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(Exception.class);
 
-        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT)
+        mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT).with(csrf())
             .param(PIN_PARAMETER, LOGIN_PIN_CODE)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)

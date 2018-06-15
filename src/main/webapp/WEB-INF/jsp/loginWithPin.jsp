@@ -2,6 +2,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <t:wrapper titleKey="public.login.subheading.sign.in">
     <article class="content__body">
@@ -42,7 +43,7 @@
 
             <spring:message code="public.login.with.pin.form.cta" var="formCta" />
             <input class="button" type="submit" value="${formCta}">
-
+            <sec:csrfInput />
             <input type="hidden" id="redirectUri" name="redirect_uri" value="${param['redirect_uri']}"/>
             <input type="hidden" id="clientId" name="client_id" value="${param['client_id']}"/>
             <input type="hidden" id="state" name="state" value="${param['state']}"/>
