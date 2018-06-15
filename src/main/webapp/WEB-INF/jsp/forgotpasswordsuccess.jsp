@@ -3,6 +3,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <t:wrapper titleKey="public.forgot.password.success.title">
     <article class="content__body">
@@ -17,10 +18,8 @@
             </p>
             <c:if test="${not empty redirectUri}">
                 <p>
-                    <spring:message
-                        code="public.forgot.password.success.unconnected.account"
-                        arguments="/users/selfRegister?redirect_uri=${redirectUri}&client_id=${clientId}&state=${state}"
-                    />
+                    <spring:message  code="public.forgot.password.success.unconnected.account"/>
+                    <a href="/users/selfRegister?redirect_uri=${fn:escapeXml(redirectUri)}&client_id=${fn:escapeXml(clientId)}&state=${fn:escapeXml(state)}"><spring:message  code="public.forgot.password.success.unconnected.account.create.account"/></a>
                 </p>
             </c:if>
             <h2 class="heading-medium">

@@ -4,6 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <c:if test="${redirectUri == null}">
     <c:if test="${param['continue-url'] != null}">
@@ -37,10 +38,9 @@
                             </h2>
                             <div class="text">
                                 <p>
-                                    <spring:message
-                                        code="public.login.error.locked.instruction"
-                                        arguments="/reset/forgotpassword?redirectUri=${param['redirect_uri']}&clientId=${param['client_id']}"
-                                    />
+                                    <spring:message  code="public.login.error.locked.instruction"/>
+                                    <a href="/reset/forgotpassword?redirectUri=${fn:escapeXml(param['redirect_uri'])}&clientId=${fn:escapeXml(param['client_id'])}"><spring:message  code="public.login.error.locked.instruction.reset.password"/></a>
+                                    <spring:message  code="public.login.error.locked.instruction.unlock.account"/>
                                 </p>
                             </div>
                         </c:when>
@@ -98,7 +98,7 @@
                                     <spring:message code="public.common.error.enter.username" />
                                 </span>
                             </c:if>
-                            <input class="form-control form-control-3-4 ${usernameError? 'form-control-error' : ''}" type="text" id="username" name="username" value="${username}" autocomplete="off">
+                            <input class="form-control form-control-3-4 ${usernameError? 'form-control-error' : ''}" type="text" id="username"  name="username" value="${fn:escapeXml(username)}" autocomplete="off">
                         </div>
 
                         <c:set var="passwordError" value="${isPasswordEmpty || hasLoginFailed}" />
@@ -113,29 +113,30 @@
                                     <spring:message code="public.common.error.enter.password" />
                                 </span>
                             </c:if>
-                            <input class="form-control form-control-3-4 ${passwordError? 'form-control-error' : ''}" id="password" name="password" type="password" value="" autocomplete="off">
+                            <form:input class="form-control form-control-3-4 ${passwordError? 'form-control-error' : ''}" id="password" name="password" path="password" type="password" value="" autocomplete="off"/>
                         </div>
 
                         <div class="form-group">
-                            <a href="/reset/forgotpassword?redirectUri=${redirect_uri}&clientId=${client_id}&state=${state}">
+                            <a href="/reset/forgotpassword?redirectUri=${fn:escapeXml(redirect_uri)}&clientId=${fn:escapeXml(client_id)}&state=${fn:escapeXml(state)}">
                                 <spring:message code="public.login.forgotten.password" />
                             </a>
                         </div>
 
-                        <spring:message code="public.login.form.submit" var="signInCta" />
-                        <input class="button" type="submit" name="save" value="${signInCta}">
 
-                        <input type="hidden" id="redirect_uri" name="redirect_uri" value="${redirect_uri}"/>
-                        <input type="hidden" id=client_id name="client_id" value="${client_id}"/>
-                        <input type="hidden" id="state" name="state" value="${state}"/>
-                        <input type="hidden" id=response_type name="response_type" value="${response_type}"/>
+                        <input class="button" type="submit" name="save" value="<spring:message code="public.login.form.submit" />">
+
+                        <form:input path="redirect_uri" type="hidden"  id="redirect_uri" name="redirect_uri" />
+                        <form:input path="client_id" type="hidden" id="client_id" name="client_id" />
+                        <form:input path="state" type="hidden" id="state" name="state"/>
+                        <form:input path="response_type" type="hidden" id="response_type" name="response_type"/>
                     </div>
                 </div>
                 <div class="column-one-half">
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
                     <p>
-                        <spring:message code="public.login.create.account.body"
-                                        arguments="/users/selfRegister?redirect_uri=${redirect_uri}&client_id=${client_id}&state=${state}" />
+                        <spring:message code="public.login.create.account.body" />
+                        <a href="/users/selfRegister?redirect_uri=${fn:escapeXml(redirect_uri)}&client_id=${fn:escapeXml(client_id)}&state=${fn:escapeXml(state)}"/>
+                        <spring:message code="public.login.create.account.body.to.use.service" />
                     </p>
                 </div>
             </div>

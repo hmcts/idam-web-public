@@ -4,13 +4,13 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <t:wrapper titleKey="public.self.register.title.text">
     <article class="content__body">
         <form:form name="selfRegisterForm" class="form form-section"
                    method="post" _lpchecked="1"
                    action="/users/selfRegister" commandName="selfRegisterCommand" novalidate="">
-
             <spring:hasBindErrors name="selfRegisterCommand">
                 <div class="error-summary" role="group"
                      aria-labelledby="validation-error-summary-heading" tabindex="-1">
@@ -101,9 +101,10 @@
                         <form:input type="hidden" path="clientId" value="${clientId}"/>
                         <form:input type="hidden" path="state" value="${state}"/>
                         <p class="body-text">
-                            <c:set var="finePrintUrl" value="https://hmcts-access.service.gov.uk" />
-                            <spring:message code="public.register.fine.print"
-                                            arguments="${finePrintUrl}/privacy-policy,${finePrintUrl}/terms-and-conditions" />
+                            <spring:message code="public.register.read.our" />
+                            <a href="https://hmcts-access.service.gov.uk/privacy-policy" target="_blank"><spring:message code="public.register.privacy.policy" /></a>
+                            <spring:message code="public.register.and" />
+                            <a href="https://hmcts-access.service.gov.uk/terms-and-conditions" target="_blank"><spring:message code="public.register.term.conditions" /></a>
                         </p>
                         <input class="button" type="submit" value="<spring:message code="public.self.register.submit.button"/>">
                     </div>
@@ -111,7 +112,7 @@
                 <div class="column-one-half">
                     <h2 class="heading-medium"><spring:message code="public.register.subheading.existing.account"/></h2>
                     <p>
-                        <a href="/login?redirect_uri=${redirectUri}&client_id=${clientId}&state=${state}"><spring:message code="public.register.sign.in" /></a>
+                        <a href="/login?redirect_uri=${fn:escapeXml(redirectUri)}&client_id=${fn:escapeXml(clientId)}&state=${fn:escapeXml(state)}"><spring:message code="public.register.sign.in" /></a>
                     </p>
                 </div>
             </div>

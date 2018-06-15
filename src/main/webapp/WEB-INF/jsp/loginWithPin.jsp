@@ -4,6 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <t:wrapper titleKey="public.login.subheading.sign.in">
     <article class="content__body">
@@ -14,7 +15,11 @@
                     <spring:message code="${errorTitle}" />
                 </h2>
                 <c:if test="${invalidPin}">
-                  <p><spring:message code="public.login.with.pin.valid.security.code.description" arguments="https://hmcts-access.service.gov.uk/contact-us"/></p>
+                  <p>
+                      <spring:message  code="public.login.with.pin.valid.security.code.description"/>
+                      <a href="https://hmcts-access.service.gov.uk/contact-us"><spring:message  code="public.login.with.pin.valid.security.code.description.contact.us"/></a>
+                      <spring:message  code="public.login.with.pin.valid.security.code.description.new.security.code"/>
+                  </p>
                 </c:if>
                 <ul class="error-summary-list">
                     <li><a href="#pin"><spring:message code="${errorMessage}" /></a></li>
@@ -42,11 +47,12 @@
                 <input class="form-control ${hasError ? "form-control-error" : ""}" type="text" id="pin" name="pin" value="" autocomplete="off">
             </div>
 
-            <spring:message code="public.login.with.pin.form.cta" var="formCta" />
-            <input class="button" type="submit" value="${formCta}">
-            <input type="hidden" id="redirectUri" name="redirect_uri" value="${param['redirect_uri']}"/>
-            <input type="hidden" id="clientId" name="client_id" value="${param['client_id']}"/>
-            <input type="hidden" id="state" name="state" value="${param['state']}"/>
+
+            <input class="button" type="submit" value="<spring:message code="public.login.with.pin.form.cta" />">
+
+            <input type="hidden" id="redirectUri" name="redirect_uri" value="${fn:escapeXml(param['redirect_uri'])}"/>
+            <input type="hidden" id="clientId" name="client_id" value="${fn:escapeXml(param['client_id'])}"/>
+            <input type="hidden" id="state" name="state" value="${fn:escapeXml(param['state'])}"/>
         </form:form>
     </article>
 </t:wrapper>
