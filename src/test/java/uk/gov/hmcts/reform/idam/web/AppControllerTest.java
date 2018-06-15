@@ -116,6 +116,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1304,4 +1305,15 @@ public class AppControllerTest {
             .andExpect(view().name(LOGIN_WITH_PIN_VIEW));
     }
 
+    /**
+     * @verifies return forbidden if csrf token is invalid
+     * @see AppController#login(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     */
+    @Test
+    public void login_shouldReturnForbiddenIfCsrfTokenIsInvalid() throws Exception {
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf().useInvalidToken())
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(CLIENT_ID_PARAMETER, MISSING))
+            .andExpect(status().isForbidden());
+    }
 }
