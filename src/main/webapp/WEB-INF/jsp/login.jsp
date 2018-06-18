@@ -135,7 +135,7 @@
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
                     <p>
                         <spring:message code="public.login.create.account.body" />
-                        <a href="/users/selfRegister?redirect_uri=${fn:escapeXml(redirect_uri)}&client_id=${fn:escapeXml(client_id)}&state=${fn:escapeXml(state)}"/>
+                        <a href="/users/selfRegister?redirect_uri=${fn:escapeXml(redirect_uri)}&client_id=${fn:escapeXml(client_id)}&state=${fn:escapeXml(state)}"><spring:message code="public.common.create.account" /></a>
                         <spring:message code="public.login.create.account.body.to.use.service" />
                     </p>
                 </div>

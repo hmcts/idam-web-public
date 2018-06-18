@@ -19,7 +19,7 @@
             <c:if test="${not empty redirectUri}">
                 <p>
                     <spring:message  code="public.forgot.password.success.unconnected.account"/>
-                    <a href="/users/selfRegister?redirect_uri=${fn:escapeXml(redirectUri)}&client_id=${fn:escapeXml(clientId)}&state=${fn:escapeXml(state)}"><spring:message  code="public.forgot.password.success.unconnected.account.create.account"/></a>
+                    <a href="/users/selfRegister?redirect_uri=${fn:escapeXml(redirectUri)}&client_id=${fn:escapeXml(clientId)}&state=${fn:escapeXml(state)}"><spring:message  code="public.common.create.account"/></a>
                 </p>
             </c:if>
             <h2 class="heading-medium">

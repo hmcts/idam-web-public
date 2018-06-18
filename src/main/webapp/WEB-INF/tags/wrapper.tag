@@ -59,6 +59,7 @@
     <div id="global-cookie-message">
         <p>
             <spring:message
+                htmlEscape="false"
                 code="public.template.cookie.message"
                 arguments="https://www.gov.uk/help/cookies"
             />
@@ -156,6 +157,7 @@
 
                     <p>
                         <spring:message
+                            htmlEscape="false"
                             code="public.template.licence.description"
                             arguments="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
                         />
