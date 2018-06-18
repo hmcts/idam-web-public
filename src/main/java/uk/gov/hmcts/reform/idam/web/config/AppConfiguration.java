@@ -1,5 +1,14 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -13,17 +22,9 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.concurrent.TimeUnit;
+import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
 @Configuration
 public class AppConfiguration extends WebSecurityConfigurerAdapter {
@@ -64,11 +65,6 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
         requestFactory.setReadTimeout(configurationProperties.getServer().getReadTimeout());
 
         return new RestTemplate(requestFactory);
-    }
-
-    @Bean
-    public SecurityContextRepository nullSecurityContextRepo() {
-        return null;
     }
 
     @Override
