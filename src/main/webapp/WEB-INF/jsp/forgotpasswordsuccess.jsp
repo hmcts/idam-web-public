@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.forgot.password.success.title">
     <article class="content__body">
         <div class="text">
             <header class="page-header group">

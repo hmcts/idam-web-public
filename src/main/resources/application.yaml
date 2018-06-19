@@ -14,6 +14,15 @@ management:
   security:
     enabled: true
 
+# Enable the info and health endpoints
+# A given environment (such as prod) might disable all endpoints,
+# but info and health should still be enabled
+endpoints:
+  info:
+    enabled: true
+  health:
+    enabled: true
+
 ssl:
   verification:
     enabled: true

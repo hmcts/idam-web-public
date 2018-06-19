@@ -3,11 +3,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.user.activation.expired.title">
     <article class="content__body">
         <header class="page-header group">
             <h1 class="heading-large">
-                <spring:message code="public.user.activation.expired.title" text="default"/>
+                <spring:message code="public.user.activation.expired.heading" text="default"/>
             </h1>
         </header>
         <p class="lede">
