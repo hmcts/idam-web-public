@@ -60,6 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.view.RedirectView;
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
@@ -96,6 +97,7 @@ public class AppController {
     /**
      * @should put correct data in model and return login view
      * @should return error page view if OAuth2 details are missing
+     * @should return forbidden if csrf token is invalid
      */
     @RequestMapping("/login")
     public String login(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
@@ -214,9 +216,8 @@ public class AppController {
      * @should redirect to login view
      */
     @RequestMapping("/logout")
-    public String logout(final Map<String, Object> model) {
-
-        return LOGIN_VIEW;
+    public RedirectView logout(final Map<String, Object> model) {
+        return new RedirectView("/" + LOGIN_VIEW + "?logout");
     }
 
     /**

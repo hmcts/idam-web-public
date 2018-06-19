@@ -1,6 +1,8 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page session="false" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <t:wrapper titleKey="public.login.subheading.sign.in">
@@ -25,7 +27,7 @@
         <p class="body-text text-secondary">
             <spring:message code="public.login.with.pin.body" />
         </p>
-        <form name="f" action="/loginWithPin" method="post" class="form form-section">
+        <form:form name="f" action="/loginWithPin" method="post" class="form form-section">
             <div class="form-group ${hasError ? "form-group-error" : ""}">
                 <label for="pin">
                     <span class="form-label-bold">
@@ -42,10 +44,9 @@
 
             <spring:message code="public.login.with.pin.form.cta" var="formCta" />
             <input class="button" type="submit" value="${formCta}">
-
             <input type="hidden" id="redirectUri" name="redirect_uri" value="${param['redirect_uri']}"/>
             <input type="hidden" id="clientId" name="client_id" value="${param['client_id']}"/>
             <input type="hidden" id="state" name="state" value="${param['state']}"/>
-        </form>
+        </form:form>
     </article>
 </t:wrapper>
