@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.util;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTIVATE_USER_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
@@ -41,7 +42,7 @@ public class TestHelper {
     }
 
     public static RequestBuilder getSelfRegisterPostRequest(String email, String firstName, String lastName) {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post(SELF_REGISTER_ENDPOINT)
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post(SELF_REGISTER_ENDPOINT).with(csrf())
             .param(USER_FIRST_NAME_PARAMETER, firstName)
             .param(USER_LAST_NAME_PARAMETER, lastName)
             .param(USER_EMAIL_PARAMETER, email);
@@ -49,7 +50,7 @@ public class TestHelper {
     }
 
     public static RequestBuilder getActivateUserPostRequest(String token, String code, String password1, String password2) {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post(ACTIVATE_USER_ENDPOINT)
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.post(ACTIVATE_USER_ENDPOINT).with(csrf())
             .param(TOKEN_PARAMETER, token)
             .param(CODE_PARAMETER, code)
             .param(PASSWORD_ONE, password1)

@@ -1,12 +1,13 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <t:wrapper titleKey="public.user.activation.title.text">
     <article class="content__body">
         <c:set var="hasError" value="${error != null}" />
-        <form name="useractivation" action="activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
+        <form:form name="useractivation" action="activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
             <c:if test="${hasError}">
                 <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -50,9 +51,8 @@
 
             <spring:message code="public.common.button.continue.text" var="formCta" />
             <input class="button" type="submit" value="${formCta}" id="activate">
-
             <input type="hidden" id="token" name="token" value="${token}">
             <input type="hidden" id="code" name="code" value="${code}">
-        </form>
+        </form:form>
     </article>
 </t:wrapper>
