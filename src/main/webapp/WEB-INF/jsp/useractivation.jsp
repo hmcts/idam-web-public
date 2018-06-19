@@ -54,7 +54,7 @@
             <input class="button" type="submit" value="<spring:message code="public.common.button.continue.text"/>" id="activate">
 
             <input type="hidden" id="token" name="token" value="${fn:escapeXml(token)}">
-            <input type="hidden" id="code" name="code" value="${fn:escapeXml(token)}">
+            <input type="hidden" id="code" name="code" value="${fn:escapeXml(code)}">
         </form:form>
     </article>
 </t:wrapper>
