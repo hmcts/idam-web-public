@@ -1,6 +1,8 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page session="false" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <t:wrapper titleKey="public.register.title">
@@ -23,7 +25,7 @@
         <h1 class="heading-large"><spring:message code="public.login.heading" /></h1>
         <div class="grid-row">
             <div class="column-one-half column--bordered">
-                <form name="upliftUser"
+                <form:form name="upliftUser"
                       class="form form-section"
                       novalidate=""
                       method="post"
@@ -59,12 +61,11 @@
 
                     <spring:message code="public.login.form.submit" var="signInCta" />
                     <input class="button" type="submit" value="${signInCta}">
-
                     <input type="hidden" id="jwt" name="jwt" value="${param['jwt']}"/>
                     <input type="hidden" id="redirectUri" name="redirectUri" value="${redirectUri}"/>
                     <input type="hidden" id="clientId" name="clientId" value="${clientId}"/>
                     <input type="hidden" id="state" name="state" value="${param['state']}"/>
-                </form>
+                </form:form>
             </div>
             <div class="column-one-half">
                 <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>

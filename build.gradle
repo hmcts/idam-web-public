@@ -75,6 +75,7 @@ allprojects  {
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
     }
+    testCompile group: 'org.springframework.security', name: 'spring-security-test'
   }
 
   tasks.withType(JavaCompile) {

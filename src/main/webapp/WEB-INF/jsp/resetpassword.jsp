@@ -1,13 +1,15 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page session="false" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <t:wrapper titleKey="public.reset.password.title.text">
     <article class="content__body">
         <c:set var="hasError" value="${error != null}" />
-        <form name="resetpassword" class="form form-section" novalidate="" method="post" _lpchecked="1"
-                 action="/doResetPassword">
+        <form:form name="resetpassword" class="form form-section" novalidate="" method="post" _lpchecked="1"
+                 action="/doResetPassword" class="form">
             <c:if test="${hasError}">
                 <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -52,11 +54,10 @@
                 </label>
                 <input class="form-control ${hasPassword2Error ? "form-control-error" : ""}" type="password" id="password2" name="password2" value="${password2}" autocomplete="off">
             </div>
-
             <spring:message code="public.reset.password.form.submit" var="formCta" />
             <input class="button" type="submit" value="${formCta}">
             <input type="hidden" id="token" name="token" value="${param.token}"/>
             <input type="hidden" id="code" name="code" value="${param.code}"/>
-        </form>
+        </form:form>
     </article>
 </t:wrapper>
