@@ -86,7 +86,7 @@ allprojects  {
     systemProperties = System.properties
   }
 
-  task smoke(type: Test) {
+  task smoke(dependsOn: ':codeceptSmoke') {
     group = 'Delivery pipeline'
     description = 'Executes non-destructive smoke tests against a running instance'
   }
@@ -94,6 +94,16 @@ allprojects  {
   task functional(type: Test) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests against a running instance'
+  }
+
+  task yarnInstall(type: Exec) {
+    workingDir '.'
+    commandLine 'yarn', 'install', '--ignore-engines'
+  }
+
+  task codeceptSmoke(type: Exec, dependsOn: ':yarnInstall') {
+    workingDir '.'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi'
   }
 }
 

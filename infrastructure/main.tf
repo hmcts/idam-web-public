@@ -1,4 +1,13 @@
 locals {
+  integration_env = "${var.env == "idam-preview" ? "idam-aat" : var.env}"
+
+  preview_vault_name = "idam-idam-preview"
+  non_preview_vault_name = "${var.product}-${var.env}"
+  vault_name = "${var.env == "idam-preview" ? local.preview_vault_name : local.non_preview_vault_name}"
+
+  vault_uri = "https://${local.vault_name}.vault.azure.net/"
+  idam_api = "https://idam-api-${local.integration_env}.service.core-compute-${local.integration_env}.internal"
+
   secure_actuator_endpoints = "${var.env == "idam-prod" || var.env == "idam-demo" ? true : false}"
 }
 
@@ -21,6 +30,6 @@ module "idam-web-public" {
     // remove when SSL certificates are in place
     SSL_VERIFICATION_ENABLED      = "${var.env == "idam-prod" ? "true" : "false"}"
 
-    STRATEGIC_SERVICE_URL         = "https://idam-api-${var.env}.service.core-compute-${var.env}.internal"
+    STRATEGIC_SERVICE_URL         = "${local.idam_api}"
   }
 }
