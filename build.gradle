@@ -91,19 +91,24 @@ allprojects  {
     description = 'Executes non-destructive smoke tests against a running instance'
   }
 
-  task functional(type: Test) {
+  task functional(dependsOn: ':codeceptFunctional') {
     group = 'Delivery pipeline'
     description = 'Executes functional tests against a running instance'
   }
 
   task yarnInstall(type: Exec) {
     workingDir '.'
-    commandLine 'yarn', 'install', '--ignore-engines'
+    commandLine 'yarn', 'install'
   }
 
   task codeceptSmoke(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi'
+  }
+
+  task codeceptFunctional(type: Exec, dependsOn: ':yarnInstall') {
+    workingDir '.'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
 }
 

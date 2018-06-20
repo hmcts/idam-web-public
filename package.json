@@ -4,7 +4,7 @@
   "repository": "git@github.com:hmcts/idam-web-public.git",
   "license": "MIT",
   "engines": {
-    "node": ">=8.9.4 <10.0.4"
+    "node": ">=8.9.4 <=10.4.0"
   },
   "devDependencies": {
     "codeceptjs": "^1.2.0",
