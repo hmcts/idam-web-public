@@ -28,7 +28,7 @@
                 <c:choose>
                     <c:when test="${not empty param['jwt']}">
                         <spring:message  code="public.common.user.created.re.enter.details"/>
-                        <a href="/login/uplift?state=${fn:escapeXml(state)}&redirect_uri=${fn:escapeXml(redirectUri)}&client_id=${fn:escapeXml(clientId)}&jwt=${jwt}"><spring:message  code="public.common.user.created.re.enter.details.enter.details.again"/></a>
+                        <a href="/login/uplift?state=${fn:escapeXml(state)}&redirect_uri=${fn:escapeXml(redirectUri)}&client_id=${fn:escapeXml(clientId)}&jwt=${fn:escapeXml(jwt)}"><spring:message  code="public.common.user.created.re.enter.details.enter.details.again"/></a>
                     </c:when>
                     <c:otherwise>
                         <spring:message code="public.common.user.created.re.enter.details"/>

@@ -98,7 +98,12 @@
                                     <spring:message code="public.common.error.enter.username" />
                                 </span>
                             </c:if>
-                            <input class="form-control form-control-3-4 ${usernameError? 'form-control-error' : ''}" type="text" id="username"  name="username" value="${fn:escapeXml(username)}" autocomplete="off">
+                            <form:input class="form-control form-control-3-4 ${usernameError? 'form-control-error' : ''}"
+                                        path="username"
+                                        type="text"
+                                        id="username"
+                                        name="username"
+                                        value="${username}" autocomplete="off" />
                         </div>
 
                         <c:set var="passwordError" value="${isPasswordEmpty || hasLoginFailed}" />
