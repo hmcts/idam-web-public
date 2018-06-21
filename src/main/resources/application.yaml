@@ -6,6 +6,9 @@ server:
   maxConnectionIdleTime: 20
   maxConnectionsPerRoute: 200
   maxConnectionsTotal: 200
+  tomcat:
+      remote-ip-header: x-forwarded-for
+      protocol-header: x-forwarded-proto
 
 management:
   security:
