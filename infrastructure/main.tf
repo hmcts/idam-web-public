@@ -21,6 +21,6 @@ module "idam-web-public" {
     // remove when SSL certificates are in place
     SSL_VERIFICATION_ENABLED      = "${var.env == "idam-prod" ? "true" : "false"}"
 
-    STRATEGIC_SERVICE_URL         = "https://idam-api.${replace(var.env, "idam-", "")}.platform.hmcts.net"
+    STRATEGIC_SERVICE_URL         = "https://idam-api-${var.env}.service.core-compute-${var.env}.internal"
   }
 }
