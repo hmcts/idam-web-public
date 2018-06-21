@@ -168,7 +168,7 @@
 
             <div class="copyright">
                 <a href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">
-                    <spring:message code="public.template.copyright" />
+                    <spring:message code="public.template.copyright" htmlEscape="false" />
                 </a>
             </div>
         </div>
