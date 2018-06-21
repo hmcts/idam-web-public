@@ -59,6 +59,7 @@
     <div id="global-cookie-message">
         <p>
             <spring:message
+                htmlEscape="false"
                 code="public.template.cookie.message"
                 arguments="https://www.gov.uk/help/cookies"
             />
@@ -104,6 +105,7 @@
                 <strong class="phase-tag"><spring:message code="public.template.header.phase.tag" /></strong>
                 <span>
                     <spring:message
+                        htmlEscape="false"
                         code="public.template.header.phase.description"
                         arguments="http://www.smartsurvey.co.uk/s/58DYD/"
                     />
@@ -155,6 +157,7 @@
 
                     <p>
                         <spring:message
+                            htmlEscape="false"
                             code="public.template.licence.description"
                             arguments="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
                         />

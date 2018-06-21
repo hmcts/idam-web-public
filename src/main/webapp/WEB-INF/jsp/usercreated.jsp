@@ -3,6 +3,7 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <t:wrapper titleKey="public.common.user.created.title.text">
     <article class="content__body">
@@ -26,16 +27,12 @@
             <p>
                 <c:choose>
                     <c:when test="${not empty param['jwt']}">
-                        <spring:message
-                            code="public.common.user.created.re.enter.details"
-                            arguments="/login/uplift?state=${state}&redirect_uri=${redirectUri}&client_id=${clientId}&jwt=${jwt}"
-                        />
+                        <spring:message  code="public.common.user.created.re.enter.details"/>
+                        <a href="/login/uplift?state=${fn:escapeXml(state)}&redirect_uri=${fn:escapeXml(redirectUri)}&client_id=${fn:escapeXml(clientId)}&jwt=${fn:escapeXml(jwt)}"><spring:message  code="public.common.user.created.re.enter.details.enter.details.again"/></a>
                     </c:when>
                     <c:otherwise>
-                        <spring:message
-                            code="public.common.user.created.re.enter.details"
-                            arguments="/users/selfRegister?redirect_uri=${redirectUri}&client_id=${clientId}"
-                        />
+                        <spring:message code="public.common.user.created.re.enter.details"/>
+                        <a href="/users/selfRegister?redirect_uri=${fn:escapeXml(redirectUri)}&client_id=${fn:escapeXml(clientId)}"><spring:message  code="public.common.user.created.re.enter.details.enter.details.again"/></a>
                     </c:otherwise>
                 </c:choose>
             </p>

@@ -4,6 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <t:wrapper titleKey="public.forgot.password.title.text">
     <article class="content__body">
@@ -68,8 +69,8 @@
                 </div>
             </spring:bind>
 
-            <spring:message code="public.common.button.submit.text" text="default" var="forgottenPasswordCta"/>
-            <input class="button" type="submit" value="${forgottenPasswordCta}">
+
+            <input class="button" type="submit" value="<spring:message code="public.common.button.submit.text"/>">
             <form:input path="redirectUri" type="hidden" id="redirectUri" />
             <form:input path="clientId" type="hidden" id="clientId" />
             <form:input path="state" type="hidden" id="state" />
