@@ -55,7 +55,12 @@
                     </div>
 
                     <div class="form-group">
-                        <a href="/reset/forgotpassword?redirectUri=${fn:escapeXml(param['redirect_uri'])}&clientId=${fn:escapeXml(param['client_id'])}&state=${fn:escapeXml(param['state'])}">
+                        <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
+                            <c:param name="redirectUri" value="${param['redirect_uri']}" />
+                            <c:param name="clientId" value="${param['client_id']}" />
+                            <c:param name="state" value="${param['state']}" />
+                        </c:url>
+                        <a href="${forgotPasswordUrl}">
                             <spring:message code="public.login.forgotten.password" />
                         </a>
                     </div>
@@ -73,7 +78,13 @@
                 <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
                 <p>
                     <spring:message code="public.login.create.account.body" />
-                    <a href="/login/uplift?state=${fn:escapeXml(param['state'])}&redirect_uri=${fn:escapeXml(param['redirect_uri'])}&client_id=${fn:escapeXml(param['client_id'])}&jwt=${fn:escapeXml(param['jwt'])}"/>
+                    <c:url value="/login/uplift" var="loginUpliftUrl">
+                        <c:param name="redirect_uri" value="${param['redirect_uri']}" />
+                        <c:param name="client_id" value="${param['client_id']}" />
+                        <c:param name="state" value="${param['state']}" />
+                        <c:param name="jwt" value="${param['jwt']}" />
+                    </c:url>
+                    <a href="${loginUpliftUrl}" />
                     <spring:message code="public.login.create.account.body.to.use.service" />
                 </p>
             </div>

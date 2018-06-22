@@ -112,7 +112,12 @@
                 <div class="column-one-half">
                     <h2 class="heading-medium"><spring:message code="public.register.subheading.existing.account"/></h2>
                     <p>
-                        <a href="/login?redirect_uri=${fn:escapeXml(redirectUri)}&client_id=${fn:escapeXml(clientId)}&state=${fn:escapeXml(state)}"><spring:message code="public.register.sign.in" /></a>
+                        <c:url value="/login" var="loginUrl">
+                            <c:param name="redirect_uri" value="${redirectUri}" />
+                            <c:param name="client_id" value="${clientId}" />
+                            <c:param name="state" value="${state}" />
+                        </c:url>
+                        <a href="${loginUrl}"><spring:message code="public.register.sign.in" /></a>
                     </p>
                 </div>
             </div>
