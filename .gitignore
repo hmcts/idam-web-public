@@ -28,6 +28,5 @@ build
 .gradle
 out
 output/
-yarn.lock
 
 **/application-local.yaml
