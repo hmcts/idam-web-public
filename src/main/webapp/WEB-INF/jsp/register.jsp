@@ -55,7 +55,12 @@
                     </div>
 
                     <div class="form-group">
-                        <a href="/reset/forgotpassword?redirectUri=${fn:escapeXml(param['redirect_uri'])}&clientId=${fn:escapeXml(param['client_id'])}&state=${fn:escapeXml(param['state'])}">
+                        <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
+                            <c:param name="redirectUri" value="${param['redirect_uri']}" />
+                            <c:param name="clientId" value="${param['client_id']}" />
+                            <c:param name="state" value="${param['state']}" />
+                        </c:url>
+                        <a href="${forgotPasswordUrl}">
                             <spring:message code="public.login.forgotten.password" />
                         </a>
                     </div>
