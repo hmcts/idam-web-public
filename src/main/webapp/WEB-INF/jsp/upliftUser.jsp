@@ -106,9 +106,13 @@
             <div class="column-one-half">
                 <h2 class="heading-medium"><spring:message code="public.register.subheading.existing.account"/></h2>
                 <p>
-                    <a href="/register?state=${fn:escapeXml(param['state'])}&redirect_uri=${fn:escapeXml(param['redirect_uri'])}&client_id=${fn:escapeXml(param['client_id'])}&jwt=${fn:escapeXml(param['jwt'])}">
-                        <spring:message code="public.register.sign.in" />
-                    </a>
+                    <c:url value="/register" var="registerUrl">
+                        <c:param name="redirect_uri" value="${param['redirect_uri']}" />
+                        <c:param name="client_id" value="${param['client_id']}" />
+                        <c:param name="state" value="${param['state']}" />
+                        <c:param name="jwt" value="${param['jwt']}" />
+                    </c:url>
+                    <a href="${registerUrl}"><spring:message code="public.register.sign.in" /></a>
                 </p>
             </div>
         </div>
