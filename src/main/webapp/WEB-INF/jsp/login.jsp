@@ -26,12 +26,13 @@
                    novalidate=""
                    _lpchecked="1">
 
+            <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
+                <c:param name="redirectUri" value="${redirect_uri}" />
+                <c:param name="clientId" value="${client_id}" />
+                <c:param name="state" value="${state}" />
+            </c:url>
+
             <spring:hasBindErrors name="authorizeCommand">
-                <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
-                    <c:param name="redirectUri" value="${redirect_uri}" />
-                    <c:param name="clientId" value="${client_id}" />
-                    <c:param name="state" value="${state}" />
-                </c:url>
 
                 <div class="error-summary" role="group"
                      aria-labelledby="validation-error-summary-heading"
