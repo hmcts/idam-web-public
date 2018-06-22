@@ -6,6 +6,11 @@ server:
   maxConnectionIdleTime: 20
   maxConnectionsPerRoute: 200
   maxConnectionsTotal: 200
+  context_parameters:
+    defaultHtmlEscape: true
+  tomcat:
+    remote-ip-header: x-forwarded-for
+    protocol-header: x-forwarded-proto
 
 management:
   security:

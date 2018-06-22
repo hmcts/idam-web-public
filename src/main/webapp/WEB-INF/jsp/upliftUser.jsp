@@ -4,6 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <t:wrapper titleKey="public.uplift.user.title">
     <article class="content__body">
@@ -58,7 +59,7 @@
                                 <span class="error-message"><spring:message code="public.common.error.empty.first.name" /></span>
                             </c:if>
                         </label>
-                        <input class="form-control form-control-3-4 ${isFirstNameEmpty? 'form-control-error' : ''}" type="text" id="firstName" name="firstName" value="${param['firstName']}" autocomplete="off">
+                        <input class="form-control form-control-3-4 ${isFirstNameEmpty? 'form-control-error' : ''}" type="text" id="firstName" name="firstName" value="${fn:escapeXml(param['firstName'])}" autocomplete="off">
                     </div>
 
                     <div class="form-group ${isLastNameEmpty? 'form-group-error' : ''}">
@@ -68,7 +69,7 @@
                                 <span class="error-message"><spring:message code="public.common.error.empty.last.name" /></span>
                             </c:if>
                         </label>
-                        <input class="form-control form-control-3-4 ${isLastNameEmpty? 'form-control-error' : ''}" type="text" id="lastName" name="lastName" value="${param['lastName']}" autocomplete="off">
+                        <input class="form-control form-control-3-4 ${isLastNameEmpty? 'form-control-error' : ''}" type="text" id="lastName" name="lastName" value="${fn:escapeXml(param['lastName'])}" autocomplete="off">
                     </div>
 
                     <spring:bind path="username">
@@ -83,31 +84,35 @@
                                     <span class="error-message"><spring:message code="public.common.error.invalid.email" /></span>
                                 </c:if>
                             </label>
-                            <input class="form-control form-control-3-4 ${status.error? 'form-control-error' : ''}" type="email" id="username" name="username" value="${param['username']}" autocomplete="off">
+                            <input class="form-control form-control-3-4 ${status.error? 'form-control-error' : ''}" type="email" id="username" name="username" value="${fn:escapeXml(param['username'])}" autocomplete="off">
                         </div>
                     </spring:bind>
 
                     <p class="body-text">
-                        <c:set var="finePrintUrl" value="https://hmcts-access.service.gov.uk" />
-                        <spring:message code="public.register.fine.print"
-                                        arguments="${finePrintUrl}/privacy-policy,${finePrintUrl}/terms-and-conditions" />
+                        <spring:message code="public.register.read.our" />
+                        <a href="https://hmcts-access.service.gov.uk/privacy-policy" target="_blank"><spring:message code="public.register.privacy.policy" /></a>
+                        <spring:message code="public.register.and" />
+                        <a href="https://hmcts-access.service.gov.uk/terms-and-conditions" target="_blank"><spring:message code="public.register.term.conditions" /></a>
                     </p>
 
-                    <spring:message code="public.uplift.user.submit.button" var="formCta" />
-                    <input class="button" type="submit" value="${formCta}">
+                    <input class="button" type="submit" value="<spring:message code="public.uplift.user.submit.button" />">
 
-                    <input type="hidden" id="jwt" name="jwt" value="${param['jwt']}"/>
-                    <input type="hidden" id="redirectUri" name="redirectUri" value="${redirectUri}"/>
-                    <input type="hidden" id="clientId" name="clientId" value="${clientId}"/>
-                    <input type="hidden" id="state" name="state" value="${param['state']}"/>
+                    <input type="hidden" id="jwt" name="jwt" value="${fn:escapeXml(param['jwt'])}"/>
+                    <input type="hidden" id="redirectUri" name="redirectUri" value="${fn:escapeXml(redirectUri)}"/>
+                    <input type="hidden" id="clientId" name="clientId" value="${fn:escapeXml(clientId)}"/>
+                    <input type="hidden" id="state" name="state" value="${fn:escapeXml(param['state'])}"/>
                 </form:form>
             </div>
             <div class="column-one-half">
                 <h2 class="heading-medium"><spring:message code="public.register.subheading.existing.account"/></h2>
                 <p>
-                    <a href="/register?state=${param['state']}&redirect_uri=${param['redirect_uri']}&client_id=${param['client_id']}&jwt=${param['jwt']}">
-                        <spring:message code="public.register.sign.in" />
-                    </a>
+                    <c:url value="/register" var="registerUrl">
+                        <c:param name="redirect_uri" value="${param['redirect_uri']}" />
+                        <c:param name="client_id" value="${param['client_id']}" />
+                        <c:param name="state" value="${param['state']}" />
+                        <c:param name="jwt" value="${param['jwt']}" />
+                    </c:url>
+                    <a href="${registerUrl}"><spring:message code="public.register.sign.in" /></a>
                 </p>
             </div>
         </div>

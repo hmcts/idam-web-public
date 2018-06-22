@@ -4,6 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <t:wrapper titleKey="public.register.title">
     <article class="content__body">
@@ -54,24 +55,37 @@
                     </div>
 
                     <div class="form-group">
-                        <a href="/reset/forgotpassword?redirectUri=${param['redirect_uri']}&clientId=${param['client_id']}&state=${param['state']}">
+                        <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
+                            <c:param name="redirectUri" value="${param['redirect_uri']}" />
+                            <c:param name="clientId" value="${param['client_id']}" />
+                            <c:param name="state" value="${param['state']}" />
+                        </c:url>
+                        <a href="${forgotPasswordUrl}">
                             <spring:message code="public.login.forgotten.password" />
                         </a>
                     </div>
 
-                    <spring:message code="public.login.form.submit" var="signInCta" />
-                    <input class="button" type="submit" value="${signInCta}">
-                    <input type="hidden" id="jwt" name="jwt" value="${param['jwt']}"/>
-                    <input type="hidden" id="redirectUri" name="redirectUri" value="${redirectUri}"/>
-                    <input type="hidden" id="clientId" name="clientId" value="${clientId}"/>
-                    <input type="hidden" id="state" name="state" value="${param['state']}"/>
+
+                    <input class="button" type="submit" value="$<spring:message code="public.login.form.submit"/>">
+
+                    <input type="hidden" id="jwt" name="jwt" value="${fn:escapeXml(param['jwt'])}"/>
+                    <input type="hidden" id="redirectUri" name="redirectUri" value="${fn:escapeXml(redirectUri)}"/>
+                    <input type="hidden" id="clientId" name="clientId" value="${fn:escapeXml(clientId)}"/>
+                    <input type="hidden" id="state" name="state" value="${fn:escapeXml(param['state'])}"/>
                 </form:form>
             </div>
             <div class="column-one-half">
                 <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
                 <p>
-                    <spring:message code="public.login.create.account.body"
-                                    arguments="/login/uplift?state=${param['state']}&redirect_uri=${param['redirect_uri']}&client_id=${param['client_id']}&jwt=${param['jwt']}" />
+                    <spring:message code="public.login.create.account.body" />
+                    <c:url value="/login/uplift" var="loginUpliftUrl">
+                        <c:param name="redirect_uri" value="${param['redirect_uri']}" />
+                        <c:param name="client_id" value="${param['client_id']}" />
+                        <c:param name="state" value="${param['state']}" />
+                        <c:param name="jwt" value="${param['jwt']}" />
+                    </c:url>
+                    <a href="${loginUpliftUrl}" />
+                    <spring:message code="public.login.create.account.body.to.use.service" />
                 </p>
             </div>
         </div>

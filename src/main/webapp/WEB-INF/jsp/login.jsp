@@ -4,6 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <c:if test="${redirectUri == null}">
     <c:if test="${param['continue-url'] != null}">
@@ -25,7 +26,14 @@
                    novalidate=""
                    _lpchecked="1">
 
+            <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
+                <c:param name="redirectUri" value="${redirect_uri}" />
+                <c:param name="clientId" value="${client_id}" />
+                <c:param name="state" value="${state}" />
+            </c:url>
+
             <spring:hasBindErrors name="authorizeCommand">
+
                 <div class="error-summary" role="group"
                      aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
@@ -37,10 +45,9 @@
                             </h2>
                             <div class="text">
                                 <p>
-                                    <spring:message
-                                        code="public.login.error.locked.instruction"
-                                        arguments="/reset/forgotpassword?redirectUri=${param['redirect_uri']}&clientId=${param['client_id']}"
-                                    />
+                                    <spring:message  code="public.login.error.locked.instruction"/>
+                                    <a href="${forgotPasswordUrl}"><spring:message  code="public.login.error.locked.instruction.reset.password"/></a>
+                                    <spring:message  code="public.login.error.locked.instruction.unlock.account"/>
                                 </p>
                             </div>
                         </c:when>
@@ -98,7 +105,12 @@
                                     <spring:message code="public.common.error.enter.username" />
                                 </span>
                             </c:if>
-                            <input class="form-control form-control-3-4 ${usernameError? 'form-control-error' : ''}" type="text" id="username" name="username" value="${username}" autocomplete="off">
+                            <form:input class="form-control form-control-3-4 ${usernameError? 'form-control-error' : ''}"
+                                        path="username"
+                                        type="text"
+                                        id="username"
+                                        name="username"
+                                        value="${username}" autocomplete="off" />
                         </div>
 
                         <c:set var="passwordError" value="${isPasswordEmpty || hasLoginFailed}" />
@@ -113,29 +125,37 @@
                                     <spring:message code="public.common.error.enter.password" />
                                 </span>
                             </c:if>
-                            <input class="form-control form-control-3-4 ${passwordError? 'form-control-error' : ''}" id="password" name="password" type="password" value="" autocomplete="off">
+                            <form:input class="form-control form-control-3-4 ${passwordError? 'form-control-error' : ''}" id="password" name="password" path="password" type="password" value="" autocomplete="off"/>
                         </div>
 
                         <div class="form-group">
-                            <a href="/reset/forgotpassword?redirectUri=${redirect_uri}&clientId=${client_id}&state=${state}">
+                            <a href="${forgotPasswordUrl}">
                                 <spring:message code="public.login.forgotten.password" />
                             </a>
                         </div>
 
-                        <spring:message code="public.login.form.submit" var="signInCta" />
-                        <input class="button" type="submit" name="save" value="${signInCta}">
 
-                        <input type="hidden" id="redirect_uri" name="redirect_uri" value="${redirect_uri}"/>
-                        <input type="hidden" id=client_id name="client_id" value="${client_id}"/>
-                        <input type="hidden" id="state" name="state" value="${state}"/>
-                        <input type="hidden" id=response_type name="response_type" value="${response_type}"/>
+                        <input class="button" type="submit" name="save" value="<spring:message code="public.login.form.submit" />">
+
+                        <form:input path="redirect_uri" type="hidden"  id="redirect_uri" name="redirect_uri" />
+                        <form:input path="client_id" type="hidden" id="client_id" name="client_id" />
+                        <form:input path="state" type="hidden" id="state" name="state"/>
+                        <form:input path="response_type" type="hidden" id="response_type" name="response_type"/>
                     </div>
                 </div>
                 <div class="column-one-half">
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
                     <p>
-                        <spring:message code="public.login.create.account.body"
-                                        arguments="/users/selfRegister?redirect_uri=${redirect_uri}&client_id=${client_id}&state=${state}" />
+                        <spring:message code="public.login.create.account.body" />
+                        <c:url value="/users/selfRegister" var="selfRegisterUrl">
+                            <c:param name="redirect_uri" value="${redirect_uri}" />
+                            <c:param name="client_id" value="${client_id}" />
+                            <c:param name="state" value="${state}" />
+                        </c:url>
+                        <a href="${selfRegisterUrl}">
+                            <spring:message code="public.common.create.account" />
+                        </a>
+                        <spring:message code="public.login.create.account.body.to.use.service" />
                     </p>
                 </div>
             </div>
