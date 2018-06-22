@@ -26,7 +26,14 @@
                    novalidate=""
                    _lpchecked="1">
 
+            <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
+                <c:param name="redirectUri" value="${redirect_uri}" />
+                <c:param name="clientId" value="${client_id}" />
+                <c:param name="state" value="${state}" />
+            </c:url>
+
             <spring:hasBindErrors name="authorizeCommand">
+
                 <div class="error-summary" role="group"
                      aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
@@ -39,7 +46,7 @@
                             <div class="text">
                                 <p>
                                     <spring:message  code="public.login.error.locked.instruction"/>
-                                    <a href="/reset/forgotpassword?redirectUri=${fn:escapeXml(param['redirect_uri'])}&clientId=${fn:escapeXml(param['client_id'])}"><spring:message  code="public.login.error.locked.instruction.reset.password"/></a>
+                                    <a href="${forgotPasswordUrl}"><spring:message  code="public.login.error.locked.instruction.reset.password"/></a>
                                     <spring:message  code="public.login.error.locked.instruction.unlock.account"/>
                                 </p>
                             </div>
@@ -122,7 +129,7 @@
                         </div>
 
                         <div class="form-group">
-                            <a href="/reset/forgotpassword?redirectUri=${fn:escapeXml(redirect_uri)}&clientId=${fn:escapeXml(client_id)}&state=${fn:escapeXml(state)}">
+                            <a href="${forgotPasswordUrl}">
                                 <spring:message code="public.login.forgotten.password" />
                             </a>
                         </div>
@@ -140,7 +147,14 @@
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
                     <p>
                         <spring:message code="public.login.create.account.body" />
-                        <a href="/users/selfRegister?redirect_uri=${fn:escapeXml(redirect_uri)}&client_id=${fn:escapeXml(client_id)}&state=${fn:escapeXml(state)}"><spring:message code="public.common.create.account" /></a>
+                        <c:url value="/users/selfRegister" var="selfRegisterUrl">
+                            <c:param name="redirect_uri" value="${redirect_uri}" />
+                            <c:param name="client_id" value="${client_id}" />
+                            <c:param name="state" value="${state}" />
+                        </c:url>
+                        <a href="${selfRegisterUrl}">
+                            <spring:message code="public.common.create.account" />
+                        </a>
                         <spring:message code="public.login.create.account.body.to.use.service" />
                     </p>
                 </div>
