@@ -20,7 +20,10 @@
                     <spring:message code="public.error.page.not.found.description.two" />
                 </p>
                 <p class="lede">
-                    <spring:message code="public.error.page.not.found.description.three" />  <a href="${pageContext.request.contextPath}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" />.
+                    <spring:message code="public.error.page.not.found.description.three" />
+                    <a href="${pageContext.request.contextPath}/contact-us">
+                        <spring:message code="public.login.with.pin.valid.security.code.description.contact.us" />.
+                    </a>
                 </p>
             </article>
         </div>
