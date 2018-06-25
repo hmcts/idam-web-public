@@ -22,7 +22,7 @@
                   </p>
                 </c:if>
                 <ul class="error-summary-list">
-                    <li><a href="#pin"><spring:message code="${errorMessage}" /></a></li>
+                    <li><a href="#pinnumber"><spring:message code="${errorMessage}" /></a></li>
                 </ul>
             </div>
         </c:if>
@@ -44,7 +44,7 @@
                         </span>
                     </c:if>
                 </label>
-                <input class="form-control ${hasError ? "form-control-error" : ""}" type="text" id="pin" name="pin" value="" autocomplete="off">
+                <input class="form-control ${hasError ? "form-control-error" : ""}" type="text" id="pinnumber" name="pin" value="" autocomplete="off">
             </div>
 
 
