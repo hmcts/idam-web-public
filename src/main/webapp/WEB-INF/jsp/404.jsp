@@ -17,7 +17,7 @@
                     <spring:message code="public.error.page.not.found.description.one" />
                 </p>
                 <p class="lede">
-                    <spring:message code="public.error.page.not.found.description.two" />
+                    <spring:message htmlEscape="false" code="public.error.page.not.found.description.two" />
                 </p>
                 <p class="lede">
                     <spring:message code="public.error.page.not.found.description.three" />
