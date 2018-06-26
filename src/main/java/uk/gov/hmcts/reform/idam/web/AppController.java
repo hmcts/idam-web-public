@@ -28,12 +28,10 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -90,7 +88,8 @@ public class AppController {
      * @should return index view
      */
     @RequestMapping("/")
-    public String index(HttpServletRequest request, final Map<String, Object> model) {
+    public String index(final Map<String, Object> model) {
+
         return MvcKeys.INDEX_VIEW;
     }
 
