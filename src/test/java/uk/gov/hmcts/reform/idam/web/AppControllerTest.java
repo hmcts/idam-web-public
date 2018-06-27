@@ -94,6 +94,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SORRY_THERE_WAS_AN
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UNUSED;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_ENDPOINT;
@@ -1323,6 +1324,6 @@ public class AppControllerTest {
      */
     @Test public void tacticalActivate_shouldReturnTacticalActivateExpired() throws Exception {
         mockMvc.perform(get(TACTICAL_ACTIVATE_ENDPOINT))
-            .andExpect(view().name("tacticalActivateExpired"));
+            .andExpect(view().name(TACTICAL_ACTIVATE_VIEW));
     }
 }
