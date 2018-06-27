@@ -35,5 +35,7 @@ public class MvcKeys {
     public static final String RESETPASSWORD_VIEW = "resetpassword";
     public static final String UPLIFT_USER_VIEW = "upliftUser";
     public static final String USERCREATED_VIEW = "usercreated";
+    public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
+
 
 }

@@ -93,6 +93,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SECURITY_CODE_INCO
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SORRY_THERE_WAS_AN_ERROR;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UNUSED;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_ENDPOINT;
@@ -116,7 +117,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1315,5 +1315,14 @@ public class AppControllerTest {
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(CLIENT_ID_PARAMETER, MISSING))
             .andExpect(status().isForbidden());
+    }
+
+    /**
+     * @verifies return tacticalActivateExpired
+     * @see AppController#tacticalActivate()
+     */
+    @Test public void tacticalActivate_shouldReturnTacticalActivateExpired() throws Exception {
+        mockMvc.perform(get(TACTICAL_ACTIVATE_ENDPOINT))
+            .andExpect(view().name("tacticalActivateExpired"));
     }
 }

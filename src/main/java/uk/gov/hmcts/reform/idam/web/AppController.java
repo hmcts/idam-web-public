@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_USER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
@@ -515,8 +516,11 @@ public class AppController {
         return "contactus";
     }
 
+    /**
+     * @should return tacticalActivateExpired
+     */
     @RequestMapping("/activate")
     public String tacticalActivate() {
-        return "tacticalActivateExpired";
+        return TACTICAL_ACTIVATE_VIEW;
     }
 }
