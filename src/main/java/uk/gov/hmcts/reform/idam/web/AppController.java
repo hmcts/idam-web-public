@@ -52,13 +52,13 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.servlet.view.RedirectView;
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
@@ -513,5 +513,10 @@ public class AppController {
     @RequestMapping("/contact-us")
     public String contactUs() {
         return "contactus";
+    }
+
+    @RequestMapping("/activate")
+    public String tacticalActivate() {
+        return "tacticalActivateExpired";
     }
 }
