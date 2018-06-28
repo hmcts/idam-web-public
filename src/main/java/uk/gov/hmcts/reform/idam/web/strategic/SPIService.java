@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.model.ArrayOfServices;
 import uk.gov.hmcts.reform.idam.api.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.model.User;
@@ -305,6 +306,24 @@ public class SPIService {
             return Optional.of(response.getBody());
         }
 
+        return Optional.empty();
+    }
+
+    /**
+     * @should call api with the correct data and return the service if api response is not empty and http status code is 200
+     * @should return Optional empty if api returns an http status different from 200
+     * @should return Optional empty if api returns empty response body
+     */
+    public Optional<uk.gov.hmcts.reform.idam.api.model.Service> getServiceByClientId(String clientId) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ResponseEntity<ArrayOfServices> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, new HttpEntity<>("parameters", headers), ArrayOfServices.class);
+
+        if (Objects.nonNull(response) && response.getStatusCode().equals(HttpStatus.OK) && Objects.nonNull(response.getBody())) {
+            return Optional.of(response.getBody().get(0));
+        }
         return Optional.empty();
     }
 

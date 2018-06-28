@@ -30,6 +30,7 @@ public class MvcKeys {
     public static final String FORGOTPASSWORDSUCCESS_VIEW = "forgotpasswordsuccess";
     public static final String INDEX_VIEW = "index";
     public static final String LOGIN_VIEW = "login";
+    public static final String LOGIN_NO_REG_VIEW = "loginNoReg";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
     public static final String REGISTER_VIEW = "register";
     public static final String RESETPASSWORD_VIEW = "resetpassword";
