@@ -59,7 +59,6 @@ strategic:
     selfRegisterUser: users/self
     selfRegistration: users/selfregister
     details: details
-    services: services
 
 validation:
   password:
