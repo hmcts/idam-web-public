@@ -121,7 +121,7 @@ public class UserController {
 
         Optional<Service> service;
 
-        if(StringUtils.isNotEmpty(clientId) || StringUtils.isNotEmpty(redirectUri)){
+        if(StringUtils.isEmpty(clientId) || StringUtils.isEmpty(redirectUri)){
             return PAGE_NOT_FOUND_VIEW;
         }
 
