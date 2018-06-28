@@ -379,7 +379,7 @@ public class UserControllerTest {
     @Test
     public void selfRegister_shouldCallSpiServiceWithCorrectParameterThenReturnSelfRegisterViewAndHaveRedirect_uriSelfRegisterCommandClient_idAttributesInModelIfSelfRegistrationIsAllowedForService() throws Exception {
 
-        given(spiService.getServiceByClientId(SERVICE_CLIENT_ID)).willReturn(Optional.of(getService(SERVICE_LABEL, SERVICE_CLIENT_ID, true)));
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID))).willReturn(Optional.of(getService(SERVICE_LABEL, SERVICE_CLIENT_ID, true)));
 
         mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
             .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
@@ -391,6 +391,8 @@ public class UserControllerTest {
             .andExpect(model().attribute(CLIENTID_PARAMETER, SERVICE_CLIENT_ID))
             .andExpect(model().attribute(STATE_PARAMETER, STATE))
             .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
+
+        verify(spiService).getServiceByClientId(eq(SERVICE_CLIENT_ID));
     }
 
     /**
@@ -412,7 +414,7 @@ public class UserControllerTest {
      */
     @Test
     public void selfRegister_shouldReturnGenericErrorWithGenericErrorMessageIfAnExceptionIsThrown() throws Exception {
-        given(spiService.getServiceByClientId(SERVICE_CLIENT_ID)).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", TOKEN_INVALID_RESPONSE.getBytes(), null));
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", TOKEN_INVALID_RESPONSE.getBytes(), null));
 
         mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
             .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
@@ -429,7 +431,7 @@ public class UserControllerTest {
      */
     @Test
     public void selfRegister_shouldReturn404ViewIfServiceIsEmpty() throws Exception {
-        given(spiService.getServiceByClientId(SERVICE_CLIENT_ID)).willReturn(Optional.empty());
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID))).willReturn(Optional.empty());
 
         mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
             .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
@@ -445,7 +447,7 @@ public class UserControllerTest {
      */
     @Test
     public void selfRegister_shouldReturn404ViewIfSelfRegistrationIsNotAllowed() throws Exception {
-        given(spiService.getServiceByClientId(SERVICE_CLIENT_ID)).willReturn(Optional.of(getService(SERVICE_LABEL, SERVICE_CLIENT_ID, false)));
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID))).willReturn(Optional.of(getService(SERVICE_LABEL, SERVICE_CLIENT_ID, false)));
 
         mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
             .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
