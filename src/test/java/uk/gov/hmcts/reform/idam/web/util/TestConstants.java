@@ -70,7 +70,6 @@ public class TestConstants {
     public static final String RESET_PASSWORD_SUCCESS_VIEW = "resetpasswordsuccess";
     public static final String INDEX_VIEW = "index";
     public static final String LOGIN_VIEW = "login";
-    public static final String LOGIN_NO_REG_VIEW = "loginNoReg";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
     public static final String LOGIN_LOGOUT_VIEW = "/login?logout";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
