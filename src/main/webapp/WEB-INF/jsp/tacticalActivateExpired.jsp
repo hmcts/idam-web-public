@@ -9,10 +9,7 @@
     <article class="content__body">
         <h1 class="heading-large"><spring:message code="public.tactical.expired.heading" /></h1>
 
-        <p><spring:message code="public.tactical.expired.text.line1" /></p>
-        <p><spring:message code="public.tactical.expired.text.line2" /></p>
-        <p><spring:message code="public.tactical.expired.text.line3" /></p>
-        <p><spring:message code="public.tactical.expired.text.line4" /></p>
+        <spring:message code="public.tactical.expired.text" htmlEscape="false"/>
 
     </article>
 </t:wrapper>
