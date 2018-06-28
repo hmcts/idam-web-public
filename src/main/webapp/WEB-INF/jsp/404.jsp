@@ -6,11 +6,6 @@
 
 <t:wrapper titleKey="public.error.page.not.found.heading">
     <article class="content__body">
-        <header class="page-header group">
-            <h1 class="heading-large">
-                <spring:message code="public.error.page.not.found.heading" />
-            </h1>
-        </header>
         <div class="article-container">
             <article role="article" class="group">
                 <p class="lede">
