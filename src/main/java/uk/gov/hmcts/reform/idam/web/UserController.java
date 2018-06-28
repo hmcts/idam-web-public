@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,7 +121,7 @@ public class UserController {
 
         Optional<Service> service;
 
-        if(Strings.isNullOrEmpty(clientId) || Strings.isNullOrEmpty(redirectUri)){
+        if(StringUtils.isNotEmpty(clientId) || StringUtils.isNotEmpty(redirectUri)){
             return PAGE_NOT_FOUND_VIEW;
         }
 
