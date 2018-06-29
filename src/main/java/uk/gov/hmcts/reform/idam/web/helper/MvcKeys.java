@@ -37,6 +37,7 @@ public class MvcKeys {
     public static final String UPLIFT_USER_VIEW = "upliftUser";
     public static final String USERCREATED_VIEW = "usercreated";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
+    public static final String SELF_REGISTER_VIEW = "selfRegister";
 
 
 }
