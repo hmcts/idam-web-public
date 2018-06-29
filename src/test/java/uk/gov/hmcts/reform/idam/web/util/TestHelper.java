@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
@@ -82,5 +83,9 @@ public class TestHelper {
         selfRegisterRequest.setState(STATE);
 
         return selfRegisterRequest;
+    }
+
+    public static Service getService(String label, String clientId, boolean selfRegistrationAllowed){
+        return new Service().label(label).oauth2ClientId(clientId).selfRegistrationAllowed(selfRegistrationAllowed);
     }
 }

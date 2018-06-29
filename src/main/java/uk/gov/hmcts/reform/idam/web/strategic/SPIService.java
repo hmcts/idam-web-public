@@ -321,11 +321,12 @@ public class SPIService {
 
         ResponseEntity<ArrayOfServices> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, new HttpEntity<>("parameters", headers), ArrayOfServices.class);
 
-        if (Objects.nonNull(response) && response.getStatusCode().equals(HttpStatus.OK) && Objects.nonNull(response.getBody())) {
+        if(Objects.nonNull(response) && response.getStatusCode().equals(HttpStatus.OK) && Objects.nonNull(response.getBody())){
             return Optional.of(response.getBody().get(0));
         }
-        return Optional.empty();
+        return  Optional.empty();
     }
+
 
     private HttpEntity<MultiValueMap<String, String>> prepareOauth2AuthenticationRequest(final String username, final String password,
                                                                                          final String redirectUri, final String state, final String clientId) {

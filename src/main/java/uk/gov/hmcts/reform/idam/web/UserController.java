@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.idam.web;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
@@ -43,6 +46,7 @@ public class UserController {
     private static final String ERROR_MSG = "errorMsg";
     private static final String GENERIC_ERROR_KEY = "public.error.page.generic.error";
     private static final String ALREADY_ACTIVATED_KEY = "public.error.page.already.activated.description";
+    public static final String PAGE_NOT_FOUND_VIEW = "404";
 
     @Autowired
     private ObjectMapper mapper;
@@ -101,7 +105,11 @@ public class UserController {
     }
 
     /**
-     * @should return selfRegister view and  have redirect_uri, selfRegisterCommand, client_id attributes in model
+     * @should call spi service with correct parameter then return selfRegister view and  have redirect_uri, selfRegisterCommand, client_id attributes in model if self registration is allowed for service
+     * @should return 404 view if clientId or redirectUri are missing
+     * @should return generic error with generic error message if an exception is thrown
+     * @should return 404 view if service is empty
+     * @should return 404 view if self registration is not allowed
      */
 
     @RequestMapping(path = "/selfRegister", method = RequestMethod.GET)
@@ -110,11 +118,35 @@ public class UserController {
         @RequestParam(name = "client_id", required = false) String clientId,
         @RequestParam(name = "state", required = false) String state,
         Model model) {
-        model.addAttribute("selfRegisterCommand", new SelfRegisterRequest());
-        model.addAttribute("redirectUri", redirectUri);
-        model.addAttribute("clientId", clientId);
-        model.addAttribute("state", state);
-        return "selfRegister";
+
+        Optional<Service> service;
+
+        if(StringUtils.isEmpty(clientId) || StringUtils.isEmpty(redirectUri)){
+            return PAGE_NOT_FOUND_VIEW;
+        }
+
+        try{
+            service = spiService.getServiceByClientId(clientId);
+        }catch(HttpServerErrorException | HttpClientErrorException e) {
+            log.error("An error occurred getting service with clientId: {}", clientId);
+            log.error("Response body: {}", e.getResponseBodyAsString(), e);
+            model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
+            return "errorpage";
+        }catch(Exception e){
+            log.error("An error occurred getting service with clientId: {}", clientId);
+            model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
+            return "errorpage";
+        }
+
+        if(service.isPresent() && service.get().getSelfRegistrationAllowed()) {
+            model.addAttribute("selfRegisterCommand", new SelfRegisterRequest());
+            model.addAttribute("redirectUri", redirectUri);
+            model.addAttribute("clientId", clientId);
+            model.addAttribute("state", state);
+            return "selfRegister";
+        }
+
+        return PAGE_NOT_FOUND_VIEW;
     }
 
     /**
