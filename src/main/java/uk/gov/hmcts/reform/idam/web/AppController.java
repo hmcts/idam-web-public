@@ -79,7 +79,7 @@ public class AppController {
 
 
     @Autowired
-    private SPIService service;
+    private SPIService spiService;
 
     @Autowired
     private ValidationService validationService;
@@ -197,7 +197,7 @@ public class AppController {
         }
 
         try {
-            ResponseEntity<String> resetPasswordEntity = service.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirectUri(), request.getClientId());
+            ResponseEntity<String> resetPasswordEntity = spiService.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirectUri(), request.getClientId());
             if (resetPasswordEntity.getStatusCode() == HttpStatus.CREATED) {
                 model.put(EMAIL, request.getUsername());
                 model.put(REDIRECTURI, request.getRedirectUri());
@@ -237,7 +237,7 @@ public class AppController {
     public String passwordReset(@RequestParam("action") String action, @RequestParam("token") String token, @RequestParam("code") String code) {
         String nextPage = RESETPASSWORD_VIEW;
         try {
-            service.validateResetPasswordToken(token, code);
+            spiService.validateResetPasswordToken(token, code);
         } catch (Exception e) {
             nextPage = EXPIREDTOKEN_VIEW;
         }
@@ -281,7 +281,7 @@ public class AppController {
                 }
                 model.addAttribute(HAS_ERRORS, true);
             } else {
-                String responseUrl = service.authorize(request.getUsername(), request.getPassword(), request.getRedirect_uri(), request.getState(), request.getClient_id());
+                String responseUrl = spiService.authorize(request.getUsername(), request.getPassword(), request.getRedirect_uri(), request.getState(), request.getClient_id());
                 if (responseUrl != null) {
                     nextPage = "redirect:" + responseUrl;
                 } else {
@@ -340,7 +340,7 @@ public class AppController {
     public ModelAndView uplift(@Validated UpliftRequest request, final Map<String, Object> model, ModelMap modelMap) {
         String redirectUrl = "redirect:";
         try {
-            final String jsonResponse = service.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
+            final String jsonResponse = spiService.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
                 request.getRedirectUri(), request.getClientId(), request.getState());
             if (jsonResponse != null) {
                 redirectUrl += jsonResponse;
@@ -387,7 +387,7 @@ public class AppController {
 
         try {
 
-            return "redirect:" + service.loginWithPin(pin, redirectUri, state, clientId);
+            return "redirect:" + spiService.loginWithPin(pin, redirectUri, state, clientId);
 
         } catch (HttpClientErrorException | BadCredentialsException e) {
             log.error("Problem with pin: {}", e.getMessage());
@@ -427,7 +427,7 @@ public class AppController {
 
         try {
             if (!bindingResult.hasErrors()) {
-                service.forgetPassword(
+                spiService.forgetPassword(
                     forgotPasswordRequest.getEmail(),
                     forgotPasswordRequest.getRedirectUri(),
                     forgotPasswordRequest.getClientId());
@@ -452,7 +452,7 @@ public class AppController {
     public String resetPassword(final String action, final String password1, final String password2, final String token, final String code, final Map<String, Object> model) throws IOException {
         try {
             if (validationService.validateResetPasswordRequest(password1, password2, model)) {
-                ResponseEntity<String> resetPasswordEntity = service.resetPassword(password1, token, code);
+                ResponseEntity<String> resetPasswordEntity = spiService.resetPassword(password1, token, code);
 
                 if (resetPasswordEntity.getStatusCode() == HttpStatus.OK) {
                     String redirectUri = getRedirectUri(resetPasswordEntity.getBody());
@@ -494,7 +494,7 @@ public class AppController {
     }
 
     public boolean checkUserAuthorised(String jwt, Map<String, Object> model) {
-        Optional<User> user = service.getDetails(jwt);
+        Optional<User> user = spiService.getDetails(jwt);
 
         if (!user.isPresent() || Objects.isNull(user.get().getRoles()) || !user.get().getRoles().contains("letter-holder")) {
             model.put(ERROR_MSG, "error.page.not.authorized");
@@ -535,9 +535,9 @@ public class AppController {
 
     private boolean isSelfRegistrationEnabled(String clientId) {
 
-        Optional<Service> serv = service.getServiceByClientId(clientId);
-        if (serv.isPresent()) {
-            return serv.get().getSelfRegistrationAllowed() == true;
+        Optional<Service> service = spiService.getServiceByClientId(clientId);
+        if (service.isPresent()) {
+            return service.get().getSelfRegistrationAllowed() == true;
         } else {
             return false;
         }
