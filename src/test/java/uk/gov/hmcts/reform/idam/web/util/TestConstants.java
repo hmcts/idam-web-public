@@ -41,6 +41,7 @@ public class TestConstants {
     public static final String VALIDATE_RESET_PASSWORD_ENDPOINT = "validateResetPasswordToken";
     public static final String SELF_REGISTRATION_ENDPOINT = "users/selfregister";
     public static final String DETAILS_ENDPOINT = "details";
+    public static final String TACTICAL_ACTIVATE_ENDPOINT = "/activate";
 
     //uris
     public static final String GOOGLE_WEB_ADDRESS = "https://www.google.com";
@@ -71,6 +72,7 @@ public class TestConstants {
     public static final String LOGIN_VIEW = "login";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
     public static final String LOGIN_LOGOUT_VIEW = "/login?logout";
+    public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
 
 
     //User
