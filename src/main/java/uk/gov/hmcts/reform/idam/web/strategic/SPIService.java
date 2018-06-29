@@ -316,10 +316,7 @@ public class SPIService {
      */
     public Optional<uk.gov.hmcts.reform.idam.api.model.Service> getServiceByClientId(String clientId) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        ResponseEntity<ArrayOfServices> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, new HttpEntity<>("parameters", headers), ArrayOfServices.class);
+        ResponseEntity<ArrayOfServices> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class);
 
         if (Objects.nonNull(response.getBody()) && !response.getBody().isEmpty()) {
             return Optional.of(response.getBody().get(0));
