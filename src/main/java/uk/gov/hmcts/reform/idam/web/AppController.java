@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_NO_REG_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
@@ -61,6 +62,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
@@ -96,6 +98,8 @@ public class AppController {
 
     /**
      * @should put correct data in model and return login view
+     * @should return loginNoReg view if self-registration is disabled for the service
+     * @should return loginNoReg view if the clientId is invalid
      * @should return error page view if OAuth2 details are missing
      * @should return forbidden if csrf token is invalid
      */
@@ -111,7 +115,12 @@ public class AppController {
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-        return LOGIN_VIEW;
+
+        if (isSelfRegistrationEnabled(request.getClient_id())) {
+            return LOGIN_VIEW;
+        } else {
+            return LOGIN_NO_REG_VIEW;
+        }
     }
 
     /**
@@ -522,5 +531,15 @@ public class AppController {
     @RequestMapping("/activate")
     public String tacticalActivate() {
         return TACTICAL_ACTIVATE_VIEW;
+    }
+
+    private boolean isSelfRegistrationEnabled(String clientId) {
+
+        Optional<Service> serv = service.getServiceByClientId(clientId);
+        if (serv.isPresent()) {
+            return serv.get().getSelfRegistrationAllowed() == true;
+        } else {
+            return false;
+        }
     }
 }

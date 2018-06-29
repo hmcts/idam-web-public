@@ -37,5 +37,6 @@ public class StrategicConfigurationProperties {
         private String selfRegisterUser;
         private String selfRegistration;
         private String details;
+        private String services;
     }
 }
