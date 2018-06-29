@@ -1,5 +1,11 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -121,29 +127,29 @@ public class UserController {
 
         Optional<Service> service;
 
-        if(StringUtils.isEmpty(clientId) || StringUtils.isEmpty(redirectUri)){
+        if (StringUtils.isEmpty(clientId) || StringUtils.isEmpty(redirectUri)) {
             return PAGE_NOT_FOUND_VIEW;
         }
 
-        try{
+        try {
             service = spiService.getServiceByClientId(clientId);
-        }catch(HttpServerErrorException | HttpClientErrorException e) {
+        } catch (HttpServerErrorException | HttpClientErrorException e) {
             log.error("An error occurred getting service with clientId: {}", clientId);
             log.error("Response body: {}", e.getResponseBodyAsString(), e);
             model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
-            return "errorpage";
-        }catch(Exception e){
+            return ERRORPAGE_VIEW;
+        } catch (Exception e) {
             log.error("An error occurred getting service with clientId: {}", clientId);
             model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
-            return "errorpage";
+            return ERRORPAGE_VIEW;
         }
 
-        if(service.isPresent() && service.get().getSelfRegistrationAllowed()) {
+        if (service.isPresent() && service.get().getSelfRegistrationAllowed()) {
             model.addAttribute("selfRegisterCommand", new SelfRegisterRequest());
-            model.addAttribute("redirectUri", redirectUri);
-            model.addAttribute("clientId", clientId);
-            model.addAttribute("state", state);
-            return "selfRegister";
+            model.addAttribute(REDIRECTURI, redirectUri);
+            model.addAttribute(CLIENTID, clientId);
+            model.addAttribute(STATE, state);
+            return SELF_REGISTER_VIEW;
         }
 
         return PAGE_NOT_FOUND_VIEW;
