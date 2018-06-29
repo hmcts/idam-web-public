@@ -321,10 +321,10 @@ public class SPIService {
 
         ResponseEntity<ArrayOfServices> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, new HttpEntity<>("parameters", headers), ArrayOfServices.class);
 
-        if(Objects.nonNull(response) && response.getStatusCode().equals(HttpStatus.OK) && Objects.nonNull(response.getBody())){
+        if (Objects.nonNull(response.getBody()) && !response.getBody().isEmpty()) {
             return Optional.of(response.getBody().get(0));
         }
-        return  Optional.empty();
+        return Optional.empty();
     }
 
 
