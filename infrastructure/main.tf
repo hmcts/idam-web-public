@@ -1,5 +1,7 @@
 locals {
   secure_actuator_endpoints = "${var.env == "idam-prod" || var.env == "idam-demo" ? true : false}"
+
+  integration_env = "${var.env == "idam-preview" ? "idam-aat" : var.env}"
 }
 
 module "idam-web-public" {
@@ -21,6 +23,6 @@ module "idam-web-public" {
     // remove when SSL certificates are in place
     SSL_VERIFICATION_ENABLED      = "${var.env == "idam-prod" ? "true" : "false"}"
 
-    STRATEGIC_SERVICE_URL         = "http://idam-api-${var.env}.service.core-compute-${var.env}.internal"
+    STRATEGIC_SERVICE_URL         = "http://idam-api-${local.integration_env}.service.core-compute-${local.integration_env}.internal"
   }
 }
