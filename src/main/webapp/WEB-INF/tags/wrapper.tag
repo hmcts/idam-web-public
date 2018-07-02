@@ -8,7 +8,7 @@
 <!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title><spring:message code="${titleKey}"/></title>
+    <title><spring:message code="${titleKey}"/> <spring:message code="public.common.title"/></title>
 
     <link href="/assets/stylesheets/application.css" media="all" rel="stylesheet"/>
     <!--[if gt IE 8]><!-->
