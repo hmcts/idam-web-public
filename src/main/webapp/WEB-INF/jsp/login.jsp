@@ -88,9 +88,11 @@
                 </div>
             </spring:hasBindErrors>
 
-            <h1 class="heading-large"><spring:message code="public.login.heading" /></h1>
-            <div class="grid-row">
+            <h1 class="heading-large"><spring:message code="${selfRegistrationEnabled ? 'public.login.heading' : 'public.login.heading.no.self.register'}" /></h1>
+            <c:if test="${selfRegistrationEnabled}">
+			<div class="grid-row">
                 <div class="column-one-half column--bordered">
+			</c:if>
                     <div class="form-section">
                         <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
                         <c:set var="usernameError" value="${isUsernameEmpty || hasLoginFailed}" />
@@ -142,6 +144,7 @@
                         <form:input path="state" type="hidden" id="state" name="state"/>
                         <form:input path="response_type" type="hidden" id="response_type" name="response_type"/>
                     </div>
+			<c:if test="${selfRegistrationEnabled}">
                 </div>
                 <div class="column-one-half">
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
@@ -159,6 +162,7 @@
                     </p>
                 </div>
             </div>
+			</c:if>
         </form:form>
     </article>
 </t:wrapper>

@@ -14,7 +14,6 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_NO_REG_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
@@ -23,6 +22,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_USER_VIEW;
@@ -98,8 +98,8 @@ public class AppController {
 
     /**
      * @should put correct data in model and return login view
-     * @should return loginNoReg view if self-registration is disabled for the service
-     * @should return loginNoReg view if the clientId is invalid
+     * @should set self-registration to false if disabled for the service
+     * @should set self-registration to false if the clientId is invalid
      * @should return error page view if OAuth2 details are missing
      * @should return forbidden if csrf token is invalid
      */
@@ -115,12 +115,9 @@ public class AppController {
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-
-        if (isSelfRegistrationEnabled(request.getClient_id())) {
-            return LOGIN_VIEW;
-        } else {
-            return LOGIN_NO_REG_VIEW;
-        }
+        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
+            
+		return LOGIN_VIEW;
     }
 
     /**

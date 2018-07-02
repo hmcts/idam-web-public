@@ -112,6 +112,7 @@ public class TestConstants {
     public static final String RESPONSE_TYPE_PARAMETER = "response_type";
     public static final String PIN_PARAMETER = "pin";
     public static final String AUTHORIZATION_PARAMETER = "authorization";
+	public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
 
 
     //Errors

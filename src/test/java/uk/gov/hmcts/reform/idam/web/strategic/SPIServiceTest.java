@@ -600,10 +600,6 @@ public class SPIServiceTest {
 
         verify(restTemplate).exchange(eq(API_URL + SLASH + SERVICES_ENDPOINT + "?clientId=" + SERVICE_CLIENT_ID), eq(HttpMethod.GET), captor.capture(), eq(ArrayOfServices.class));
 
-        HttpEntity<String> entity = (HttpEntity<String>) captor.getValue();
-
-        assertThat(entity.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE), equalTo(MediaType.APPLICATION_JSON_VALUE));
-        assertThat(entity.getBody(), equalTo("parameters"));
     }
 
 

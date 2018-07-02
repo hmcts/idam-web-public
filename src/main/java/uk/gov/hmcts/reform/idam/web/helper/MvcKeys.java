@@ -21,7 +21,7 @@ public class MvcKeys {
     public static final String STATE = "state";
     public static final String USERNAME = "username";
     public static final String INVALID_PIN = "invalidPin";
-
+    public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
 
     public static final String ERROR_VIEW = "error";
     public static final String ERRORPAGE_VIEW = "errorpage";
@@ -30,7 +30,6 @@ public class MvcKeys {
     public static final String FORGOTPASSWORDSUCCESS_VIEW = "forgotpasswordsuccess";
     public static final String INDEX_VIEW = "index";
     public static final String LOGIN_VIEW = "login";
-    public static final String LOGIN_NO_REG_VIEW = "loginNoReg";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
     public static final String REGISTER_VIEW = "register";
     public static final String RESETPASSWORD_VIEW = "resetpassword";
