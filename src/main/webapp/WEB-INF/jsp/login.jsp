@@ -107,7 +107,7 @@
                                     <spring:message code="public.common.error.enter.username" />
                                 </span>
                             </c:if>
-                            <form:input class="form-control form-control-3-4 ${usernameError? 'form-control-error' : ''}"
+                            <form:input class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${usernameError? ' form-control-error' : ''}"
                                         path="username"
                                         type="text"
                                         id="username"
@@ -127,7 +127,7 @@
                                     <spring:message code="public.common.error.enter.password" />
                                 </span>
                             </c:if>
-                            <form:input class="form-control form-control-3-4 ${passwordError? 'form-control-error' : ''}" id="password" name="password" path="password" type="password" value="" autocomplete="off"/>
+                            <form:input class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${passwordError? ' form-control-error' : ''}" id="password" name="password" path="password" type="password" value="" autocomplete="off"/>
                         </div>
 
                         <div class="form-group">
