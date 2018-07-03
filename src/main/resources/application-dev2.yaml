@@ -1,7 +1,0 @@
-strategic:
-  service:
-    url: https://dev2fridamapi.azurewebsites.net
-
-ssl:
-  verification:
-    enabled: false
