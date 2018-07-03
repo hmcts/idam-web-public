@@ -41,6 +41,7 @@ public class TestConstants {
     public static final String VALIDATE_RESET_PASSWORD_ENDPOINT = "validateResetPasswordToken";
     public static final String SELF_REGISTRATION_ENDPOINT = "users/selfregister";
     public static final String DETAILS_ENDPOINT = "details";
+    public static final String SERVICES_ENDPOINT = "services";
     public static final String TACTICAL_ACTIVATE_ENDPOINT = "/activate";
 
     //uris
@@ -70,8 +71,10 @@ public class TestConstants {
     public static final String RESET_PASSWORD_SUCCESS_VIEW = "resetpasswordsuccess";
     public static final String INDEX_VIEW = "index";
     public static final String LOGIN_VIEW = "login";
+    public static final String LOGIN_NO_REG_VIEW = "loginNoReg";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
     public static final String LOGIN_LOGOUT_VIEW = "/login?logout";
+    public static final String NOT_FOUND_VIEW = "404";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
 
 
@@ -86,6 +89,11 @@ public class TestConstants {
     public static final String PASSWORD_ONE = "password1";
     public static final String PASSWORD_TWO = "password2";
     public static final String USER_NAME = "userName";
+
+
+    //Service
+    public static final String SERVICE_LABEL = "label";
+    public static final String SERVICE_CLIENT_ID = "client_id";
 
 
     //Parameters
@@ -104,6 +112,7 @@ public class TestConstants {
     public static final String RESPONSE_TYPE_PARAMETER = "response_type";
     public static final String PIN_PARAMETER = "pin";
     public static final String AUTHORIZATION_PARAMETER = "authorization";
+	public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
 
 
     //Errors

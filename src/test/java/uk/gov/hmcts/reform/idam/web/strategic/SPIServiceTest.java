@@ -39,6 +39,9 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_URI
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_RESPONSE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_URL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICES_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_LABEL;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_OAUTH2_CLIENT_ID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_OAUTH2_REDIRECT_URI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SLASH;
@@ -59,6 +62,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_API
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getFoundResponseEntity;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterRequest;
+import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getService;
 
 import java.util.Optional;
 
@@ -84,9 +88,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.model.ArrayOfServices;
 import uk.gov.hmcts.reform.idam.api.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest;
+import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -571,5 +577,59 @@ public class SPIServiceTest {
         Optional<User> response = spiService.getDetails(AUTHORIZATION_TOKEN);
 
         assertThat(response, equalTo(Optional.empty()));
+    }
+
+
+    /**
+     * @verifies call api with the correct data and return the service if api response is not empty and http status code is 200
+     * @see SPIService#getServiceByClientId(String)
+     */
+    @Test
+    public void getServiceByClientId_shouldCallApiWithTheCorrectDataAndReturnTheServiceIfApiResponseIsNotEmptyAndHttpStatusCodeIs200() throws Exception {
+        Service service = getService(SERVICE_LABEL, SERVICE_CLIENT_ID, true);
+
+        ArrayOfServices services = new ArrayOfServices();
+        services.add(service);
+
+        given(configurationProperties.getStrategic().getEndpoint().getServices()).willReturn(SERVICES_ENDPOINT);
+        given(restTemplate.exchange(eq(API_URL + SLASH + SERVICES_ENDPOINT + "?clientId=" + SERVICE_CLIENT_ID), eq(HttpMethod.GET), any(HttpEntity.class), eq(ArrayOfServices.class))).willReturn(ResponseEntity.ok(services));
+
+        Optional<Service> response = spiService.getServiceByClientId(SERVICE_CLIENT_ID);
+
+        assertThat(response.get(), equalTo(service));
+
+        verify(restTemplate).exchange(eq(API_URL + SLASH + SERVICES_ENDPOINT + "?clientId=" + SERVICE_CLIENT_ID), eq(HttpMethod.GET), captor.capture(), eq(ArrayOfServices.class));
+
+    }
+
+
+    /**
+     * @verifies return Optional empty if api returns an http status different from 200
+     * @see SPIService#getServiceByClientId(String)
+     */
+    @Test
+    public void getServiceByClientId_shouldReturnOptionalEmptyIfApiReturnsAnHttpStatusDifferentFrom200() throws Exception {
+
+        given(configurationProperties.getStrategic().getEndpoint().getServices()).willReturn(SERVICES_ENDPOINT);
+        given(restTemplate.exchange(eq(API_URL + SLASH + SERVICES_ENDPOINT + "?clientId=" + SERVICE_CLIENT_ID), eq(HttpMethod.GET), any(HttpEntity.class), eq(ArrayOfServices.class))).willReturn(ResponseEntity.badRequest().build());
+
+        Optional<Service> response = spiService.getServiceByClientId(SERVICE_CLIENT_ID);
+
+        assertThat(response.isPresent(), is(false));
+
+    }
+
+    /**
+     * @verifies return Optional empty if api returns empty response body
+     * @see SPIService#getServiceByClientId(String)
+     */
+    @Test
+    public void getServiceByClientId_shouldReturnOptionalEmptyIfApiReturnsEmptyResponseBody() throws Exception {
+        given(configurationProperties.getStrategic().getEndpoint().getServices()).willReturn(SERVICES_ENDPOINT);
+        given(restTemplate.exchange(eq(API_URL + SLASH + SERVICES_ENDPOINT + "?clientId=" + SERVICE_CLIENT_ID), eq(HttpMethod.GET), any(HttpEntity.class), eq(ArrayOfServices.class))).willReturn(ResponseEntity.ok().build());
+
+        Optional<Service> response = spiService.getServiceByClientId(SERVICE_CLIENT_ID);
+
+        assertThat(response.isPresent(), is(false));
     }
 }
