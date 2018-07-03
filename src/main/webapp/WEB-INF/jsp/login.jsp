@@ -88,11 +88,15 @@
                 </div>
             </spring:hasBindErrors>
 
-            <h1 class="heading-large"><spring:message code="public.login.heading" /></h1>
-            <div class="grid-row">
+            <h1 class="heading-large"><spring:message code="${selfRegistrationEnabled ? 'public.login.heading' : 'public.login.heading.no.self.register'}" /></h1>
+            <c:if test="${selfRegistrationEnabled}">
+			<div class="grid-row">
                 <div class="column-one-half column--bordered">
+			</c:if>
                     <div class="form-section">
-                        <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
+                        <c:if test="${selfRegistrationEnabled}">
+                            <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
+                        </c:if>
                         <c:set var="usernameError" value="${isUsernameEmpty || hasLoginFailed}" />
                         <div class="form-group ${usernameError? 'form-group-error' : ''}">
                             <label for="username">
@@ -105,7 +109,7 @@
                                     <spring:message code="public.common.error.enter.username" />
                                 </span>
                             </c:if>
-                            <form:input class="form-control form-control-3-4 ${usernameError? 'form-control-error' : ''}"
+                            <form:input class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${usernameError? ' form-control-error' : ''}"
                                         path="username"
                                         type="text"
                                         id="username"
@@ -125,7 +129,7 @@
                                     <spring:message code="public.common.error.enter.password" />
                                 </span>
                             </c:if>
-                            <form:input class="form-control form-control-3-4 ${passwordError? 'form-control-error' : ''}" id="password" name="password" path="password" type="password" value="" autocomplete="off"/>
+                            <form:input class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${passwordError? ' form-control-error' : ''}" id="password" name="password" path="password" type="password" value="" autocomplete="off"/>
                         </div>
 
                         <div class="form-group">
@@ -142,6 +146,7 @@
                         <form:input path="state" type="hidden" id="state" name="state"/>
                         <form:input path="response_type" type="hidden" id="response_type" name="response_type"/>
                     </div>
+			<c:if test="${selfRegistrationEnabled}">
                 </div>
                 <div class="column-one-half">
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
@@ -159,6 +164,7 @@
                     </p>
                 </div>
             </div>
+			</c:if>
         </form:form>
     </article>
 </t:wrapper>

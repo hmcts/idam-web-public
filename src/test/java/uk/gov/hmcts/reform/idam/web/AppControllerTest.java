@@ -90,6 +90,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_TOK
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESPONSE_TYPE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESPONSE_TYPE_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SECURITY_CODE_INCORRECT_ERROR;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SORRY_THERE_WAS_AN_ERROR;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
@@ -135,6 +136,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -171,6 +173,12 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutCorrectDataInModelAndReturnLoginView() throws Exception {
+
+        Service service = new Service();
+        service.selfRegistrationAllowed(true);
+
+        given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.of(service));
+
         mockMvc.perform(get(LOGIN_ENDPOINT)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -182,6 +190,45 @@ public class AppControllerTest {
             .andExpect(model().attribute(STATE_PARAMETER, STATE))
             .andExpect(model().attribute(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(model().attribute(REDIRECT_URI, REDIRECT_URI))
+            .andExpect(view().name(LOGIN_VIEW));
+    }
+
+    /**
+     * @verifies set self-registration to false if disabled for the service
+     * @see AppController#login(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     */
+    @Test public void login_shouldSetSelfRegistrationToFalseIfDisabledForTheService() throws Exception {
+
+        Service service = new Service();
+        service.selfRegistrationAllowed(false);
+
+        given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.of(service));
+
+        mockMvc.perform(get(LOGIN_ENDPOINT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+			.andExpect(model().attribute(SELF_REGISTRATION_ENABLED, false))
+            .andExpect(view().name(LOGIN_VIEW));
+    }
+
+    /**
+     * @verifies set self-registration to false if the clientId is invalid
+     * @see AppController#login(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     */
+    @Test public void login_shouldSetSelfRegistrationToFalseIfTheClientIdIsInvalid() throws Exception {
+
+        given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.empty());
+
+        mockMvc.perform(get(LOGIN_ENDPOINT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+			.andExpect(model().attribute(SELF_REGISTRATION_ENABLED, false))
             .andExpect(view().name(LOGIN_VIEW));
     }
 
@@ -1326,4 +1373,6 @@ public class AppControllerTest {
         mockMvc.perform(get(TACTICAL_ACTIVATE_ENDPOINT))
             .andExpect(view().name(TACTICAL_ACTIVATE_VIEW));
     }
+
+
 }

@@ -21,7 +21,7 @@ public class MvcKeys {
     public static final String STATE = "state";
     public static final String USERNAME = "username";
     public static final String INVALID_PIN = "invalidPin";
-
+    public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
 
     public static final String ERROR_VIEW = "error";
     public static final String ERRORPAGE_VIEW = "errorpage";
@@ -36,6 +36,7 @@ public class MvcKeys {
     public static final String UPLIFT_USER_VIEW = "upliftUser";
     public static final String USERCREATED_VIEW = "usercreated";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
+    public static final String SELF_REGISTER_VIEW = "selfRegister";
 
 
 }
