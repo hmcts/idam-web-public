@@ -27,5 +27,6 @@ node_modules/
 build
 .gradle
 out
+output/
 
 **/application-local.yaml
