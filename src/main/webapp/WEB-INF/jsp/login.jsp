@@ -94,7 +94,9 @@
                 <div class="column-one-half column--bordered">
 			</c:if>
                     <div class="form-section">
-                        <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
+                        <c:if test="${selfRegistrationEnabled}">
+                            <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
+                        </c:if>
                         <c:set var="usernameError" value="${isUsernameEmpty || hasLoginFailed}" />
                         <div class="form-group ${usernameError? 'form-group-error' : ''}">
                             <label for="username">
