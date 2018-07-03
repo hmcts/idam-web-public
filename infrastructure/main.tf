@@ -1,6 +1,4 @@
 locals {
-  integration_env = "${var.env == "idam-preview" ? "idam-aat" : var.env}"
-
   preview_vault_name = "idam-idam-preview"
   non_preview_vault_name = "${var.product}-${var.env}"
   vault_name = "${var.env == "idam-preview" ? local.preview_vault_name : local.non_preview_vault_name}"
