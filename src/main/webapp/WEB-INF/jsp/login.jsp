@@ -18,9 +18,7 @@
 <t:wrapper titleKey="public.login.subheading.sign.in">
     <article class="content__body">
         <form:form name="loginForm"
-                   method="post"
                    class="form"
-                   action="/authorize"
                    commandName="authorizeCommand"
                    modelAttribute="authorizeCommand"
                    novalidate=""

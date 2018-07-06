@@ -24,7 +24,6 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
@@ -135,6 +134,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -142,6 +142,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
+import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
@@ -1132,14 +1133,14 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model correct data  then call authorize service and redirect using redirect url returned by service
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
+    public void login_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
 
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(REDIRECT_URI);
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1154,11 +1155,11 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model correct data if username or  password are empty.
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelCorrectDataIfUsernameOrPasswordAreEmpty() throws Exception {
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+    public void login_shouldPutInModelCorrectDataIfUsernameOrPasswordAreEmpty() throws Exception {
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, BLANK)
             .param(PASSWORD_PARAMETER, BLANK)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1174,13 +1175,13 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model the correct data and return login view if authorize service doesn't return a response url
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
+    public void login_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(MISSING);
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1194,13 +1195,13 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
+    public void login_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1215,7 +1216,7 @@ public class AppControllerTest {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
 
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1230,7 +1231,7 @@ public class AppControllerTest {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
 
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1246,13 +1247,13 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
+    public void login_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
