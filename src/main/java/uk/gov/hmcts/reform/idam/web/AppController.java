@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.idam.web;
 
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
@@ -17,6 +19,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REGISTER_VIEW;
@@ -25,6 +28,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_USER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
@@ -44,6 +48,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -90,8 +95,8 @@ public class AppController {
     /**
      * @should return index view
      */
-    @RequestMapping("/")
-    public String index(final Map<String, Object> model) {
+    @GetMapping("/")
+    public String indexView(final Map<String, Object> model) {
 
         return MvcKeys.INDEX_VIEW;
     }
@@ -103,7 +108,7 @@ public class AppController {
      * @should return error page view if OAuth2 details are missing
      * @should return forbidden if csrf token is invalid
      */
-    @RequestMapping("/login")
+    @GetMapping("/login")
     public String login(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
                         BindingResult bindingResult, Model model) {
         if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
@@ -123,8 +128,8 @@ public class AppController {
     /**
      * @should return expired token view
      */
-    @RequestMapping("/expiredtoken")
-    public String expiredtoken(final Map<String, Object> model) {
+    @GetMapping("/expiredtoken")
+    public String expiredTokenView(final Map<String, Object> model) {
 
         return EXPIREDTOKEN_VIEW;
     }
@@ -132,8 +137,8 @@ public class AppController {
     /**
      * @should return login with pin view
      */
-    @RequestMapping("/login/pin")
-    public String loginWithPin(final Map<String, Object> model) {
+    @GetMapping("/login/pin")
+    public String loginWithPinView(final Map<String, Object> model) {
 
         return LOGIN_WITH_PIN_VIEW;
     }
@@ -502,30 +507,42 @@ public class AppController {
         return true;
     }
 
-    @RequestMapping("/cookies")
-    public String cookies() {
-        return "cookies";
+    /**
+     * @should return view
+     */
+    @GetMapping("/cookies")
+    public String cookiesView() {
+        return COOKIES_VIEW;
     }
 
-    @RequestMapping("/privacy-policy")
-    public String privacyPolicy() {
-        return "privacypolicy";
+    /**
+     * @should return view
+     */
+    @GetMapping("/privacy-policy")
+    public String privacyPolicyView() {
+        return PRIVACY_POLICY_VIEW;
     }
 
-    @RequestMapping("/terms-and-conditions")
-    public String termsAndConditions() {
-        return "tandc";
+    /**
+     * @should return view
+     */
+    @GetMapping("/terms-and-conditions")
+    public String termsAndConditionsView() {
+        return TERMS_AND_CONDITIONS_VIEW;
     }
 
-    @RequestMapping("/contact-us")
-    public String contactUs() {
-        return "contactus";
+    /**
+     * @should return view
+     */
+    @GetMapping("/contact-us")
+    public String contactUsView() {
+        return CONTACT_US_VIEW;
     }
 
     /**
      * @should return tacticalActivateExpired
      */
-    @RequestMapping("/activate")
+    @GetMapping("/activate")
     public String tacticalActivate() {
         return TACTICAL_ACTIVATE_VIEW;
     }

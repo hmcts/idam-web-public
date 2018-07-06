@@ -19,6 +19,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
@@ -157,10 +161,10 @@ public class AppControllerTest {
 
     /**
      * @verifies return index view
-     * @see AppController#index(Map)
+     * @see AppController#indexView(Map)
      */
     @Test
-    public void index_shouldReturnIndexView() throws Exception {
+    public void indexView_shouldReturnIndexView() throws Exception {
         mockMvc.perform(get("/"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -234,10 +238,10 @@ public class AppControllerTest {
 
     /**
      * @verifies return expired token view
-     * @see AppController#expiredtoken(Map)
+     * @see AppController#expiredTokenView(Map)
      */
     @Test
-    public void expiredtoken_shouldReturnExpiredTokenView() throws Exception {
+    public void expiredTokenView_shouldReturnExpiredTokenView() throws Exception {
         mockMvc.perform(get(EXPIRED_TOKEN_ENDPOINT))
             .andDo(print())
             .andExpect(status().isOk())
@@ -246,10 +250,10 @@ public class AppControllerTest {
 
     /**
      * @verifies return login with pin view
-     * @see AppController#loginWithPin(Map)
+     * @see AppController#loginWithPinView(Map)
      */
     @Test
-    public void loginWithPin_shouldReturnLoginWithPinView() throws Exception {
+    public void loginWithPinView_shouldReturnLoginWithPinView() throws Exception {
         mockMvc.perform(get(LOGIN_PIN_ENDPOINT))
             .andDo(print())
             .andExpect(status().isOk())
@@ -720,7 +724,7 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldReturnErrorPageViewIfOAuth2DetailsAreMissing() throws Exception {
-        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+        mockMvc.perform(get(LOGIN_ENDPOINT)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(CLIENT_ID_PARAMETER, MISSING))
             .andExpect(status().isOk())
@@ -1371,8 +1375,55 @@ public class AppControllerTest {
      */
     @Test public void tacticalActivate_shouldReturnTacticalActivateExpired() throws Exception {
         mockMvc.perform(get(TACTICAL_ACTIVATE_ENDPOINT))
+            .andExpect(status().isOk())
             .andExpect(view().name(TACTICAL_ACTIVATE_VIEW));
     }
 
+    /**
+     * @verifies return view
+     * @see AppController#cookiesView()
+     */
+    @Test
+    public void cookiesView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/cookies"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(COOKIES_VIEW));
+    }
 
+    /**
+     * @verifies return view
+     * @see AppController#privacyPolicyView()
+     */
+    @Test
+    public void privacyPolicyView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/privacy-policy"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(PRIVACY_POLICY_VIEW));
+    }
+
+    /**
+     * @verifies return view
+     * @see AppController#termsAndConditionsView()
+     */
+    @Test
+    public void termsAndConditionsView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/terms-and-conditions"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(TERMS_AND_CONDITIONS_VIEW));
+    }
+
+    /**
+     * @verifies return view
+     * @see AppController#contactUsView()
+     */
+    @Test
+    public void contactUsView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/contact-us"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(CONTACT_US_VIEW));
+    }
 }
