@@ -46,9 +46,7 @@
                     commandName="registerUserCommand"
                     class="form form-section"
                     novalidate="true"
-                    method="post"
-                    _lpchecked="1"
-                    action="/registerUser">
+                    _lpchecked="1">
 
                     <h2 class="heading-medium"><spring:message code="public.uplift.user.body" /></h2>
 
@@ -96,11 +94,6 @@
                     </p>
 
                     <input class="button" type="submit" value="<spring:message code="public.uplift.user.submit.button" />">
-
-                    <input type="hidden" id="jwt" name="jwt" value="${fn:escapeXml(param['jwt'])}"/>
-                    <input type="hidden" id="redirectUri" name="redirectUri" value="${fn:escapeXml(redirectUri)}"/>
-                    <input type="hidden" id="clientId" name="clientId" value="${fn:escapeXml(clientId)}"/>
-                    <input type="hidden" id="state" name="state" value="${fn:escapeXml(param['state'])}"/>
                 </form:form>
             </div>
             <div class="column-one-half">

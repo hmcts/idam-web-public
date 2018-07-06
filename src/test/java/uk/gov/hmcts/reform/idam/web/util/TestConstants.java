@@ -13,21 +13,20 @@ public class TestConstants {
     public static final String LOGIN_PIN_CODE = "e2c0afac-fd92-4e9a-b1e9-03944384a083";
 
 
-    //enpoints
+    //endpoints
     public static final String USERS_ENDPOINT = "/users";
     public static final String SELF_REGISTER_ENDPOINT = "/users/selfRegister";
     public static final String VALIDATE_TOKEN_ENDPOINT = "/users/register";
     public static final String VALIDATE_TOKEN_API_ENDPOINT = "/validate";
     public static final String USERS_SELF_ENDPOINT = "users/self";
-    public static final String REGISTER_USER_ENDPOINT = "/registerUser";
-    public static final String REGISTER_ENDPOINT = "/register";
+    public static final String UPLIFT_REGISTER_ENDPOINT = "/login/uplift";
     public static final String RESET_PASSWORD_ENDPOINT = "resetPassword";
     public static final String FORGOT_PASSWORD_SPI_ENDPOINT = "forgotPassword";
     public static final String FORGOT_PASSWORD_WEB_ENDPOINT = "/reset/doForgotPassword";
     public static final String PASSWORD_RESET_ENDPOINT = "/passwordReset";
     public static final String DO_RESET_PASSWORD_ENDPOINT = "/doResetPassword";
-    public static final String UPLIFT_ENDPOINT = "/uplift";
-    public static final String LOGIN_UPLIFT_ENDPOINT = "/login/uplift";
+    public static final String UPLIFT_LOGIN_ENDPOINT = "/register";
+    public static final String API_LOGIN_UPLIFT_ENDPOINT = "/login/uplift";
     public static final String ACTIVATE_USER_ENDPOINT = "/users/activate";
     public static final String LOGIN_ENDPOINT = "/login";
     public static final String EXPIRED_TOKEN_ENDPOINT = "/expiredtoken";
@@ -62,8 +61,6 @@ public class TestConstants {
     public static final String USER_ACTIVATED_VIEW_NAME = "useractivated";
     public static final String ERROR_VIEW_NAME = "errorpage";
     public static final String USER_CREATED_VIEW_NAME = "usercreated";
-    public static final String UPLIFT_USER_VIEW_NAME = "upliftUser";
-    public static final String REGISTER_VIEW_NAME = "register";
     public static final String RESETPASSWORD_VIEW_NAME = "resetpassword";
     public static final String EXPIREDTOKEN_VIEW_NAME = "expiredtoken";
     public static final String FORGOT_PASSWORD_VIEW = "forgotpassword";
@@ -71,7 +68,6 @@ public class TestConstants {
     public static final String RESET_PASSWORD_SUCCESS_VIEW = "resetpasswordsuccess";
     public static final String INDEX_VIEW = "index";
     public static final String LOGIN_VIEW = "login";
-    public static final String LOGIN_NO_REG_VIEW = "loginNoReg";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
     public static final String LOGIN_LOGOUT_VIEW = "/login?logout";
     public static final String NOT_FOUND_VIEW = "404";

@@ -19,13 +19,13 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REGISTER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_USER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
 
@@ -44,6 +44,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -142,31 +143,35 @@ public class AppController {
      * @should return user uplift page if the user is authorized
      * @should return error page if the user is not authorized
      */
-    @RequestMapping("/login/uplift")
-    public String uplift(
-        @RequestParam(value = "jwt") String jwt,
-        @ModelAttribute("registerUserCommand") RegisterUserRequest request,
-        final Map<String, Object> model) {
+    @GetMapping("/login/uplift")
+    public String upliftRegisterView(@RequestParam("client_id") String clientId,
+                                     @RequestParam("redirect_uri") String redirectUri,
+                                     @RequestParam String jwt,
+                                     @ModelAttribute("registerUserCommand") RegisterUserRequest request,
+                                     final Map<String, Object> model) {
 
         if (!checkUserAuthorised(jwt, model)) {
             return ERRORPAGE_VIEW;
         }
 
-        return UPLIFT_USER_VIEW;
+        return UPLIFT_REGISTER_VIEW;
     }
 
     /**
      * @should return user registration page if the user is authorized
      * @should return error page if the user is not authorized
      */
-    @RequestMapping("/register")
-    public String selfRegister(@RequestParam(value = "jwt") String jwt, final Map<String, Object> model) {
+    @GetMapping("/register")
+    public String upliftLoginView(@RequestParam String jwt,
+                                  @RequestParam(value = "client_id") String clientId,
+                                  @RequestParam(value = "redirect_uri") String redirectUri,
+                                  final Map<String, Object> model) {
 
         if (!checkUserAuthorised(jwt, model)) {
             return ERRORPAGE_VIEW;
         }
 
-        return REGISTER_VIEW;
+        return UPLIFT_LOGIN_VIEW;
     }
 
     /**
@@ -182,26 +187,29 @@ public class AppController {
      * @should reject request if the redirect URI is missing
      * @should reject request if the clientId is missing
      */
-    @RequestMapping("/registerUser")
-    public String registerUser(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request, BindingResult bindingResult, final Map<String, Object> model, RedirectAttributes redirectAttributes) {
+    @PostMapping("/login/uplift")
+    public String upliftRegister(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request,
+                                 BindingResult bindingResult,
+                                 final Map<String, Object> model,
+                                 RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             ErrorHelper.showLoginError("Information is missing or invalid",
                 "Please fix the following",
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
-            return UPLIFT_USER_VIEW;
+            return UPLIFT_REGISTER_VIEW;
         }
 
         try {
-            ResponseEntity<String> resetPasswordEntity = spiService.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirectUri(), request.getClientId());
+            ResponseEntity<String> resetPasswordEntity = spiService.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirect_uri(), request.getClient_id());
             if (resetPasswordEntity.getStatusCode() == HttpStatus.CREATED) {
                 model.put(EMAIL, request.getUsername());
-                model.put(REDIRECTURI, request.getRedirectUri());
-                model.put(CLIENTID, request.getClientId());
+                model.put(REDIRECTURI, request.getRedirect_uri());
+                model.put(CLIENTID, request.getClient_id());
                 return USERCREATED_VIEW;
             } else {
-                return UPLIFT_USER_VIEW;
+                return UPLIFT_REGISTER_VIEW;
             }
         } catch (HttpClientErrorException ex) {
             String msg = "";
@@ -211,10 +219,12 @@ public class AppController {
 
             ErrorHelper.showLoginError("Sorry, there was an error",
                 String.format("Please try your action again. %s", msg),
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
+            // TODO: The above 'showLoginError' is not rendered on the page unless we flag the bindingResult with errors
+            // bindingResult.addError(new ObjectError("bob", "null message"));
 
-            return UPLIFT_USER_VIEW;
+            return UPLIFT_REGISTER_VIEW;
         }
     }
 
@@ -333,12 +343,22 @@ public class AppController {
      * @should return to the registration page if the credentials are invalid
      * @should return to the registration page if there is an exception
      */
-    @RequestMapping("/uplift")
-    public ModelAndView uplift(@Validated UpliftRequest request, final Map<String, Object> model, ModelMap modelMap) {
+    @PostMapping("/register")
+    public ModelAndView upliftLogin(@Validated UpliftRequest request, BindingResult bindingResult,
+                                    final Map<String, Object> model, ModelMap modelMap) {
+
+        if (bindingResult.hasErrors()) {
+            ErrorHelper.showLoginError("Information is missing or invalid",
+                "Please fix the following",
+                request.getRedirect_uri(),
+                model);
+            return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
+        }
+
         String redirectUrl = "redirect:";
         try {
             final String jsonResponse = spiService.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
-                request.getRedirectUri(), request.getClientId(), request.getState());
+                request.getRedirect_uri(), request.getClient_id(), request.getState());
             if (jsonResponse != null) {
                 redirectUrl += jsonResponse;
             }
@@ -347,18 +367,18 @@ public class AppController {
 
             ErrorHelper.showLoginError("Incorrect email/password combination",
                 "Please check your email address and password and try again",
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
-            return new ModelAndView(REGISTER_VIEW, modelMap);
+            return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
 
         } catch (Exception ex) {
             log.error("Uplift process exception: {}", ex.getMessage());
 
             ErrorHelper.showLoginError("Sorry, there was an error",
                 "Please try your action again.",
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
-            return new ModelAndView(REGISTER_VIEW, modelMap);
+            return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
         }
         return new ModelAndView(redirectUrl, modelMap);
     }
@@ -490,7 +510,7 @@ public class AppController {
         }
     }
 
-    public boolean checkUserAuthorised(String jwt, Map<String, Object> model) {
+    private boolean checkUserAuthorised(String jwt, Map<String, Object> model) {
         Optional<User> user = spiService.getDetails(jwt);
 
         if (!user.isPresent() || Objects.isNull(user.get().getRoles()) || !user.get().getRoles().contains("letter-holder")) {

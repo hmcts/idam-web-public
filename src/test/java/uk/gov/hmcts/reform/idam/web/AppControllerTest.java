@@ -19,6 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
@@ -61,7 +63,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_LOGOUT_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_PIN_CODE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_PIN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_UPLIFT_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_REGISTER_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_VIEW;
@@ -78,9 +80,6 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_FIX_THE_FOL
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_TRY_AGAIN;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REGISTER_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REGISTER_USER_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REGISTER_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESETPASSWORD_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_FORGOT_PASSWORD_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_CODE;
@@ -98,8 +97,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UNUSED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_USER_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_LOGIN_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERNAME_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_CREATED_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL;
@@ -131,13 +129,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
+import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
+import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
@@ -258,16 +260,16 @@ public class AppControllerTest {
 
     /**
      * @verifies put right error data in model if mandatory fields are missing and return upliftUser view
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
     @Test
-    public void registerUser_shouldPutRightErrorDataInModelIfMandatoryFieldsAreMissingAndReturnUpliftUserView() throws Exception {
+    public void upliftRegister_shouldPutRightErrorDataInModelIfMandatoryFieldsAreMissingAndReturnUpliftUserView() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, MISSING)
@@ -277,19 +279,19 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
     }
 
     /**
      * @verifies return upliftUser view if register user service returns http code different from 201
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
     @Test
-    public void registerUser_shouldReturnUpliftUserViewIfRegisterUserServiceReturnsHttpCodeDifferentFrom201() throws Exception {
+    public void upliftRegister_shouldReturnUpliftUserViewIfRegisterUserServiceReturnsHttpCodeDifferentFrom201() throws Exception {
 
         given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willReturn(ResponseEntity.badRequest().build());
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
@@ -299,22 +301,22 @@ public class AppControllerTest {
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
     }
 
     /**
      * @verifies put email in model and return usercreated view if register user service returns http code 201
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
     @Test
-    public void registerUser_shouldPutEmailInModelAndReturnUsercreatedViewIfRegisterUserServiceReturnsHttpCode201() throws Exception {
+    public void upliftRegister_shouldPutEmailInModelAndReturnUsercreatedViewIfRegisterUserServiceReturnsHttpCode201() throws Exception {
         given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willReturn(ResponseEntity.status(HttpStatus.CREATED).build());
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
@@ -327,17 +329,17 @@ public class AppControllerTest {
 
     /**
      * @verifies put right error data in model if register user service throws HttpClientErrorException with 404 http status code
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
     @Test
-    public void registerUser_shouldPutRightErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionWith404HttpStatusCode() throws Exception {
+    public void upliftRegister_shouldPutRightErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionWith404HttpStatusCode() throws Exception {
         given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
@@ -347,23 +349,23 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_TITLE, SORRY_THERE_WAS_AN_ERROR))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_TRY_AGAIN + PIN_USER_NOT_LONGER_VALID))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
 
     }
 
     /**
      * @verifies put generic error data in model if register user service throws HttpClientErrorException an http status code different from 404
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
     @Test
-    public void registerUser_shouldPutGenericErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionAnHttpStatusCodeDifferentFrom404() throws Exception {
+    public void upliftRegister_shouldPutGenericErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionAnHttpStatusCodeDifferentFrom404() throws Exception {
         given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
@@ -373,21 +375,21 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_TITLE, SORRY_THERE_WAS_AN_ERROR))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_TRY_AGAIN))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
 
     }
 
     /**
      * @verifies reject request if the username is invalid
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
-    @Test public void registerUser_shouldRejectRequestIfTheUsernameIsInvalid() throws Exception {
+    @Test public void upliftRegister_shouldRejectRequestIfTheUsernameIsInvalid() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL_INVALID)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
@@ -397,21 +399,21 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
 
     }
 
     /**
      * @verifies reject request if the first name is missing
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
-    @Test public void registerUser_shouldRejectRequestIfTheFirstNameIsMissing() throws Exception {
+    @Test public void upliftRegister_shouldRejectRequestIfTheFirstNameIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, MISSING)
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
@@ -421,21 +423,21 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
 
     }
 
     /**
      * @verifies reject request if the last name is missing
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
-    @Test public void registerUser_shouldRejectRequestIfTheLastNameIsMissing() throws Exception {
+    @Test public void upliftRegister_shouldRejectRequestIfTheLastNameIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, MISSING)
@@ -445,20 +447,20 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
     }
 
     /**
      * @verifies reject request if the jwt is missing
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
-    @Test public void registerUser_shouldRejectRequestIfTheJwtIsMissing() throws Exception {
+    @Test public void upliftRegister_shouldRejectRequestIfTheJwtIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, MISSING)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
@@ -468,16 +470,16 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
     }
 
     /**
      * @verifies reject request if the redirect URI is missing
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
-    @Test public void registerUser_shouldRejectRequestIfTheRedirectURIIsMissing() throws Exception {
+    @Test public void upliftRegister_shouldRejectRequestIfTheRedirectURIIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, MISSING)
             .param(STATE_PARAMETER, STATE)
@@ -491,21 +493,21 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, MISSING))
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
 
     }
 
     /**
      * @verifies reject request if the clientId is missing
-     * @see AppController#registerUser(uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest, org.springframework.validation.BindingResult, Map, org.springframework.web.servlet.mvc.support.RedirectAttributes)
+     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
-    @Test public void registerUser_shouldRejectRequestIfTheClientIdIsMissing() throws Exception {
+    @Test public void upliftRegister_shouldRejectRequestIfTheClientIdIsMissing() throws Exception {
 
-        mockMvc.perform(post(REGISTER_USER_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, MISSING)
+            .param(CLIENT_ID_PARAMETER, MISSING)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
@@ -515,24 +517,24 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
     }
 
     /**
      * @verifies uplift user
-     * @see AppController#uplift(uk.gov.hmcts.reform.idam.web.model.UpliftRequest, Map, org.springframework.ui.ModelMap)
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
      */
-    @Test public void uplift_shouldUpliftUser() throws Exception {
+    @Test public void upliftLogin_shouldUpliftUser() throws Exception {
 
         given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE)).willReturn("upliftResult");
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isFound())
             .andExpect(view().name("redirect:upliftResult"));
 
@@ -541,175 +543,197 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if username is not provided
-     * @see AppController#uplift(uk.gov.hmcts.reform.idam.web.model.UpliftRequest, Map, org.springframework.ui.ModelMap)
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
      */
-    @Test public void uplift_shouldRejectRequestIfUsernameIsNotProvided() throws Exception {
+    @Test public void upliftLogin_shouldRejectRequestIfUsernameIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, MISSING)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
         verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
      * @verifies reject request if username is invalid
-     * @see AppController#uplift(uk.gov.hmcts.reform.idam.web.model.UpliftRequest, Map, org.springframework.ui.ModelMap)
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
      */
-    @Test public void uplift_shouldRejectRequestIfUsernameIsInvalid() throws Exception {
+    @Test public void upliftLogin_shouldRejectRequestIfUsernameIsInvalid() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval!d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval(d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval)d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval%d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval&d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, "inval;d@email.com")
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
         verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
      * @verifies reject request if password is not provided
-     * @see AppController#uplift(uk.gov.hmcts.reform.idam.web.model.UpliftRequest, Map, org.springframework.ui.ModelMap)
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
      */
-    @Test public void uplift_shouldRejectRequestIfPasswordIsNotProvided() throws Exception {
+    @Test public void upliftLogin_shouldRejectRequestIfPasswordIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, MISSING)
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", PASSWORD_PARAMETER));
 
         verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
      * @verifies reject request if JWT is not provided
-     * @see AppController#uplift(uk.gov.hmcts.reform.idam.web.model.UpliftRequest, Map, org.springframework.ui.ModelMap)
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
      */
-    @Test public void uplift_shouldRejectRequestIfJWTIsNotProvided() throws Exception {
+    @Test public void upliftLogin_shouldRejectRequestIfJWTIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, MISSING)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", JWT_PARAMETER));
 
         verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
      * @verifies reject request if redirectUri is not provided
-     * @see AppController#uplift(uk.gov.hmcts.reform.idam.web.model.UpliftRequest, Map, org.springframework.ui.ModelMap)
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
      */
-    @Test public void uplift_shouldRejectRequestIfRedirectUriIsNotProvided() throws Exception {
+    @Test public void upliftLogin_shouldRejectRequestIfRedirectUriIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, MISSING)
             .param(STATE_PARAMETER, STATE)
             .param(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", REDIRECT_URI));
 
         verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
      * @verifies reject request if clientId is not provided
-     * @see AppController#uplift(uk.gov.hmcts.reform.idam.web.model.UpliftRequest, Map, org.springframework.ui.ModelMap)
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
      */
-    @Test public void uplift_shouldRejectRequestIfClientIdIsNotProvided() throws Exception {
+    @Test public void upliftLogin_shouldRejectRequestIfClientIdIsNotProvided() throws Exception {
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, MISSING))
-            .andExpect(status().isBadRequest());
+            .param(CLIENT_ID_PARAMETER, MISSING))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attributeHasFieldErrors("upliftRequest", CLIENT_ID_PARAMETER));
 
         verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
      * @verifies return to the registration page if the credentials are invalid
-     * @see AppController#uplift(uk.gov.hmcts.reform.idam.web.model.UpliftRequest, Map, org.springframework.ui.ModelMap)
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
      */
-    @Test public void uplift_shouldReturnToTheRegistrationPageIfTheCredentialsAreInvalid() throws Exception {
+    @Test public void upliftLogin_shouldReturnToTheRegistrationPageIfTheCredentialsAreInvalid() throws Exception {
 
         given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE))
             .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
-            .andExpect(view().name(REGISTER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_LOGIN_VIEW));
 
         verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE);
     }
@@ -730,51 +754,55 @@ public class AppControllerTest {
 
     /**
      * @verifies return to the registration page if there is an exception
-     * @see AppController#uplift(uk.gov.hmcts.reform.idam.web.model.UpliftRequest, Map, org.springframework.ui.ModelMap)
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
      */
-    @Test public void uplift_shouldReturnToTheRegistrationPageIfThereIsAnException() throws Exception {
+    @Test public void upliftLogin_shouldReturnToTheRegistrationPageIfThereIsAnException() throws Exception {
 
         given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE)).willThrow(new RuntimeException());
 
-        mockMvc.perform(post(UPLIFT_ENDPOINT).with(csrf())
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
-            .param(REDIRECTURI, REDIRECT_URI)
+            .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
-            .andExpect(view().name(REGISTER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_LOGIN_VIEW));
 
         verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE);
     }
 
     /**
      * @verifies return user uplift page if the user is authorized
-     * @see AppController#uplift(String, Map)
+     * @see AppController#upliftRegisterView(String, String, String, RegisterUserRequest, Map)
      */
-    @Test public void uplift_shouldReturnUserUpliftPageIfTheUserIsAuthorized() throws Exception {
+    @Test public void upliftRegisterView_shouldReturnUserUpliftPageIfTheUserIsAuthorized() throws Exception {
 
         given(spiService.getDetails(JWT)).willReturn(Optional.of(anAuthorizedUser()));
 
-        mockMvc.perform(post(LOGIN_UPLIFT_ENDPOINT).with(csrf())
-            .param(JWT_PARAMETER, JWT))
+        mockMvc.perform(get(UPLIFT_REGISTER_ENDPOINT)
+            .param(JWT_PARAMETER, JWT)
+            .param(CLIENT_ID_PARAMETER, "abc")
+            .param(REDIRECT_URI, "http://localhost"))
             .andExpect(status().isOk())
-            .andExpect(view().name(UPLIFT_USER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
 
         verify(spiService).getDetails(JWT);
     }
 
     /**
      * @verifies return error page if the user is not authorized
-     * @see AppController#uplift(String, Map)
+     * @see AppController#upliftRegisterView(String, String, String, RegisterUserRequest, Map)
      */
-    @Test public void uplift_shouldReturnErrorPageIfTheUserIsNotAuthorized() throws Exception {
+    @Test public void upliftRegisterView_shouldReturnErrorPageIfTheUserIsNotAuthorized() throws Exception {
 
         given(spiService.getDetails(JWT)).willReturn(Optional.of(new User()));
 
-        mockMvc.perform(post(LOGIN_UPLIFT_ENDPOINT).with(csrf())
-            .param(JWT_PARAMETER, JWT))
+        mockMvc.perform(get(UPLIFT_REGISTER_ENDPOINT)
+            .param(JWT_PARAMETER, JWT)
+            .param(CLIENT_ID_PARAMETER, "abc")
+            .param(REDIRECT_URI, "http://localhost"))
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
 
@@ -783,30 +811,34 @@ public class AppControllerTest {
 
     /**
      * @verifies return user registration page if the user is authorized
-     * @see AppController#selfRegister(String, Map)
+     * @see AppController#upliftLoginView(String, String, String, Map)
      */
-    @Test public void selfRegister_shouldReturnUserRegistrationPageIfTheUserIsAuthorized() throws Exception {
+    @Test public void upliftLoginView_shouldReturnUserRegistrationPageIfTheUserIsAuthorized() throws Exception {
 
         given(spiService.getDetails(JWT)).willReturn(Optional.of(anAuthorizedUser()));
 
-        mockMvc.perform(post(REGISTER_ENDPOINT).with(csrf())
-            .param(JWT_PARAMETER, JWT))
+        mockMvc.perform(get(UPLIFT_LOGIN_ENDPOINT)
+            .param(JWT_PARAMETER, JWT)
+            .param(CLIENT_ID_PARAMETER, "abc")
+            .param(REDIRECT_URI, "http://localhost"))
             .andExpect(status().isOk())
-            .andExpect(view().name(REGISTER_VIEW_NAME));
+            .andExpect(view().name(UPLIFT_LOGIN_VIEW));
 
         verify(spiService).getDetails(JWT);
     }
 
     /**
      * @verifies return error page if the user is not authorized
-     * @see AppController#selfRegister(String, Map)
+     * @see AppController#upliftLoginView(String, String, String, Map)
      */
-    @Test public void selfRegister_shouldReturnErrorPageIfTheUserIsNotAuthorized() throws Exception {
+    @Test public void upliftLoginView_shouldReturnErrorPageIfTheUserIsNotAuthorized() throws Exception {
 
         given(spiService.getDetails(JWT)).willReturn(Optional.of(new User()));
 
-        mockMvc.perform(post(REGISTER_ENDPOINT).with(csrf())
-            .param(JWT_PARAMETER, JWT))
+        mockMvc.perform(get(UPLIFT_LOGIN_ENDPOINT)
+            .param(JWT_PARAMETER, JWT)
+            .param(CLIENT_ID_PARAMETER, "abc")
+            .param(REDIRECT_URI, "http://localhost"))
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
 
