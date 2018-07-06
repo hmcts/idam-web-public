@@ -8,8 +8,6 @@
 
 <t:wrapper titleKey="public.register.title">
     <article class="content__body">
-        <c:set var="redirectUri" value="${empty param['redirectUri'] ? param['redirect_uri'] : param['redirectUri']}" />
-        <c:set var="clientId" value="${empty param['clientId'] ? param['client_id'] : param['clientId']}" />
         <c:set var="hasError" value="${error != null}" />
         <c:if test="${hasError}">
             <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">

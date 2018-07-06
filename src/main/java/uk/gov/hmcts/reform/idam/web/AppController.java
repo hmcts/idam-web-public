@@ -202,15 +202,11 @@ public class AppController {
         }
 
         try {
-            ResponseEntity<String> resetPasswordEntity = spiService.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirect_uri(), request.getClient_id());
-            if (resetPasswordEntity.getStatusCode() == HttpStatus.CREATED) {
-                model.put(EMAIL, request.getUsername());
-                model.put(REDIRECTURI, request.getRedirect_uri());
-                model.put(CLIENTID, request.getClient_id());
-                return USERCREATED_VIEW;
-            } else {
-                return UPLIFT_REGISTER_VIEW;
-            }
+            spiService.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirect_uri(), request.getClient_id());
+            model.put(EMAIL, request.getUsername());
+            model.put(REDIRECTURI, request.getRedirect_uri());
+            model.put(CLIENTID, request.getClient_id());
+            return USERCREATED_VIEW;
         } catch (HttpClientErrorException ex) {
             String msg = "";
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
@@ -221,8 +217,9 @@ public class AppController {
                 String.format("Please try your action again. %s", msg),
                 request.getRedirect_uri(),
                 model);
-            // TODO: The above 'showLoginError' is not rendered on the page unless we flag the bindingResult with errors
-            // bindingResult.addError(new ObjectError("bob", "null message"));
+            // We use spring:hasBindErrors so make sure the 'showLoginError' is rendered to the page
+            // by adding a binding error
+            bindingResult.reject("non-existent-error-code");
 
             return UPLIFT_REGISTER_VIEW;
         }

@@ -8,8 +8,6 @@
 
 <t:wrapper titleKey="public.uplift.user.title">
     <article class="content__body">
-        <c:set var="redirectUri" value="${empty param['redirectUri'] ? param['redirect_uri'] : param['redirectUri']}" />
-        <c:set var="clientId" value="${empty param['clientId'] ? param['client_id'] : param['clientId']}" />
         <c:set var="hasError" value="${error != null}" />
         <c:set var="isFirstNameEmpty" value="${param['firstName'] == ''}" />
         <c:set var="isLastNameEmpty" value="${param['lastName'] == ''}" />
