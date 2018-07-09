@@ -7,11 +7,11 @@ locals {
   secure_actuator_endpoints = "${var.env == "idam-prod" || var.env == "idam-demo" ? true : false}"
 
   integration_env = "${var.env == "idam-preview" ? "idam-aat" : var.env}"
-  idam_api = "http://idam-api-${local.integration_env}.service.core-compute-${local.integration_env}.internal"
+  idam_api = "https://idam-api.${replace(var.env, "idam-", "")}.platform.hmcts.net"
 }
 
 module "idam-web-public" {
-  source                = "git@github.com:hmcts/moj-module-webapp?ref=master"
+  source                = "git@github.com:hmcts/moj-module-webapp?ref=SIDM-1439_stop_overwriting_ssl_settings"
   product               = "${var.product}-${var.app}"
   location              = "${var.location}"
   env                   = "${var.env}"
