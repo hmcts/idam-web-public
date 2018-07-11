@@ -48,6 +48,16 @@
         <cve>CVE-2015-0254</cve>
     </suppress>
 
+    <!-- This CVE is about Spring Security in combination with Spring Framework 5.0.5.RELEASE - we do not use
+    Spring 5 -->
+    <suppress>
+        <notes><![CDATA[
+   This suppresses false positives identified on Spring Security.
+   ]]></notes>
+        <gav regex="true">^org\.springframework:spring-.*$</gav>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+
     <suppress>
         <notes>suppress false positives - only relevant to tomcat &lt;= 8.4</notes>
         <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
