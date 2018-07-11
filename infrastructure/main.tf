@@ -21,6 +21,7 @@ module "idam-web-public" {
   capacity              = "${var.capacity}"
   additional_host_name  = "hmcts-access.${replace(var.env, "idam-", "")}.platform.hmcts.net"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
+  common_tags = "${var.common_tags}"
 
   app_settings = {
     MANAGEMENT_SECURITY_ENABLED   = "${local.secure_actuator_endpoints}"
