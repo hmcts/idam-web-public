@@ -19,7 +19,8 @@ module "idam-web-public" {
   is_frontend           = "${var.env == "idam-preview" ? 0 : 1}"
   subscription          = "${var.subscription}"
   capacity              = "${var.capacity}"
-  additional_host_name  = "hmcts-access.${replace(var.env, "idam-", "")}.platform.hmcts.net"
+  https_only            = "true"
+  additional_host_name  = "idam-web-public.${replace(var.env, "idam-", "")}.platform.hmcts.net"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
   common_tags = "${var.common_tags}"
 
