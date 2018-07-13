@@ -27,9 +27,9 @@
                    _lpchecked="1">
 
             <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
-                <c:param name="redirectUri" value="${redirect_uri}" />
-                <c:param name="clientId" value="${client_id}" />
-                <c:param name="state" value="${state}" />
+                <c:param name="redirectUri" value="${redirect_uri}"/>
+                <c:param name="clientId" value="${client_id}"/>
+                <c:param name="state" value="${state}"/>
             </c:url>
 
             <spring:hasBindErrors name="authorizeCommand">
@@ -41,7 +41,7 @@
                     <c:choose>
                         <c:when test="${isAccountLocked}">
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                                <spring:message code="public.login.error.locked.title" />
+                                <spring:message code="public.login.error.locked.title"/>
                             </h2>
                             <div class="text">
                                 <p>
@@ -54,24 +54,24 @@
                         </c:when>
                         <c:when test="${isAccountSuspended}">
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                                <spring:message code="public.login.error.suspended.title" />
+                                <spring:message code="public.login.error.suspended.title"/>
                             </h2>
                             <div class="text">
                                 <p>
-                                    <spring:message code="public.login.error.suspended.instruction" />
+                                    <spring:message code="public.login.error.suspended.instruction"/>
                                 </p>
                             </div>
                         </c:when>
                         <c:when test="${hasLoginFailed}">
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                                <spring:message code="public.login.error.failed.title" />
+                                <spring:message code="public.login.error.failed.title"/>
                             </h2>
                         </c:when>
                         <c:otherwise>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                                <spring:message code="public.login.error.other.title" />
+                                <spring:message code="public.login.error.other.title"/>
                             </h2>
-                            <p><spring:message code="public.common.error.please.fix.following" /></p>
+                            <p><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:otherwise>
                     </c:choose>
                     <ul class="error-summary-list">
@@ -82,90 +82,95 @@
                             <li><a href="#password"><form:errors path="password"/></a></li>
                         </c:if>
                         <c:if test="${hasLoginFailed}">
-                            <li><a href="#username"><spring:message code="public.login.error.failed.username" /></a></li>
-                            <li><a href="#password"><spring:message code="public.login.error.failed.password" /></a></li>
+                            <li><a href="#username"><spring:message code="public.login.error.failed.username"/></a></li>
+                            <li><a href="#password"><spring:message code="public.login.error.failed.password"/></a></li>
                         </c:if>
                     </ul>
                 </div>
             </spring:hasBindErrors>
-
-            <h1 class="heading-large"><spring:message code="${selfRegistrationEnabled ? 'public.login.heading' : 'public.login.heading.no.self.register'}" /></h1>
+            <h1 class="heading-large"><spring:message
+                code="${selfRegistrationEnabled ? 'public.login.heading' : 'public.login.heading.no.self.register'}"/></h1>
             <c:if test="${selfRegistrationEnabled}">
-			<div class="grid-row">
+                <div class="grid-row">
                 <div class="column-one-half column--bordered">
-			</c:if>
-                    <div class="form-section">
-                        <c:if test="${selfRegistrationEnabled}">
-                            <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
-                        </c:if>
-                        <c:set var="usernameError" value="${isUsernameEmpty || hasLoginFailed}" />
-                        <div class="form-group ${usernameError? 'form-group-error' : ''}">
-                            <label for="username">
+            </c:if>
+            <div class="form-section">
+                <c:if test="${selfRegistrationEnabled}">
+                    <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
+                </c:if>
+                <c:set var="usernameError" value="${isUsernameEmpty || hasLoginFailed}"/>
+                <div class="form-group ${usernameError? 'form-group-error' : ''}">
+                    <label for="username">
                                 <span class="form-label">
-                                    <spring:message code="public.common.email.address.label" />
+                                    <spring:message code="public.common.email.address.label"/>
                                 </span>
-                            </label>
-                            <c:if test="${isUsernameEmpty}">
+                    </label>
+                    <c:if test="${isUsernameEmpty}">
                                 <span class="error-message">
-                                    <spring:message code="public.common.error.enter.username" />
+                                    <spring:message code="public.common.error.enter.username"/>
                                 </span>
-                            </c:if>
-                            <form:input class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${usernameError? ' form-control-error' : ''}"
-                                        path="username"
-                                        type="text"
-                                        id="username"
-                                        name="username"
-                                        value="${username}" autocomplete="off" />
-                        </div>
+                    </c:if>
+                    <form:input
+                        class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${usernameError? ' form-control-error' : ''}"
+                        path="username"
+                        type="text"
+                        id="username"
+                        name="username"
+                        value="${username}" autocomplete="off"/>
+                </div>
 
-                        <c:set var="passwordError" value="${isPasswordEmpty || hasLoginFailed}" />
-                        <div class="form-group ${passwordError? 'form-group-error' : ''}">
-                            <label for="password">
+                <c:set var="passwordError" value="${isPasswordEmpty || hasLoginFailed}"/>
+                <div class="form-group ${passwordError? 'form-group-error' : ''}">
+                    <label for="password">
                                 <span class="form-label">
-                                    <spring:message code="public.common.password.label" />
+                                    <spring:message code="public.common.password.label"/>
                                 </span>
-                            </label>
-                            <c:if test="${isPasswordEmpty}">
+                    </label>
+                    <c:if test="${isPasswordEmpty}">
                                 <span class="error-message">
-                                    <spring:message code="public.common.error.enter.password" />
+                                    <spring:message code="public.common.error.enter.password"/>
                                 </span>
-                            </c:if>
-                            <form:input class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${passwordError? ' form-control-error' : ''}" id="password" name="password" path="password" type="password" value="" autocomplete="off"/>
-                        </div>
+                    </c:if>
+                    <form:input
+                        class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${passwordError? ' form-control-error' : ''}"
+                        id="password" name="password" path="password" type="password" value="" autocomplete="off"/>
+                </div>
 
-                        <div class="form-group">
-                            <a href="${forgotPasswordUrl}">
-                                <spring:message code="public.login.forgotten.password" />
-                            </a>
-                        </div>
+                <div class="form-group">
+                    <a href="${forgotPasswordUrl}">
+                        <spring:message code="public.login.forgotten.password"/>
+                    </a>
+                </div>
 
 
-                        <input class="button" type="submit" name="save" value="<spring:message code="public.login.form.submit" />">
+                <input class="button" type="submit" name="save"
+                       value="<spring:message code="public.login.form.submit" />">
 
-                        <form:input path="redirect_uri" type="hidden"  id="redirect_uri" name="redirect_uri" />
-                        <form:input path="client_id" type="hidden" id="client_id" name="client_id" />
-                        <form:input path="state" type="hidden" id="state" name="state"/>
-                        <form:input path="response_type" type="hidden" id="response_type" name="response_type"/>
-                    </div>
-			<c:if test="${selfRegistrationEnabled}">
+                <form:input path="redirect_uri" type="hidden" id="redirect_uri" name="redirect_uri"/>
+                <form:input path="client_id" type="hidden" id="client_id" name="client_id"/>
+                <form:input path="state" type="hidden" id="state" name="state"/>
+                <form:input path="response_type" type="hidden" id="response_type" name="response_type"/>
+                <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled" name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
+            </div>
+            <c:if test="${selfRegistrationEnabled}">
                 </div>
                 <div class="column-one-half">
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
                     <p>
-                        <spring:message code="public.login.create.account.body" />
+                        <spring:message code="public.login.create.account.body"/>
                         <c:url value="/users/selfRegister" var="selfRegisterUrl">
-                            <c:param name="redirect_uri" value="${redirect_uri}" />
-                            <c:param name="client_id" value="${client_id}" />
-                            <c:param name="state" value="${state}" />
+                            <c:param name="redirect_uri" value="${redirect_uri}"/>
+                            <c:param name="client_id" value="${client_id}"/>
+                            <c:param name="state" value="${state}"/>
                         </c:url>
                         <a href="${selfRegisterUrl}">
-                            <spring:message code="public.common.create.account" />
+                            <spring:message code="public.common.create.account"/>
                         </a>
-                        <spring:message code="public.login.create.account.body.to.use.service" />
+                        <spring:message code="public.login.create.account.body.to.use.service"/>
                     </p>
                 </div>
-            </div>
-			</c:if>
+                </div>
+            </c:if>
         </form:form>
     </article>
 </t:wrapper>

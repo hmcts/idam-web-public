@@ -132,3 +132,8 @@ sonarqube {
             "**/*Exception.java"
     }
 }
+
+bootRun {
+  systemProperties = System.properties
+}
+
