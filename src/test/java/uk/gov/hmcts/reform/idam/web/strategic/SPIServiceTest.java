@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_UR
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_UPLIFT_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.API_LOGIN_UPLIFT_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.OAUTH2_AUTHORIZE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
@@ -120,7 +120,7 @@ public class SPIServiceTest {
         given(configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser()).willReturn(USERS_SELF_ENDPOINT);
         given(configurationProperties.getStrategic().getEndpoint().getResetPassword()).willReturn(RESET_PASSWORD_ENDPOINT);
         given(configurationProperties.getStrategic().getEndpoint().getForgotPassword()).willReturn(FORGOT_PASSWORD_SPI_ENDPOINT);
-        given(configurationProperties.getStrategic().getEndpoint().getUplift()).willReturn(LOGIN_UPLIFT_ENDPOINT);
+        given(configurationProperties.getStrategic().getEndpoint().getUplift()).willReturn(API_LOGIN_UPLIFT_ENDPOINT);
         given(configurationProperties.getStrategic().getEndpoint().getAuthorizeOauth2()).willReturn(OAUTH2_AUTHORIZE_ENDPOINT);
     }
 
@@ -347,7 +347,7 @@ public class SPIServiceTest {
     @Test
     public void uplift_shouldReturnApiLocationInHeaderInApiResponseIfResponseCodeIs302() throws Exception {
 
-        given(restTemplate.exchange(eq(API_URL + SLASH + LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
+        given(restTemplate.exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
 
         String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE);
 
@@ -361,13 +361,13 @@ public class SPIServiceTest {
      */
     @Test
     public void uplift_shouldCallApiWithTheCorrectDataAndReturnApiResponseBodyIfResponseCodeIs200() throws Exception {
-        given(restTemplate.exchange(eq(API_URL + SLASH + LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.ok(GOOGLE_WEB_ADDRESS));
+        given(restTemplate.exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.ok(GOOGLE_WEB_ADDRESS));
 
         String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE);
 
         assertThat(result, equalTo(GOOGLE_WEB_ADDRESS));
 
-        verify(restTemplate).exchange(eq(API_URL + SLASH + LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), captor.capture(), eq(String.class));
+        verify(restTemplate).exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), captor.capture(), eq(String.class));
 
         HttpEntity<MultiValueMap<String, String>> entity = (HttpEntity<MultiValueMap<String, String>>) captor.getValue();
 
@@ -388,13 +388,13 @@ public class SPIServiceTest {
      */
     @Test
     public void uplift_shouldReturnNullIfApiResponseCodeIsNot200Nor302() throws Exception {
-        given(restTemplate.exchange(eq(API_URL + SLASH + LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.status(HttpStatus.NOT_MODIFIED).build());
+        given(restTemplate.exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.status(HttpStatus.NOT_MODIFIED).build());
 
         String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE);
 
         assertThat(result, is(nullValue()));
 
-        verify(restTemplate).exchange(eq(API_URL + SLASH + LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class));
+        verify(restTemplate).exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class));
     }
 
     /**

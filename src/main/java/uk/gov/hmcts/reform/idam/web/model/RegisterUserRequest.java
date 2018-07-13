@@ -26,10 +26,10 @@ public class RegisterUserRequest {
     private String jwt;
 
     @NotEmpty
-    private String redirectUri;
+    private String redirect_uri;
 
     @NotEmpty
-    private String clientId;
+    private String client_id;
 
     private String state;
 }

@@ -31,9 +31,9 @@ public class MvcKeys {
     public static final String INDEX_VIEW = "index";
     public static final String LOGIN_VIEW = "login";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
-    public static final String REGISTER_VIEW = "register";
+    public static final String UPLIFT_LOGIN_VIEW = "upliftLogin";
     public static final String RESETPASSWORD_VIEW = "resetpassword";
-    public static final String UPLIFT_USER_VIEW = "upliftUser";
+    public static final String UPLIFT_REGISTER_VIEW = "upliftRegister";
     public static final String USERCREATED_VIEW = "usercreated";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
     public static final String SELF_REGISTER_VIEW = "selfRegister";
