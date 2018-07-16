@@ -117,6 +117,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1186,6 +1187,9 @@ public class AppControllerTest {
      */
     @Test
     public void authorize_shouldPutInModelCorrectDataIfUsernameOrPasswordAreEmpty() throws Exception {
+        Service service = new Service();
+        service.selfRegistrationAllowed(true);
+        given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.of(service));
         mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, BLANK)
             .param(PASSWORD_PARAMETER, BLANK)
@@ -1197,6 +1201,7 @@ public class AppControllerTest {
             .andExpect(model().attribute("isUsernameEmpty", true))
             .andExpect(model().attribute("isPasswordEmpty", true))
             .andExpect(model().attribute("hasErrors", true))
+            .andExpect(model().attribute(SELF_REGISTRATION_ENABLED, true))
             .andExpect(view().name(LOGIN_VIEW));
     }
 
@@ -1293,6 +1298,48 @@ public class AppControllerTest {
 
     }
 
+    /**
+     * @verifies set self-registration to false if disabled for the service
+     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     */
+    @Test
+    public void authorize_shouldSetSelfregistrationToFalseIfDisabledForTheService() throws Exception {
+        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+            .param(USERNAME_PARAMETER, BLANK)
+            .param(PASSWORD_PARAMETER, BLANK)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute("isUsernameEmpty", true))
+            .andExpect(model().attribute("isPasswordEmpty", true))
+            .andExpect(model().attribute("hasErrors", true))
+            .andExpect(model().attribute(SELF_REGISTRATION_ENABLED, false))
+            .andExpect(view().name(LOGIN_VIEW));
+    }
+
+    /**
+     * @verifies set self-registration to false if the clientId is invalid
+     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     */
+    @Test
+    public void authorize_shouldSetSelfregistrationToFalseIfTheClientIdIsInvalid() throws Exception {
+        given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.empty());
+        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+            .param(USERNAME_PARAMETER, BLANK)
+            .param(PASSWORD_PARAMETER, BLANK)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute("isUsernameEmpty", true))
+            .andExpect(model().attribute("isPasswordEmpty", true))
+            .andExpect(model().attribute("hasErrors", true))
+            .andExpect(model().attribute(SELF_REGISTRATION_ENABLED, false))
+            .andExpect(view().name(LOGIN_VIEW));
+    }
 
     /**
      * @verifies put in model correct error data and return loginWithPin view if pin is missing.
@@ -1405,6 +1452,5 @@ public class AppControllerTest {
         mockMvc.perform(get(TACTICAL_ACTIVATE_ENDPOINT))
             .andExpect(view().name(TACTICAL_ACTIVATE_VIEW));
     }
-
 
 }
