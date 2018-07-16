@@ -275,6 +275,8 @@ public class AppController {
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
+
         try {
             if (bindingResult.hasErrors()) {
                 if (StringUtils.isEmpty(request.getUsername())) {
