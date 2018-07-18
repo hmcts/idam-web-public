@@ -45,9 +45,10 @@
                             </h2>
                             <div class="text">
                                 <p>
-                                    <spring:message  code="public.login.error.locked.instruction"/>
-                                    <a href="${forgotPasswordUrl}"><spring:message  code="public.login.error.locked.instruction.reset.password"/></a>
-                                    <spring:message  code="public.login.error.locked.instruction.unlock.account"/>
+                                    <spring:message
+                                        code="public.login.error.locked.instruction"
+                                        arguments="${forgotPasswordUrl}"
+                                        htmlEscape="false"/>
                                 </p>
                             </div>
                         </c:when>
