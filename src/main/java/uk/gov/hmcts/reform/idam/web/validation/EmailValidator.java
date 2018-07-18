@@ -11,7 +11,7 @@ import javax.validation.ConstraintValidatorContext;
  */
 class EmailValidator implements ConstraintValidator<Email, String> {
 
-    private static final String AT_LEAST_ONE_ALLOWED_CHARACTER = "[^()&!%;*/@]+";
+    private static final String AT_LEAST_ONE_ALLOWED_CHARACTER = "[^()&!%;*/@\\s]+";
     private static final String EMAIL_REGEX =
         "^"
             + AT_LEAST_ONE_ALLOWED_CHARACTER
