@@ -7,7 +7,7 @@ locals {
   secure_actuator_endpoints = "${var.env == "idam-prod" || var.env == "idam-demo" ? true : false}"
 
   integration_env = "${var.env == "idam-preview" ? "idam-aat" : var.env}"
-  idam_api = "http://idam-api-${local.integration_env}.service.core-compute-${local.integration_env}.internal"
+  idam_api = "http://pr-54-idam-api-idam-preview.service.core-compute-idam-preview.internal"
 }
 
 module "idam-web-public" {
