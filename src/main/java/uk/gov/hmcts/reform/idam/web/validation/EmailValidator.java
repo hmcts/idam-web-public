@@ -11,7 +11,7 @@ import javax.validation.ConstraintValidatorContext;
  */
 class EmailValidator implements ConstraintValidator<Email, String> {
 
-    private static final String AT_LEAST_ONE_ALLOWED_CHARACTER = "[^()&!%;*/@]+";
+    private static final String AT_LEAST_ONE_ALLOWED_CHARACTER = "[^()&!%;*/@\\s]+";
     private static final String EMAIL_REGEX =
         "^"
             + AT_LEAST_ONE_ALLOWED_CHARACTER
@@ -32,6 +32,7 @@ class EmailValidator implements ConstraintValidator<Email, String> {
      * @should return false if the email address does not contain a dot
      * @should return false if the email address ends with a dot
      * @should return false if the email address does not match the pattern
+     * @should return false if the email address contains spaces
      */
     @Override public boolean isValid(String email, ConstraintValidatorContext context) {
         if (email == null) {
