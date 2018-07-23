@@ -21,4 +21,7 @@
             </p>
         </c:if>
     </article>
+    <script>
+        ga('send', 'event', 'Reset password success', 'Reset password was successful');
+    </script>
 </t:wrapper>
