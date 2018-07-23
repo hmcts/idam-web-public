@@ -17,6 +17,9 @@
               commandName="forgotPasswordCommand">
 
             <spring:hasBindErrors name="forgotPasswordCommand">
+                <script>
+                    ga('send', 'event', 'Forgot password page error', 'The forgot password page recorded an error');
+                </script>
                 <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
