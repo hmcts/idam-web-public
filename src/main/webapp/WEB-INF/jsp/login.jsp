@@ -43,7 +43,7 @@
                     <c:choose>
                         <c:when test="${isAccountLocked}">
                             <script>
-                                ga('send', 'event', 'Login failed - account locked', 'Login failed - user account is locked);
+                                ga('send', 'event', 'Login failed - account locked', 'Login failed - user account is locked');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.locked.title"/>
@@ -59,7 +59,7 @@
                         </c:when>
                         <c:when test="${isAccountSuspended}">
                             <script>
-                                ga('send', 'event', 'Login failed - account suspended', 'Login failed - user account is suspended);
+                                ga('send', 'event', 'Login failed - account suspended', 'Login failed - user account is suspended');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.suspended.title"/>
