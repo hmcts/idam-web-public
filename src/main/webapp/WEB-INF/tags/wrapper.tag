@@ -14,7 +14,7 @@
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    ga('create', '<spring:eval expression="@environment.getProperty(\'GA_TRACKER_ID\')" />', 'auto');
+    ga('create', '<spring:eval expression="@environment.getProperty(\'ga.tracker.id\')" />', 'auto');
 
     ga('send', 'pageview');
     </script>
