@@ -32,6 +32,6 @@ module "idam-web-public" {
 
     STRATEGIC_SERVICE_URL         = "${local.idam_api}"
 
-    GA_TRACKER_ID                 = "UA-DUMMY-X"
+    GA_TRACKER_ID                 = "${var.env == "idam-preview" ? "UA-DUMMY-XXX" : "UA-DUMMY-YYY"}"
   }
 }
