@@ -40,7 +40,8 @@
             </spring:hasBindErrors>
 
             <h1 class="heading-large"><spring:message code="public.self.register.heading.text"/></h1>
-
+                GA ID FROM ENV ==> <spring:eval expression="@environment.getProperty('ga.tracker.id')" />
+                GA ID FROM TF ==> <spring:eval expression="@environment.getProperty('GA_TRACKER_ID')" />
             <div class="grid-row">
                 <div class="column-one-half column--bordered">
                     <h2 class="heading-medium"><spring:message code="public.self.register.subheading.text"/></h2>
