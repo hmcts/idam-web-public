@@ -55,9 +55,15 @@
                         <c:if test="${status.error}">
                             <span class="error-message">
                                 <c:if test="${empty status.value}">
+                                    <script>
+                                        ga('send', 'event', 'Forgot password page error - empty field', 'The forgot password page form has an empty field');
+                                    </script>
                                     <spring:message code="public.common.error.enter.username" />
                                 </c:if>
                                 <c:if test="${not empty status.value}">
+                                    <script>
+                                        ga('send', 'event', 'Forgot password page error - validation', 'The forgot password page has an invalid email');
+                                    </script>
                                     <spring:message code="public.common.error.enter.valid.email" />
                                 </c:if>
                             </span>

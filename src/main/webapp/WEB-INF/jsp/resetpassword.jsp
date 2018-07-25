@@ -12,6 +12,9 @@
         <form:form name="resetpassword" class="form form-section" novalidate="" method="post" _lpchecked="1"
                  action="/doResetPassword">
             <c:if test="${hasError}">
+                <script>
+                    ga('send', 'event', 'Reset password page error', 'The reset password page recorded an error');
+                </script>
                 <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                         <spring:message code="public.common.error.password.heading" text=""/>

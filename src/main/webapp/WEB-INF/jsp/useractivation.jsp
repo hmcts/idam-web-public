@@ -11,6 +11,9 @@
         <c:set var="hasError" value="${error != null}" />
         <form:form name="useractivation" action="activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
             <c:if test="${hasError}">
+                <script>
+                    ga('send', 'event', 'Create password page error', 'The create password page recorded an error');
+                </script>
                 <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                         <spring:message code="public.common.error.password.heading" text="default"/>
