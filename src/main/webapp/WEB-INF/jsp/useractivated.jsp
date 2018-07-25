@@ -21,4 +21,7 @@
             </p>
         </c:if>
     </article>
+    <script>
+        ga('send', 'event', 'User activated', 'User has been activated');
+    </script>
 </t:wrapper>
