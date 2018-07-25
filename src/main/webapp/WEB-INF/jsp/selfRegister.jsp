@@ -49,6 +49,9 @@
                                 <label for="firstName">
                                     <span class="form-label-bold"><spring:message code="public.self.register.first.name.label"/></span>
                                     <c:if test="${status.error}">
+                                        <script>
+                                            ga('send', 'event', 'Self register - missing first name', 'Self register - first name is missing');
+                                        </script>
                                         <span class="error-message"><spring:message code="public.common.error.empty.first.name"/></span>
                                     </c:if>
                                 </label>
@@ -66,6 +69,9 @@
                                 <label for="lastName">
                                     <span class="form-label-bold"><spring:message code="public.self.register.last.name.label"/></span>
                                     <c:if test="${status.error}">
+                                        <script>
+                                            ga('send', 'event', 'Self register - missing last name', 'Self register - last name is missing');
+                                        </script>
                                         <span class="error-message"><spring:message code="public.common.error.empty.last.name" /></span>
                                     </c:if>
                                 </label>
@@ -82,9 +88,15 @@
                                 <label for="email">
                                     <span class="form-label-bold"><spring:message code="public.common.email.address.label"/></span>
                                     <c:if test="${status.error && not empty status.value}">
+                                        <script>
+                                            ga('send', 'event', 'Self register - invalid email address', 'Self register - email address is invalid');
+                                        </script>
                                         <span class="error-message"><spring:message code="public.common.error.invalid.email"/></span>
                                     </c:if>
                                     <c:if test="${status.error && empty status.value}">
+                                        <script>
+                                            ga('send', 'event', 'Self register - empty email address', 'Self register - email address is empty');
+                                        </script>
                                         <span class="error-message"><spring:message code="public.common.error.empty.email"/></span>
                                     </c:if>
                                 </label>
