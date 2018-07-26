@@ -21,4 +21,7 @@
             </p>
         </div>
     </article>
+    <script>
+        ga('send', 'event', 'Generic Error', 'Error', 'Generic error page loaded');
+    </script>
 </t:wrapper>
