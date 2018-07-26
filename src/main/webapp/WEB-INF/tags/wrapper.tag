@@ -18,7 +18,7 @@
 
     ga('send', 'pageview');
     </script>
-    <!-- End Google Analytics -->
+    <!-- End Google Analytics -->  
 
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title><spring:message code="${titleKey}"/> <spring:message code="public.common.title"/></title>
