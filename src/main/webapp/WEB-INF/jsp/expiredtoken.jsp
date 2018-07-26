@@ -20,6 +20,6 @@
         </c:if>
     </article>
     <script>
-        ga('send', 'event', 'Expired Token', 'Expired', 'User activation token has expired');
+        sendEvent('Expired Token', 'Expired', 'User activation token has expired');
     </script>
 </t:wrapper>

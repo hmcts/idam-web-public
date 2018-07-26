@@ -16,7 +16,7 @@
                 </h2>
                 <c:if test="${invalidPin}">
                   <script>
-                      ga('send', 'event', 'Login With Pin', 'Error', 'Invalid pin');
+                      sendEvent('Login With Pin', 'Error', 'Invalid pin');
                   </script>
                   <p>
                       <spring:message  code="public.login.with.pin.valid.security.code.description"/>
@@ -43,7 +43,7 @@
                     </span>
                     <c:if test="${hasError}">
                         <script>
-                            ga('send', 'event', 'Login With Pin', 'Error', 'Security code error');
+                            sendEvent('Login With Pin', 'Error', 'Security code error');
                         </script>
                         <span class="error-message">
                             <spring:message code="public.login.with.pin.form.security.code.error" />

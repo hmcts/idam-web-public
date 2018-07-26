@@ -25,7 +25,7 @@
                             <a href="#${error.field}">
                                 <c:if test="${error.field != 'username' or (error.field == 'username' && !isUsernameEmpty)}">
                                     <script>
-                                        ga('send', 'event', 'Uplift Registration', 'Error', 'An error occurred for uplift registration');
+                                        sendEvent('Uplift Registration', 'Error', 'An error occurred for uplift registration');
                                     </script>
                                     <spring:message message="${error}" />
                                 </c:if>
@@ -56,7 +56,7 @@
                             <span class="form-label-bold"><spring:message code="public.uplift.user.first.name.label" /></span>
                             <c:if test="${isFirstNameEmpty}">
                                 <script>
-                                    ga('send', 'event', 'Uplift Registration', 'Error', 'First name is empty');
+                                    sendEvent('Uplift Registration', 'Error', 'First name is empty');
                                 </script>
                                 <span class="error-message"><spring:message code="public.common.error.empty.first.name" /></span>
                             </c:if>
@@ -69,7 +69,7 @@
                             <span class="form-label-bold"><spring:message code="public.uplift.user.last.name.label" /></span>
                             <c:if test="${isLastNameEmpty}">
                                 <script>
-                                    ga('send', 'event', 'Uplift Registration', 'Error', 'Last name is empty');
+                                    sendEvent('Uplift Registration', 'Error', 'Last name is empty');
                                 </script>
                                 <span class="error-message"><spring:message code="public.common.error.empty.last.name" /></span>
                             </c:if>
@@ -84,13 +84,13 @@
                                 <span class="form-label-bold"><spring:message code="public.uplift.user.email.address.label" /></span>
                                 <c:if test="${isUsernameEmpty}">
                                     <script>
-                                        ga('send', 'event', 'Uplift Registration', 'Error', 'Email address is empty');
+                                        sendEvent('Uplift Registration', 'Error', 'Email address is empty');
                                     </script>
                                     <span class="error-message"><spring:message code="public.common.error.empty.email" /></span>
                                 </c:if>
                                 <c:if test="${!isUsernameEmpty && status.error}">
                                     <script>
-                                        ga('send', 'event', 'Uplift Registration', 'Error', 'Email address is invalid');
+                                        sendEvent('Uplift Registration', 'Error', 'Email address is invalid');
                                     </script>
                                     <span class="error-message"><spring:message code="public.common.error.invalid.email" /></span>
                                 </c:if>
