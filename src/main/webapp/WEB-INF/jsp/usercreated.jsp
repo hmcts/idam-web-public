@@ -49,6 +49,6 @@
         </div>
     </article>
     <script>
-        ga('send', 'event', 'User created', 'User has been created');
+        ga('send', 'event', 'User Created', 'Success', 'User has been created');
     </script>
 </t:wrapper>

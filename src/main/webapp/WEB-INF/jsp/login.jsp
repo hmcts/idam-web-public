@@ -34,7 +34,7 @@
 
             <spring:hasBindErrors name="authorizeCommand">
                 <script>
-                    ga('send', 'event', 'Authorization failed', 'User authorization has failed');
+                    ga('send', 'event', 'Authorization', 'Error', 'User authorization has failed');
                 </script>
                 <div class="error-summary" role="group"
                      aria-labelledby="validation-error-summary-heading"
@@ -43,7 +43,7 @@
                     <c:choose>
                         <c:when test="${isAccountLocked}">
                             <script>
-                                ga('send', 'event', 'Login failed - account locked', 'Login failed - user account is locked');
+                                ga('send', 'event', 'Authorization', 'Error', 'Account is locked');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.locked.title"/>
@@ -59,7 +59,7 @@
                         </c:when>
                         <c:when test="${isAccountSuspended}">
                             <script>
-                                ga('send', 'event', 'Login failed - account suspended', 'Login failed - user account is suspended');
+                                ga('send', 'event', 'Authorization', 'Error', 'Account is suspended');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.suspended.title"/>
@@ -72,7 +72,7 @@
                         </c:when>
                         <c:when test="${hasLoginFailed}">
                             <script>
-                                ga('send', 'event', 'Login failed', 'User login has failed');
+                                ga('send', 'event', 'Authorization', 'Error', 'User login has failed');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.failed.title"/>
@@ -80,7 +80,7 @@
                         </c:when>
                         <c:otherwise>
                             <script>
-                                ga('send', 'event', 'Login failed', 'User login has failed');
+                                ga('send', 'event', 'Authorization', 'Error', 'User login has failed');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.other.title"/>
@@ -91,13 +91,13 @@
                     <ul class="error-summary-list">
                         <c:if test="${isUsernameEmpty}">
                             <script>
-                                ga('send', 'event', 'Login failed - username is empty', 'User login has failed because the username field is empty');
+                                ga('send', 'event', 'Authorization', 'Error', 'Username is empty');
                             </script>
                             <li><a href="#username"><form:errors path="username"/></a></li>
                         </c:if>
                         <c:if test="${isPasswordEmpty}">
                             <script>
-                                ga('send', 'event', 'Login failed - password is empty', 'User login has failed because the password field is empty');
+                                ga('send', 'event', 'Authorization', 'Error', 'Password is empty');
                             </script>
                             <li><a href="#password"><form:errors path="password"/></a></li>
                         </c:if>

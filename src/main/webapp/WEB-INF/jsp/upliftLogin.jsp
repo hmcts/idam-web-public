@@ -11,7 +11,7 @@
         <c:set var="hasError" value="${error != null}" />
         <c:if test="${hasError}">
             <script>
-                ga('send', 'event', 'Uplift login error', 'Uplift login error');
+                ga('send', 'event', 'Uplift', 'Error', 'Login error occurred');
             </script>
             <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                 <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -38,7 +38,7 @@
                             <span class="form-label-bold"><spring:message code="public.common.email.address.label" /></span>
                             <c:if test="${hasError}">
                                 <script>
-                                    ga('send', 'event', 'Uplift login error - email address', 'An email address error occurred');
+                                    ga('send', 'event', 'Uplift', 'Error', 'Email address error occurred');
                                 </script>
                                 <span class="error-message"><spring:message code="public.common.error.enter.username" /></span>
                             </c:if>
@@ -51,7 +51,7 @@
                             <span class="form-label-bold"><spring:message code="public.common.password.label" /></span>
                             <c:if test="${hasError}">
                                 <script>
-                                    ga('send', 'event', 'Uplift login error - password', 'A password error occurred');
+                                    ga('send', 'event', 'Uplift', 'Error', 'Password error occurred');
                                 </script>
                                 <span class="error-message"><spring:message code="public.common.error.enter.password" /></span>
                             </c:if>

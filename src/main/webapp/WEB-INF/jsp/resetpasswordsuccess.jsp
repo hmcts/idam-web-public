@@ -22,6 +22,6 @@
         </c:if>
     </article>
     <script>
-        ga('send', 'event', 'Reset password success', 'The reset password email entry was successful');
+        ga('send', 'event', 'Reset Password', 'Success', 'Reset password email entry was successful');
     </script>
 </t:wrapper>
