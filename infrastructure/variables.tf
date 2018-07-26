@@ -29,3 +29,8 @@ variable "appinsights_instrumentation_key" {
 variable "common_tags" {
   type = "map"
 }
+
+variable "ga_tracking_id" {
+  description = "Google Analytics tracking ID"
+  default = ""
+}
