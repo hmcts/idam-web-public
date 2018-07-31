@@ -77,7 +77,7 @@
                     </c:url>
                     <a href="${loginUpliftUrl}">
                         <spring:message code="public.common.create.account" />
-                    </a>
+                     </a>
                     <spring:message code="public.login.create.account.body.to.use.service" />
                 </p>
             </div>
