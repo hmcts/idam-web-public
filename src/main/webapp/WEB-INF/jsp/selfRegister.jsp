@@ -102,9 +102,9 @@
                         <form:input type="hidden" path="state" value="${state}"/>
                         <p class="body-text">
                             <spring:message code="public.register.read.our" />
-                            <a href="https://hmcts-access.service.gov.uk/privacy-policy" target="_blank"><spring:message code="public.register.privacy.policy" /></a>
+                            <a href="https://hmcts-access.service.gov.uk/privacy-policy"><spring:message code="public.register.privacy.policy" /></a>
                             <spring:message code="public.register.and" />
-                            <a href="https://hmcts-access.service.gov.uk/terms-and-conditions" target="_blank"><spring:message code="public.register.term.conditions" /></a>
+                            <a href="https://hmcts-access.service.gov.uk/terms-and-conditions"><spring:message code="public.register.term.conditions" /></a>
                         </p>
                         <input class="button" type="submit" value="<spring:message code="public.self.register.submit.button"/>">
                     </div>

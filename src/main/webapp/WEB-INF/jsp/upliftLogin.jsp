@@ -8,8 +8,6 @@
 
 <t:wrapper titleKey="public.register.title">
     <article class="content__body">
-        <c:set var="redirectUri" value="${empty param['redirectUri'] ? param['redirect_uri'] : param['redirectUri']}" />
-        <c:set var="clientId" value="${empty param['clientId'] ? param['client_id'] : param['clientId']}" />
         <c:set var="hasError" value="${error != null}" />
         <c:if test="${hasError}">
             <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
@@ -29,9 +27,7 @@
                 <form:form name="upliftUser"
                       class="form form-section"
                       novalidate=""
-                      method="post"
-                      _lpchecked="1"
-                      action="/uplift">
+                      _lpchecked="1">
 
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
                     <div class="form-group ${hasError? 'form-group-error': ''}">
@@ -66,12 +62,7 @@
                     </div>
 
 
-                    <input class="button" type="submit" value="$<spring:message code="public.login.form.submit"/>">
-
-                    <input type="hidden" id="jwt" name="jwt" value="${fn:escapeXml(param['jwt'])}"/>
-                    <input type="hidden" id="redirectUri" name="redirectUri" value="${fn:escapeXml(redirectUri)}"/>
-                    <input type="hidden" id="clientId" name="clientId" value="${fn:escapeXml(clientId)}"/>
-                    <input type="hidden" id="state" name="state" value="${fn:escapeXml(param['state'])}"/>
+                    <input class="button" type="submit" value="<spring:message code="public.login.form.submit"/>">
                 </form:form>
             </div>
             <div class="column-one-half">
