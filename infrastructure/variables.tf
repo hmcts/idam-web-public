@@ -39,3 +39,8 @@ variable idam_api_url {
   description = "IdAM API URL"
   default = ""
 }
+
+variable "https_only" {
+  description = "Disable HTTP access to the web app (Azure triggers 301 to HTTPS)."
+  default = "true"
+}
