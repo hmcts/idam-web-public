@@ -31,5 +31,11 @@ variable "common_tags" {
 }
 
 variable ssl_verification_enabled {
+  description = "Control whether SSL verification of SSL certificates is enabled (disable only in environments without real certificates set for webapps)."
   default = true
+}
+
+variable idam_api_url {
+  description = "IdAM API URL"
+  default = ""
 }

@@ -28,7 +28,7 @@ module "idam-web-public" {
 
     SSL_VERIFICATION_ENABLED      = "${var.ssl_verification_enabled}"
 
-    STRATEGIC_SERVICE_URL         = "${local.idam_api}"
+    STRATEGIC_SERVICE_URL         = "${var.idam_api_url != "" ? var.idam_api_url : local.idam_api}"
 
   }
 }
