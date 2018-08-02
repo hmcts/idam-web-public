@@ -12,9 +12,7 @@
     "mocha-multi": "^1.0.1",
     "mochawesome": "^3.0.2",
     "nightmare": "^3.0.1",
+    "pa11y": "^5.0.4",
     "puppeteer": "^1.4.0"
-  },
-  "dependencies": {
-    "pa11y": "^5.0.4"
   }
 }
