@@ -29,3 +29,18 @@ variable "appinsights_instrumentation_key" {
 variable "common_tags" {
   type = "map"
 }
+
+variable ssl_verification_enabled {
+  description = "Control whether SSL verification of SSL certificates is enabled (disable only in environments without real certificates set for webapps)."
+  default = true
+}
+
+variable idam_api_url {
+  description = "IdAM API URL"
+  default = ""
+}
+
+variable "https_only" {
+  description = "Disable HTTP access to the web app (Azure triggers 301 to HTTPS)."
+  default = "true"
+}
