@@ -29,3 +29,7 @@ variable "appinsights_instrumentation_key" {
 variable "common_tags" {
   type = "map"
 }
+
+variable ssl_verification_enabled {
+  default = true
+}
