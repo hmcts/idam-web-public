@@ -7,6 +7,25 @@
 <!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
 <!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
+    <!-- Google Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '<spring:eval expression="@environment.getProperty(\'ga.tracking.id\')" />', 'auto');
+
+    ga('send', 'pageview');
+    </script>
+    <!-- End Google Analytics -->
+
+    <script>
+        function sendEvent(eventCategory, eventAction, eventLabel) {
+            ga('send', 'event', eventCategory, eventAction, eventLabel);
+        }
+    </script>
+
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title><spring:message code="${titleKey}"/> <spring:message code="public.common.title"/></title>
 

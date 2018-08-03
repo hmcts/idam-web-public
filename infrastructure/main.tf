@@ -31,5 +31,6 @@ module "idam-web-public" {
 
     STRATEGIC_SERVICE_URL         = "${var.idam_api_url != "" ? var.idam_api_url : local.idam_api}"
 
+    GA_TRACKING_ID                = "${var.ga_tracking_id}"
   }
 }

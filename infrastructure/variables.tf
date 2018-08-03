@@ -30,6 +30,11 @@ variable "common_tags" {
   type = "map"
 }
 
+variable "ga_tracking_id" {
+  description = "Google Analytics tracking ID"
+  default = ""
+}
+
 variable ssl_verification_enabled {
   description = "Control whether SSL verification of SSL certificates is enabled (disable only in environments without real certificates set for webapps)."
   default = true

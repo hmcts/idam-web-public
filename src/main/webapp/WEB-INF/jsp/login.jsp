@@ -33,13 +33,18 @@
             </c:url>
 
             <spring:hasBindErrors name="authorizeCommand">
-
+                <script>
+                    sendEvent('Authorization', 'Error', 'User authorization has failed');
+                </script>
                 <div class="error-summary" role="group"
                      aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
 
                     <c:choose>
                         <c:when test="${isAccountLocked}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'Account is locked');
+                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.locked.title"/>
                             </h2>
@@ -53,6 +58,9 @@
                             </div>
                         </c:when>
                         <c:when test="${isAccountSuspended}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'Account is suspended');
+                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.suspended.title"/>
                             </h2>
@@ -63,11 +71,17 @@
                             </div>
                         </c:when>
                         <c:when test="${hasLoginFailed}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'User login has failed');
+                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.failed.title"/>
                             </h2>
                         </c:when>
                         <c:otherwise>
+                            <script>
+                                sendEvent('Authorization', 'Error', 'User login has failed');
+                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.other.title"/>
                             </h2>
@@ -76,9 +90,15 @@
                     </c:choose>
                     <ul class="error-summary-list">
                         <c:if test="${isUsernameEmpty}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'Username is empty');
+                            </script>
                             <li><a href="#username"><form:errors path="username"/></a></li>
                         </c:if>
                         <c:if test="${isPasswordEmpty}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'Password is empty');
+                            </script>
                             <li><a href="#password"><form:errors path="password"/></a></li>
                         </c:if>
                         <c:if test="${hasLoginFailed}">

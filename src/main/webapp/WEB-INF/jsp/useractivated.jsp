@@ -21,4 +21,7 @@
             </p>
         </c:if>
     </article>
+    <script>
+        sendEvent('User Activation', 'Success',  'User has been activated');
+    </script>
 </t:wrapper>
