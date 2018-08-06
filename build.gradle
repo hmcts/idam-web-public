@@ -119,7 +119,7 @@ allprojects  {
 
   task pa11y(type: Exec, dependsOn: 'pa11yInstall') {
     workingDir '.'
-    commandLine './node_modules/.bin/pa11y', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
+    commandLine './node_modules/.bin/pa11y', '--debug', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
   }
 }
 
