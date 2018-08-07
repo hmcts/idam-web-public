@@ -25,3 +25,27 @@ variable "appinsights_instrumentation_key" {
   description = "Instrumentation key of the App Insights instance this webapp should use. Module will create own App Insights resource if this is not provided."
   default = ""
 }
+
+variable "common_tags" {
+  type = "map"
+}
+
+variable "ga_tracking_id" {
+  description = "Google Analytics tracking ID"
+  default = ""
+}
+
+variable ssl_verification_enabled {
+  description = "Control whether SSL verification of SSL certificates is enabled (disable only in environments without real certificates set for webapps)."
+  default = true
+}
+
+variable idam_api_url {
+  description = "IdAM API URL"
+  default = ""
+}
+
+variable "https_only" {
+  description = "Disable HTTP access to the web app (Azure triggers 301 to HTTPS)."
+  default = "true"
+}

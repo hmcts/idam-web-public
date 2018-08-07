@@ -66,6 +66,10 @@ validation:
     minLength: 8
     maxLength: 256
 
+logging:
+  level:
+    ROOT: INFO
+
 azure:
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}

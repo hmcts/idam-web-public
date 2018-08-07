@@ -19,4 +19,7 @@
             <p><a href="${fn:escapeXml(redirect_uri)}"><spring:message code="public.user.activation.expired.link.click.here" text=""/></a> <spring:message code="public.user.activation.expired.link.sing.into" text=""/></p>
         </c:if>
     </article>
+    <script>
+        sendEvent('Expired Token', 'Expired', 'User activation token has expired');
+    </script>
 </t:wrapper>

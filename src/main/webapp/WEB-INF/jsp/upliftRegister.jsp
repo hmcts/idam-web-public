@@ -8,8 +8,6 @@
 
 <t:wrapper titleKey="public.uplift.user.title">
     <article class="content__body">
-        <c:set var="redirectUri" value="${empty param['redirectUri'] ? param['redirect_uri'] : param['redirectUri']}" />
-        <c:set var="clientId" value="${empty param['clientId'] ? param['client_id'] : param['clientId']}" />
         <c:set var="hasError" value="${error != null}" />
         <c:set var="isFirstNameEmpty" value="${param['firstName'] == ''}" />
         <c:set var="isLastNameEmpty" value="${param['lastName'] == ''}" />
@@ -26,6 +24,9 @@
                         <li>
                             <a href="#${error.field}">
                                 <c:if test="${error.field != 'username' or (error.field == 'username' && !isUsernameEmpty)}">
+                                    <script>
+                                        sendEvent('Uplift Registration', 'Error', 'An error occurred for uplift registration');
+                                    </script>
                                     <spring:message message="${error}" />
                                 </c:if>
                                 <c:if test="${error.field == 'username' && isUsernameEmpty}">
@@ -46,9 +47,7 @@
                     commandName="registerUserCommand"
                     class="form form-section"
                     novalidate="true"
-                    method="post"
-                    _lpchecked="1"
-                    action="/registerUser">
+                    _lpchecked="1">
 
                     <h2 class="heading-medium"><spring:message code="public.uplift.user.body" /></h2>
 
@@ -56,6 +55,9 @@
                         <label for="firstName">
                             <span class="form-label-bold"><spring:message code="public.uplift.user.first.name.label" /></span>
                             <c:if test="${isFirstNameEmpty}">
+                                <script>
+                                    sendEvent('Uplift Registration', 'Error', 'First name is empty');
+                                </script>
                                 <span class="error-message"><spring:message code="public.common.error.empty.first.name" /></span>
                             </c:if>
                         </label>
@@ -66,6 +68,9 @@
                         <label for="lastName">
                             <span class="form-label-bold"><spring:message code="public.uplift.user.last.name.label" /></span>
                             <c:if test="${isLastNameEmpty}">
+                                <script>
+                                    sendEvent('Uplift Registration', 'Error', 'Last name is empty');
+                                </script>
                                 <span class="error-message"><spring:message code="public.common.error.empty.last.name" /></span>
                             </c:if>
                         </label>
@@ -78,9 +83,15 @@
                             <label for="username">
                                 <span class="form-label-bold"><spring:message code="public.uplift.user.email.address.label" /></span>
                                 <c:if test="${isUsernameEmpty}">
+                                    <script>
+                                        sendEvent('Uplift Registration', 'Error', 'Email address is empty');
+                                    </script>
                                     <span class="error-message"><spring:message code="public.common.error.empty.email" /></span>
                                 </c:if>
                                 <c:if test="${!isUsernameEmpty && status.error}">
+                                    <script>
+                                        sendEvent('Uplift Registration', 'Error', 'Email address is invalid');
+                                    </script>
                                     <span class="error-message"><spring:message code="public.common.error.invalid.email" /></span>
                                 </c:if>
                             </label>
@@ -96,11 +107,6 @@
                     </p>
 
                     <input class="button" type="submit" value="<spring:message code="public.uplift.user.submit.button" />">
-
-                    <input type="hidden" id="jwt" name="jwt" value="${fn:escapeXml(param['jwt'])}"/>
-                    <input type="hidden" id="redirectUri" name="redirectUri" value="${fn:escapeXml(redirectUri)}"/>
-                    <input type="hidden" id="clientId" name="clientId" value="${fn:escapeXml(clientId)}"/>
-                    <input type="hidden" id="state" name="state" value="${fn:escapeXml(param['state'])}"/>
                 </form:form>
             </div>
             <div class="column-one-half">

@@ -17,6 +17,9 @@
               commandName="forgotPasswordCommand">
 
             <spring:hasBindErrors name="forgotPasswordCommand">
+                <script>
+                    sendEvent('Forgot Password', 'Error', 'Forgot password error occurred');
+                </script>
                 <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -52,9 +55,15 @@
                         <c:if test="${status.error}">
                             <span class="error-message">
                                 <c:if test="${empty status.value}">
+                                    <script>
+                                        sendEvent('Forgot Password', 'Error', 'Empty email');
+                                    </script>
                                     <spring:message code="public.common.error.enter.username" />
                                 </c:if>
                                 <c:if test="${not empty status.value}">
+                                    <script>
+                                        sendEvent('Forgot Password', 'Error', 'Invalid email');
+                                    </script>
                                     <spring:message code="public.common.error.enter.valid.email" />
                                 </c:if>
                             </span>
