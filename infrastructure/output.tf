@@ -1,3 +1,3 @@
 output "idamApi" {
-  value = "${local.idam_api}"
+  value = "${local.idam_api_internal}"
 }
