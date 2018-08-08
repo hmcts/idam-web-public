@@ -7,6 +7,8 @@ locals {
   secure_actuator_endpoints = "${var.env == "idam-prod" || var.env == "idam-demo" ? true : false}"
 
   idam_api = "https://idam-api.${replace(var.env, "idam-", "")}.platform.hmcts.net"
+  idam_api_internal = "${var.idam_api_url != "" ? var.idam_api_url : local.idam_api}"
+
 }
 
 module "idam-web-public" {
@@ -29,7 +31,7 @@ module "idam-web-public" {
 
     SSL_VERIFICATION_ENABLED      = "${var.ssl_verification_enabled}"
 
-    STRATEGIC_SERVICE_URL         = "${var.idam_api_url != "" ? var.idam_api_url : local.idam_api}"
+    STRATEGIC_SERVICE_URL         = "${local.idam_api_internal}"
 
     GA_TRACKING_ID                = "${var.ga_tracking_id}"
   }
