@@ -54,3 +54,7 @@ variable "https_only" {
   description = "Disable HTTP access to the web app (Azure triggers 301 to HTTPS)."
   default = "true"
 }
+
+variable "external_host_name_override" {
+  description = "Non-default custom domain name for the webapp"
+}
