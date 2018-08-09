@@ -140,12 +140,21 @@ jacocoTestReport {
     html.enabled = true
     html.destination = file("${buildDir}/reports/jacoco")
   }
+
   additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
   sourceDirectories = files(sourceSets.main.allSource.srcDirs)
   classDirectories = files(sourceSets.main.output)
-  classDirectories = files(classDirectories.files.collect {
-    fileTree(dir: it)
-  })
+  println 'class directories: ' + classDirectories.asPath
+  afterEvaluate {
+    classDirectories = files(classDirectories.files.collect {
+      fileTree(dir: it,
+        exclude: ['**/uk/gov/hmcts/reform/idam/web/config/properties/*',
+                  '**/uk/gov/hmcts/reform/idam/web/model/*',
+                  '**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys**',
+                  '**/uk/gov/hmcts/reform/idam/web/Application**',
+                  '**/*Exception**'])
+    })
+  }
 }
 
 test.finalizedBy jacocoTestReport
