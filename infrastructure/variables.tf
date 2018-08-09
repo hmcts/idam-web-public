@@ -57,4 +57,5 @@ variable "https_only" {
 
 variable "external_host_name_override" {
   description = "Non-default custom domain name for the webapp"
+  default = ""
 }
