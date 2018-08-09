@@ -48,7 +48,8 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
             SSLContext sslContext = SSLContexts.custom()
                 .loadTrustMaterial(null, acceptingTrustStrategy)
                 .build();
-            HostnameVerifier allowAllHostnameVerifier = (hostName, session) -> true;
+            // ignore Sonar's weak hostname verifier as we are deliberately disabling SSL verification
+            HostnameVerifier allowAllHostnameVerifier = (hostName, session) -> true; // NOSONAR
 
             SSLConnectionSocketFactory allowAllSslSocketFactory = new SSLConnectionSocketFactory(
                 sslContext,

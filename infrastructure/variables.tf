@@ -40,12 +40,22 @@ variable ssl_verification_enabled {
   default = true
 }
 
-variable idam_api_url {
+variable idam_api_url_override {
   description = "IdAM API URL"
+  default = ""
+}
+
+variable idam_api_testing_support_url_override {
+  description = "IdAM API URL for testing support calls"
   default = ""
 }
 
 variable "https_only" {
   description = "Disable HTTP access to the web app (Azure triggers 301 to HTTPS)."
   default = "true"
+}
+
+variable "external_host_name_override" {
+  description = "Non-default custom domain name for the webapp"
+  default = ""
 }
