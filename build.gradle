@@ -92,7 +92,7 @@ allprojects  {
     description = 'Executes non-destructive smoke tests against a running instance'
   }
 
-  task functional(dependsOn: ':codeceptFunctional') {
+  task functional(dependsOn: [':codeceptFunctional', ':pa11y']) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests against a running instance'
   }
@@ -100,6 +100,11 @@ allprojects  {
   task yarnInstall(type: Exec) {
     workingDir '.'
     commandLine 'yarn', 'install'
+  }
+
+  task pa11yInstall(type: Exec) {
+    workingDir '.'
+    commandLine 'npm', 'install', 'pa11y'
   }
 
   task codeceptSmoke(type: Exec, dependsOn: ':yarnInstall') {
@@ -110,6 +115,11 @@ allprojects  {
   task codeceptFunctional(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
+  }
+
+  task pa11y(type: Exec, dependsOn: 'pa11yInstall') {
+    workingDir '.'
+    commandLine './node_modules/.bin/pa11y', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
   }
 }
 
