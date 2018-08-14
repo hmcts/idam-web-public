@@ -14,4 +14,15 @@ env.DEMO_ENVIRONMENT_NAME    = 'idam-demo'
 env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
 
 withPipeline(type, product, component) {
+
+    after('test') {
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/jacoco",
+            reportFiles          : "index.html",
+            reportName           : "IdAM Web Public Code Coverage Report"
+        ]
+    }
 }
