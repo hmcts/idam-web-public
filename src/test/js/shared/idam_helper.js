@@ -25,17 +25,17 @@ class IdamHelper extends Helper {
     deleteService(service) {
 
         // for localhost
-        return fetch(`${TestData.IDAM_API}/testing-support/services/${service}`, { method: 'DELETE' });
+        //return fetch(`${TestData.IDAM_API}/testing-support/services/${service}`, { method: 'DELETE' });
 
-        //return fetch(`${api}/testing-support/services/${service}`, { agent: agent, method: 'DELETE' });
+        return fetch(`${api}/testing-support/services/${service}`, { agent: agent, method: 'DELETE' });
     }
 
     deleteRole(role) {
 
         // for localhost
-        return fetch(`${TestData.IDAM_API}/testing-support/roles/${role}`, { method: 'DELETE' });
+        //return fetch(`${TestData.IDAM_API}/testing-support/roles/${role}`, { method: 'DELETE' });
 
-        //return fetch(`${api}/testing-support/roles/${role}`, { agent: agent, method: 'DELETE' });
+        return fetch(`${api}/testing-support/roles/${role}`, { agent: agent, method: 'DELETE' });
     }
 
     createService(serviceName, token) {
@@ -53,7 +53,7 @@ class IdamHelper extends Helper {
 
         return fetch(`${TestData.IDAM_API}/services`, {
             //Comment in localhost
-            //agent: agent,
+            agent: agent,
             method: 'POST',
             body: JSON.stringify(data),
             headers: { 'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token },
@@ -70,7 +70,7 @@ class IdamHelper extends Helper {
 
         return   fetch(`${api}/loginUser?username=${TestData.SMOKE_TEST_USER_USERNAME}&password=${TestData.SMOKE_TEST_USER_PASSWORD}`, {
             //Comment in localhost
-            //agent: agent,
+            agent: agent,
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         }).then(function(response) {
