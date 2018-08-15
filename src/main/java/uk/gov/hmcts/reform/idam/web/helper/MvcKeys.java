@@ -14,6 +14,7 @@ public class MvcKeys {
     public static final String HAS_LOGIN_FAILED = "hasLoginFailed";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
+    public static final String JWT = "jwt";
     public static final String PASSWORD = "password";
     public static final String REDIRECTURI = "redirectUri";
     public static final String REDIRECT_URI = "redirect_uri";
