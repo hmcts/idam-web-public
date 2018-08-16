@@ -84,7 +84,9 @@
                         <c:param name="state" value="${param['state']}" />
                         <c:param name="jwt" value="${param['jwt']}" />
                     </c:url>
-                    <a href="${loginUpliftUrl}" />
+                    <a href="${loginUpliftUrl}">
+                        <spring:message code="public.common.create.account" />
+                    </a>
                     <spring:message code="public.login.create.account.body.to.use.service" />
                 </p>
             </div>
