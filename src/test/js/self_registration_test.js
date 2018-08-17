@@ -1,12 +1,9 @@
-var TestData = require('./config/test_data');
 var serviceName = 'TEST_SERVICE_' + Date.now();
 
 Feature('Self Registration');
 
 BeforeSuite(async(I) => {
     return await I.createServiceData(serviceName);
-I.clearCookie();
-
 })
 ;
 
@@ -40,7 +37,6 @@ Scenario('@functional Self Register User Validation errors', (I) => {
     I.see('Sign in to your account.');
     I.click('Sign in to your account.');
     I.see('Sign in');
-
 
 })
 ;
