@@ -1,7 +1,7 @@
 locals {
   preview_vault_name = "idam-idam-preview"
   non_preview_vault_name = "${var.product}-${var.env}"
-  vault_name = "${var.env == "idam-preview" ? local.preview_vault_name : local.non_preview_vault_name}"
+  vault_name = "idam-idam-preview"
 
   vault_uri = "https://${local.vault_name}.vault.azure.net/"
   secure_actuator_endpoints = "${var.env == "idam-prod" || var.env == "idam-demo" ? true : false}"
