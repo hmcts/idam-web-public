@@ -1,6 +1,6 @@
 locals {
   preview_vault_name = "idam-idam-preview"
-  non_preview_vault_name = "${var.product}-${var.env}"
+  non_preview_vault_name = "idam-idam-preview"
   vault_name = "idam-idam-preview"
 
   vault_uri = "https://${local.vault_name}.vault.azure.net/"
