@@ -24,18 +24,17 @@ class IdamHelper extends Helper {
 
     deleteService(service) {
 
-        // for localhost
-        //return fetch(`${TestData.IDAM_API}/testing-support/services/${service}`, { method: 'DELETE' });
-
-        return fetch(`${TestData.IDAM_API}/testing-support/services/${service}`, { agent: agent, method: 'DELETE' });
+        return fetch(`${TestData.IDAM_API}/testing-support/services/${service}`, {
+            agent: agent,
+            method: 'DELETE'
+        });
     }
 
     deleteRole(role) {
-
-        // for localhost
-        //return fetch(`${TestData.IDAM_API}/testing-support/roles/${role}`, { method: 'DELETE' });
-
-        return fetch(`${TestData.IDAM_API}/testing-support/roles/${role}`, { agent: agent, method: 'DELETE' });
+        return fetch(`${TestData.IDAM_API}/testing-support/roles/${role}`, {
+            agent: agent,
+            method: 'DELETE'
+        });
     }
 
     createService(serviceName, token) {

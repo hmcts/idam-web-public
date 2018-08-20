@@ -1,3 +1,4 @@
+var TestData = require('./config/test_data');
 var serviceName = 'TEST_SERVICE_' + Date.now();
 
 Feature('Self Registration');
@@ -13,8 +14,10 @@ AfterSuite(async(I) => {
 ;
 
 Scenario('@functional Self Register User Validation errors', (I) => {
+    let url = TestData.WEB_PUBLIC_URL;
 
-    I.amOnPage('/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
+    I.amOnPage(url + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
+
     I.waitForText('Create an account or sign in', 20, 'h1');
     I.see('Create an account');
 
