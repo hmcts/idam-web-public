@@ -65,7 +65,6 @@ class IdamHelper extends Helper {
 
     getAuthToken(){
         const api = TestData.IDAM_API;
-        console.log("Api", api);
 
         return   fetch(`${api}/loginUser?username=${TestData.SMOKE_TEST_USER_USERNAME}&password=${TestData.SMOKE_TEST_USER_PASSWORD}`, {
             //Comment in localhost
