@@ -26,7 +26,7 @@ Scenario('@functional Self Register User Validation errors', (I) => {
     I.see('Information is missing or invalid');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
-    I.see('You have not entered your email address')
+    I.see('You have not entered your email address');
     I.fillField('firstName', 'Lucy');
     I.click('Continue');
     I.see('You have not entered your last name');
