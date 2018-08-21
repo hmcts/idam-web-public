@@ -4,7 +4,7 @@
   "repository": "git@github.com:hmcts/idam-web-public.git",
   "license": "MIT",
   "engines": {
-    "node": ">=8.9.4 <=10.4.0"
+    "node": ">=8.9.4"
   },
   "devDependencies": {
     "codeceptjs": "^1.2.0",
@@ -14,5 +14,8 @@
     "nightmare": "^3.0.1",
     "pa11y": "^4.13.2",
     "puppeteer": "^1.4.0"
+  },
+  "dependencies": {
+    "proxy-agent": "^3.0.1"
   }
 }
