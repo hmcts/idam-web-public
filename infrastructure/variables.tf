@@ -18,7 +18,7 @@ variable "app" {
 }
 
 variable "capacity" {
-  default = "1"
+  default = "2"
 }
 
 variable "appinsights_instrumentation_key" {
