@@ -78,6 +78,28 @@ class IdamHelper extends Helper {
         });
     }
 
+    createUser(email, forename, role, serviceRole) {
+        console.log('Email', email);
+        const data = {
+            email: email,
+            forename: forename,
+            password: 'Passw0rdIDAM',
+            roles : [{code : role}, {code : serviceRole}],
+            surname: 'User',
+            userGroup:{ code : 'cmc_private_beta'},
+        };
+        return fetch(`${TestData.IDAM_API}/testing-support/accounts`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'application/json' },
+        }).then(res => res.json())
+            .then((json) => {
+                return json;
+            })
+            .catch(err => err);
+    }
+
 }
 
 module.exports = IdamHelper;
