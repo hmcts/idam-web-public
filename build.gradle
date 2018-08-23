@@ -154,15 +154,14 @@ sonarqube {
 }
 
 pitest {
-  verbose = true
-  targetClasses = ['**uk.gov.hmcts.reform.idam.*']
-  threads = 16
+  targetClasses = ['uk.gov.hmcts.reform.idam.*']
+  threads = 10
   enableDefaultIncrementalAnalysis = true
   historyInputLocation = ['build/reports/pitest/fastermutationtesting']
   historyOutputLocation = ['build/reports/pitest/fastermutationtestingoutput']
   outputFormats = ['XML', 'HTML']
   timestampedReports = true
-  mutationThreshold = 90
+  mutationThreshold = 80
 }
 
 jacocoTestReport {
