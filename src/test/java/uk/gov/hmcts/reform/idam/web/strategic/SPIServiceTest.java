@@ -59,6 +59,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_RESET_PASSWORD_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_API_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HEALTH_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getFoundResponseEntity;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterRequest;
@@ -631,5 +632,19 @@ public class SPIServiceTest {
         Optional<Service> response = spiService.getServiceByClientId(SERVICE_CLIENT_ID);
 
         assertThat(response.isPresent(), is(false));
+    }
+
+    /**
+     * @verifies call api health check
+     * @see SPIService#healthCheck()
+     */
+    @Test
+    public void healthCheck_shouldCallApiHealthCheck() throws Exception {
+        given(configurationProperties.getStrategic().getEndpoint().getHealth()).willReturn(HEALTH_ENDPOINT);
+        given(restTemplate.getForEntity(API_URL + SLASH + HEALTH_ENDPOINT, String.class)).willReturn(ResponseEntity.ok("{\"status\": \"UP\"}"));
+
+        ResponseEntity<String> response = spiService.healthCheck();
+
+        assertThat(response.getBody(), equalTo("{\"status\": \"UP\"}"));
     }
 }
