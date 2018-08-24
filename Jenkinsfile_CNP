@@ -39,4 +39,15 @@ withPipeline(type, product, component) {
             reportName           : "IdAM Web Public Code Coverage Report"
         ]
     }
+
+    after('functional') {
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/test-results/codeceptjs",
+            reportFiles          : "idam-web-public-integration-result.xml",
+            reportName           : "IdAM Web Public Code Coverage Report"
+        ]
+    }
 }
