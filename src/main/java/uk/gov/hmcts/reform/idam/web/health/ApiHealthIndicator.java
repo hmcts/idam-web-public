@@ -24,11 +24,7 @@ public class ApiHealthIndicator implements HealthIndicator {
     @Autowired
     private ObjectMapper mapper;
 
-    public static final int ERROR_CODE_OK = 0;
-
     public static final int ERROR_CODE_DOWN = 1;
-
-    public static final int ERROR_CODE_EXCEPTION = 2;
 
     /**
      * @should Return UP if response is 200 and contains status value of UP
@@ -39,14 +35,10 @@ public class ApiHealthIndicator implements HealthIndicator {
      */
     @Override
     public Health health() {
-        int errorCode = checkApiStatus();
-        if (errorCode != ERROR_CODE_OK) {
-            return Health.down().withDetail("Error Code", errorCode).build();
-        }
-        return Health.up().build();
+        return checkApiStatus();
     }
 
-    private int checkApiStatus() {
+    private Health checkApiStatus() {
         try {
             final ResponseEntity<String> response = spiService.healthCheck();
             final HttpStatus responseCode = response.getStatusCode();
@@ -54,14 +46,13 @@ public class ApiHealthIndicator implements HealthIndicator {
                 final ObjectNode responseJson = mapper.readValue(response.getBody(), ObjectNode.class);
                 final JsonNode apiStatus = responseJson.get("status");
                 if (Status.UP.getCode().equals(apiStatus.asText())) {
-                    return ERROR_CODE_OK;
+                    return Health.up().build();
                 }
             }
-            return ERROR_CODE_DOWN;
+            return Health.down().withDetail("Error Code", ERROR_CODE_DOWN).build();
 
         } catch (RestClientException | IOException e) {
-            return ERROR_CODE_EXCEPTION;
+            return Health.down(e).build();
         }
     }
-
 }

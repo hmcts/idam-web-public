@@ -19,7 +19,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.idam.web.health.ApiHealthIndicator.ERROR_CODE_DOWN;
-import static uk.gov.hmcts.reform.idam.web.health.ApiHealthIndicator.ERROR_CODE_EXCEPTION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApiHealthIndicatorTest {
@@ -98,7 +97,6 @@ public class ApiHealthIndicatorTest {
         Health health = apiHealthIndicator.health();
 
         assertThat(health.getStatus().toString(), equalTo("DOWN"));
-        assertThat(health.getDetails().get("Error Code").toString(), equalTo(Integer.toString(ERROR_CODE_EXCEPTION)));
-
+        assertThat(health.getDetails().get("error").toString(), equalTo("org.springframework.web.client.RestClientException: SomeException"));
     }
 }
