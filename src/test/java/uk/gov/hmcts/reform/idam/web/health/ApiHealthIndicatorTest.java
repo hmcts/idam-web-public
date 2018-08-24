@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -72,6 +73,7 @@ public class ApiHealthIndicatorTest {
 
         assertThat(health.getStatus().toString(), equalTo("DOWN"));
         assertThat(health.getDetails().get("Error Code").toString(), equalTo(Integer.toString(ERROR_CODE_DOWN)));
+        assertThat(health.getDetails().get("Http Status").toString(), equalTo(HttpStatus.OK.toString()));
     }
 
     /**
@@ -85,6 +87,7 @@ public class ApiHealthIndicatorTest {
 
         assertThat(health.getStatus().toString(), equalTo("DOWN"));
         assertThat(health.getDetails().get("Error Code").toString(), equalTo(Integer.toString(ERROR_CODE_DOWN)));
+        assertThat(health.getDetails().get("Http Status").toString(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR.toString()));
     }
 
     /**

@@ -49,7 +49,10 @@ public class ApiHealthIndicator implements HealthIndicator {
                     return Health.up().build();
                 }
             }
-            return Health.down().withDetail("Error Code", ERROR_CODE_DOWN).build();
+            return Health.down()
+                .withDetail("Http Status", responseCode)
+                .withDetail("Error Code", ERROR_CODE_DOWN)
+                .build();
 
         } catch (RestClientException | IOException e) {
             return Health.down(e).build();
