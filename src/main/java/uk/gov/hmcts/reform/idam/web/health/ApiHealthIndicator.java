@@ -24,8 +24,6 @@ public class ApiHealthIndicator implements HealthIndicator {
     @Autowired
     private ObjectMapper mapper;
 
-    public static final int ERROR_CODE_DOWN = 1;
-
     /**
      * @should Return UP if response is 200 and contains status value of UP
      * @should Return DOWN if response is 200 but contains status value of DOWN
@@ -45,13 +43,18 @@ public class ApiHealthIndicator implements HealthIndicator {
             if (HttpStatus.OK.equals(responseCode)) {
                 final ObjectNode responseJson = mapper.readValue(response.getBody(), ObjectNode.class);
                 final JsonNode apiStatus = responseJson.get("status");
+
                 if (Status.UP.getCode().equals(apiStatus.asText())) {
                     return Health.up().build();
+                } else if (Status.DOWN.getCode().equals(apiStatus.asText())) {
+                    return Health.down()
+                        .withDetail("Error", "The API server status is DOWN")
+                        .build();
                 }
             }
+
             return Health.down()
                 .withDetail("Http Status", responseCode)
-                .withDetail("Error Code", ERROR_CODE_DOWN)
                 .build();
 
         } catch (RestClientException | IOException e) {

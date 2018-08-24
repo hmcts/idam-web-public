@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.idam.web.health.ApiHealthIndicator.ERROR_CODE_DOWN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApiHealthIndicatorTest {
@@ -72,8 +71,7 @@ public class ApiHealthIndicatorTest {
         Health health = apiHealthIndicator.health();
 
         assertThat(health.getStatus().toString(), equalTo("DOWN"));
-        assertThat(health.getDetails().get("Error Code").toString(), equalTo(Integer.toString(ERROR_CODE_DOWN)));
-        assertThat(health.getDetails().get("Http Status").toString(), equalTo(HttpStatus.OK.toString()));
+        assertThat(health.getDetails().get("Error").toString(), equalTo("The API server status is DOWN"));
     }
 
     /**
@@ -86,7 +84,6 @@ public class ApiHealthIndicatorTest {
         Health health = apiHealthIndicator.health();
 
         assertThat(health.getStatus().toString(), equalTo("DOWN"));
-        assertThat(health.getDetails().get("Error Code").toString(), equalTo(Integer.toString(ERROR_CODE_DOWN)));
         assertThat(health.getDetails().get("Http Status").toString(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR.toString()));
     }
 
