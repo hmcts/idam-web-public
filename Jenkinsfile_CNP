@@ -30,12 +30,6 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     after('test') {
-        try {
-            sh './gradlew pitest'
-        } finally {
-            steps.archiveArtifacts "build/reports/pitest/**/*.*"
-        }
-
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
