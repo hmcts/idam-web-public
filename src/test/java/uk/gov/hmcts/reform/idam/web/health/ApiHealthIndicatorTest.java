@@ -37,15 +37,18 @@ public class ApiHealthIndicatorTest {
 
     final ResponseEntity<String> upResponse = ResponseEntity.ok("{\"status\": \"UP\"}");
     final ResponseEntity<String> downResponse = ResponseEntity.ok("{\"status\": \"DOWN\"}");
+    final ResponseEntity<String> noStatusResponse = ResponseEntity.ok("{\"random\": \"value\"}");
 
     @Before
     public void setUp() throws Exception {
         final ObjectMapper objMapper = new ObjectMapper();
         final ObjectNode upResponseJson = objMapper.readValue(upResponse.getBody(), ObjectNode.class);
         final ObjectNode downResponseJson = objMapper.readValue(downResponse.getBody(), ObjectNode.class);
+        final ObjectNode emptyStatusResponseJson = objMapper.readValue(noStatusResponse.getBody(), ObjectNode.class);
 
         given(mapper.readValue(upResponse.getBody(), ObjectNode.class)).willReturn(upResponseJson);
         given(mapper.readValue(downResponse.getBody(), ObjectNode.class)).willReturn(downResponseJson);
+        given(mapper.readValue(noStatusResponse.getBody(), ObjectNode.class)).willReturn(emptyStatusResponseJson);
     }
 
     /**
@@ -98,5 +101,18 @@ public class ApiHealthIndicatorTest {
 
         assertThat(health.getStatus().toString(), equalTo("DOWN"));
         assertThat(health.getDetails().get("error").toString(), equalTo("org.springframework.web.client.RestClientException: SomeException"));
+    }
+
+    /**
+     * @verifies Return DOWN if can't determine API server status
+     * @see ApiHealthIndicator#health()
+     */
+    @Test
+    public void health_shouldReturnDOWNIfCantDetermineAPIServerStatus() throws Exception {
+        given(spiService.healthCheck()).willReturn(noStatusResponse);
+        Health health = apiHealthIndicator.health();
+
+        assertThat(health.getStatus().toString(), equalTo("DOWN"));
+        assertThat(health.getDetails().get("Error").toString(), equalTo("Couldn't determine the API server status"));
     }
 }

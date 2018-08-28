@@ -29,6 +29,7 @@ public class ApiHealthIndicator implements HealthIndicator {
      * @should Return DOWN if response is 200 but contains status value of DOWN
      * @should Return DOWN if response is not 200
      * @should Return DOWN if exception thrown
+     * @should Return DOWN if can't determine API server status
      *
      */
     @Override
@@ -43,12 +44,17 @@ public class ApiHealthIndicator implements HealthIndicator {
             if (HttpStatus.OK.equals(responseCode)) {
                 final ObjectNode responseJson = mapper.readValue(response.getBody(), ObjectNode.class);
                 final JsonNode apiStatus = responseJson.get("status");
-
-                if (Status.UP.getCode().equals(apiStatus.asText())) {
-                    return Health.up().build();
-                } else if (Status.DOWN.getCode().equals(apiStatus.asText())) {
+                if (apiStatus != null) {
+                    if (Status.UP.getCode().equals(apiStatus.asText())) {
+                        return Health.up().build();
+                    } else if (Status.DOWN.getCode().equals(apiStatus.asText())) {
+                        return Health.down()
+                            .withDetail("Error", "The API server status is DOWN")
+                            .build();
+                    }
+                } else {
                     return Health.down()
-                        .withDetail("Error", "The API server status is DOWN")
+                        .withDetail("Error", "Couldn't determine the API server status")
                         .build();
                 }
             }
