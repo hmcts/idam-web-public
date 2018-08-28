@@ -100,7 +100,7 @@ public class ApiHealthIndicatorTest {
         Health health = apiHealthIndicator.health();
 
         assertThat(health.getStatus().toString(), equalTo("DOWN"));
-        assertThat(health.getDetails().get("error").toString(), equalTo("org.springframework.web.client.RestClientException: SomeException"));
+        assertThat(health.getDetails().get("Error").toString(), equalTo("An exception occurred while checking the API server status"));
     }
 
     /**

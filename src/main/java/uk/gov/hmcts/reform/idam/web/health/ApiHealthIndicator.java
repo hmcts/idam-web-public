@@ -64,7 +64,9 @@ public class ApiHealthIndicator implements HealthIndicator {
                 .build();
 
         } catch (RestClientException | IOException e) {
-            return Health.down(e).build();
+            return Health.down()
+                .withDetail("Error", "An exception occurred while checking the API server status")
+                .build();
         }
     }
 }
