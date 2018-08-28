@@ -84,7 +84,7 @@ public class ApiHealthIndicatorTest {
         Health health = apiHealthIndicator.health();
 
         assertThat(health.getStatus().toString(), equalTo("DOWN"));
-        assertThat(health.getDetails().get("Http Status").toString(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR.toString()));
+        assertThat(health.getDetails().get("Http Status received").toString(), equalTo(HttpStatus.INTERNAL_SERVER_ERROR.toString()));
     }
 
     /**

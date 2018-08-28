@@ -54,7 +54,7 @@ public class ApiHealthIndicator implements HealthIndicator {
             }
 
             return Health.down()
-                .withDetail("Http Status", responseCode)
+                .withDetail("Http Status received", responseCode)
                 .build();
 
         } catch (RestClientException | IOException e) {
