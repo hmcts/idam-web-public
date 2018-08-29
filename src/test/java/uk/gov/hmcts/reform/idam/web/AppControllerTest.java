@@ -1042,7 +1042,7 @@ public class AppControllerTest {
             .andExpect(status().isOk());
 
         verify(spiService).forgetPassword(USER_EMAIL, REDIRECT_URI, CLIENT_ID);
-        verifyNoMoreInteractions(spiService);
+        verify(spiService).getServiceByClientId(eq(CLIENT_ID));
     }
 
     /**
