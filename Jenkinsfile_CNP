@@ -45,8 +45,8 @@ withPipeline(type, product, component) {
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
             keepAll              : true,
-            reportDir            : "target/site/serenity/",
-            reportFiles          : "index.html",
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
             reportName           : "IdAM Web Public UI Tests Report"
         ]
     }
