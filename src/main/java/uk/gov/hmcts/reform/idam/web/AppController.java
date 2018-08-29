@@ -555,8 +555,10 @@ public class AppController {
     }
 
     private boolean isSelfRegistrationEnabled(String clientId) {
-
-        Optional<Service> service = spiService.getServiceByClientId(clientId);
-        return service.isPresent() && service.get().getSelfRegistrationAllowed();
+        if(Objects.nonNull(clientId) && !clientId.isEmpty()) {
+            Optional<Service> service = spiService.getServiceByClientId(clientId);
+            return service.isPresent() && service.get().getSelfRegistrationAllowed();
+        }
+        return false;
     }
 }
