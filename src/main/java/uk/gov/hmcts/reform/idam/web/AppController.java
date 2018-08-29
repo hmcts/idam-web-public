@@ -449,6 +449,9 @@ public class AppController {
                     forgotPasswordRequest.getEmail(),
                     forgotPasswordRequest.getRedirectUri(),
                     forgotPasswordRequest.getClientId());
+
+                model.put(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(forgotPasswordRequest.getClientId()));
+
                 return FORGOTPASSWORDSUCCESS_VIEW;
             }
         } catch (Exception e) {

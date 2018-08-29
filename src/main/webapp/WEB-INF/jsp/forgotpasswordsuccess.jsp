@@ -16,7 +16,7 @@
             <p class="lede">
                 <spring:message code="public.forgot.password.success.valid.address" />
             </p>
-            <c:if test="${not empty redirectUri}">
+            <c:if test="${not empty redirectUri && selfRegistrationEnabled}">
                 <p>
                     <spring:message  code="public.forgot.password.success.unconnected.account"/>
                     <c:url value="/users/selfRegister" var="selfRegisterUrl">
