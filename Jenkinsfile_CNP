@@ -40,7 +40,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('functionaltest') {
+    after('smoketest') {
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
