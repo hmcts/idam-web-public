@@ -40,13 +40,13 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('codeceptFunctional') {
+    after('functionaltest') {
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
             keepAll              : true,
-            reportDir            : "build/test-results/codeceptjs",
-            reportFiles          : "idam-web-public-integration-result.xml",
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
             reportName           : "IdAM Web Public UI Tests Report"
         ]
     }
