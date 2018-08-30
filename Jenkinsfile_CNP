@@ -40,7 +40,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('smoketest') {
+    after(':codeceptFunctional') {
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
