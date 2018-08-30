@@ -40,14 +40,8 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('smoketest') {
-        publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-public-e2e-result.html",
-            reportName           : "IdAM Web Public UI Tests Report"
-        ]
+    after('functionalTest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'smoke-output/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
     }
 }
