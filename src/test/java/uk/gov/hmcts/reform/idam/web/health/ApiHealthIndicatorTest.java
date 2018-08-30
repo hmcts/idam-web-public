@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.idam.web.health;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -26,30 +23,15 @@ public class ApiHealthIndicatorTest {
     @Mock
     private SPIService spiService;
 
-    @Mock
-    private ObjectMapper mapper;
-
     @InjectMocks
     private ApiHealthIndicator apiHealthIndicator;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConfigurationProperties configurationProperties;
 
-    final ResponseEntity<String> upResponse = ResponseEntity.ok("{\"status\": \"UP\"}");
-    final ResponseEntity<String> downResponse = ResponseEntity.ok("{\"status\": \"DOWN\"}");
-    final ResponseEntity<String> noStatusResponse = ResponseEntity.ok("{\"random\": \"value\"}");
-
-    @Before
-    public void setUp() throws Exception {
-        final ObjectMapper objMapper = new ObjectMapper();
-        final ObjectNode upResponseJson = objMapper.readValue(upResponse.getBody(), ObjectNode.class);
-        final ObjectNode downResponseJson = objMapper.readValue(downResponse.getBody(), ObjectNode.class);
-        final ObjectNode emptyStatusResponseJson = objMapper.readValue(noStatusResponse.getBody(), ObjectNode.class);
-
-        given(mapper.readValue(upResponse.getBody(), ObjectNode.class)).willReturn(upResponseJson);
-        given(mapper.readValue(downResponse.getBody(), ObjectNode.class)).willReturn(downResponseJson);
-        given(mapper.readValue(noStatusResponse.getBody(), ObjectNode.class)).willReturn(emptyStatusResponseJson);
-    }
+    final ResponseEntity<HealthCheckStatus> upResponse = ResponseEntity.ok(new HealthCheckStatus("UP"));
+    final ResponseEntity<HealthCheckStatus> downResponse = ResponseEntity.ok(new HealthCheckStatus("DOWN"));
+    final ResponseEntity<HealthCheckStatus> noStatusResponse = ResponseEntity.ok(new HealthCheckStatus(null));
 
     /**
      * @verifies Return UP if response is 200 and contains status value of UP

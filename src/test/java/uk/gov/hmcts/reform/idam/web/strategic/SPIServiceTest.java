@@ -97,11 +97,11 @@ import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class SPIServiceTest {
-
 
     @Mock
     private RestTemplate restTemplate;
@@ -641,10 +641,10 @@ public class SPIServiceTest {
     @Test
     public void healthCheck_shouldCallApiHealthCheck() throws Exception {
         given(configurationProperties.getStrategic().getEndpoint().getHealth()).willReturn(HEALTH_ENDPOINT);
-        given(restTemplate.getForEntity(API_URL + SLASH + HEALTH_ENDPOINT, String.class)).willReturn(ResponseEntity.ok("{\"status\": \"UP\"}"));
+        given(restTemplate.getForEntity(API_URL + SLASH + HEALTH_ENDPOINT, HealthCheckStatus.class)).willReturn(ResponseEntity.ok(new HealthCheckStatus("UP")));
 
-        ResponseEntity<String> response = spiService.healthCheck();
+        ResponseEntity<HealthCheckStatus> response = spiService.healthCheck();
 
-        assertThat(response.getBody(), equalTo("{\"status\": \"UP\"}"));
+        assertThat(response.getBody().getStatus(), equalTo("UP"));
     }
 }

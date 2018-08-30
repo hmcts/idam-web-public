@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.idam.api.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
 @Slf4j
@@ -280,8 +281,8 @@ public class SPIService {
     /**
      * @should call api health check
      */
-    public ResponseEntity<String> healthCheck() throws RestClientException {
-        return restTemplate.getForEntity(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getHealth(), String.class);
+    public ResponseEntity<HealthCheckStatus> healthCheck() throws RestClientException {
+        return restTemplate.getForEntity(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getHealth(), HealthCheckStatus.class);
     }
 
     /**

@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.idam.web.health;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -13,16 +10,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 
-import java.io.IOException;
-
 @Component
 public class ApiHealthIndicator implements HealthIndicator {
 
-    @Autowired
-    private SPIService spiService;
+    private final SPIService spiService;
 
     @Autowired
-    private ObjectMapper mapper;
+    public ApiHealthIndicator(SPIService spiService) {
+        this.spiService = spiService;
+    }
 
     /**
      * @should Return UP if response is 200 and contains status value of UP
@@ -39,15 +35,14 @@ public class ApiHealthIndicator implements HealthIndicator {
 
     private Health checkApiStatus() {
         try {
-            final ResponseEntity<String> response = spiService.healthCheck();
+            final ResponseEntity<HealthCheckStatus> response = spiService.healthCheck();
             final HttpStatus responseCode = response.getStatusCode();
             if (HttpStatus.OK.equals(responseCode)) {
-                final ObjectNode responseJson = mapper.readValue(response.getBody(), ObjectNode.class);
-                final JsonNode apiStatus = responseJson.get("status");
+                final String apiStatus = response.getBody().getStatus();
                 if (apiStatus != null) {
-                    if (Status.UP.getCode().equals(apiStatus.asText())) {
+                    if (Status.UP.getCode().equals(apiStatus)) {
                         return Health.up().build();
-                    } else if (Status.DOWN.getCode().equals(apiStatus.asText())) {
+                    } else if (Status.DOWN.getCode().equals(apiStatus)) {
                         return Health.down()
                             .withDetail("Error", "The API server status is DOWN")
                             .build();
@@ -63,7 +58,7 @@ public class ApiHealthIndicator implements HealthIndicator {
                 .withDetail("Http Status received", responseCode)
                 .build();
 
-        } catch (RestClientException | IOException e) {
+        } catch (RestClientException e) {
             return Health.down()
                 .withDetail("Error", "An exception occurred while checking the API server status")
                 .build();
