@@ -10,7 +10,7 @@ def type = "java"
 
 def product = "idam"
 
-def component = "web-admin"
+def component = "web-public"
 
 withNightlyPipeline(type, product, component) {
 enableMutationTest()
