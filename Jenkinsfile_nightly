@@ -1,0 +1,17 @@
+#!groovy
+
+properties([
+        pipelineTriggers([cron('35 * * * *')])
+])
+
+@Library("Infrastructure")
+
+def type = "java"
+
+def product = "idam"
+
+def component = "web-admin"
+
+withNightlyPipeline(type, product, component) {
+enableMutationTest()
+}
