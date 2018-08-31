@@ -40,7 +40,23 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('functionalTest:preview') {
+    after('functionaltest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    }
+
+    before('functionaltest:preview') {
+        env.PREVIEW_ENV = 'true'
+    }
+
+    after('functionaltest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    }
+
+    after('smoketest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    }
+
+    after('smoketest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     }
 }
