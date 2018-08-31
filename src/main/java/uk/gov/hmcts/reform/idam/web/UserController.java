@@ -50,7 +50,9 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 public class UserController {
 
     private static final String ERROR_MSG = "errorMsg";
+    public static final String ERROR_SUB_MSG = "errorSubMsg";
     private static final String GENERIC_ERROR_KEY = "public.error.page.generic.error";
+    private static final String GENERIC_SUB_ERROR_KEY = "public.error.page.generic.sub.error";
     private static final String ALREADY_ACTIVATED_KEY = "public.error.page.already.activated.description";
     public static final String PAGE_NOT_FOUND_VIEW = "404";
 
@@ -104,6 +106,7 @@ public class UserController {
                 model.put(ERROR_MSG, ALREADY_ACTIVATED_KEY);
             } else {
                 model.put(ERROR_MSG, GENERIC_ERROR_KEY);
+                model.put(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
             }
             return "errorpage";
         }
@@ -141,6 +144,7 @@ public class UserController {
         } catch (Exception e) {
             log.error("An error occurred getting service with clientId: {}", clientId);
             model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
+            model.addAttribute(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
             return ERRORPAGE_VIEW;
         }
 
@@ -198,6 +202,7 @@ public class UserController {
             log.error("Client error during user registration, Error body: {}", ce.getResponseBodyAsString(), ce);
         }
         model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
+        model.addAttribute(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
         return "errorpage";
     }
 
