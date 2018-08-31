@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
@@ -169,7 +170,7 @@ public class AppController {
                                   final Map<String, Object> model) {
 
         if (!checkUserAuthorised(jwt, model)) {
-            return ERRORPAGE_VIEW;
+            return PAGE_NOT_FOUND_VIEW;
         }
 
         return UPLIFT_LOGIN_VIEW;
