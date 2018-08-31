@@ -59,6 +59,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_RESET_PASSWORD_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_API_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HEALTH_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getFoundResponseEntity;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterRequest;
@@ -96,11 +97,11 @@ import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class SPIServiceTest {
-
 
     @Mock
     private RestTemplate restTemplate;
@@ -631,5 +632,19 @@ public class SPIServiceTest {
         Optional<Service> response = spiService.getServiceByClientId(SERVICE_CLIENT_ID);
 
         assertThat(response.isPresent(), is(false));
+    }
+
+    /**
+     * @verifies call api health check
+     * @see SPIService#healthCheck()
+     */
+    @Test
+    public void healthCheck_shouldCallApiHealthCheck() throws Exception {
+        given(configurationProperties.getStrategic().getEndpoint().getHealth()).willReturn(HEALTH_ENDPOINT);
+        given(restTemplate.getForEntity(API_URL + SLASH + HEALTH_ENDPOINT, HealthCheckStatus.class)).willReturn(ResponseEntity.ok(new HealthCheckStatus("UP")));
+
+        ResponseEntity<HealthCheckStatus> response = spiService.healthCheck();
+
+        assertThat(response.getBody().getStatus(), equalTo("UP"));
     }
 }
