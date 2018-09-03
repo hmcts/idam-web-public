@@ -841,7 +841,7 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, "abc")
             .param(REDIRECT_URI, "http://localhost"))
             .andExpect(status().isOk())
-            .andExpect(view().name(ERROR_VIEW_NAME));
+            .andExpect(view().name(NOT_FOUND_VIEW));
 
         verify(spiService).getDetails(JWT);
     }
