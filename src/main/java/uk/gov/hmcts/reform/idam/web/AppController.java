@@ -170,7 +170,7 @@ public class AppController {
                                   final Map<String, Object> model) {
 
         if (!checkUserAuthorised(jwt, model)) {
-            return PAGE_NOT_FOUND_VIEW;
+            return ERRORPAGE_VIEW;
         }
 
         return UPLIFT_LOGIN_VIEW;
