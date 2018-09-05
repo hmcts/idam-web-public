@@ -1,18 +1,20 @@
 let Helper = codecept_helper;
 var TestData = require('../config/test_data');
 const fetch = require('node-fetch');
-const HttpsProxyAgent = require('https-proxy-agent');
-const Https = require('https');
-const agent = new Https.Agent({
+
+let agentToUse;
+if (process.env.PROXY_SERVER) {
+  console.log('using proxy agent: ' + process.env.PROXY_SERVER);
+  const HttpsProxyAgent = require('https-proxy-agent');
+  agentToUse = new HttpsProxyAgent(process.env.PROXY_SERVER);
+} else {
+  console.log('using real agent');
+  const Https = require('https');
+  agentToUse = new Https.Agent({
     rejectUnauthorized: false
-})
-// Proxy agent settings if needed in future.
-/*
-const agent = new HttpsProxyAgent({
-    proxyHost: 'proxyout.reform.hmcts.net',
-    proxyPort: 8080
-})
-*/
+  });
+}
+const agent = agentToUse;
 
 const NotifyClient = require('notifications-node-client').NotifyClient;
 var notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
