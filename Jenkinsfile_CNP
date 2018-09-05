@@ -40,23 +40,21 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('functionaltest:aat') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+
+    after('smoketest:idam-preview') {
+        archiveArtifacts '**/build/test-results/**/*'
     }
 
-    before('functionaltest:preview') {
-        env.PREVIEW_ENV = 'true'
+    after('smoketest:idam-aat') {
+        archiveArtifacts '**/build/test-results/**/*'
     }
 
-    after('functionaltest:preview') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    after('functionalTest:idam-preview') {
+        archiveArtifacts '**/build/test-results/**/*'
     }
 
-    after('smoketest:aat') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    after('functionalTest:idam-aat') {
+        archiveArtifacts '**/build/test-results/**/*'
     }
 
-    after('smoketest:preview') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    }
 }
