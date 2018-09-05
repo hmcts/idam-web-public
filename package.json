@@ -16,6 +16,7 @@
     "puppeteer": "^1.4.0"
   },
   "dependencies": {
+    "notifications-node-client": "^4.3.0",
     "proxy-agent": "^3.0.1"
   }
 }

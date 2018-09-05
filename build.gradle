@@ -113,12 +113,17 @@ allprojects  {
     commandLine 'npm', 'install', 'pa11y'
   }
 
+  task notifyClientInstall(type: Exec) {
+    workingDir '.'
+    commandLine 'npm', 'install', 'notifications-node-client'
+  }
+
   task codeceptSmoke(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi'
   }
 
-  task codeceptFunctional(type: Exec, dependsOn: ':yarnInstall') {
+  task codeceptFunctional(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }

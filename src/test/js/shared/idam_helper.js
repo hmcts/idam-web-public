@@ -14,6 +14,9 @@ const agent = new HttpsProxyAgent({
 })
 */
 
+const NotifyClient = require('notifications-node-client').NotifyClient;
+var notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
+
 class IdamHelper extends Helper {
 
     async createServiceData(serviceName){
@@ -217,6 +220,26 @@ class IdamHelper extends Helper {
         })
         .catch(err => err);
     }
+
+   verifyEmailSent(email) {
+     notifyClient
+       .getNotifications("email", "sending")
+       .then(response => {
+         console.log("Searching " + response.body.notifications.length + " emails(s)");
+         var result = response.body.notifications.find(obj => {
+           if (obj.email_address === email) {
+             return obj.email_address === email
+           } else {
+             //console.log("ignoring unmatched email address " + obj.email_address);
+           }
+         })
+       })
+       .catch(err => {
+         console.log(err)
+         let browser = this.helpers['Puppeteer'].browser;
+         browser.close();
+       });
+   }
 }
 
 module.exports = IdamHelper;

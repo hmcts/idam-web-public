@@ -33,7 +33,7 @@ return Promise.all([
     ]);
 });
 
- Scenario('@functional My user account is unlocked when I reset my password - citizen', (I) => {
+ Scenario('@functional My user account is unlocked when I reset my password - citizen', async (I) => {
        I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
        I.click('Sign in to your account');
        I.waitForText('Sign in or create an account');
@@ -45,4 +45,5 @@ return Promise.all([
        I.fillField('#email', citizenEmail);
        I.click('Submit');
        I.waitForText('Check your email');
+       await I.verifyEmailSent(citizenEmail);
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
