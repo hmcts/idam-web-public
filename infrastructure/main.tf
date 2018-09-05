@@ -16,7 +16,7 @@ locals {
 }
 
 module "idam-web-public" {
-  source                = "git@github.com:hmcts/moj-module-webapp?ref=SIDM-1439_stop_overwriting_ssl_settings"
+  source                = "git@github.com:hmcts/moj-module-webapp?ref=master"
   product               = "${var.product}-${var.app}"
   location              = "${var.location}"
   env                   = "${var.env}"
