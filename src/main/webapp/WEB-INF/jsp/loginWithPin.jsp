@@ -15,6 +15,9 @@
                     <spring:message code="${errorTitle}" />
                 </h2>
                 <c:if test="${invalidPin}">
+                  <script>
+                      sendEvent('Login With Pin', 'Error', 'Invalid pin');
+                  </script>
                   <p>
                       <spring:message  code="public.login.with.pin.valid.security.code.description"/>
                       <a href="https://hmcts-access.service.gov.uk/contact-us"><spring:message  code="public.login.with.pin.valid.security.code.description.contact.us"/></a>
@@ -39,6 +42,9 @@
                         <spring:message code="public.login.with.pin.form.security.code.label" />
                     </span>
                     <c:if test="${hasError}">
+                        <script>
+                            sendEvent('Login With Pin', 'Error', 'Security code error');
+                        </script>
                         <span class="error-message">
                             <spring:message code="public.login.with.pin.form.security.code.error" />
                         </span>

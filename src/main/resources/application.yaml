@@ -60,11 +60,16 @@ strategic:
     selfRegistration: users/selfregister
     details: details
     services: services
+    health: health
 
 validation:
   password:
     minLength: 8
     maxLength: 256
+
+logging:
+  level:
+    ROOT: INFO
 
 azure:
   application-insights:

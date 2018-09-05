@@ -13,5 +13,30 @@ env.PROD_ENVIRONMENT_NAME    = 'idam-prod'
 env.DEMO_ENVIRONMENT_NAME    = 'idam-demo'
 env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
 
+List<LinkedHashMap<String, Object>> secrets = [
+    secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
+    secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD')
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+    [$class     : 'AzureKeyVaultSecret',
+     secretType : 'Secret',
+     name       : secretName,
+     version    : '',
+     envVariable: envVar
+    ]
+}
+
 withPipeline(type, product, component) {
+    loadVaultSecrets(secrets)
+    after('test') {
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/jacoco",
+            reportFiles          : "index.html",
+            reportName           : "IdAM Web Public Code Coverage Report"
+        ]
+    }
 }
