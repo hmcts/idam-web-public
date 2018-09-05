@@ -21,6 +21,9 @@ exports.config = {
             "require": "./src/test/js/shared/idam_helper.js"
         }
     },
+    "include": {
+        "I": "./src/test/js/shared/custom_steps.js"
+    },
     mocha: {
         reporterOptions: {
             'codeceptjs-cli-reporter': {
