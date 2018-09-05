@@ -51,10 +51,28 @@ withPipeline(type, product, component) {
 
     after('functionalTest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E tests result"
+        ]
     }
 
     after('functionalTest:idam-aat') {
         archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E tests result"
+        ]
     }
 
 }
