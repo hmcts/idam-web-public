@@ -26,6 +26,7 @@ public class MvcKeys {
 
     public static final String ERROR_VIEW = "error";
     public static final String ERRORPAGE_VIEW = "errorpage";
+    public static final String PAGE_NOT_FOUND_VIEW = "404";
     public static final String EXPIREDTOKEN_VIEW = "expiredtoken";
     public static final String FORGOTPASSWORD_VIEW = "forgotpassword";
     public static final String FORGOTPASSWORDSUCCESS_VIEW = "forgotpasswordsuccess";
