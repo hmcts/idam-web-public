@@ -43,6 +43,7 @@ public class CustomErrorViewResolver extends DefaultErrorViewResolver {
         if (view == null) {
             view = new ModelAndView("errorpage");
             view.addObject("errorMsg", "public.error.page.generic.error");
+            view.addObject("errorSubMsg", "public.error.page.generic.sub.error");
         }
 
         return view;
