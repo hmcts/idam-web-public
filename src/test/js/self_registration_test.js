@@ -45,4 +45,4 @@ Scenario('@functional Self Register User Validation errors', (I) => {
     I.click('Sign in to your account.');
     I.waitForText('Password');
     I.see('Sign in');
-});
+ }).retry(TestData.SCENARIO_RETRY_LIMIT);
