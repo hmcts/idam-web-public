@@ -40,15 +40,6 @@ withPipeline(type, product, component) {
         ]
     }
 
-
-    after('smoketest:idam-preview') {
-        archiveArtifacts '**/build/test-results/**/*'
-    }
-
-    after('smoketest:idam-aat') {
-        archiveArtifacts '**/build/test-results/**/*'
-    }
-
     after('functionalTest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
 
