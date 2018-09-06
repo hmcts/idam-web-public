@@ -33,15 +33,16 @@ return Promise.all([
     ]);
 });
 
- Scenario('@functional My user account is unlocked when I reset my password - citizen', async (I) => {
+ Scenario('@functional @unlock My user account is unlocked when I reset my password - citizen', async (I) => {
        I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
        I.click('Sign in to your account');
-       I.waitForText('Sign in or create an account');
+       I.waitInUrl('/login', 180);
+       I.waitForText('Sign in or create an account', 20, 'h1');
        I.lockAccount(citizenEmail);
        I.waitForText('There is a problem with your account login details');
        I.see('Your account is locked due to too many unsuccessful attempts.');
        I.click('reset your password');
-       I.waitForText('Reset your password');
+       I.waitForText('Reset your password', 20, 'h1');
        I.fillField('#email', citizenEmail);
        I.click('Submit');
        I.waitForText('Check your email');

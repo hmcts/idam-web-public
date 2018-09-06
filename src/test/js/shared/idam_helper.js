@@ -101,7 +101,6 @@ class IdamHelper extends Helper {
             headers: { 'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token },
         }).then(res => res.json())
       .then((json) => {
-          console.log('Create service response: ' + json);
           return json;
       })
       .catch(err => err);

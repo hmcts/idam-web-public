@@ -4,7 +4,7 @@ exports.config = {
     name: 'idam-web-public',
     tests: './src/test/js/**/*_test.js',
     output: './output',
-    timeout: 10000,
+    timeout: 180000,
     bootstrap: false,
     helpers: {
         Puppeteer: {
