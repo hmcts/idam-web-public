@@ -15,7 +15,8 @@ env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
 
 List<LinkedHashMap<String, Object>> secrets = [
     secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
-    secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD')
+    secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
+    secret('notify-api-key', 'NOTIFY_API_KEY')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
