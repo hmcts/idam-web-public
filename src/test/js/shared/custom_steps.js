@@ -7,14 +7,19 @@ module.exports = function() {
         this.fillField('username', email);
         this.fillField('password', '111');
         this.click('Sign in');
+        this.wait(1);
         this.fillField('password', '111');
         this.click('Sign in');
+        this.wait(1);
         this.fillField('password', '111');
         this.click('Sign in');
+        this.wait(1);
         this.fillField('password', '111');
         this.click('Sign in');
+        this.wait(1);
         this.fillField('password', '111');
         this.click('Sign in');
+        this.wait(1);
     }
   })
 }
