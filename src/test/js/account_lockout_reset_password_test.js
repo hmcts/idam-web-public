@@ -45,6 +45,6 @@ return Promise.all([
        I.waitForText('Reset your password', 20, 'h1');
        I.fillField('#email', citizenEmail);
        I.click('Submit');
-       I.waitForText('Check your email');
+       I.waitForText('Check your email', 20, 'h1');
        await I.verifyEmailSent(citizenEmail);
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
