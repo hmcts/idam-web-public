@@ -34,7 +34,7 @@ return Promise.all([
 });
 
  Scenario('@functional @unlock My user account is unlocked when I reset my password - citizen', async (I) => {
-       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.google.com&client_id=' + serviceName);
+       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
        I.click('Sign in to your account');
        I.waitInUrl('/login', 180);
        I.waitForText('Sign in or create an account', 20, 'h1');
@@ -56,7 +56,7 @@ return Promise.all([
        I.click('Continue');
        I.waitForText('Your password has been changed', 20, 'h1');
        I.see('You can now sign in with your new password.')
-       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.google.com&client_id=' + serviceName);
+       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
        I.click('Sign in to your account');
        I.waitInUrl('/login', 180);
        I.waitForText('Sign in or create an account', 20, 'h1');
@@ -64,5 +64,5 @@ return Promise.all([
        I.fillField('#password', 'Passw0rd1234');
        I.click('Sign in');
        I.wait(2);
-       I.seeCurrentUrlEquals('https://www.google.com');
+       I.seeCurrentUrlEquals('https://www.autotest.com');
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
