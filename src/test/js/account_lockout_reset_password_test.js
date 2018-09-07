@@ -45,6 +45,24 @@ return Promise.all([
        I.waitForText('Reset your password', 20, 'h1');
        I.fillField('#email', citizenEmail);
        I.click('Submit');
-       I.waitForText('Check your email');
-       await I.verifyEmailSent(citizenEmail);
+       I.waitForText('Check your email', 20, 'h1');
+       I.wait(1);
+       var resetPasswordUrl = await I.extractUrl(citizenEmail);
+       I.amOnPage(resetPasswordUrl);
+       I.waitForText('Create a new password');
+       I.fillField('#password1', 'Passw0rd1234');
+       I.fillField('#password2', 'Passw0rd1234');
+       I.click('Continue');
+       I.wait(1);
+       I.waitForText('Your password has been changed');
+       I.see('You can now sign in with your new password.')
+
+       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
+       I.click('Sign in to your account');
+       I.waitInUrl('/login', 180);
+       I.waitForText('Sign in or create an account', 20, 'h1');
+       I.fillField('#username', citizenEmail);
+       I.fillField('#password', 'Passw0rd1234');
+       I.wait(20);
+       I.click('Sign in');
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
