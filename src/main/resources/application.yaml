@@ -60,6 +60,7 @@ strategic:
     selfRegistration: users/selfregister
     details: details
     services: services
+    health: health
 
 validation:
   password:
