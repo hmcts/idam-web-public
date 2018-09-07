@@ -39,7 +39,7 @@ return Promise.all([
        I.waitInUrl('/login', 180);
        I.waitForText('Sign in or create an account', 20, 'h1');
        I.lockAccount(citizenEmail);
-       I.waitForText('There is a problem with your account login details');
+       I.waitForText('There is a problem with your account login details', 20, 'h2');
        I.see('Your account is locked due to too many unsuccessful attempts.');
        I.click('reset your password');
        I.waitForText('Reset your password', 20, 'h1');
@@ -50,7 +50,9 @@ return Promise.all([
        I.wait(5);
        var resetPasswordUrl = await I.extractUrl(citizenEmail);
        I.amOnPage(resetPasswordUrl);
-       I.waitForText('Create a new password');
+       I.wait(2);
+       //I.waitForText('Create a new password', 20, 'h1');
+       I.seeTitleEquals('Reset Password - HMCTS Access');
        I.fillField('#password1', 'Passw0rd1234');
        I.fillField('#password2', 'Passw0rd1234');
        I.click('Continue');
