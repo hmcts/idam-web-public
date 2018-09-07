@@ -46,15 +46,13 @@ return Promise.all([
        I.fillField('#email', citizenEmail);
        I.click('Submit');
        I.waitForText('Check your email', 20, 'h1');
-       I.wait(1);
        var resetPasswordUrl = await I.extractUrl(citizenEmail);
        I.amOnPage(resetPasswordUrl);
        I.waitForText('Create a new password');
        I.fillField('#password1', 'Passw0rd1234');
        I.fillField('#password2', 'Passw0rd1234');
        I.click('Continue');
-       I.wait(1);
-       I.waitForText('Your password has been changed');
+       I.waitForText('Your password has been changed', 20, 'h1');
        I.see('You can now sign in with your new password.')
        I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.google.com&client_id=' + serviceName);
        I.click('Sign in to your account');
@@ -63,5 +61,5 @@ return Promise.all([
        I.fillField('#username', citizenEmail);
        I.fillField('#password', 'Passw0rd1234');
        I.click('Sign in');
-       I.waitForText('Google Search');
+       I.seeCurrentUrlEquals('https://www.google.com');
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
