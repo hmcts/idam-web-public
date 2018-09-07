@@ -13,5 +13,11 @@ def product = "idam"
 def component = "web-public"
 
 withNightlyPipeline(type, product, component) {
-enableMutationTest()
+
+    enableMutationTest()
+
+    after('mutationTest') {
+
+        sh "./gradlew --info sonarqube"
+    }
 }
