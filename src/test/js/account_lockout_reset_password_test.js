@@ -46,6 +46,8 @@ return Promise.all([
        I.fillField('#email', citizenEmail);
        I.click('Submit');
        I.waitForText('Check your email', 20, 'h1');
+       I.see('Check your email');
+       I.wait(5);
        var resetPasswordUrl = await I.extractUrl(citizenEmail);
        I.amOnPage(resetPasswordUrl);
        I.waitForText('Create a new password');
@@ -61,5 +63,6 @@ return Promise.all([
        I.fillField('#username', citizenEmail);
        I.fillField('#password', 'Passw0rd1234');
        I.click('Sign in');
+       I.wait(2);
        I.seeCurrentUrlEquals('https://www.google.com');
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
