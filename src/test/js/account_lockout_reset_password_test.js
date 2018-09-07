@@ -47,11 +47,10 @@ return Promise.all([
        I.click('Submit');
        I.waitForText('Check your email', 20, 'h1');
        I.see('Check your email');
-       I.wait(5);
+       I.wait(2);
        var resetPasswordUrl = await I.extractUrl(citizenEmail);
        I.amOnPage(resetPasswordUrl);
-       I.wait(2);
-       //I.waitForText('Create a new password', 20, 'h1');
+       I.waitForText('Create a new password', 20, 'h1');
        I.seeTitleEquals('Reset Password - HMCTS Access');
        I.fillField('#password1', 'Passw0rd1234');
        I.fillField('#password2', 'Passw0rd1234');
@@ -65,6 +64,7 @@ return Promise.all([
        I.fillField('#username', citizenEmail);
        I.fillField('#password', 'Passw0rd1234');
        I.click('Sign in');
-       I.wait(2);
-       I.seeCurrentUrlEquals('https://www.autotest.com');
+       I.waitInUrl('www.autotest.com', 180);
+//       I.wait(2);
+//       I.seeCurrentUrlEquals('https://www.autotest.com');
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
