@@ -251,7 +251,7 @@ class IdamHelper extends Helper {
                  if (obj.email_address === email) {
                      return obj.email_address === email
                  } else {
-                     //console.log("ignoring unmatched email address " + obj.email_address);
+                     console.log("ignoring unmatched email address " + obj.email_address);
                  }
              });
              return result;
