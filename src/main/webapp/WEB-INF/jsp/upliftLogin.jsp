@@ -6,7 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<t:wrapper titleKey="public.register.title">
+<t:wrapper titleKey="public.login.subheading.sign.in">
     <article class="content__body">
         <c:set var="hasError" value="${error != null}" />
         <c:if test="${hasError}">
@@ -84,7 +84,9 @@
                         <c:param name="state" value="${param['state']}" />
                         <c:param name="jwt" value="${param['jwt']}" />
                     </c:url>
-                    <a href="${loginUpliftUrl}" />
+                    <a href="${loginUpliftUrl}">
+                        <spring:message code="public.common.create.account" />
+                    </a>
                     <spring:message code="public.login.create.account.body.to.use.service" />
                 </p>
             </div>

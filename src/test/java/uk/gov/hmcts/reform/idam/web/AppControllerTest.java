@@ -72,6 +72,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_END
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGOUT_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_PARAMETER;
@@ -845,7 +846,7 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, "abc")
             .param(REDIRECT_URI, "http://localhost"))
             .andExpect(status().isOk())
-            .andExpect(view().name(ERROR_VIEW_NAME));
+            .andExpect(view().name(NOT_FOUND_VIEW));
 
         verify(spiService).getDetails(JWT);
     }
@@ -1047,7 +1048,7 @@ public class AppControllerTest {
             .andExpect(status().isOk());
 
         verify(spiService).forgetPassword(USER_EMAIL, REDIRECT_URI, CLIENT_ID);
-        verifyNoMoreInteractions(spiService);
+        verify(spiService).getServiceByClientId(eq(CLIENT_ID));
     }
 
     /**
