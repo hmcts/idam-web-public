@@ -20,6 +20,7 @@ module.exports = function() {
         this.clearCookie();
         // Second
         this.amOnPage(loginPage);
+        this.waitInUrl('/login')
         this.dontSee('Incorrect email or password');
         this.see('Sign in');
         this.fillField('username', email);
@@ -29,6 +30,7 @@ module.exports = function() {
         this.clearCookie();
         // Third
         this.amOnPage(loginPage);
+        this.waitInUrl('/login')
         this.dontSee('Incorrect email or password');
         this.see('Sign in');
         this.fillField('username', email);
@@ -38,6 +40,7 @@ module.exports = function() {
         this.clearCookie();
         // Fourth
         this.amOnPage(loginPage);
+        this.waitInUrl('/login')
         this.dontSee('Incorrect email or password');
         this.see('Sign in');
         this.fillField('username', email);
@@ -47,6 +50,7 @@ module.exports = function() {
         this.clearCookie();
         // Fifth
         this.amOnPage(loginPage);
+        this.waitInUrl('/login')
         this.dontSee('Incorrect email or password');
         this.see('Sign in');
         this.fillField('username', email);

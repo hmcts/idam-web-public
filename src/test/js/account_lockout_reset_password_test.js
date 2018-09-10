@@ -62,4 +62,6 @@ return Promise.all([
        I.fillField('#password', 'Passw0rd1234');
        I.click('Sign in');
        I.waitInUrl('idam.testservice.gov.uk', 180);
+       I.seeInCurrentUrl('code=');
+       I.dontSeeInCurrentUrl('error=');
  }).retry(TestData.SCENARIO_RETRY_LIMIT);

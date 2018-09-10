@@ -9,15 +9,20 @@ if (process.env.PROXY_SERVER) {
   agentToUse = new HttpsProxyAgent(process.env.PROXY_SERVER);
 } else {
   console.log('using real agent');
-//  const Https = require('https');
-//  agentToUse = new Https.Agent({
-//    rejectUnauthorized: false
-//  });
+  const Https = require('https');
+  agentToUse = new Https.Agent({
+    rejectUnauthorized: false
+  });
 }
 const agent = agentToUse;
 
+let notifyClient;
 const NotifyClient = require('notifications-node-client').NotifyClient;
-var notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
+if (TestData.NOTIFY_API_KEY) {
+  notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
+} else {
+  console.log("Notify client API key is not defined");
+}
 
 class IdamHelper extends Helper {
 
@@ -249,9 +254,8 @@ class IdamHelper extends Helper {
              console.log("Searching " + response.body.notifications.length + " emails(s)");
              var result = response.body.notifications.find(obj => {
                  if (obj.email_address === email) {
+                     // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
                      return obj.email_address === email
-                 } else {
-                     console.log("Ignoring unmatched email address");
                  }
              });
              return result;
