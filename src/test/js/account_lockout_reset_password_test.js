@@ -39,8 +39,6 @@ return Promise.all([
        I.waitInUrl('/login', 180);
        I.waitForText('Sign in or create an account', 20, 'h1');
        I.lockAccount(citizenEmail, serviceName);
-       //I.waitForText('There is a problem with your account login details', 20, 'h2');
-       //I.see('Your account is locked due to too many unsuccessful attempts.');
        I.click('reset your password');
        I.waitForText('Reset your password', 20, 'h1');
        I.fillField('#email', citizenEmail);
