@@ -38,16 +38,16 @@ return Promise.all([
        I.click('Sign in to your account');
        I.waitInUrl('/login', 180);
        I.waitForText('Sign in or create an account', 20, 'h1');
-       I.lockAccount(citizenEmail);
-       I.waitForText('There is a problem with your account login details', 20, 'h2');
-       I.see('Your account is locked due to too many unsuccessful attempts.');
+       I.lockAccount(citizenEmail, serviceName);
+       //I.waitForText('There is a problem with your account login details', 20, 'h2');
+       //I.see('Your account is locked due to too many unsuccessful attempts.');
        I.click('reset your password');
        I.waitForText('Reset your password', 20, 'h1');
        I.fillField('#email', citizenEmail);
        I.click('Submit');
        I.waitForText('Check your email', 20, 'h1');
        I.see('Check your email');
-       I.wait(20);
+       I.wait(2);
        var resetPasswordUrl = await I.extractUrl(citizenEmail);
        I.amOnPage(resetPasswordUrl);
        I.waitForText('Create a new password', 20, 'h1');
@@ -64,6 +64,5 @@ return Promise.all([
        I.fillField('#username', citizenEmail);
        I.fillField('#password', 'Passw0rd1234');
        I.click('Sign in');
-       I.wait(2);
-       I.seeCurrentUrlEquals('https://www.autotest.com');
+       I.waitInUrl('www.autotest.com', 180);
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
