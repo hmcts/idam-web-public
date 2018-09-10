@@ -5,7 +5,7 @@ module.exports = function() {
 
     lockAccount: function (email, serviceName) {
         var registerPage = TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName;
-        var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=https://www.autotest.com&client_id=' + serviceName + 'state=';
+        var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=https://www.autotest.com&client_id=' + serviceName + '&state=';
         // First
         this.amOnPage(registerPage);
         this.click('Sign in to your account');
