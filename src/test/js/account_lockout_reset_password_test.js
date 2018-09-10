@@ -64,7 +64,6 @@ return Promise.all([
        I.fillField('#username', citizenEmail);
        I.fillField('#password', 'Passw0rd1234');
        I.click('Sign in');
-       I.waitInUrl('www.autotest.com', 180);
-//       I.wait(2);
-//       I.seeCurrentUrlEquals('https://www.autotest.com');
+       I.wait(2);
+       I.seeCurrentUrlEquals('https://www.autotest.com');
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
