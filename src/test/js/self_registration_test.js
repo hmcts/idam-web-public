@@ -15,7 +15,7 @@ AfterSuite(async(I) => {
 Scenario('@functional @selfregister Self Register User Validation errors', (I) => {
     let url = TestData.WEB_PUBLIC_URL;
 
-    I.amOnPage(url + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
+    I.amOnPage(url + '/users/selfRegister?redirect_uri=https://idam.testservice.gov.uk&client_id=' + serviceName);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
     I.see('Create an account');

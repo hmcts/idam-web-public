@@ -9,10 +9,10 @@ if (process.env.PROXY_SERVER) {
   agentToUse = new HttpsProxyAgent(process.env.PROXY_SERVER);
 } else {
   console.log('using real agent');
-  const Https = require('https');
-  agentToUse = new Https.Agent({
-    rejectUnauthorized: false
-  });
+//  const Https = require('https');
+//  agentToUse = new Https.Agent({
+//    rejectUnauthorized: false
+//  });
 }
 const agent = agentToUse;
 
@@ -49,10 +49,10 @@ class IdamHelper extends Helper {
           description: serviceName,
           oauth2ClientId: serviceName,
           oauth2ClientSecret: 'autotestingservice',
-          oauth2RedirectUris: ['https://www.autotest.com'],
+          oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
           onboardingEndpoint: '/autotest',
           onboardingRoles: ['auto-private-beta_role'],
-          activationRedirectUrl: "https://www.autotest.com",
+          activationRedirectUrl: "https://idam.testservice.gov.uk",
           selfRegistrationAllowed: true
         };
       }else{
@@ -61,11 +61,11 @@ class IdamHelper extends Helper {
           description: serviceName,
           oauth2ClientId: serviceName,
           oauth2ClientSecret: 'autotestingservice',
-          oauth2RedirectUris: ['https://www.autotest.com'],
+          oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
           onboardingEndpoint: '/autotest',
           onboardingRoles: ['auto-private-beta_role'],
           allowedRoles: [roleId, 'auto-admin_role'],
-          activationRedirectUrl: "https://www.autotest.com",
+          activationRedirectUrl: "https://idam.testservice.gov.uk",
           selfRegistrationAllowed: true
         };
       }
@@ -87,11 +87,11 @@ class IdamHelper extends Helper {
             description: serviceName,
             oauth2ClientId: serviceName,
             oauth2ClientSecret: 'autotestingservice',
-            oauth2RedirectUris: ['https://www.autotest.com'],
+            oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
             onboardingEndpoint: '/autotest',
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
-            activationRedirectUrl: "https://www.autotest.com",
+            activationRedirectUrl: "https://idam.testservice.gov.uk",
             selfRegistrationAllowed: true
         };
         return fetch(`${TestData.IDAM_API}/services`, {
@@ -251,7 +251,7 @@ class IdamHelper extends Helper {
                  if (obj.email_address === email) {
                      return obj.email_address === email
                  } else {
-                     console.log("ignoring unmatched email address " + obj.email_address);
+                     console.log("Ignoring unmatched email address");
                  }
              });
              return result;

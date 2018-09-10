@@ -34,7 +34,7 @@ return Promise.all([
 });
 
  Scenario('@functional @unlock My user account is unlocked when I reset my password - citizen', async (I) => {
-       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
+       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://idam.testservice.gov.uk&client_id=' + serviceName);
        I.click('Sign in to your account');
        I.waitInUrl('/login', 180);
        I.waitForText('Sign in or create an account', 20, 'h1');
@@ -45,7 +45,6 @@ return Promise.all([
        I.click('Submit');
        I.waitForText('Check your email', 20, 'h1');
        I.see('Check your email');
-       I.wait(20);
        var resetPasswordUrl = await I.extractUrl(citizenEmail);
        I.amOnPage(resetPasswordUrl);
        I.waitForText('Create a new password', 20, 'h1');
@@ -55,12 +54,12 @@ return Promise.all([
        I.click('Continue');
        I.waitForText('Your password has been changed', 20, 'h1');
        I.see('You can now sign in with your new password.')
-       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
+       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://idam.testservice.gov.uk&client_id=' + serviceName);
        I.click('Sign in to your account');
        I.waitInUrl('/login', 180);
        I.waitForText('Sign in or create an account', 20, 'h1');
        I.fillField('#username', citizenEmail);
        I.fillField('#password', 'Passw0rd1234');
        I.click('Sign in');
-       I.waitInUrl('www.autotest.com', 180);
+       I.waitInUrl('idam.testservice.gov.uk', 180);
  }).retry(TestData.SCENARIO_RETRY_LIMIT);
