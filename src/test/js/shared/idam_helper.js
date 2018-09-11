@@ -16,8 +16,13 @@ if (process.env.PROXY_SERVER) {
 }
 const agent = agentToUse;
 
+let notifyClient;
 const NotifyClient = require('notifications-node-client').NotifyClient;
-var notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
+if (TestData.NOTIFY_API_KEY) {
+  notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
+} else {
+  console.log("Notify client API key is not defined");
+}
 
 class IdamHelper extends Helper {
 
@@ -49,10 +54,10 @@ class IdamHelper extends Helper {
           description: serviceName,
           oauth2ClientId: serviceName,
           oauth2ClientSecret: 'autotestingservice',
-          oauth2RedirectUris: ['https://www.autotest.com'],
+          oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
           onboardingEndpoint: '/autotest',
           onboardingRoles: ['auto-private-beta_role'],
-          activationRedirectUrl: "https://www.autotest.com",
+          activationRedirectUrl: "https://idam.testservice.gov.uk",
           selfRegistrationAllowed: true
         };
       }else{
@@ -61,11 +66,11 @@ class IdamHelper extends Helper {
           description: serviceName,
           oauth2ClientId: serviceName,
           oauth2ClientSecret: 'autotestingservice',
-          oauth2RedirectUris: ['https://www.autotest.com'],
+          oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
           onboardingEndpoint: '/autotest',
           onboardingRoles: ['auto-private-beta_role'],
           allowedRoles: [roleId, 'auto-admin_role'],
-          activationRedirectUrl: "https://www.autotest.com",
+          activationRedirectUrl: "https://idam.testservice.gov.uk",
           selfRegistrationAllowed: true
         };
       }
@@ -87,11 +92,11 @@ class IdamHelper extends Helper {
             description: serviceName,
             oauth2ClientId: serviceName,
             oauth2ClientSecret: 'autotestingservice',
-            oauth2RedirectUris: ['https://www.autotest.com'],
+            oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
             onboardingEndpoint: '/autotest',
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
-            activationRedirectUrl: "https://www.autotest.com",
+            activationRedirectUrl: "https://idam.testservice.gov.uk",
             selfRegistrationAllowed: true
         };
         return fetch(`${TestData.IDAM_API}/services`, {
@@ -241,6 +246,59 @@ class IdamHelper extends Helper {
          browser.close();
        });
    }
+
+  extractUrl(email) {
+     return (notifyClient
+         .getNotifications("email", "sending")
+         .then(response => {
+             console.log("Searching " + response.body.notifications.length + " emails(s)");
+             var result = response.body.notifications.find(obj => {
+                 if (obj.email_address === email) {
+                     // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
+                     return obj.email_address === email
+                 }
+             });
+             return result;
+         })
+       .then(emailResponse => {
+            if (emailResponse) {
+                var regex = "(https.+)"
+                var url = emailResponse.body.match(regex);
+                return url[0];
+            } else {
+                throw new Error('Email response is empty');
+            }
+        })
+     );
+  }
+
+  async getCurrentUrl() {
+    const helper = this.helpers['Puppeteer'];
+    console.log("Page is " + helper.page.url());
+    return helper.page.url();
+  }
+
+  interceptRequestsAfterSignin() {
+    const helper = this.helpers['Puppeteer'];
+    helper.page.setRequestInterception(true);
+    helper.page.on('request', request => {
+        if (request.url().indexOf('/authorize') > 0) {
+            request.continue();
+        } else {
+            request.respond({
+                status: 200,
+                contentType: 'application/javascript; charset=utf-8',
+                body: request.url()
+            });
+        }
+    });
+  }
+
+  resetRequestInterception() {
+      const helper = this.helpers['Puppeteer'];
+      helper.page.setRequestInterception(false);
+  }
+
 }
 
 module.exports = IdamHelper;

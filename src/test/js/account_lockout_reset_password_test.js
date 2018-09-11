@@ -34,17 +34,38 @@ return Promise.all([
 });
 
  Scenario('@functional @unlock My user account is unlocked when I reset my password - citizen', async (I) => {
-       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://www.autotest.com&client_id=' + serviceName);
-       I.click('Sign in to your account');
-       I.waitInUrl('/login', 180);
-       I.waitForText('Sign in or create an account', 20, 'h1');
-       I.lockAccount(citizenEmail);
-       I.waitForText('There is a problem with your account login details');
-       I.see('Your account is locked due to too many unsuccessful attempts.');
+       I.lockAccount(citizenEmail, serviceName);
        I.click('reset your password');
        I.waitForText('Reset your password', 20, 'h1');
        I.fillField('#email', citizenEmail);
        I.click('Submit');
        I.waitForText('Check your email', 20, 'h1');
-       await I.verifyEmailSent(citizenEmail);
- }).retry(TestData.SCENARIO_RETRY_LIMIT);
+       I.see('Check your email');
+       I.wait(2)
+       var resetPasswordUrl = await I.extractUrl(citizenEmail);
+       if (resetPasswordUrl) {
+         resetPasswordUrl = resetPasswordUrl.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
+       }
+       I.amOnPage(resetPasswordUrl);
+       I.waitForText('Create a new password', 20, 'h1');
+       I.seeTitleEquals('Reset Password - HMCTS Access');
+       I.fillField('#password1', 'Passw0rd1234');
+       I.fillField('#password2', 'Passw0rd1234');
+       I.click('Continue');
+       I.waitForText('Your password has been changed', 20, 'h1');
+       I.see('You can now sign in with your new password.')
+       I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister?redirect_uri=https://idam.testservice.gov.uk&client_id=' + serviceName);
+       I.click('Sign in to your account');
+       I.waitInUrl('/login', 180);
+       I.waitForText('Sign in or create an account', 20, 'h1');
+       I.fillField('#username', citizenEmail);
+       I.fillField('#password', 'Passw0rd1234');
+       I.scrollPageToBottom();
+       I.interceptRequestsAfterSignin();
+       I.click('Sign in');
+       I.waitForText('idam.testservice.gov.uk');
+       I.see('code=');
+       I.dontSee('error=');
+       I.resetRequestInterception();
+ });
+ // NOTE: Retrying this scenario is problematic.
