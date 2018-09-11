@@ -9,7 +9,7 @@ let citizenEmail;
 const serviceName = 'TEST_SERVICE_' + Date.now();
 const testMailSuffix = '@mailtest.gov.uk';
 const password = "Passw0rdIDAM"
-const serviceRedirectUri = "https://www.autotest.com";
+const serviceRedirectUri = "https://idam.testservice.gov.uk";
 
 BeforeSuite(async (I) => {
     randomUserLastName = await I.generateRandomText();
@@ -38,14 +38,14 @@ Scenario('@functional @login As a citizen user I can login', (I) => {
   var loginUrl = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName;
 
   I.amOnPage(loginUrl);
-  I.waitInUrl('/login', 180);
   I.waitForText('Sign in', 20, 'h1');
   I.fillField('#username', citizenEmail);
   I.fillField('#password', password);
+  I.interceptRequestsAfterSignin();
   I.click('Sign in');
-  I.waitInUrl(serviceRedirectUri, 180);
-  I.seeInCurrentUrl('code=');
-  I.dontSeeInCurrentUrl('error=');
+  I.waitForText(serviceRedirectUri);
+  I.see('code=');
+  I.dontSee('error=');
+  I.resetRequestInterception();
 
-}).retry(0);
-//}).retry(TestData.SCENARIO_RETRY_LIMIT);
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
