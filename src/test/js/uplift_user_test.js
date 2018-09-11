@@ -46,6 +46,5 @@ return Promise.all([
      I.fillField('#username', citizenEmail);
      I.click('Continue');
      I.waitForText('Check your email', 20, 'h1');
-     wait(20);
      await I.verifyEmailSent(citizenEmail);
  }).retry(0);
