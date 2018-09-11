@@ -23,6 +23,7 @@ allprojects  {
   apply plugin: 'org.owasp.dependencycheck'
   apply plugin: 'war'
   apply plugin: 'org.springframework.boot'
+  apply plugin: 'pmd'
 
   group = 'uk.gov.hmcts.reform.idam'
   description = 'idam-web-public'
