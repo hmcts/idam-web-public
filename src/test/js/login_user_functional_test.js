@@ -34,12 +34,12 @@ return Promise.all([
     ]);
 });
 
-Scenario('@functional @login As a citizen user I can login', (I) => {
+Scenario('@functional @login As a citizen user I can login with email in uppercase', (I) => {
   var loginUrl = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName;
 
   I.amOnPage(loginUrl);
   I.waitForText('Sign in', 20, 'h1');
-  I.fillField('#username', citizenEmail);
+  I.fillField('#username', citizenEmail.toUpperCase());
   I.fillField('#password', password);
   I.interceptRequestsAfterSignin();
   I.click('Sign in');
