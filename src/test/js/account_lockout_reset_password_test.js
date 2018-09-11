@@ -1,6 +1,6 @@
 var TestData = require('./config/test_data');
 
-Feature('When I am locked out of my account, resetting my password unlocks it');
+Feature('When I am locked out of my account, resetting my password unlocks it').retry(TestData.SCENARIO_RETRY_LIMIT);;
 
 let adminEmail;
 let randomUserLastName;
@@ -58,10 +58,11 @@ return Promise.all([
        I.fillField('#username', citizenEmail);
        I.fillField('#password', 'Passw0rd1234');
        I.scrollPageToBottom();
+       I.interceptRequestsAfterSignin();
        I.click('Sign in');
-       // TODO Check the redirect URL and its parameters
-       //I.waitInUrl('idam.testservice.gov.uk', 180);
-       //I.seeInCurrentUrl('idam.testservice.gov.uk');
-       //I.seeInCurrentUrl('code=');
-       //I.dontSeeInCurrentUrl('error=');
- }).retry(TestData.SCENARIO_RETRY_LIMIT);
+       I.waitForText('idam.testservice.gov.uk');
+       I.see('code=');
+       I.dontSee('error=');
+       I.resetRequestInterception();
+ });
+// NOTE: the feature can be retried, but not the individual scenario.

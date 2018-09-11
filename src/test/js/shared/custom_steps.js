@@ -7,53 +7,75 @@ module.exports = function() {
         var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=https://idam.testservice.gov.uk&client_id=' + serviceName + '&state=';
 
         // First
-        this.amOnPage(loginPage);
+        this.amOnPage(loginPage + 'attemptone');
         this.waitForText('Sign in', 180, 'h1');
         this.dontSee('Incorrect email or password');
         this.fillField('username', email);
         this.fillField('password', '111');
         this.scrollPageToBottom();
         this.click('Sign in');
+        this.waitInUrl('/authorize', 60);
+        this.seeInField('state', 'attemptone');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
         // Second
-        this.amOnPage(loginPage);
+        this.amOnPage(loginPage + 'attempttwo');
         this.waitForText('Sign in', 180, 'h1');
         this.dontSee('Incorrect email or password');
+        this.dontSeeInField('state', 'attemptone');
         this.fillField('username', email);
-        this.fillField('password', '111');
+        this.fillField('password', '111111');
         this.scrollPageToBottom();
         this.click('Sign in');
+        this.waitInUrl('/authorize', 60);
+        this.seeInField('state', 'attempttwo');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
         // Third
-        this.amOnPage(loginPage);
+        this.amOnPage(loginPage + 'attemptthree');
         this.waitForText('Sign in', 180, 'h1');
         this.dontSee('Incorrect email or password');
+        this.dontSeeInField('state', 'attemptone');
+        this.dontSeeInField('state', 'attempttwo');
         this.fillField('username', email);
-        this.fillField('password', '111');
+        this.fillField('password', '111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
+        this.waitInUrl('/authorize', 60);
+        this.seeInField('state', 'attemptthree');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
         // Fourth
-        this.amOnPage(loginPage);
+        this.amOnPage(loginPage + 'attemptfour');
         this.waitForText('Sign in', 180, 'h1');
         this.dontSee('Incorrect email or password');
+        this.dontSeeInField('state', 'attemptone');
+        this.dontSeeInField('state', 'attempttwo');
+        this.dontSeeInField('state', 'attemptthree');
         this.fillField('username', email);
-        this.fillField('password', '111');
+        this.fillField('password', '111111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
+        this.waitInUrl('/authorize', 60);
+        this.seeInField('state', 'attemptfour');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
+        // NOTE: Not clear why this wait is required, but without it you might not get the lockout error.
+        this.wait(10);
         // Fifth
-        this.amOnPage(loginPage);
+        this.amOnPage(loginPage + 'attemptfive');
         this.waitForText('Sign in', 180, 'h1');
         this.dontSee('Incorrect email or password');
+        this.dontSeeInField('state', 'attemptone');
+        this.dontSeeInField('state', 'attempttwo');
+        this.dontSeeInField('state', 'attemptthree');
+        this.dontSeeInField('state', 'attemptfour');
         this.fillField('username', email);
-        this.fillField('password', '111');
+        this.fillField('password', '111111111111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
+        this.waitInUrl('/authorize', 60);
+        this.seeInField('state', 'attemptfive');
         this.waitForText('There is a problem with your account login details', 20, 'h2');
         this.see('Your account is locked due to too many unsuccessful attempts.');
         this.see('You can reset your password');

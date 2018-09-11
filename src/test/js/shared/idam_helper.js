@@ -261,17 +261,44 @@ class IdamHelper extends Helper {
              return result;
          })
        .then(emailResponse => {
-           var regex = "(https.+)"
-           var url = emailResponse.body.match(regex);
-           return url[0];
+            if (emailResponse) {
+                var regex = "(https.+)"
+                var url = emailResponse.body.match(regex);
+                return url[0];
+            } else {
+                throw new Error('Email response is empty');
+            }
         })
-     )
-     .catch(err => {
-          console.log(err)
-          let browser = this.helpers['Puppeteer'].browser;
-          browser.close();
-     });
+     );
   }
+
+  async getCurrentUrl() {
+    const helper = this.helpers['Puppeteer'];
+    console.log("Page is " + helper.page.url());
+    return helper.page.url();
+  }
+
+  interceptRequestsAfterSignin() {
+    const helper = this.helpers['Puppeteer'];
+    helper.page.setRequestInterception(true);
+    helper.page.on('request', request => {
+        if (request.url().indexOf('/authorize') > 0) {
+            request.continue();
+        } else {
+            request.respond({
+                status: 200,
+                contentType: 'application/javascript; charset=utf-8',
+                body: request.url()
+            });
+        }
+    });
+  }
+
+  resetRequestInterception() {
+      const helper = this.helpers['Puppeteer'];
+      helper.page.setRequestInterception(false);
+  }
+
 }
 
 module.exports = IdamHelper;
