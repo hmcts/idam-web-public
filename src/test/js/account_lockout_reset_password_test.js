@@ -1,6 +1,6 @@
 var TestData = require('./config/test_data');
 
-Feature('When I am locked out of my account, resetting my password unlocks it').retry(TestData.SCENARIO_RETRY_LIMIT);;
+Feature('When I am locked out of my account, resetting my password unlocks it');
 
 let adminEmail;
 let randomUserLastName;
@@ -65,4 +65,4 @@ return Promise.all([
        I.dontSee('error=');
        I.resetRequestInterception();
  });
-// NOTE: the feature can be retried, but not the individual scenario.
+ // NOTE: Retrying this scenario is problematic.

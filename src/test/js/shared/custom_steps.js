@@ -60,8 +60,8 @@ module.exports = function() {
         this.seeInField('state', 'attemptfour');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
-        // NOTE: Not clear why this wait is required, but without it you might not get the lockout error.
-        this.wait(10);
+        // NOTE: This fifth attempt should have locked the account, but we will do one more to be sure.
+        // I think this is required because of a timing issue.
         // Fifth
         this.amOnPage(loginPage + 'attemptfive');
         this.waitForText('Sign in', 180, 'h1');
@@ -75,7 +75,22 @@ module.exports = function() {
         this.scrollPageToBottom();
         this.click('Sign in');
         this.waitInUrl('/authorize', 60);
-        this.seeInField('state', 'attemptfive');
+        this.wait(10);
+        // Final
+        this.amOnPage(loginPage + 'attemptfinal');
+        this.waitForText('Sign in', 180, 'h1');
+        this.dontSee('Incorrect email or password');
+        this.dontSeeInField('state', 'attemptone');
+        this.dontSeeInField('state', 'attempttwo');
+        this.dontSeeInField('state', 'attemptthree');
+        this.dontSeeInField('state', 'attemptfour');
+        this.dontSeeInField('state', 'attemptfive');
+        this.fillField('username', email);
+        this.fillField('password', '111111111111111111');
+        this.scrollPageToBottom();
+        this.click('Sign in');
+        this.waitInUrl('/authorize', 60);
+        this.seeInField('state', 'attemptfinal');
         this.waitForText('There is a problem with your account login details', 20, 'h2');
         this.see('Your account is locked due to too many unsuccessful attempts.');
         this.see('You can reset your password');
