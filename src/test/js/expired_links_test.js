@@ -8,4 +8,4 @@ Scenario('@smoke @expiredlinks I try to reset my password with an expired reset 
   I.waitForText('Sorry, your link has expired', 180, 'h1');
   I.see('Please contact customer services for more information.');
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
