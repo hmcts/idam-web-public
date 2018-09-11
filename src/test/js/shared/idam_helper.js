@@ -49,10 +49,10 @@ class IdamHelper extends Helper {
           description: serviceName,
           oauth2ClientId: serviceName,
           oauth2ClientSecret: 'autotestingservice',
-          oauth2RedirectUris: ['https://www.autotest.com'],
+          oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
           onboardingEndpoint: '/autotest',
           onboardingRoles: ['auto-private-beta_role'],
-          activationRedirectUrl: "https://www.autotest.com",
+          activationRedirectUrl: "https://idam.testservice.gov.uk",
           selfRegistrationAllowed: true
         };
       }else{
@@ -61,11 +61,11 @@ class IdamHelper extends Helper {
           description: serviceName,
           oauth2ClientId: serviceName,
           oauth2ClientSecret: 'autotestingservice',
-          oauth2RedirectUris: ['https://www.autotest.com'],
+          oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
           onboardingEndpoint: '/autotest',
           onboardingRoles: ['auto-private-beta_role'],
           allowedRoles: [roleId, 'auto-admin_role'],
-          activationRedirectUrl: "https://www.autotest.com",
+          activationRedirectUrl: "https://idam.testservice.gov.uk",
           selfRegistrationAllowed: true
         };
       }
@@ -87,11 +87,11 @@ class IdamHelper extends Helper {
             description: serviceName,
             oauth2ClientId: serviceName,
             oauth2ClientSecret: 'autotestingservice',
-            oauth2RedirectUris: ['https://www.autotest.com'],
+            oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
             onboardingEndpoint: '/autotest',
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
-            activationRedirectUrl: "https://www.autotest.com",
+            activationRedirectUrl: "https://idam.testservice.gov.uk",
             selfRegistrationAllowed: true
         };
         return fetch(`${TestData.IDAM_API}/services`, {
@@ -241,6 +241,79 @@ class IdamHelper extends Helper {
          browser.close();
        });
    }
+
+   getPin(firstname, lastname) {
+      const data = {
+        firstName: firstname,
+        lastName: lastname,
+      };
+      return fetch(`${TestData.IDAM_API}/pin`, {
+        agent: agent,
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' },
+      }).then(res => res.json())
+        .then((json) => {
+          return json.pin;
+        })
+       .catch(err => {
+         console.log(err)
+         let browser = this.helpers['Puppeteer'].browser;
+         browser.close();
+       });
+    }
+
+    loginAsPin(pin, clientId, serviceRedirect) {
+      return fetch(`${TestData.IDAM_API}/pin?client_id=${clientId}&redirect_uri=${serviceRedirect}`, {
+        agent: agent,
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'pin': pin },
+        redirect: 'manual',
+      }).then(response => {
+          var location = response.headers.get('location');
+          var code = location.match('(?<=code=)(.*)(?=&scope)');
+          return code[0];
+        })
+       .catch(err => {
+         console.log(err)
+         let browser = this.helpers['Puppeteer'].browser;
+         browser.close();
+       });
+    }
+
+    getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
+      const data = {
+        code: code,
+        client_id: serviceName,
+        redirect_uri: serviceRedirect,
+        client_secret: clientSecret,
+      };
+
+      const URLSearchParams = require('url').URLSearchParams;
+      var searchParams = new URLSearchParams();
+      searchParams.set('code', code);
+      searchParams.set('client_id', serviceName);
+      searchParams.set('redirect_uri', serviceRedirect);
+      searchParams.set('client_secret', clientSecret);
+
+      return fetch(`${TestData.IDAM_API}/oauth2/token`, {
+        agent: agent,
+        method: 'POST',
+        body: searchParams,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+      }).then(response => {
+          return response.json();
+       })
+       .then((json) => {
+          console.log("Token: " + json.access_token);
+          return json.access_token;
+       })
+       .catch(err => {
+          console.log(err)
+          let browser = this.helpers['Puppeteer'].browser;
+          browser.close();
+       });
+    }
 }
 
 module.exports = IdamHelper;
