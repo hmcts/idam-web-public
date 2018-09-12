@@ -25,7 +25,6 @@ if (TestData.NOTIFY_API_KEY) {
 }
 
 const URLSearchParams = require('url').URLSearchParams;
-var searchParams = new URLSearchParams();
 
 class IdamHelper extends Helper {
 
@@ -342,6 +341,7 @@ class IdamHelper extends Helper {
   }
 
   getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
+    var searchParams = new URLSearchParams();
     searchParams.set('code', code);
     searchParams.set('client_id', serviceName);
     searchParams.set('redirect_uri', serviceRedirect);
