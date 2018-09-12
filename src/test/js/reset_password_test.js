@@ -47,12 +47,8 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.see('Check your email');
-    I.wait(1);
+    I.wait(2);
     var resetPasswordUrl = await I.extractUrl(citizenEmail);
-    if (resetPasswordUrl) {
-        resetPasswordUrl = resetPasswordUrl.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
-    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
@@ -83,12 +79,8 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.fillField('#email', otherCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.see('Check your email');
-    I.wait(1);
+    I.wait(2);
     var resetPasswordUrl = await I.extractUrl(otherCitizenEmail);
-    if (resetPasswordUrl) {
-        resetPasswordUrl = resetPasswordUrl.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
-    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');

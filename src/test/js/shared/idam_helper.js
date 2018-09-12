@@ -227,26 +227,6 @@ class IdamHelper extends Helper {
         .catch(err => err);
     }
 
-   verifyEmailSent(email) {
-     notifyClient
-       .getNotifications("email", "sending")
-       .then(response => {
-         console.log("Searching " + response.body.notifications.length + " emails(s)");
-         var result = response.body.notifications.find(obj => {
-           if (obj.email_address === email) {
-             return obj.email_address === email
-           } else {
-             //console.log("ignoring unmatched email address " + obj.email_address);
-           }
-         })
-       })
-       .catch(err => {
-         console.log(err)
-         let browser = this.helpers['Puppeteer'].browser;
-         browser.close();
-       });
-   }
-
   extractUrl(searchEmail) {
     return(
         notifyClient
@@ -293,7 +273,9 @@ class IdamHelper extends Helper {
     if (emailResponse) {
         var regex = "(https.+)"
         var url = emailResponse.body.match(regex);
-        return url[0];
+        if (url[0]) {
+            return url[0].replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
+        }
     }
   }
 
