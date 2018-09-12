@@ -16,8 +16,13 @@ if (process.env.PROXY_SERVER) {
 }
 const agent = agentToUse;
 
+let notifyClient;
 const NotifyClient = require('notifications-node-client').NotifyClient;
-var notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
+if (TestData.NOTIFY_API_KEY) {
+  notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
+} else {
+  console.log("Notify client API key is not defined");
+}
 
 class IdamHelper extends Helper {
 
@@ -242,104 +247,130 @@ class IdamHelper extends Helper {
        });
    }
 
-   getPin(firstname, lastname) {
-      const data = {
+  extractUrl(email) {
+     return (notifyClient
+         .getNotifications("email", "sending")
+         .then(response => {
+             console.log("Searching " + response.body.notifications.length + " emails(s)");
+             var result = response.body.notifications.find(obj => {
+                 if (obj.email_address === email) {
+                     // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
+                     return obj.email_address === email
+                 }
+             });
+             return result;
+         })
+       .then(emailResponse => {
+            if (emailResponse) {
+                var regex = "(https.+)"
+                var url = emailResponse.body.match(regex);
+                return url[0];
+            } else {
+                throw new Error('Email response is empty');
+            }
+        })
+     );
+  }
+
+  async getCurrentUrl() {
+    const helper = this.helpers['Puppeteer'];
+    console.log("Page is " + helper.page.url());
+    return helper.page.url();
+  }
+
+  interceptRequestsAfterSignin() {
+    const helper = this.helpers['Puppeteer'];
+    helper.page.setRequestInterception(true);
+    helper.page.on('request', request => {
+        if (request.url().indexOf('/authorize') > 0) {
+            request.continue();
+        } else {
+            request.respond({
+                status: 200,
+                contentType: 'application/javascript; charset=utf-8',
+                body: request.url()
+            });
+        }
+    });
+  }
+
+  resetRequestInterception() {
+      const helper = this.helpers['Puppeteer'];
+      helper.page.setRequestInterception(false);
+  }
+
+  getPin(firstname, lastname) {
+    const data = {
         firstName: firstname,
         lastName: lastname,
-      };
-      return fetch(`${TestData.IDAM_API}/pin`, {
+    };
+    return fetch(`${TestData.IDAM_API}/pin`, {
         agent: agent,
         method: 'POST',
         body: JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' },
-      }).then(res => res.json())
-        .then((json) => {
-          return json.pin;
-        })
-       .catch(err => {
-         console.log(err)
-         let browser = this.helpers['Puppeteer'].browser;
-         browser.close();
-       });
-    }
+    }).then(res => res.json())
+    .then((json) => {
+        return json.pin;
+    })
+    .catch(err => {
+        console.log(err)
+        let browser = this.helpers['Puppeteer'].browser;
+        browser.close();
+    });
+  }
 
-    loginAsPin(pin, clientId, serviceRedirect) {
-      return fetch(`${TestData.IDAM_API}/pin?client_id=${clientId}&redirect_uri=${serviceRedirect}`, {
+  loginAsPin(pin, clientId, serviceRedirect) {
+    return fetch(`${TestData.IDAM_API}/pin?client_id=${clientId}&redirect_uri=${serviceRedirect}`, {
         agent: agent,
         method: 'GET',
         headers: { 'Content-Type': 'application/json', 'pin': pin },
         redirect: 'manual',
-      }).then(response => {
-          var location = response.headers.get('location');
-          var code = location.match('(?<=code=)(.*)(?=&scope)');
-          return code[0];
-        })
-       .catch(err => {
-         console.log(err)
-         let browser = this.helpers['Puppeteer'].browser;
-         browser.close();
-       });
-    }
+    }).then(response => {
+        var location = response.headers.get('location');
+        var code = location.match('(?<=code=)(.*)(?=&scope)');
+        return code[0];
+    })
+    .catch(err => {
+       console.log(err)
+       let browser = this.helpers['Puppeteer'].browser;
+       browser.close();
+    });
+  }
 
-    getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
-      const data = {
+  getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
+    const data = {
         code: code,
         client_id: serviceName,
         redirect_uri: serviceRedirect,
         client_secret: clientSecret,
-      };
+    };
 
-      const URLSearchParams = require('url').URLSearchParams;
-      var searchParams = new URLSearchParams();
-      searchParams.set('code', code);
-      searchParams.set('client_id', serviceName);
-      searchParams.set('redirect_uri', serviceRedirect);
-      searchParams.set('client_secret', clientSecret);
+    const URLSearchParams = require('url').URLSearchParams;
+    var searchParams = new URLSearchParams();
+    searchParams.set('code', code);
+    searchParams.set('client_id', serviceName);
+    searchParams.set('redirect_uri', serviceRedirect);
+    searchParams.set('client_secret', clientSecret);
 
-      return fetch(`${TestData.IDAM_API}/oauth2/token`, {
+    return fetch(`${TestData.IDAM_API}/oauth2/token`, {
         agent: agent,
         method: 'POST',
         body: searchParams,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
-      }).then(response => {
-          return response.json();
-       })
-       .then((json) => {
-          console.log("Token: " + json.access_token);
-          return json.access_token;
-       })
-       .catch(err => {
-          console.log(err)
-          let browser = this.helpers['Puppeteer'].browser;
-          browser.close();
-       });
-    }
-
-      extractUrl(email) {
-         return (notifyClient
-             .getNotifications("email", "sending")
-             .then(response => {
-                 console.log("Searching " + response.body.notifications.length + " emails(s)");
-                 var result = response.body.notifications.find(obj => {
-                     if (obj.email_address === email) {
-                         // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
-                         console.log("Body ==> " + obj.body);
-                         return obj.email_address === email
-                     }
-                 });
-                 return result;
-             })
-           .then(emailResponse => {
-                if (emailResponse) {
-                    var regex = "(https.+)"
-                    var url = emailResponse.body.match(regex);
-                    return url[0];
-                } else {
-                    throw new Error('Email response is empty');
-                }
-            })
-         );
-      }
+     }).then(response => {
+        return response.json();
+     })
+     .then((json) => {
+        console.log("Token: " + json.access_token);
+        return json.access_token;
+     })
+     .catch(err => {
+        console.log(err)
+        let browser = this.helpers['Puppeteer'].browser;
+        browser.close();
+     });
+  }
 }
 
 module.exports = IdamHelper;
