@@ -450,6 +450,9 @@ public class AppController {
                     forgotPasswordRequest.getEmail(),
                     forgotPasswordRequest.getRedirectUri(),
                     forgotPasswordRequest.getClientId());
+
+                model.put(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(forgotPasswordRequest.getClientId()));
+
                 return FORGOTPASSWORDSUCCESS_VIEW;
             }
         } catch (Exception e) {
@@ -553,8 +556,10 @@ public class AppController {
     }
 
     private boolean isSelfRegistrationEnabled(String clientId) {
-
-        Optional<Service> service = spiService.getServiceByClientId(clientId);
-        return service.isPresent() && service.get().getSelfRegistrationAllowed();
+        if(Objects.nonNull(clientId) && !clientId.isEmpty()) {
+            Optional<Service> service = spiService.getServiceByClientId(clientId);
+            return service.isPresent() && service.get().getSelfRegistrationAllowed();
+        }
+        return false;
     }
 }

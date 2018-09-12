@@ -15,7 +15,8 @@ env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
 
 List<LinkedHashMap<String, Object>> secrets = [
     secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
-    secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD')
+    secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
+    secret('notify-api-key', 'NOTIFY_API_KEY')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -39,4 +40,57 @@ withPipeline(type, product, component) {
             reportName           : "IdAM Web Public Code Coverage Report"
         ]
     }
+
+    after('smoketest:idam-preview') {
+        archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E smoke tests result"
+        ]
+    }
+
+    after('smoketest:idam-aat') {
+        archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E smoke tests result"
+        ]
+    }
+    
+    after('functionalTest:idam-preview') {
+        archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E functional tests result"
+        ]
+    }
+
+    after('functionalTest:idam-aat') {
+        archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E functional tests result"
+        ]
+    }
+
 }
