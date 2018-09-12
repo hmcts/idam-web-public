@@ -314,6 +314,32 @@ class IdamHelper extends Helper {
           browser.close();
        });
     }
+
+      extractUrl(email) {
+         return (notifyClient
+             .getNotifications("email", "sending")
+             .then(response => {
+                 console.log("Searching " + response.body.notifications.length + " emails(s)");
+                 var result = response.body.notifications.find(obj => {
+                     if (obj.email_address === email) {
+                         // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
+                         console.log("Body ==> " + obj.body);
+                         return obj.email_address === email
+                     }
+                 });
+                 return result;
+             })
+           .then(emailResponse => {
+                if (emailResponse) {
+                    var regex = "(https.+)"
+                    var url = emailResponse.body.match(regex);
+                    return url[0];
+                } else {
+                    throw new Error('Email response is empty');
+                }
+            })
+         );
+      }
 }
 
 module.exports = IdamHelper;

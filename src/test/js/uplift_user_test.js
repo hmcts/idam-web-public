@@ -3,15 +3,19 @@ var TestData = require('./config/test_data');
 Feature('I am able to uplift a user');
 
 let adminEmail;
+let randomUserFirstName;
 let randomUserLastName;
 let citizenEmail;
 
 const serviceName = 'TEST_SERVICE_' + Date.now();
 const testMailSuffix = '@mailtest.gov.uk';
 const password = "Passw0rdIDAM"
+const redirectUri = 'https://idam.testservice.gov.uk';
+const clientSecret = 'autotestingservice';
 
 BeforeSuite(async (I) => {
     randomUserLastName = await I.generateRandomText();
+    randomUserFirstName = await I.generateRandomText();
     adminEmail = 'admin.' + randomUserLastName + testMailSuffix;
     citizenEmail = 'citizen.' + randomUserLastName + testMailSuffix;
 
@@ -22,7 +26,6 @@ BeforeSuite(async (I) => {
     var serviceRoles = [serviceName + "_beta", serviceName + "_admin", serviceName + "_super"];
     await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token);
     await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_admin", "IDAM_ADMIN_USER"]);
-    await I.createUserWithRoles(citizenEmail, 'Citizen', ["citizen"]);
 });
 
 AfterSuite(async (I) => {
@@ -33,18 +36,29 @@ return Promise.all([
     ]);
 });
 
- Scenario('@functional @uplift My user account is unlocked when I reset my password - citizen', async (I) => {
-     var pin = await I.getPin('Test', 'User');
+ Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async (I) => {
+     var pin = await I.getPin(randomUserFirstName, randomUserLastName);
 
-     var code = await I.loginAsPin(pin, serviceName, 'https://idam.testservice.gov.uk');
+     var code = await I.loginAsPin(pin, serviceName, redirectUri);
 
-     var accessToken = await I.getAccessToken(code, serviceName, 'https://idam.testservice.gov.uk', 'autotestingservice');
+     var accessToken = await I.getAccessToken(code, serviceName, redirectUri, clientSecret);
 
-     I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=https://idam.testservice.gov.uk&jwt=' + accessToken);
-     I.fillField('#firstName', 'Test');
-     I.fillField('#lastName', 'User');
+     I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
+     I.fillField('#firstName', randomUserFirstName);
+     I.fillField('#lastName', randomUserLastName);
      I.fillField('#username', citizenEmail);
+     I.scrollPageToBottom();
      I.click('Continue');
      I.waitForText('Check your email', 20, 'h1');
-     await I.verifyEmailSent(citizenEmail);
- }).retry(0);
+     var url = await I.extractUrl(citizenEmail);
+     if (url) {
+        url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
+     }
+     I.amOnPage(url);
+     I.waitForText('Create a password', 20, 'h1');
+     I.fillField('#password1', 'Passw0rd1234');
+     I.fillField('#password2', 'Passw0rd1234');
+     I.click('Continue');
+     I.waitForText('Account created', 20, 'h1');
+     I.see('You can now sign in to your account.');
+ }).retry(TestData.SCENARIO_RETRY_LIMIT);
