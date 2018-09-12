@@ -6,6 +6,7 @@ let adminEmail;
 let randomUserFirstName;
 let randomUserLastName;
 let citizenEmail;
+let accessToken;
 
 const serviceName = 'TEST_SERVICE_' + Date.now();
 const testMailSuffix = '@mailtest.gov.uk';
@@ -26,6 +27,10 @@ BeforeSuite(async (I) => {
     var serviceRoles = [serviceName + "_beta", serviceName + "_admin", serviceName + "_super"];
     await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token);
     await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_admin", "IDAM_ADMIN_USER"]);
+
+    var pin = await I.getPin(randomUserFirstName, randomUserLastName);
+    var code = await I.loginAsPin(pin, serviceName, redirectUri);
+    accessToken = await I.getAccessToken(code, serviceName, redirectUri, clientSecret);
 });
 
 AfterSuite(async (I) => {
@@ -37,12 +42,6 @@ return Promise.all([
 });
 
  Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async (I) => {
-     var pin = await I.getPin(randomUserFirstName, randomUserLastName);
-
-     var code = await I.loginAsPin(pin, serviceName, redirectUri);
-
-     var accessToken = await I.getAccessToken(code, serviceName, redirectUri, clientSecret);
-
      I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
      I.fillField('#firstName', randomUserFirstName);
      I.fillField('#lastName', randomUserLastName);

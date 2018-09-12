@@ -24,6 +24,9 @@ if (TestData.NOTIFY_API_KEY) {
   console.log("Notify client API key is not defined");
 }
 
+const URLSearchParams = require('url').URLSearchParams;
+var searchParams = new URLSearchParams();
+
 class IdamHelper extends Helper {
 
     async createServiceData(serviceName){
@@ -339,15 +342,6 @@ class IdamHelper extends Helper {
   }
 
   getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
-    const data = {
-        code: code,
-        client_id: serviceName,
-        redirect_uri: serviceRedirect,
-        client_secret: clientSecret,
-    };
-
-    const URLSearchParams = require('url').URLSearchParams;
-    var searchParams = new URLSearchParams();
     searchParams.set('code', code);
     searchParams.set('client_id', serviceName);
     searchParams.set('redirect_uri', serviceRedirect);
