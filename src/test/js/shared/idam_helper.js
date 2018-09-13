@@ -24,6 +24,8 @@ if (TestData.NOTIFY_API_KEY) {
   console.log("Notify client API key is not defined");
 }
 
+const URLSearchParams = require('url').URLSearchParams;
+
 class IdamHelper extends Helper {
 
     async createServiceData(serviceName){
@@ -299,6 +301,70 @@ class IdamHelper extends Helper {
       helper.page.setRequestInterception(false);
   }
 
+  getPin(firstname, lastname) {
+    const data = {
+        firstName: firstname,
+        lastName: lastname,
+    };
+    return fetch(`${TestData.IDAM_API}/pin`, {
+        agent: agent,
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' },
+    }).then(res => res.json())
+    .then((json) => {
+        return json.pin;
+    })
+    .catch(err => {
+        console.log(err)
+        let browser = this.helpers['Puppeteer'].browser;
+        browser.close();
+    });
+  }
+
+  loginAsPin(pin, clientId, serviceRedirect) {
+    return fetch(`${TestData.IDAM_API}/pin?client_id=${clientId}&redirect_uri=${serviceRedirect}`, {
+        agent: agent,
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'pin': pin },
+        redirect: 'manual',
+    }).then(response => {
+        var location = response.headers.get('location');
+        var code = location.match('(?<=code=)(.*)(?=&scope)');
+        return code[0];
+    })
+    .catch(err => {
+       console.log(err)
+       let browser = this.helpers['Puppeteer'].browser;
+       browser.close();
+    });
+  }
+
+  getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
+    var searchParams = new URLSearchParams();
+    searchParams.set('code', code);
+    searchParams.set('client_id', serviceName);
+    searchParams.set('redirect_uri', serviceRedirect);
+    searchParams.set('client_secret', clientSecret);
+
+    return fetch(`${TestData.IDAM_API}/oauth2/token`, {
+        agent: agent,
+        method: 'POST',
+        body: searchParams,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+     }).then(response => {
+        return response.json();
+     })
+     .then((json) => {
+        console.log("Token: " + json.access_token);
+        return json.access_token;
+     })
+     .catch(err => {
+        console.log(err)
+        let browser = this.helpers['Puppeteer'].browser;
+        browser.close();
+     });
+  }
 }
 
 module.exports = IdamHelper;
