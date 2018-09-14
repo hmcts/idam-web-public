@@ -7,14 +7,14 @@ const setupConfig = {
     'timeout': 60000,
     "helpers": {
         "WebDriverIO": {
-            "url": "https://idam-web-public.aat.platform.hmcts.net",
+            "url": process.env.TEST_URL,
             "browser": supportedBrowsers[browser].browserName,
             "cssSelectorsEnabled": "true",
             "ignore-certificate-errors": "true",
             "host": "ondemand.saucelabs.com",
             "port": 80,
-            "user": "idam",
-            "key": "a3a5fa68-4316-4b67-aa9f-3e614b438da7",
+            "user": process.env.SAUCE_USERNAME,
+            "key": process.env.SAUCE_ACCESS_KEY,
             "desiredCapabilities" : getDesiredCapabilities(),
         },
         "idam_helper": {
