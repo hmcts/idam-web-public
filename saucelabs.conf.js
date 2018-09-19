@@ -1,5 +1,5 @@
 const supportedBrowsers = require('./src/test/js/config/supportedBrowsers.js');
-const browser = process.env.SAUCELABS_BROWSER || "chrome_mac_latest";
+const browser = process.env.SAUCELABS_BROWSER || "ie9_win7";
 const tunnelName = process.env.TUNNEL_IDENTIFIER || 'reformtunnel';
 const setupConfig = {
     'tests': "./src/test/js/*.js",
@@ -16,6 +16,11 @@ const setupConfig = {
             "user": process.env.SAUCE_USERNAME,
             "key": process.env.SAUCE_ACCESS_KEY,
             "desiredCapabilities" : getDesiredCapabilities(),
+            "waitforTimeout": 60000,
+            "timeouts": {
+                "script": 60000,
+                "page load": 60000
+            }
         },
         "idam_helper": {
             'require': './src/test/js/shared/idam_helper.js'

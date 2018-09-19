@@ -16,7 +16,17 @@ echo
 for i in "${browsersArray[@]}"
 do
     echo "*** Testing $i ***"
+
+    FOLDERNAME="$i-$(date +%s)"
+
+    mkdir ../../../../output/$FOLDERNAME
+
     SAUCELABS_BROWSER=$i TUNNEL_IDENTIFIER=reformtunnel npm run test-crossbrowser-e2e
+
+    for f in ../../../../output/*.*; do
+        echo $f
+        mv $f ../../../../output/$FOLDERNAME
+    done
 
     exitStatus=$?
     if [ $exitStatus -ne 0 ]; then

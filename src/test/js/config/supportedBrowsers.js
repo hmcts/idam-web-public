@@ -13,16 +13,16 @@ const supportedBrowsers = {
                 'nativeEvents': false,
                 'ignoreProtectedModeSettings': true,
                 'version': '8'
-            }
-//    'ie9_win7': {
-//        'browserName': 'internet explorer',
-//        'name': 'IE9_Win7',
-//        'platform': 'Windows 7',
-//        'ignoreZoomSetting': true,
-//        'nativeEvents': false,
-//        'ignoreProtectedModeSettings': true,
-//        'version': '9'
-//    },
+            },
+    'ie9_win7': {
+        'browserName': 'internet explorer',
+        'name': 'IE9_Win7',
+        'platform': 'Windows 7',
+        'ignoreZoomSetting': true,
+        'nativeEvents': false,
+        'ignoreProtectedModeSettings': true,
+        'version': '9'
+    },
 //    'ie10_win7': {
 //        'browserName': 'internet explorer',
 //        'name': 'IE10_Win7',

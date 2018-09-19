@@ -56,7 +56,7 @@ return Promise.all([
        I.waitForText('Sign in or create an account', 20, 'h1');
        I.fillField('#username', citizenEmail);
        I.fillField('#password', 'Passw0rd1234');
-       I.scrollPageToBottom();
+       //XB: I.scrollPageToBottom();
        I.interceptRequestsAfterSignin();
        I.click('Sign in');
        I.waitForText('idam.testservice.gov.uk');

@@ -46,7 +46,7 @@ return Promise.all([
      I.fillField('#firstName', randomUserFirstName);
      I.fillField('#lastName', randomUserLastName);
      I.fillField('#username', citizenEmail);
-     I.scrollPageToBottom();
+     //XB: I.scrollPageToBottom();
      I.click('Continue');
      I.waitForText('Check your email', 20, 'h1');
      var url = await I.extractUrl(citizenEmail);

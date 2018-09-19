@@ -12,7 +12,7 @@ module.exports = function() {
         this.dontSee('Incorrect email or password');
         this.fillField('username', email);
         this.fillField('password', '111');
-        this.scrollPageToBottom();
+        //XB: this.scrollPageToBottom();
         this.click('Sign in');
         this.waitInUrl('/authorize', 60);
         this.seeInField('#state', 'attemptone');
@@ -25,7 +25,7 @@ module.exports = function() {
         this.dontSeeInField('#state', 'attemptone');
         this.fillField('username', email);
         this.fillField('password', '111111');
-        this.scrollPageToBottom();
+        //XB: this.scrollPageToBottom();
         this.click('Sign in');
         this.waitInUrl('/authorize', 60);
         this.seeInField('#state', 'attempttwo');
@@ -39,7 +39,7 @@ module.exports = function() {
         this.dontSeeInField('#state', 'attempttwo');
         this.fillField('username', email);
         this.fillField('password', '111111111');
-        this.scrollPageToBottom();
+        //XB: this.scrollPageToBottom();
         this.click('Sign in');
         this.waitInUrl('/authorize', 60);
         this.seeInField('#state', 'attemptthree');
@@ -54,7 +54,7 @@ module.exports = function() {
         this.dontSeeInField('#state', 'attemptthree');
         this.fillField('username', email);
         this.fillField('password', '111111111111');
-        this.scrollPageToBottom();
+        //XB: this.scrollPageToBottom();
         this.click('Sign in');
         this.waitInUrl('/authorize', 60);
         this.seeInField('#state', 'attemptfour');
@@ -72,7 +72,7 @@ module.exports = function() {
         this.dontSeeInField('#state', 'attemptfour');
         this.fillField('username', email);
         this.fillField('password', '111111111111111111');
-        this.scrollPageToBottom();
+        //XB: this.scrollPageToBottom();
         this.click('Sign in');
         this.waitInUrl('/authorize', 60);
         this.wait(10);
@@ -87,7 +87,7 @@ module.exports = function() {
         this.dontSeeInField('#state', 'attemptfive');
         this.fillField('username', email);
         this.fillField('password', '111111111111111111');
-        this.scrollPageToBottom();
+        //XB: this.scrollPageToBottom();
         this.click('Sign in');
         this.waitInUrl('/authorize', 60);
         this.seeInField('#state', 'attemptfinal');
