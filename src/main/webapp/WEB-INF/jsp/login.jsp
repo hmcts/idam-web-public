@@ -164,10 +164,6 @@
                 <input class="button" type="submit" name="save"
                        value="<spring:message code="public.login.form.submit" />">
 
-                <form:input path="redirect_uri" type="hidden" id="redirect_uri" name="redirect_uri"/>
-                <form:input path="client_id" type="hidden" id="client_id" name="client_id"/>
-                <form:input path="state" type="hidden" id="state" name="state"/>
-                <form:input path="response_type" type="hidden" id="response_type" name="response_type"/>
                 <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled" name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
             </div>
             <c:if test="${selfRegistrationEnabled}">
