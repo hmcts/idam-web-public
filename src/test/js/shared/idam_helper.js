@@ -205,6 +205,7 @@ class IdamHelper extends Helper {
     }
 
     createUserWithRoles(email, forename, userRoles) {
+      console.log('Creating user with email: ', email);
       var codeUserRoles = [];
       for (var i=0;i<userRoles.length;i++) {
         codeUserRoles.push({'code': userRoles[i]});
@@ -324,8 +325,8 @@ class IdamHelper extends Helper {
     })
     .catch(err => {
         console.log(err)
-        let browser = this.helpers['Puppeteer'].browser;
-        browser.close();
+        //XB: let browser = this.helpers['Puppeteer'].browser;
+        //XB: browser.close();
     });
   }
 
@@ -342,8 +343,8 @@ class IdamHelper extends Helper {
     })
     .catch(err => {
        console.log(err)
-       let browser = this.helpers['Puppeteer'].browser;
-       browser.close();
+       //XB: let browser = this.helpers['Puppeteer'].browser;
+       //XB: browser.close();
     });
   }
 
@@ -368,8 +369,8 @@ class IdamHelper extends Helper {
      })
      .catch(err => {
         console.log(err)
-        let browser = this.helpers['Puppeteer'].browser;
-        browser.close();
+        //XB: let browser = this.helpers['Puppeteer'].browser;
+        //XB: browser.close();
      });
   }
 }

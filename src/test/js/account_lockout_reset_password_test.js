@@ -57,11 +57,13 @@ return Promise.all([
        I.fillField('#username', citizenEmail);
        I.fillField('#password', 'Passw0rd1234');
        //XB: I.scrollPageToBottom();
-       I.interceptRequestsAfterSignin();
+       //XB: I.interceptRequestsAfterSignin();
+       I.wait(2);
        I.click('Sign in');
-       I.waitForText('idam.testservice.gov.uk');
-       I.see('code=');
-       I.dontSee('error=');
-       I.resetRequestInterception();
+       I.wait(10);
+       I.seeInCurrentUrl('idam.testservice.gov.uk');
+       I.seeInCurrentUrl('code=');
+       I.dontSeeInCurrentUrl('error=');
+       //XB: I.resetRequestInterception();
  });
  // NOTE: Retrying this scenario is problematic.

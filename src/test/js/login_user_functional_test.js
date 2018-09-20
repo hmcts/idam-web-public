@@ -40,8 +40,9 @@ Scenario('@functional @login As a citizen user I can login with email in upperca
   I.waitForText('Sign in', 20, 'h1');
   I.fillField('#username', citizenEmail.toUpperCase());
   I.fillField('#password', password);
+  I.wait(2);
   I.click('Sign in');
-  I.wait(5);
+  I.wait(10);
   I.seeInCurrentUrl('code=');
   I.dontSeeInCurrentUrl('error=');
 

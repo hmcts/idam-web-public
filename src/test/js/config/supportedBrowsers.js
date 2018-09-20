@@ -14,15 +14,15 @@ const supportedBrowsers = {
         'ignoreProtectedModeSettings': true,
         'version': '8'
     },
-    'ie9_win7': {
-        'browserName': 'internet explorer',
-        'name': 'IE9_Win7',
-        'platform': 'Windows 7',
-        'ignoreZoomSetting': true,
-        'nativeEvents': false,
-        'ignoreProtectedModeSettings': true,
-        'version': '9'
-    },
+//    'ie9_win7': {
+//        'browserName': 'internet explorer',
+//        'name': 'IE9_Win7',
+//        'platform': 'Windows 7',
+//        'ignoreZoomSetting': true,
+//        'nativeEvents': false,
+//        'ignoreProtectedModeSettings': true,
+//        'version': '9'
+//    },
 //    'ie10_win7': {
 //        'browserName': 'internet explorer',
 //        'name': 'IE10_Win7',
@@ -59,12 +59,12 @@ const supportedBrowsers = {
 //        'ignoreProtectedModeSettings': true,
 //        'version': '11'
 //    },
-    // 'edge_latest': {
-    //     'browserName': 'MicrosoftEdge',
-    //     'name': 'IEEdge_LATEST',
-    //     'platform': 'Windows 10',
-    //     'version': 'latest'
-    // },
+     'edge_latest': {
+         'browserName': 'MicrosoftEdge',
+         'name': 'IEEdge_LATEST',
+         'platform': 'Windows 10',
+         'version': 'latest'
+     },
     // 'edge_previous': {
     //     'browserName': 'MicrosoftEdge',
     //     'name': 'IEEdge_PREVIOUS',
@@ -78,12 +78,12 @@ const supportedBrowsers = {
 //        'platform': 'Windows 10',
 //        'version': 'latest'
 //    },
-//    'chrome_win_previous': {
-//        'browserName': 'chrome',
-//        'name': 'WIN_CHROME_PREVIOUS',
-//        'platform': 'Windows 8.1',
-//        'version': 'latest-1'
-//    },
+    'chrome_win_previous': {
+        'browserName': 'chrome',
+        'name': 'WIN_CHROME_PREVIOUS',
+        'platform': 'Windows 8.1',
+        'version': 'latest-1'
+    },
 //    'chrome_mac_previous': {
 //        'browserName': 'chrome',
 //        'name': 'MAC_CHROME_PREVIOUS',
@@ -91,12 +91,12 @@ const supportedBrowsers = {
 //        'version': 'latest-1'
 //    },
 //
-//    'firefox_win_latest': {
-//        'browserName': 'firefox',
-//        'name': 'WIN_FIREFOX_LATEST',
-//        'platform': 'Windows 10',
-//        'version': 'latest'
-//    },
+    'firefox_win_latest': {
+        'browserName': 'firefox',
+        'name': 'WIN_FIREFOX_LATEST',
+        'platform': 'Windows 10',
+        'version': 'latest'
+    },
     // 'firefox_win_previous': {
     //     'browserName': 'firefox',
     //     'name': 'WIN_FIREFOX_PREVIOUS',
@@ -127,15 +127,15 @@ const supportedBrowsers = {
     //     'platform': 'OS X 10.12',
     //     'version': '10.0'
     // },
-    // 'iPhone6s_iOS9': {
-    //     'browserName': 'safari',
-    //     'appiumVersion': '1.6.4',
-    //     'deviceName': 'iPhone 6s Simulator',
-    //     'deviceOrientation': 'portrait',
-    //     'name': 'IPHONE6S_IOS9',
-    //     'platformVersion': '9.3',
-    //     'platformName': 'iOS'
-    // },
+     'iPhone6s_iOS9': {
+         'browserName': 'safari',
+         'appiumVersion': '1.6.4',
+         'deviceName': 'iPhone 6s Simulator',
+         'deviceOrientation': 'portrait',
+         'name': 'IPHONE6S_IOS9',
+         'platformVersion': '9.3',
+         'platformName': 'iOS'
+     },
     // 'iPhone7_iOS10': {
     //     'browserName': 'safari',
     //     'appiumVersion': '1.6.4',
@@ -145,15 +145,15 @@ const supportedBrowsers = {
     //     'platformVersion': '10.2',
     //     'platformName': 'iOS'
     // },
-    // 'android4-4_samsungS4': {
-    //     'browserName': 'Browser',
-    //     'appiumVersion': '1.6.4',
-    //     'deviceName': 'Samsung Galaxy S4 Emulator',
-    //     'deviceOrientation': 'portrait',
-    //     'name': 'ANDROID4-4_SAMSUNGS4',
-    //     'platformVersion': '4.4',
-    //     'platformName': 'Android'
-    // },
+     'android4-4_samsungS4': {
+         'browserName': 'Browser',
+         'appiumVersion': '1.6.4',
+         'deviceName': 'Samsung Galaxy S4 Emulator',
+         'deviceOrientation': 'portrait',
+         'name': 'ANDROID4-4_SAMSUNGS4',
+         'platformVersion': '4.4',
+         'platformName': 'Android'
+     },
     // 'android6-0_chrome': {
     //     'browserName': 'Chrome',
     //     'appiumVersion': '1.6.4',
