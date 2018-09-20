@@ -294,13 +294,13 @@ public class AppController {
                 if (responseUrl != null) {
                     nextPage = "redirect:" + responseUrl;
                 } else {
-                    log.info("There is a problem while login in  user - " + obfuscateMail(request.getUsername()));
+                    log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
                     model.addAttribute(HAS_LOGIN_FAILED, true);
                     bindingResult.reject("Login failure");
                 }
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
-            log.info("Login failed for user - " + obfuscateMail(request.getUsername()));
+            log.info("Login failed for user - " + obfuscateEmailAddress(request.getUsername()));
             if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
 
                 getLoginFailureReason(he, model, bindingResult);
@@ -527,7 +527,7 @@ public class AppController {
         return true;
     }
 
-    private String obfuscateMail(String email) {
+    private String obfuscateEmailAddress(String email) {
         int start = email.indexOf("@");
         if (start < 0) {
             return email;
