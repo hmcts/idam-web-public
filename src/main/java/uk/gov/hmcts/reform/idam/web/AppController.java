@@ -528,14 +528,7 @@ public class AppController {
     }
 
     private String obfuscateEmailAddress(String email) {
-        int start = email.indexOf("@");
-        if (start < 0) {
-            return email;
-        }
-
-        StringBuilder sbEmail = new StringBuilder(email);
-        sbEmail.replace(0, start, "******");
-        return sbEmail.toString();
+        return email.replaceAll("(^[^@]{3}|(?!^)\\G)[^@]", "$1*");
     }
 
     @RequestMapping("/cookies")
