@@ -163,7 +163,7 @@
 
                 <input class="button" type="submit" name="save"
                        value="<spring:message code="public.login.form.submit" />">
-
+                <form:input path="state" type="hidden" id="state" name="state"/>
                 <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled" name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
             </div>
             <c:if test="${selfRegistrationEnabled}">
