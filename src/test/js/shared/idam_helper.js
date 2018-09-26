@@ -19,6 +19,7 @@ const agent = agentToUse;
 let notifyClient;
 const NotifyClient = require('notifications-node-client').NotifyClient;
 if (TestData.NOTIFY_API_KEY) {
+  console.log("Notify client API key is " + TestData.NOTIFY_API_KEY);
   notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
 } else {
   console.log("Notify client API key is not defined");
