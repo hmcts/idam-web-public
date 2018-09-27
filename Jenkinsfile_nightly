@@ -17,7 +17,8 @@ withNightlyPipeline(type, product, component) {
     enableMutationTest()
 
     after('mutationTest') {
-
-        sh "./gradlew --info sonarqube"
+        withSonarQubeEnv("SonarQube") {
+          sh "./gradlew --info sonarqube"
+        }
     }
 }
