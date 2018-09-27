@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -178,7 +177,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put correct data in model and return login view
-     * @see AppController#login(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
     @Test
     public void login_shouldPutCorrectDataInModelAndReturnLoginView() throws Exception {
@@ -204,7 +203,7 @@ public class AppControllerTest {
 
     /**
      * @verifies set self-registration to false if disabled for the service
-     * @see AppController#login(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
     @Test public void login_shouldSetSelfRegistrationToFalseIfDisabledForTheService() throws Exception {
 
@@ -225,7 +224,7 @@ public class AppControllerTest {
 
     /**
      * @verifies set self-registration to false if the clientId is invalid
-     * @see AppController#login(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
     @Test public void login_shouldSetSelfRegistrationToFalseIfTheClientIdIsInvalid() throws Exception {
 
@@ -747,7 +746,7 @@ public class AppControllerTest {
 
     /**
      * @verifies return error page view if OAuth2 details are missing
-     * @see AppController#login(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
     @Test
     public void login_shouldReturnErrorPageViewIfOAuth2DetailsAreMissing() throws Exception {
@@ -1167,10 +1166,10 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model correct data  then call authorize service and redirect using redirect url returned by service
-     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
+     * @see AppController#authorize(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void login_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
+    public void authorize_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
 
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(REDIRECT_URI);
 
@@ -1189,10 +1188,10 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model correct data if username or  password are empty.
-     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
+     * @see AppController#authorize(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void login_shouldPutInModelCorrectDataIfUsernameOrPasswordAreEmpty() throws Exception {
+    public void authorize_shouldPutInModelCorrectDataIfUsernameOrPasswordAreEmpty() throws Exception {
         mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, BLANK)
             .param(PASSWORD_PARAMETER, BLANK)
@@ -1209,10 +1208,10 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model the correct data and return login view if authorize service doesn't return a response url
-     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
+     * @see AppController#authorize(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void login_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
+    public void authorize_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(MISSING);
 
         mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
@@ -1229,10 +1228,10 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
-     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
+     * @see AppController#authorize(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void login_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
+    public void authorize_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
 
         mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
@@ -1264,7 +1263,6 @@ public class AppControllerTest {
 
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
 
-
         mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
@@ -1276,15 +1274,14 @@ public class AppControllerTest {
             .andExpect(status().isOk())
 
             .andExpect(view().name(LOGIN_VIEW));
-
     }
 
     /**
      * @verifies put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
-     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
+     * @see AppController#authorize(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void login_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
+    public void authorize_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
         given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
         mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
@@ -1297,9 +1294,7 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(view().name(LOGIN_VIEW));
-
     }
-
 
     /**
      * @verifies put in model correct error data and return loginWithPin view if pin is missing.
@@ -1394,7 +1389,7 @@ public class AppControllerTest {
 
     /**
      * @verifies return forbidden if csrf token is invalid
-     * @see AppController#login(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
     @Test
     public void login_shouldReturnForbiddenIfCsrfTokenIsInvalid() throws Exception {

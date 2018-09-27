@@ -271,7 +271,7 @@ public class AppController {
      * @should return forbidden if csrf token is invalid
      */
     @PostMapping("/authorize")
-    public String login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
+    public String authorize(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
                         BindingResult bindingResult, Model model) {
         String nextPage = LOGIN_VIEW;
         model.addAttribute(USERNAME, request.getUsername());
