@@ -1,21 +1,30 @@
 var TestData = require('./config/test_data');
+var assert = require('assert');
 
 Feature('Self Registration');
 
-const serviceName = 'TEST_SERVICE_' + Date.now();
+const now = Date.now();
+const serviceName = 'TEST_SERVICE_' + now;
+const emailSuffix = '@mailtest.gov.uk';
+const citizenEmail = 'citizen.' + now + emailSuffix;
+const parameters = '?redirect_uri=https://idam.testservice.gov.uk&client_id=';
 
 BeforeSuite(async(I) => {
-    return await I.createServiceData(serviceName);
+    await I.createServiceData(serviceName);
+    await I.createUserWithRoles(citizenEmail, 'Citizen', ["citizen"]);
+
 });
 
 AfterSuite(async(I) => {
-    return await I.deleteService(serviceName);
+    return Promise.all([
+        I.deleteService(serviceName),
+        I.deleteUser(citizenEmail)
+    ]);
 });
 
-Scenario('@functional @selfregister Self Register User Validation errors', (I) => {
-    let url = TestData.WEB_PUBLIC_URL;
+Scenario('@functional @selfregister User Validation errors', (I) => {
 
-    I.amOnPage(url + '/users/selfRegister?redirect_uri=https://idam.testservice.gov.uk&client_id=' + serviceName);
+    I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister' + parameters + serviceName);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
     I.see('Create an account');
@@ -40,10 +49,72 @@ Scenario('@functional @selfregister Self Register User Validation errors', (I) =
     I.see('You have not entered your email address');
     I.fillField('email', '111');
     I.click('Continue');
-    I.wait(5)
+    I.wait(5);
     I.see('Your email address is invalid');
     I.see('Sign in to your account.');
     I.click('Sign in to your account.');
     I.waitForText('Sign in', 20, 'h1');
     I.see('Sign in');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @selfregister Account already created', async (I) => {
+
+    I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister'+ parameters + serviceName);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+
+    I.see('Create an account');
+    I.fillField('firstName', 'Citizen');
+    I.fillField('lastName', 'User');
+    I.fillField('email', citizenEmail);
+    I.click("Continue");
+
+    I.waitForText('Check your email', 20, 'h1');
+
+    I.wait(2);
+    let emailResponse = await I.getEmail(citizenEmail);
+    assert.equal('You already have an account', emailResponse.subject);
+
+});
+
+Scenario('@functional @selfregister I can self register', async (I) => {
+
+    const email = 'test_citizen.' + now + emailSuffix;
+    const loginPage = TestData.WEB_PUBLIC_URL + '/login' + parameters + serviceName + '&state=';
+
+    I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister' + parameters + serviceName);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+
+    I.see('Create an account');
+    I.fillField('firstName', 'Citizen');
+    I.fillField('lastName', 'User');
+    I.fillField('email', email);
+    I.click("Continue");
+
+    I.waitForText('Check your email', 20, 'h1');
+
+    I.wait(2);
+    let userActivationUrl = await I.extractUrl(email);
+    I.amOnPage(userActivationUrl);
+    I.waitForText('Create a password', 20, 'h1');
+    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.fillField('#password1', 'Passw0rd1234');
+    I.fillField('#password2', 'Passw0rd1234');
+    I.click('Continue');
+    I.waitForText('Account created', 20, 'h1');
+    I.see('You can now sign in to your account.');
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', email);
+    I.fillField('#password', 'Passw0rd1234');
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText('https://idam.testservice.gov.uk/');
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+
+});
+
+
