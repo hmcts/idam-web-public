@@ -270,7 +270,7 @@ public class AppController {
      * @should put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
      * @should return forbidden if csrf token is invalid
      */
-    @PostMapping("/login")
+    @PostMapping("/authorize")
     public String login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
                         BindingResult bindingResult, Model model) {
         String nextPage = LOGIN_VIEW;
