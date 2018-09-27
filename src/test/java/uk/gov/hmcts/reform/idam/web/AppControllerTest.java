@@ -180,7 +180,7 @@ public class AppControllerTest {
      * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
     @Test
-    public void login_shouldPutCorrectDataInModelAndReturnLoginView() throws Exception {
+    public void loginView_shouldPutCorrectDataInModelAndReturnLoginView() throws Exception {
 
         Service service = new Service();
         service.selfRegistrationAllowed(true);
@@ -205,7 +205,7 @@ public class AppControllerTest {
      * @verifies set self-registration to false if disabled for the service
      * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
-    @Test public void login_shouldSetSelfRegistrationToFalseIfDisabledForTheService() throws Exception {
+    @Test public void loginView_shouldSetSelfregistrationToFalseIfDisabledForTheService() throws Exception {
 
         Service service = new Service();
         service.selfRegistrationAllowed(false);
@@ -226,7 +226,7 @@ public class AppControllerTest {
      * @verifies set self-registration to false if the clientId is invalid
      * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
-    @Test public void login_shouldSetSelfRegistrationToFalseIfTheClientIdIsInvalid() throws Exception {
+    @Test public void loginView_shouldSetSelfregistrationToFalseIfTheClientIdIsInvalid() throws Exception {
 
         given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.empty());
 
@@ -749,7 +749,7 @@ public class AppControllerTest {
      * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
     @Test
-    public void login_shouldReturnErrorPageViewIfOAuth2DetailsAreMissing() throws Exception {
+    public void loginView_shouldReturnErrorPageViewIfOAuth2DetailsAreMissing() throws Exception {
         mockMvc.perform(get(LOGIN_ENDPOINT)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(CLIENT_ID_PARAMETER, MISSING))
@@ -1392,7 +1392,7 @@ public class AppControllerTest {
      * @see AppController#loginView(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
      */
     @Test
-    public void login_shouldReturnForbiddenIfCsrfTokenIsInvalid() throws Exception {
+    public void loginView_shouldReturnForbiddenIfCsrfTokenIsInvalid() throws Exception {
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf().useInvalidToken())
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(CLIENT_ID_PARAMETER, MISSING))
