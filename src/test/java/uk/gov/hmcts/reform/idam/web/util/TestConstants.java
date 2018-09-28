@@ -32,7 +32,6 @@ public class TestConstants {
     public static final String EXPIRED_TOKEN_ENDPOINT = "/expiredtoken";
     public static final String LOGIN_PIN_ENDPOINT = "/login/pin";
     public static final String LOGOUT_ENDPOINT = "/logout";
-    public static final String AUTHORIZE_ENDPOINT = "/authorize";
     public static final String RESET_FORGOT_PASSWORD_ENDPOINT = "/reset/forgotpassword";
     public static final String LOGIN_WITH_PIN_ENDPOINT = "/loginWithPin";
     public static final String ACTIVATE_ENDPOINT = "/activate";
