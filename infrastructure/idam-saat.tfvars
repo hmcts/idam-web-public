@@ -3,5 +3,5 @@ idam_api_url_override = "http://idam-api-idam-saat.service.core-compute-idam-saa
 ssl_verification_enabled = false
 https_only = "false"
 
-asp_name = "idam-web-public-idam-saat"
-asp_rg = "idam-web-public-idam-saat"
+asp_name = "idam-idam-saat"
+asp_rg = "idam-idam-saat"
