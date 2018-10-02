@@ -59,3 +59,13 @@ variable "external_host_name_override" {
   description = "Non-default custom domain name for the webapp"
   default = ""
 }
+
+variable asp_name {
+  description = "App Service Plan Name"
+  default = ""
+}
+
+variable asp_rg {
+  description = "App Service Plan Resource Group"
+  default = ""
+}

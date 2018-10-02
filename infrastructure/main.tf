@@ -29,6 +29,9 @@ module "idam-web-public" {
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
   common_tags = "${var.common_tags}"
 
+  asp_name = "${var.asp_name}"
+  asp_rg = "${var.asp_rg}"
+
   app_settings = {
     MANAGEMENT_SECURITY_ENABLED   = "${local.secure_actuator_endpoints}"
     ENDPOINTS_ENABLED             = "${local.secure_actuator_endpoints ? false : true}"
