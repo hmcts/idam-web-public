@@ -60,12 +60,12 @@ variable "external_host_name_override" {
   default = ""
 }
 
-variable asp_name {
+variable asp_name_override {
   description = "App Service Plan Name"
   default = ""
 }
 
-variable asp_rg {
+variable asp_rg_override {
   description = "App Service Plan Resource Group"
   default = ""
 }
