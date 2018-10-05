@@ -291,7 +291,7 @@ class IdamHelper extends Helper {
     const helper = this.helpers['Puppeteer'];
     helper.page.setRequestInterception(true);
     helper.page.on('request', request => {
-        if (request.url().indexOf('/login') > 0) {
+        if (request.url().indexOf('/authorize') > 0) {
             request.continue();
         } else {
             request.respond({
