@@ -182,7 +182,7 @@ class IdamHelper extends Helper {
         return Math.random().toString(36).substr(2, 5);
     }
 
-    createUser(email, forename, role, serviceRole) {
+  createUser(email, forename, role, serviceRole) {
       console.log('Creating user with email: ', email);
       const data = {
         email: email,
@@ -202,9 +202,9 @@ class IdamHelper extends Helper {
           return json;
         })
         .catch(err => err);
-    }
+  }
 
-    createUserWithRoles(email, forename, userRoles) {
+  createUserWithRoles(email, forename, userRoles) {
       var codeUserRoles = [];
       for (var i=0;i<userRoles.length;i++) {
         codeUserRoles.push({'code': userRoles[i]});
@@ -227,7 +227,7 @@ class IdamHelper extends Helper {
           return json;
         })
         .catch(err => err);
-    }
+  }
 
   extractUrl(searchEmail) {
     return(
