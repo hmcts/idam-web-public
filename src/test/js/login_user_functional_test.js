@@ -28,10 +28,10 @@ BeforeSuite(async (I) => {
 
 AfterSuite(async (I) => {
 return Promise.all([
-     I.deleteService(serviceName),
-     I.deleteUser(adminEmail),
-     I.deleteUser(citizenEmail)
-    ]);
+//     I.deleteService(serviceName),
+//     I.deleteUser(adminEmail),
+//     I.deleteUser(citizenEmail)
+//    ]);
 });
 
 Scenario('@functional @login As a citizen user I can login with email in uppercase', (I) => {
