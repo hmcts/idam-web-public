@@ -40,12 +40,8 @@ return Promise.all([
        I.fillField('#email', citizenEmail);
        I.click('Submit');
        I.waitForText('Check your email', 20, 'h1');
-       I.see('Check your email');
        I.wait(2)
        var resetPasswordUrl = await I.extractUrl(citizenEmail);
-       if (resetPasswordUrl) {
-         resetPasswordUrl = resetPasswordUrl.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
-       }
        I.amOnPage(resetPasswordUrl);
        I.waitForText('Create a new password', 20, 'h1');
        I.seeTitleEquals('Reset Password - HMCTS Access');
