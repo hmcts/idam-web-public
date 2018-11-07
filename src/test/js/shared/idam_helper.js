@@ -24,6 +24,8 @@ if (TestData.NOTIFY_API_KEY) {
   console.log("Notify client API key is not defined");
 }
 
+const URLSearchParams = require('url').URLSearchParams;
+
 class IdamHelper extends Helper {
 
     async createServiceData(serviceName){
@@ -227,49 +229,56 @@ class IdamHelper extends Helper {
         .catch(err => err);
     }
 
-   verifyEmailSent(email) {
-     notifyClient
-       .getNotifications("email", "sending")
-       .then(response => {
-         console.log("Searching " + response.body.notifications.length + " emails(s)");
-         var result = response.body.notifications.find(obj => {
-           if (obj.email_address === email) {
-             return obj.email_address === email
-           } else {
-             //console.log("ignoring unmatched email address " + obj.email_address);
-           }
-         })
-       })
-       .catch(err => {
-         console.log(err)
-         let browser = this.helpers['Puppeteer'].browser;
-         browser.close();
-       });
-   }
-
-  extractUrl(email) {
-     return (notifyClient
-         .getNotifications("email", "sending")
-         .then(response => {
-             console.log("Searching " + response.body.notifications.length + " emails(s)");
-             var result = response.body.notifications.find(obj => {
-                 if (obj.email_address === email) {
-                     // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
-                     return obj.email_address === email
-                 }
-             });
-             return result;
-         })
-       .then(emailResponse => {
+  extractUrl(searchEmail) {
+    return(
+        notifyClient
+        .getNotifications("email", "sending")
+        .then(response => {
+            console.log("Searching " + response.body.notifications.length + " emails(s) from sending queue");
+            return this.searchForEmailInResults(response.body.notifications, searchEmail);
+        })
+        .then(emailResponse => {
             if (emailResponse) {
-                var regex = "(https.+)"
-                var url = emailResponse.body.match(regex);
-                return url[0];
+                return this.extractUrlFromBody(emailResponse);
             } else {
-                throw new Error('Email response is empty');
+                return (
+                    notifyClient.getNotifications("email", "failed")
+                    .then(failedResponse => {
+                        console.log("Searching " + failedResponse.body.notifications.length + " emails(s) from failure queues");
+                        return this.searchForEmailInResults(failedResponse.body.notifications, searchEmail);
+                    })
+                    .then(failedEmailResponse => {
+                        if (failedEmailResponse) {
+                            return this.extractUrlFromBody(failedEmailResponse);
+                        } else {
+                            throw new Error('No emails found for ' + searchEmail);
+                        }
+                    })
+                );
             }
         })
-     );
+    );
+  }
+
+  searchForEmailInResults(notifications, searchEmail) {
+    var result = notifications.find(currentItem => {
+        // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
+        if (currentItem.email_address === searchEmail) {
+            return true;
+        }
+        return false;
+    });
+    return result;
+  }
+
+  extractUrlFromBody(emailResponse) {
+    if (emailResponse) {
+        var regex = "(https.+)"
+        var url = emailResponse.body.match(regex);
+        if (url[0]) {
+            return url[0].replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
+        }
+    }
   }
 
   async getCurrentUrl() {
@@ -299,6 +308,70 @@ class IdamHelper extends Helper {
       helper.page.setRequestInterception(false);
   }
 
+  getPin(firstname, lastname) {
+    const data = {
+        firstName: firstname,
+        lastName: lastname,
+    };
+    return fetch(`${TestData.IDAM_API}/pin`, {
+        agent: agent,
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' },
+    }).then(res => res.json())
+    .then((json) => {
+        return json.pin;
+    })
+    .catch(err => {
+        console.log(err)
+        let browser = this.helpers['Puppeteer'].browser;
+        browser.close();
+    });
+  }
+
+  loginAsPin(pin, clientId, serviceRedirect) {
+    return fetch(`${TestData.IDAM_API}/pin?client_id=${clientId}&redirect_uri=${serviceRedirect}`, {
+        agent: agent,
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', 'pin': pin },
+        redirect: 'manual',
+    }).then(response => {
+        var location = response.headers.get('location');
+        var code = location.match('(?<=code=)(.*)(?=&scope)');
+        return code[0];
+    })
+    .catch(err => {
+       console.log(err)
+       let browser = this.helpers['Puppeteer'].browser;
+       browser.close();
+    });
+  }
+
+  getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
+    var searchParams = new URLSearchParams();
+    searchParams.set('code', code);
+    searchParams.set('client_id', serviceName);
+    searchParams.set('redirect_uri', serviceRedirect);
+    searchParams.set('client_secret', clientSecret);
+
+    return fetch(`${TestData.IDAM_API}/oauth2/token`, {
+        agent: agent,
+        method: 'POST',
+        body: searchParams,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+     }).then(response => {
+        return response.json();
+     })
+     .then((json) => {
+        console.log("Token: " + json.access_token);
+        return json.access_token;
+     })
+     .catch(err => {
+        console.log(err)
+        let browser = this.helpers['Puppeteer'].browser;
+        browser.close();
+     });
+  }
 }
 
 module.exports = IdamHelper;
