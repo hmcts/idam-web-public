@@ -5,8 +5,8 @@ const fetch = require('node-fetch');
 let agentToUse;
 if (process.env.PROXY_SERVER) {
   console.log('using proxy agent: ' + process.env.PROXY_SERVER);
-  const HttpsProxyAgent = require('https-proxy-agent');
-  agentToUse = new HttpsProxyAgent(process.env.PROXY_SERVER);
+  const HttpProxyAgent = require('http-proxy-agent');
+  agentToUse = new HttpProxyAgent(process.env.PROXY_SERVER);
 } else {
   console.log('using real agent');
   const Https = require('https');
