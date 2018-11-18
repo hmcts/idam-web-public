@@ -58,6 +58,15 @@
         <cve>CVE-2018-1258</cve>
     </suppress>
 
+    <!-- This CVE is Java serialization in Guava -->
+    <suppress>
+        <notes><![CDATA[
+   This suppresses false positives identified on Guava
+   ]]></notes>
+        <gav regex="true">^com.google.guava:guava:.*$</gav>
+        <cve>CVE-2018-10237</cve>
+    </suppress>
+
     <suppress>
         <notes>suppress false positives - only relevant to tomcat &lt;= 8.4</notes>
         <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
