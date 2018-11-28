@@ -21,7 +21,7 @@ locals {
 }
 
 module "idam-web-public" {
-  source                = "git@github.com:hmcts/cnp-module-webapp?ref=0.1.0_ssl_fix"
+  source                = "git@github.com:hmcts/cnp-module-webapp?ref=0.1.1"
   product               = "${var.product}-${var.app}"
   location              = "${var.location}"
   env                   = "${var.env}"
