@@ -14,7 +14,8 @@ module.exports = function() {
         this.fillField('password', '111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attemptone');
+        this.waitInUrl('/authorize', 60);
+        this.retry({retries:3, minTimeout:1000}).seeInField('#state', 'attemptone');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
         // Second
@@ -26,7 +27,8 @@ module.exports = function() {
         this.fillField('password', '111111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attempttwo');
+        this.waitInUrl('/authorize', 60);
+        this.retry({retries:3, minTimeout:1000}).seeInField('#state', 'attempttwo');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
         // Third
@@ -39,7 +41,8 @@ module.exports = function() {
         this.fillField('password', '111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attemptthree');
+        this.waitInUrl('/authorize', 60);
+        this.retry({retries:3, minTimeout:1000}).seeInField('#state', 'attemptthree');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
         // Fourth
@@ -53,7 +56,8 @@ module.exports = function() {
         this.fillField('password', '111111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attemptfour');
+        this.waitInUrl('/authorize', 60);
+        this.retry({retries:3, minTimeout:1000}).seeInField('#state', 'attemptfour');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
         // NOTE: This fifth attempt should have locked the account, but we will do one more to be sure.
@@ -84,7 +88,8 @@ module.exports = function() {
         this.fillField('password', '111111111111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attemptfinal');
+        this.waitInUrl('/authorize', 60);
+        this.retry({retries:3, minTimeout:1000}).seeInField('#state', 'attemptfinal');
         this.waitForText('There is a problem with your account login details', 20, 'h2');
         this.see('Your account is locked due to too many unsuccessful attempts.');
         this.see('You can reset your password');
