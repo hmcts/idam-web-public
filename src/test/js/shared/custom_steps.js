@@ -14,7 +14,6 @@ module.exports = function() {
         this.fillField('password', '111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.waitInUrl('/authorize', 60);
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('#state', 'attemptone');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
@@ -27,7 +26,6 @@ module.exports = function() {
         this.fillField('password', '111111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.waitInUrl('/authorize', 60);
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('#state', 'attempttwo');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
@@ -41,7 +39,6 @@ module.exports = function() {
         this.fillField('password', '111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.waitInUrl('/authorize', 60);
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('#state', 'attemptthree');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
@@ -56,7 +53,6 @@ module.exports = function() {
         this.fillField('password', '111111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.waitInUrl('/authorize', 60);
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('#state', 'attemptfour');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.clearCookie();
@@ -88,7 +84,6 @@ module.exports = function() {
         this.fillField('password', '111111111111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.waitInUrl('/authorize', 60);
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('#state', 'attemptfinal');
         this.waitForText('There is a problem with your account login details', 20, 'h2');
         this.see('Your account is locked due to too many unsuccessful attempts.');
