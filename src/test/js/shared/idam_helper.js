@@ -276,7 +276,7 @@ class IdamHelper extends Helper {
         var regex = "(https.+)"
         var url = emailResponse.body.match(regex);
         if (url[0]) {
-            return url[0].replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
+            return url[0].replace(/https:\/\/idam-web-public\..+?\.platform\.hmcts\.net/i, TestData.WEB_PUBLIC_URL);
         }
     }
   }
