@@ -43,6 +43,7 @@ return Promise.all([
 
  Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async (I) => {
      I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
+     I.waitForText('Create an account or sign in', 30, 'h1');
      I.fillField('#firstName', randomUserFirstName);
      I.fillField('#lastName', randomUserLastName);
      I.fillField('#username', citizenEmail);
