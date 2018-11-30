@@ -269,7 +269,7 @@ public class AppController {
      * @should put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
      * @should put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
      */
-    @RequestMapping(method = RequestMethod.POST, path = "/authorize")
+    @PostMapping(path = "/authorize")
     public String authorize(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
                             BindingResult bindingResult, Model model) {
         String nextPage = LOGIN_VIEW;
