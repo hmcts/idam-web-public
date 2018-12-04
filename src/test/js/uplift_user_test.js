@@ -43,6 +43,7 @@ return Promise.all([
 
  Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async (I) => {
      I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
+     I.waitForText('Create an account or sign in', 30, 'h1');
      I.fillField('#firstName', randomUserFirstName);
      I.fillField('#lastName', randomUserLastName);
      I.fillField('#username', citizenEmail);
@@ -55,9 +56,10 @@ return Promise.all([
      }
      I.amOnPage(url);
      I.waitForText('Create a password', 20, 'h1');
-     I.fillField('#password1', 'Passw0rd1234');
-     I.fillField('#password2', 'Passw0rd1234');
+     I.fillField('#password1', password);
+     I.fillField('#password2', password);
      I.click('Continue');
-     I.waitForText('Account created', 20, 'h1');
+     I.waitForText('Account created', 60, 'h1');
      I.see('You can now sign in to your account.');
- }).retry(TestData.SCENARIO_RETRY_LIMIT);
+ });
+ // NOTE: Retrying this scenario is problematic.

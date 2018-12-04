@@ -277,15 +277,15 @@ class IdamHelper extends Helper {
         return result;
     }
 
-    extractUrlFromBody(emailResponse) {
-        if (emailResponse) {
-            var regex = "(https.+)"
-            var url = emailResponse.body.match(regex);
-            if (url[0]) {
-                return url[0].replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
-            }
+  extractUrlFromBody(emailResponse) {
+    if (emailResponse) {
+        var regex = "(https.+)"
+        var url = emailResponse.body.match(regex);
+        if (url[0]) {
+            return url[0].replace(/https:\/\/idam-web-public\..+?\.platform\.hmcts\.net/i, TestData.WEB_PUBLIC_URL);
         }
     }
+  }
 
     async getCurrentUrl() {
         const helper = this.helpers['Puppeteer'];
@@ -293,21 +293,21 @@ class IdamHelper extends Helper {
         return helper.page.url();
     }
 
-    interceptRequestsAfterSignin() {
-        const helper = this.helpers['Puppeteer'];
-        helper.page.setRequestInterception(true);
-        helper.page.on('request', request => {
-            if (request.url().indexOf('/authorize') > 0) {
-                request.continue();
-            } else {
-                request.respond({
-                    status: 200,
-                    contentType: 'application/javascript; charset=utf-8',
-                    body: request.url()
-                });
-            }
-        });
-    }
+  interceptRequestsAfterSignin() {
+    const helper = this.helpers['Puppeteer'];
+    helper.page.setRequestInterception(true);
+    helper.page.on('request', request => {
+        if (request.url().indexOf('/login') > 0) {
+            request.continue();
+        } else {
+            request.respond({
+                status: 200,
+                contentType: 'application/javascript; charset=utf-8',
+                body: request.url()
+            });
+        }
+    });
+  }
 
     resetRequestInterception() {
         const helper = this.helpers['Puppeteer'];

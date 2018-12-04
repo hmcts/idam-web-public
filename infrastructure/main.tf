@@ -13,10 +13,15 @@ locals {
   idam_api_url = "${var.idam_api_url_override != "" ? var.idam_api_url_override : local.default_idam_api}"
   idam_api_testing_support_url = "${var.idam_api_testing_support_url_override != "" ? var.idam_api_testing_support_url_override : local.idam_api_url}"
 
+  default_asp_name = "${var.product}-${var.env}"
+  asp_name = "${coalesce(var.asp_name_override, local.default_asp_name)}"
+
+  default_asp_rg = "${var.product}-${var.env}"
+  asp_rg = "${coalesce(var.asp_rg_override, local.default_asp_rg)}"
 }
 
 module "idam-web-public" {
-  source                = "git@github.com:hmcts/moj-module-webapp?ref=master"
+  source                = "git@github.com:hmcts/cnp-module-webapp?ref=0.1.1"
   product               = "${var.product}-${var.app}"
   location              = "${var.location}"
   env                   = "${var.env}"
@@ -28,6 +33,9 @@ module "idam-web-public" {
   additional_host_name  = "${local.external_host_name}"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
   common_tags = "${var.common_tags}"
+
+  asp_name = "${local.asp_name}"
+  asp_rg = "${local.asp_rg}"
 
   app_settings = {
     MANAGEMENT_SECURITY_ENABLED   = "${local.secure_actuator_endpoints}"
