@@ -97,6 +97,7 @@ class IdamHelper extends Helper {
             oauth2ClientId: serviceName,
             oauth2ClientSecret: 'autotestingservice',
             oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+            oauth2Scope: 'create-user',
             onboardingEndpoint: '/autotest',
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
@@ -412,7 +413,8 @@ class IdamHelper extends Helper {
             const data = {
                 email: userEmail,
                 firstName: userFirstName,
-                userLastName: userLastName
+                lastName: userLastName,
+                roles: []
             };
 
             return fetch(`${TestData.IDAM_API}/user/registration`, {
@@ -427,6 +429,28 @@ class IdamHelper extends Helper {
                 })
                 .catch(err => err);
         }
+
+    registerUserWithRoles(bearerToken, userEmail, userFirstName, userLastName, userRoles) {
+
+                const data = {
+                    email: userEmail,
+                    firstName: userFirstName,
+                    lastName: userLastName,
+                    roles: userRoles
+                };
+
+                return fetch(`${TestData.IDAM_API}/user/registration`, {
+                    agent: agent,
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
+                })
+                    .then(res => res.json())
+                    .then((json) => {
+                        return json;
+                    })
+                    .catch(err => err);
+            }
 
 }
 
