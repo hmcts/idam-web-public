@@ -18,10 +18,7 @@ const grantType = 'client_credentials';
 Before(async (I) => {
     randomUserLastName = await I.generateRandomText();
     randomUserFirstName = await I.generateRandomText();
-
     userEmail = randomUserFirstName + '.' + randomUserLastName + testMailSuffix;
-
-
 });
 
 After(async (I) => {
