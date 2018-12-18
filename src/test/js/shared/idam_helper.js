@@ -57,6 +57,7 @@ class IdamHelper extends Helper {
                 oauth2ClientId: serviceName,
                 oauth2ClientSecret: 'autotestingservice',
                 oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+                oauth2Scope: 'create-user',
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 activationRedirectUrl: "https://idam.testservice.gov.uk",
@@ -69,6 +70,7 @@ class IdamHelper extends Helper {
                 oauth2ClientId: serviceName,
                 oauth2ClientSecret: 'autotestingservice',
                 oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+                oauth2Scope: 'create-user',
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 allowedRoles: [roleId, 'auto-admin_role'],
@@ -378,6 +380,54 @@ class IdamHelper extends Helper {
                 browser.close();
             });
     }
+
+    getBearerToken(serviceName, clientSecret, scope, grantType) {
+            var searchParams = new URLSearchParams();
+            searchParams.set('client_id', serviceName);
+            searchParams.set('client_secret', clientSecret);
+            searchParams.set('scope', scope);
+            searchParams.set('grant_type', grantType);
+
+            return fetch(`${TestData.IDAM_API}/oauth2/token`, {
+                agent: agent,
+                method: 'POST',
+                body: searchParams,
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            }).then(response => {
+                return response.json();
+            })
+            .then((json) => {
+                console.log("Token: " + json.access_token);
+                return json.access_token;
+            })
+            .catch(err => {
+                console.log(err)
+                let browser = this.helpers['Puppeteer'].browser;
+                browser.close();
+            });
+    }
+
+    registerUser(bearerToken, userEmail, userFirstName, userLastName) {
+
+            const data = {
+                email: userEmail,
+                firstName: userFirstName,
+                userLastName: userLastName
+            };
+
+            return fetch(`${TestData.IDAM_API}/user/registration`, {
+                agent: agent,
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
+            })
+                .then(res => res.json())
+                .then((json) => {
+                    return json;
+                })
+                .catch(err => err);
+        }
+
 }
 
 module.exports = IdamHelper;
