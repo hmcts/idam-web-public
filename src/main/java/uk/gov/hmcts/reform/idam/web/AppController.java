@@ -547,6 +547,11 @@ public class AppController {
         return "contactus";
     }
 
+    @RequestMapping("/shutter-page")
+    public String shutterPage() {
+        return "shutterpage";
+    }
+
     /**
      * @should return tacticalActivateExpired
      */
