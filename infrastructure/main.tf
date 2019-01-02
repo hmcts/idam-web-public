@@ -1,3 +1,7 @@
+provider "azurerm" {
+  version = "1.19.0"
+}
+
 locals {
   preview_vault_name = "idam-idam-preview"
   non_preview_vault_name = "${var.product}-${var.env}"
