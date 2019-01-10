@@ -28,7 +28,7 @@ return Promise.all([
     ]);
 });
 
-Scenario('@smoke @puiReg PUI Registration Happy Path - No roles', async (I) => {
+Scenario('@functional @puiReg PUI Registration Happy Path - No roles', async (I) => {
      await I.createServiceData(serviceName);
      I.wait(5);
      bearerToken = await I.getBearerToken(serviceName, clientSecret, scope, grantType);
@@ -48,7 +48,7 @@ Scenario('@smoke @puiReg PUI Registration Happy Path - No roles', async (I) => {
      I.see('You can now sign in to your account.');
 });
 
-Scenario('@smoke @puiReg PUI Registration Happy Path - one role', async (I) => {
+Scenario('@functional @puiReg PUI Registration Happy Path - one role', async (I) => {
      var token = await I.getAuthToken();
      await I.createRole(serviceName + "_beta", 'beta description', '', token);
 
