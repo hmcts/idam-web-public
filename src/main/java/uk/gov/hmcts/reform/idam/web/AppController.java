@@ -456,6 +456,7 @@ public class AppController {
         model.put(CLIENTID, forgotPasswordRequest.getClientId());
         model.put(EMAIL, forgotPasswordRequest.getEmail());
         model.put(STATE, forgotPasswordRequest.getState());
+        model.put(SCOPE, forgotPasswordRequest.getScope());
 
         try {
             if (!bindingResult.hasErrors()) {
