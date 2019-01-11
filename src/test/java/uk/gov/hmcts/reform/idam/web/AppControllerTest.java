@@ -31,6 +31,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CUSTOM_SCOPE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.DO_RESET_PASSWORD_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_BLACKLISTED_PASSWORD;
@@ -66,6 +67,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_LOGOUT_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_PIN_CODE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_PIN_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SCOPE_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_REGISTER_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_ENDPOINT;
@@ -1171,7 +1173,7 @@ public class AppControllerTest {
     @Test
     public void login_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
 
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(REDIRECT_URI);
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE))).willReturn(REDIRECT_URI);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
@@ -1179,11 +1181,12 @@ public class AppControllerTest {
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
-        verify(spiService).authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID));
+        verify(spiService).authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE));
     }
 
     /**
@@ -1212,7 +1215,7 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(MISSING);
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE))).willReturn(MISSING);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
@@ -1232,7 +1235,7 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
@@ -1240,13 +1243,14 @@ public class AppControllerTest {
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(status().isOk())
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), any())).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
 
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
@@ -1261,7 +1265,7 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), any())).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
 
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
@@ -1270,7 +1274,8 @@ public class AppControllerTest {
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(model().attribute(IS_ACCOUNT_SUSPENDED, true))
             .andExpect(status().isOk())
 
@@ -1284,7 +1289,7 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
@@ -1292,7 +1297,8 @@ public class AppControllerTest {
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().isOk())
             .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(view().name(LOGIN_VIEW));

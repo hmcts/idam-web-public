@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CUSTOM_SCOPE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.DETAILS_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_SPI_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_URI;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_COD
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_TOKEN;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_URI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SCOPE_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_RESPONSE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_URL;
@@ -400,13 +402,13 @@ public class SPIServiceTest {
 
     /**
      * @verifies call api with the correct data and return location in header in api response if response code is 302
-     * @see SPIService#authorize(String, String, String, String, String)
+     * @see SPIService#authorize(String, String, String, String, String, String)
      */
     @Test
     public void authorize_shouldCallApiWithTheCorrectDataAndReturnLocationInHeaderInApiResponseIfResponseCodeIs302() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
 
-        String result = spiService.authorize(USER_EMAIL, PASSWORD_ONE, REDIRECTURI, STATE, CLIENT_ID);
+        String result = spiService.authorize(USER_EMAIL, PASSWORD_ONE, REDIRECTURI, STATE, CLIENT_ID, CUSTOM_SCOPE);
 
         assertThat(result, equalTo(GOOGLE_WEB_ADDRESS));
 
@@ -429,13 +431,13 @@ public class SPIServiceTest {
 
     /**
      * @verifies return null if api response code is not 302
-     * @see SPIService#authorize(String, String, String, String, String)
+     * @see SPIService#authorize(String, String, String, String, String, String)
      */
     @Test
     public void authorize_shouldReturnNullIfApiResponseCodeIsNot302() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.ok().build());
 
-        String result = spiService.authorize(USER_EMAIL, PASSWORD_ONE, REDIRECTURI, STATE, CLIENT_ID);
+        String result = spiService.authorize(USER_EMAIL, PASSWORD_ONE, REDIRECTURI, STATE, CLIENT_ID, MISSING);
 
         assertThat(result, is(nullValue()));
 
@@ -443,15 +445,15 @@ public class SPIServiceTest {
     }
 
     /**
-     * @verifies not send state parameter in form if it is not send as parameter in the service
-     * @see SPIService#authorize(String, String, String, String, String)
+     * @verifies not send state and scope parameters in form if they are not send as parameter in the service
+     * @see SPIService#authorize(String, String, String, String, String, String)
      */
     @Test
-    public void authorize_shouldNotSendStateParameterInFormIfItIsNotSendAsParameterInTheService() throws Exception {
+    public void authorize_shouldNotSendStateAndScopeParametersInFormIfTheyAreNotSendAsParameterInTheService() throws Exception {
 
         given(restTemplate.exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
 
-        spiService.authorize(USER_EMAIL, PASSWORD_ONE, REDIRECTURI, MISSING, CLIENT_ID);
+        spiService.authorize(USER_EMAIL, PASSWORD_ONE, REDIRECTURI, MISSING, CLIENT_ID, MISSING);
 
         verify(restTemplate).exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), captor.capture(), eq(String.class));
 
@@ -465,6 +467,7 @@ public class SPIServiceTest {
         assertThat(form.getFirst(PASSWORD_PARAMETER), equalTo(PASSWORD_ONE));
         assertThat(form.getFirst(REDIRECT_URI), equalTo(REDIRECTURI));
         assertThat(form.getFirst(STATE_PARAMETER), is(nullValue()));
+        assertThat(form.getFirst(SCOPE_PARAMETER), is(nullValue()));
         assertThat(form.getFirst(CLIENT_ID_PARAMETER), equalTo(CLIENT_ID));
 
     }
