@@ -345,14 +345,14 @@ public class SPIServiceTest {
 
     /**
      * @verifies return api location in header in api response if response code is 302
-     * @see SPIService#uplift(String, String, String, String, String, String)
+     * @see SPIService#uplift(String, String, String, String, String, String, String)
      */
     @Test
     public void uplift_shouldReturnApiLocationInHeaderInApiResponseIfResponseCodeIs302() throws Exception {
 
         given(restTemplate.exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
 
-        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE, MISSING);
 
         assertThat(result, equalTo(GOOGLE_WEB_ADDRESS));
 
@@ -360,13 +360,13 @@ public class SPIServiceTest {
 
     /**
      * @verifies call api with the correct data and return api response body if response code is 200
-     * @see SPIService#uplift(String, String, String, String, String, String)
+     * @see SPIService#uplift(String, String, String, String, String, String, String)
      */
     @Test
     public void uplift_shouldCallApiWithTheCorrectDataAndReturnApiResponseBodyIfResponseCodeIs200() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.ok(GOOGLE_WEB_ADDRESS));
 
-        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE, MISSING);
 
         assertThat(result, equalTo(GOOGLE_WEB_ADDRESS));
 
@@ -387,13 +387,13 @@ public class SPIServiceTest {
 
     /**
      * @verifies return null if api response code is not 200 nor 302
-     * @see SPIService#uplift(String, String, String, String, String, String)
+     * @see SPIService#uplift(String, String, String, String, String, String, String)
      */
     @Test
     public void uplift_shouldReturnNullIfApiResponseCodeIsNot200Nor302() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.status(HttpStatus.NOT_MODIFIED).build());
 
-        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE, MISSING);
 
         assertThat(result, is(nullValue()));
 

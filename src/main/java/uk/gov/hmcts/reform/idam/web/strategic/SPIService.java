@@ -81,7 +81,7 @@ public class SPIService {
      * @should return api location in header in api response if response code is 302
      * @should return null if api response code is not 200 nor 302
      */
-    public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, String state) {
+    public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, final String state, final String scope) {
         ResponseEntity<String> response;
         long startTime = System.currentTimeMillis();
 
@@ -99,6 +99,7 @@ public class SPIService {
         form.add("redirectUri", redirectUri);
         form.add("clientId", clientId);
         form.add("state", state);
+        form.add("scope", scope);
 
         entity = new HttpEntity<>(form, headers);
 

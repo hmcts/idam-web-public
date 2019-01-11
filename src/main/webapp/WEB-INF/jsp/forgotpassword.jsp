@@ -83,6 +83,7 @@
             <form:input path="redirectUri" type="hidden" id="redirectUri" />
             <form:input path="clientId" type="hidden" id="clientId" />
             <form:input path="state" type="hidden" id="state" />
+            <form:input path="scope" type="hidden" id="scope" />
         </form:form>
     </article>
 </t:wrapper>

@@ -534,7 +534,7 @@ public class AppControllerTest {
      */
     @Test public void upliftLogin_shouldUpliftUser() throws Exception {
 
-        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE)).willReturn("upliftResult");
+        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE)).willReturn("upliftResult");
 
         mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
@@ -542,11 +542,12 @@ public class AppControllerTest {
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isFound())
             .andExpect(view().name("redirect:upliftResult"));
 
-        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE);
     }
 
     /**
@@ -566,7 +567,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -641,7 +642,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -661,7 +662,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", PASSWORD_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -681,7 +682,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", JWT_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -701,7 +702,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", REDIRECT_URI));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -721,7 +722,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", CLIENT_ID_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -730,7 +731,7 @@ public class AppControllerTest {
      */
     @Test public void upliftLogin_shouldReturnToTheRegistrationPageIfTheCredentialsAreInvalid() throws Exception {
 
-        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE))
+        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE))
             .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 
         mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
@@ -739,11 +740,12 @@ public class AppControllerTest {
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
             .andExpect(view().name(UPLIFT_LOGIN_VIEW));
 
-        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE);
     }
 
     /**
@@ -766,19 +768,20 @@ public class AppControllerTest {
      */
     @Test public void upliftLogin_shouldReturnToTheRegistrationPageIfThereIsAnException() throws Exception {
 
-        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE)).willThrow(new RuntimeException());
+        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE)).willThrow(new RuntimeException());
 
         mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECT_URI, REDIRECT_URI)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(STATE_PARAMETER, STATE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
             .andExpect(view().name(UPLIFT_LOGIN_VIEW));
 
-        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE);
     }
 
     /**

@@ -373,7 +373,7 @@ public class AppController {
         String redirectUrl = "redirect:";
         try {
             final String jsonResponse = spiService.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
-                request.getRedirect_uri(), request.getClient_id(), request.getState());
+                request.getRedirect_uri(), request.getClient_id(), request.getState(), request.getScope());
             if (jsonResponse != null) {
                 redirectUrl += jsonResponse;
             }

@@ -29,6 +29,8 @@ public class UpliftRequest {
 
     private String state;
 
+    private String scope;
+
     @NotEmpty
     private String client_id;
 }
