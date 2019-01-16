@@ -300,7 +300,7 @@ class IdamHelper extends Helper {
     const helper = this.helpers['Puppeteer'];
     helper.page.setRequestInterception(true);
     helper.page.on('request', request => {
-        if (request.url().indexOf('/login') > 0) {
+        if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0) {
             request.continue();
         } else {
             request.respond({
@@ -317,7 +317,7 @@ class IdamHelper extends Helper {
         helper.page.setRequestInterception(false);
     }
 
-    getPin(firstname, lastname) {
+    getPinUser(firstname, lastname) {
         const data = {
             firstName: firstname,
             lastName: lastname,
@@ -329,7 +329,7 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json'},
         }).then(res => res.json())
             .then((json) => {
-                return json.pin;
+                return json;
             })
             .catch(err => {
                 console.log(err)
