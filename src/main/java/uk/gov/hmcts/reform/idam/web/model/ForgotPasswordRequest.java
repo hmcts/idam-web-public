@@ -19,4 +19,6 @@ public class ForgotPasswordRequest {
     private String clientId;
 
     private String state;
+
+    private String scope;
 }

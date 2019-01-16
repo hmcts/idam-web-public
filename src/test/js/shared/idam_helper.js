@@ -47,7 +47,7 @@ class IdamHelper extends Helper {
         });
     }
 
-    createService(serviceName, roleId, token) {
+    createService(serviceName, roleId, token, scope='') {
         let data;
 
         if (roleId === '') {
@@ -57,6 +57,7 @@ class IdamHelper extends Helper {
                 oauth2ClientId: serviceName,
                 oauth2ClientSecret: 'autotestingservice',
                 oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+                oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 activationRedirectUrl: "https://idam.testservice.gov.uk",
@@ -69,6 +70,7 @@ class IdamHelper extends Helper {
                 oauth2ClientId: serviceName,
                 oauth2ClientSecret: 'autotestingservice',
                 oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+                oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 allowedRoles: [roleId, 'auto-admin_role'],
@@ -88,13 +90,14 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createServiceWithRoles(serviceName, serviceRoles, betaRole, token) {
+    createServiceWithRoles(serviceName, serviceRoles, betaRole, token, scope='') {
         const data = {
             label: serviceName,
             description: serviceName,
             oauth2ClientId: serviceName,
             oauth2ClientSecret: 'autotestingservice',
             oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+            oauth2Scope: scope,
             onboardingEndpoint: '/autotest',
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
@@ -297,7 +300,7 @@ class IdamHelper extends Helper {
     const helper = this.helpers['Puppeteer'];
     helper.page.setRequestInterception(true);
     helper.page.on('request', request => {
-        if (request.url().indexOf('/login') > 0) {
+        if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0) {
             request.continue();
         } else {
             request.respond({
@@ -314,7 +317,7 @@ class IdamHelper extends Helper {
         helper.page.setRequestInterception(false);
     }
 
-    getPin(firstname, lastname) {
+    getPinUser(firstname, lastname) {
         const data = {
             firstName: firstname,
             lastName: lastname,
@@ -326,7 +329,7 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json'},
         }).then(res => res.json())
             .then((json) => {
-                return json.pin;
+                return json;
             })
             .catch(err => {
                 console.log(err)
@@ -377,6 +380,37 @@ class IdamHelper extends Helper {
                 let browser = this.helpers['Puppeteer'].browser;
                 browser.close();
             });
+    }
+
+    getUserInfo(accessToken) {
+        return fetch(`${TestData.IDAM_API}/details`, {
+            agent: agent,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        }).then(response => {
+            return response.json();
+        })
+    }
+
+    grantRoleToUser(roleName, accessToken) {
+        return fetch(`${TestData.IDAM_API}/account/role`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify({
+              "name": roleName
+            }),
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': 'Bearer ' + accessToken
+            }
+        }).then((response) => {
+            if (response.status != 201) {
+                console.log('Error granting role', response.status);
+                throw new Error()
+            }
+        });
     }
 }
 

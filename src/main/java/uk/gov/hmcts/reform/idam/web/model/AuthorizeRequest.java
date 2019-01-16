@@ -16,5 +16,6 @@ public class AuthorizeRequest {
     private String state;
     private String response_type;
     private String client_id;
+    private String scope;
     private boolean selfRegistrationEnabled;
 }

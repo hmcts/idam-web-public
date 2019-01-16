@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.idam.web;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 
@@ -126,6 +127,7 @@ public class UserController {
         @RequestParam(name = "redirect_uri", required = false) String redirectUri,
         @RequestParam(name = "client_id", required = false) String clientId,
         @RequestParam(name = "state", required = false) String state,
+        @RequestParam(name = "scope", required = false) String scope,
         Model model) {
 
         Optional<Service> service;
@@ -153,6 +155,7 @@ public class UserController {
             model.addAttribute(REDIRECTURI, redirectUri);
             model.addAttribute(CLIENTID, clientId);
             model.addAttribute(STATE, state);
+            model.addAttribute(SCOPE, scope);
             return SELF_REGISTER_VIEW;
         }
 

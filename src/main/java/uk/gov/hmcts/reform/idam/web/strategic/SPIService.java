@@ -81,7 +81,7 @@ public class SPIService {
      * @should return api location in header in api response if response code is 302
      * @should return null if api response code is not 200 nor 302
      */
-    public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, String state) {
+    public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, final String state, final String scope) {
         ResponseEntity<String> response;
         long startTime = System.currentTimeMillis();
 
@@ -99,6 +99,7 @@ public class SPIService {
         form.add("redirectUri", redirectUri);
         form.add("clientId", clientId);
         form.add("state", state);
+        form.add("scope", scope);
 
         entity = new HttpEntity<>(form, headers);
 
@@ -118,12 +119,12 @@ public class SPIService {
 
     /**
      * @should call api with the correct data and return location in header in api response if response code is 302
-     * @should not send state parameter in form if it is not send as parameter in the service
+     * @should not send state and scope parameters in form if they are not send as parameter in the service
      * @should return null if api response code is not 302
      */
-    public String authorize(final String username, final String password, final String redirectUri, final String state, final String clientId) {
+    public String authorize(final String username, final String password, final String redirectUri, final String state, final String clientId, final String scope) {
 
-        HttpEntity<MultiValueMap<String, String>> entity = prepareOauth2AuthenticationRequest(username, password, redirectUri, state, clientId);
+        HttpEntity<MultiValueMap<String, String>> entity = prepareOauth2AuthenticationRequest(username, password, redirectUri, state, clientId, scope);
 
         ResponseEntity<String> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getAuthorizeOauth2(), HttpMethod.POST, entity,
             String.class);
@@ -334,7 +335,8 @@ public class SPIService {
 
 
     private HttpEntity<MultiValueMap<String, String>> prepareOauth2AuthenticationRequest(final String username, final String password,
-                                                                                         final String redirectUri, final String state, final String clientId) {
+                                                                                         final String redirectUri, final String state,
+                                                                                         final String clientId, final String scope) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -347,6 +349,9 @@ public class SPIService {
         form.add("client_id", clientId);
         if (state != null) {
             form.add("state", state);
+        }
+        if (scope != null) {
+            form.add("scope", scope);
         }
 
         return new HttpEntity<>(form, headers);

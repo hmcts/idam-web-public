@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
@@ -122,6 +123,7 @@ public class AppController {
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
+        model.addAttribute(SCOPE, request.getScope());
 
         return LOGIN_VIEW;
     }
@@ -283,6 +285,7 @@ public class AppController {
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
         try {
             if (bindingResult.hasErrors()) {
@@ -294,7 +297,13 @@ public class AppController {
                 }
                 model.addAttribute(HAS_ERRORS, true);
             } else {
-                String responseUrl = spiService.authorize(request.getUsername(), request.getPassword(), request.getRedirect_uri(), request.getState(), request.getClient_id());
+                String responseUrl = spiService.authorize(
+                    request.getUsername(),
+                    request.getPassword(),
+                    request.getRedirect_uri(),
+                    request.getState(),
+                    request.getClient_id(),
+                    request.getScope());
                 if (responseUrl != null) {
                     nextPage = "redirect:" + responseUrl;
                 } else {
@@ -364,7 +373,7 @@ public class AppController {
         String redirectUrl = "redirect:";
         try {
             final String jsonResponse = spiService.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
-                request.getRedirect_uri(), request.getClient_id(), request.getState());
+                request.getRedirect_uri(), request.getClient_id(), request.getState(), request.getScope());
             if (jsonResponse != null) {
                 redirectUrl += jsonResponse;
             }
@@ -447,6 +456,7 @@ public class AppController {
         model.put(CLIENTID, forgotPasswordRequest.getClientId());
         model.put(EMAIL, forgotPasswordRequest.getEmail());
         model.put(STATE, forgotPasswordRequest.getState());
+        model.put(SCOPE, forgotPasswordRequest.getScope());
 
         try {
             if (!bindingResult.hasErrors()) {
