@@ -76,6 +76,15 @@
         <cve>CVE-2018-8088</cve>
     </suppress>
     
+    <!-- Ignored as we don't do XML parsing. -->
+    <suppress>
+        <notes><![CDATA[
+   file name: javax.json-api-1.1.jar
+   ]]></notes>
+        <gav regex="true">^javax\.json:javax\.json-api:1\.1.*$</gav>
+        <cpe>cpe:/a:processing:processing:1.1</cpe>
+    </suppress>
+    
     <suppress>
         <notes>suppress false positives - only relevant to tomcat &lt;= 8.4</notes>
         <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
