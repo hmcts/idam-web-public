@@ -31,7 +31,7 @@ allprojects  {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.4.5'
+  def idamBomVersion = '1.4.9'
 
   dependencyManagement {
     imports {
