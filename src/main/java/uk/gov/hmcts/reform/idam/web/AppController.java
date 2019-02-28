@@ -209,7 +209,7 @@ public class AppController {
         }
 
         try {
-            spiService.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirect_uri(), request.getClient_id());
+            spiService.registerUser(request);
             model.put(EMAIL, request.getUsername());
             model.put(REDIRECTURI, request.getRedirect_uri());
             model.put(CLIENTID, request.getClient_id());

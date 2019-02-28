@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
+import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
 @Slf4j
@@ -248,20 +249,21 @@ public class SPIService {
      * @should register user with correct details
      * @should return what API call returns
      */
-    public ResponseEntity<String> registerUser(String firstName, String lastName, String userName, String jwtToken, String redirectUri, String clientId) {
+    public ResponseEntity<String> registerUser(RegisterUserRequest registerUserRequest) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest request = new uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest();
-        request.setFirstName(firstName);
-        request.setLastName(lastName);
-        request.setEmail(userName);
-        request.setClientId(clientId);
-        request.setRedirectUri(redirectUri);
+        request.setFirstName(registerUserRequest.getFirstName());
+        request.setLastName(registerUserRequest.getLastName());
+        request.setEmail(registerUserRequest.getUsername());
+        request.setClientId(registerUserRequest.getClient_id());
+        request.setRedirectUri(registerUserRequest.getRedirect_uri());
+        request.setState(registerUserRequest.getState());
 
         HttpEntity<uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
-        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + jwtToken, HttpMethod.POST, requestEntity, String.class);
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + registerUserRequest.getJwt(), HttpMethod.POST, requestEntity, String.class);
     }
 
     /**

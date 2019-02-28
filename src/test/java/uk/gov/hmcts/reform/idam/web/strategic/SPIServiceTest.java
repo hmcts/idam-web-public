@@ -100,6 +100,7 @@ import uk.gov.hmcts.reform.idam.api.model.User;
 import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
+import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -133,16 +134,8 @@ public class SPIServiceTest {
      */
     @Test
     public void registerUser_shouldCallCorrectEndpointToRegisterUser() throws Exception {
-        // given
-
         // when
-        spiService.registerUser(
-            USER_FIRST_NAME,
-            USER_LAST_NAME,
-            USER_EMAIL,
-            JWT,
-            SERVICE_OAUTH2_REDIRECT_URI,
-            SERVICE_OAUTH2_CLIENT_ID);
+        spiService.registerUser(aRegisterUserRequest());
 
         // then
         verify(restTemplate).exchange(eq(SELF_REGISTRATION_URL), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
@@ -154,20 +147,8 @@ public class SPIServiceTest {
      */
     @Test
     public void registerUser_shouldRegisterUserWithCorrectDetails() throws Exception {
-        // given
-        uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest selfRegisterRequest = new uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest();
-        selfRegisterRequest.setEmail(USER_EMAIL);
-        selfRegisterRequest.setFirstName(USER_FIRST_NAME);
-        selfRegisterRequest.setLastName(USER_LAST_NAME);
-
         // when
-        spiService.registerUser(
-            USER_FIRST_NAME,
-            USER_LAST_NAME,
-            USER_EMAIL,
-            JWT,
-            SERVICE_OAUTH2_REDIRECT_URI,
-            SERVICE_OAUTH2_CLIENT_ID);
+        spiService.registerUser(aRegisterUserRequest());
 
         // then
         ArgumentCaptor<HttpEntity<SelfRegisterRequest>> captor = ArgumentCaptor.forClass(HttpEntity.class);
@@ -195,13 +176,7 @@ public class SPIServiceTest {
             .willReturn(expectedResponse);
 
         // when
-        ResponseEntity<String> actualResponse = spiService.registerUser(
-            USER_FIRST_NAME,
-            USER_LAST_NAME,
-            USER_EMAIL,
-            JWT,
-            SERVICE_OAUTH2_REDIRECT_URI,
-            SERVICE_OAUTH2_CLIENT_ID);
+        ResponseEntity<String> actualResponse = spiService.registerUser(aRegisterUserRequest());
 
         // then
         assertThat(actualResponse, is(expectedResponse));
@@ -650,4 +625,17 @@ public class SPIServiceTest {
 
         assertThat(response.getBody().getStatus(), equalTo("UP"));
     }
+
+    private RegisterUserRequest aRegisterUserRequest() {
+        RegisterUserRequest registerUserRequest = new RegisterUserRequest();
+        registerUserRequest.setClient_id(SERVICE_OAUTH2_CLIENT_ID);
+        registerUserRequest.setRedirect_uri(SERVICE_OAUTH2_REDIRECT_URI);
+        registerUserRequest.setFirstName(USER_FIRST_NAME);
+        registerUserRequest.setLastName(USER_LAST_NAME);
+        registerUserRequest.setJwt(JWT);
+        registerUserRequest.setUsername(USER_EMAIL);
+        registerUserRequest.setState(STATE);
+        return registerUserRequest;
+    }
+
 }
