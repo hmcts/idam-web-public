@@ -20,6 +20,7 @@ public class MvcKeys {
     public static final String REDIRECT_URI = "redirect_uri";
     public static final String RESPONSE_TYPE = "response_type";
     public static final String STATE = "state";
+    public static final String SCOPE = "scope";
     public static final String USERNAME = "username";
     public static final String INVALID_PIN = "invalidPin";
     public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
@@ -39,6 +40,10 @@ public class MvcKeys {
     public static final String USERCREATED_VIEW = "usercreated";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
     public static final String SELF_REGISTER_VIEW = "selfRegister";
+    public static final String COOKIES_VIEW = "cookies";
+    public static final String PRIVACY_POLICY_VIEW = "privacypolicy";
+    public static final String TERMS_AND_CONDITIONS_VIEW = "tandc";
+    public static final String CONTACT_US_VIEW = "contactus";
 
 
 }

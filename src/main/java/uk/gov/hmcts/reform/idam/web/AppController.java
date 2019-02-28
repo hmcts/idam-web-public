@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.idam.web;
 
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
@@ -19,13 +21,16 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
@@ -50,7 +55,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -64,6 +68,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
+
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
@@ -93,8 +98,8 @@ public class AppController {
     /**
      * @should return index view
      */
-    @RequestMapping("/")
-    public String index(final Map<String, Object> model) {
+    @GetMapping("/")
+    public String indexView(final Map<String, Object> model) {
 
         return MvcKeys.INDEX_VIEW;
     }
@@ -104,11 +109,10 @@ public class AppController {
      * @should set self-registration to false if disabled for the service
      * @should set self-registration to false if the clientId is invalid
      * @should return error page view if OAuth2 details are missing
-     * @should return forbidden if csrf token is invalid
      */
-    @RequestMapping("/login")
-    public String login(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
-                        BindingResult bindingResult, Model model) {
+    @GetMapping("/login")
+    public String loginView(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
+                            BindingResult bindingResult, Model model) {
         if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
             model.addAttribute(ERROR_MSG, "error.page.access.denied");
             model.addAttribute(ERROR_SUB_MSG, "public.error.page.access.denied.text");
@@ -119,6 +123,7 @@ public class AppController {
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
+        model.addAttribute(SCOPE, request.getScope());
 
         return LOGIN_VIEW;
     }
@@ -126,8 +131,8 @@ public class AppController {
     /**
      * @should return expired token view
      */
-    @RequestMapping("/expiredtoken")
-    public String expiredtoken(final Map<String, Object> model) {
+    @GetMapping("/expiredtoken")
+    public String expiredTokenView(final Map<String, Object> model) {
 
         return EXPIREDTOKEN_VIEW;
     }
@@ -135,8 +140,8 @@ public class AppController {
     /**
      * @should return login with pin view
      */
-    @RequestMapping("/login/pin")
-    public String loginWithPin(final Map<String, Object> model) {
+    @GetMapping("/login/pin")
+    public String loginWithPinView(final Map<String, Object> model) {
 
         return LOGIN_WITH_PIN_VIEW;
     }
@@ -204,7 +209,7 @@ public class AppController {
         }
 
         try {
-            spiService.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirect_uri(), request.getClient_id());
+            spiService.registerUser(request);
             model.put(EMAIL, request.getUsername());
             model.put(REDIRECTURI, request.getRedirect_uri());
             model.put(CLIENTID, request.getClient_id());
@@ -268,10 +273,11 @@ public class AppController {
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
      * @should put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
      * @should put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
+     * @should return forbidden if csrf token is invalid
      */
-    @RequestMapping(method = RequestMethod.POST, path = "/authorize")
-    public String authorize(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
-                            BindingResult bindingResult, Model model) {
+    @PostMapping("/login")
+    public String login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
+                        BindingResult bindingResult, Model model) {
         String nextPage = LOGIN_VIEW;
         model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(PASSWORD, request.getPassword());
@@ -279,6 +285,7 @@ public class AppController {
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
         try {
             if (bindingResult.hasErrors()) {
@@ -290,17 +297,23 @@ public class AppController {
                 }
                 model.addAttribute(HAS_ERRORS, true);
             } else {
-                String responseUrl = spiService.authorize(request.getUsername(), request.getPassword(), request.getRedirect_uri(), request.getState(), request.getClient_id());
+                String responseUrl = spiService.authorize(
+                    request.getUsername(),
+                    request.getPassword(),
+                    request.getRedirect_uri(),
+                    request.getState(),
+                    request.getClient_id(),
+                    request.getScope());
                 if (responseUrl != null) {
                     nextPage = "redirect:" + responseUrl;
                 } else {
-                    log.info("There is a problem while login in  user - " + request.getUsername());
+                    log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
                     model.addAttribute(HAS_LOGIN_FAILED, true);
                     bindingResult.reject("Login failure");
                 }
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
-            log.info("Login failed for user - " + request.getUsername());
+            log.info("Login failed for user - " + obfuscateEmailAddress(request.getUsername()));
             if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
 
                 getLoginFailureReason(he, model, bindingResult);
@@ -360,7 +373,7 @@ public class AppController {
         String redirectUrl = "redirect:";
         try {
             final String jsonResponse = spiService.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
-                request.getRedirect_uri(), request.getClient_id(), request.getState());
+                request.getRedirect_uri(), request.getClient_id(), request.getState(), request.getScope());
             if (jsonResponse != null) {
                 redirectUrl += jsonResponse;
             }
@@ -443,6 +456,7 @@ public class AppController {
         model.put(CLIENTID, forgotPasswordRequest.getClientId());
         model.put(EMAIL, forgotPasswordRequest.getEmail());
         model.put(STATE, forgotPasswordRequest.getState());
+        model.put(SCOPE, forgotPasswordRequest.getScope());
 
         try {
             if (!bindingResult.hasErrors()) {
@@ -527,30 +541,46 @@ public class AppController {
         return true;
     }
 
-    @RequestMapping("/cookies")
-    public String cookies() {
-        return "cookies";
+    private String obfuscateEmailAddress(String email) {
+        return email.replaceAll("(^[^@]{3}|(?!^)\\G)[^@]", "$1*");
     }
 
-    @RequestMapping("/privacy-policy")
-    public String privacyPolicy() {
-        return "privacypolicy";
+    /**
+     * @should return view
+     */
+    @GetMapping("/cookies")
+    public String cookiesView() {
+        return COOKIES_VIEW;
     }
 
-    @RequestMapping("/terms-and-conditions")
-    public String termsAndConditions() {
-        return "tandc";
+    /**
+     * @should return view
+     */
+    @GetMapping("/privacy-policy")
+    public String privacyPolicyView() {
+        return PRIVACY_POLICY_VIEW;
     }
 
-    @RequestMapping("/contact-us")
-    public String contactUs() {
-        return "contactus";
+    /**
+     * @should return view
+     */
+    @GetMapping("/terms-and-conditions")
+    public String termsAndConditionsView() {
+        return TERMS_AND_CONDITIONS_VIEW;
+    }
+
+    /**
+     * @should return view
+     */
+    @GetMapping("/contact-us")
+    public String contactUsView() {
+        return CONTACT_US_VIEW;
     }
 
     /**
      * @should return tacticalActivateExpired
      */
-    @RequestMapping("/activate")
+    @GetMapping("/activate")
     public String tacticalActivate() {
         return TACTICAL_ACTIVATE_VIEW;
     }

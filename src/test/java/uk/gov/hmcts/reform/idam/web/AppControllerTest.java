@@ -1,123 +1,5 @@
 package uk.gov.hmcts.reform.idam.web;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZE_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.DO_RESET_PASSWORD_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_BLACKLISTED_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CAPITAL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_ENTER_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_INVALID_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_ONE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_TWO;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MESSAGE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MSG;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_PASSWORD_DETAILS;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_PREVIOUSLY_USED_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_TITLE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERR_LOCKED_FAILED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERR_SUSPENDED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_TOKEN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_TOKEN_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_COMMAND_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_SUCCESS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_WEB_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HAS_LOGIN_FAILED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HAS_LOGIN_FAILED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.INDEX_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.INFORMATION_IS_MISSING_OR_INVALID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_LOCKED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_SUSPENDED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_LOGOUT_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_PIN_CODE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_PIN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_REGISTER_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGOUT_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_RESET_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_TWO;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_USER_NOT_LONGER_VALID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_FIX_THE_FOLLOWING;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_TRY_AGAIN;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESETPASSWORD_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_FORGOT_PASSWORD_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_CODE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_SUCCESS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_TOKEN;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESPONSE_TYPE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESPONSE_TYPE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SECURITY_CODE_INCORRECT_ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_ENABLED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SORRY_THERE_WAS_AN_ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UNUSED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_LOGIN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERNAME_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_CREATED_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL_INVALID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALID_SECURITY_CODE_ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,19 +12,56 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
+import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MSG;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HAS_LOGIN_FAILED;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.INDEX_VIEW;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_LOCKED;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_SUSPENDED;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESPONSE_TYPE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_ENABLED;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.*;
+import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(AppController.class)
@@ -160,10 +79,10 @@ public class AppControllerTest {
 
     /**
      * @verifies return index view
-     * @see AppController#index(Map)
+     * @see AppController#indexView(Map)
      */
     @Test
-    public void index_shouldReturnIndexView() throws Exception {
+    public void indexView_shouldReturnIndexView() throws Exception {
         mockMvc.perform(get("/"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -237,10 +156,10 @@ public class AppControllerTest {
 
     /**
      * @verifies return expired token view
-     * @see AppController#expiredtoken(Map)
+     * @see AppController#expiredTokenView(Map)
      */
     @Test
-    public void expiredtoken_shouldReturnExpiredTokenView() throws Exception {
+    public void expiredTokenView_shouldReturnExpiredTokenView() throws Exception {
         mockMvc.perform(get(EXPIRED_TOKEN_ENDPOINT))
             .andDo(print())
             .andExpect(status().isOk())
@@ -249,10 +168,10 @@ public class AppControllerTest {
 
     /**
      * @verifies return login with pin view
-     * @see AppController#loginWithPin(Map)
+     * @see AppController#loginWithPinView(Map)
      */
     @Test
-    public void loginWithPin_shouldReturnLoginWithPinView() throws Exception {
+    public void loginWithPinView_shouldReturnLoginWithPinView() throws Exception {
         mockMvc.perform(get(LOGIN_PIN_ENDPOINT))
             .andDo(print())
             .andExpect(status().isOk())
@@ -290,7 +209,7 @@ public class AppControllerTest {
     @Test
     public void upliftRegister_shouldReturnUpliftUserViewIfRegisterUserServiceReturnsHttpCodeDifferentFrom201() throws Exception {
 
-        given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willReturn(ResponseEntity.badRequest().build());
+        given(spiService.registerUser(eq(aRegisterUserRequest()))).willReturn(ResponseEntity.badRequest().build());
 
         mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
@@ -305,13 +224,25 @@ public class AppControllerTest {
             .andExpect(view().name(UPLIFT_REGISTER_VIEW));
     }
 
+    private RegisterUserRequest aRegisterUserRequest() {
+        RegisterUserRequest registerUserRequest = new RegisterUserRequest();
+        registerUserRequest.setClient_id(CLIENT_ID);
+        registerUserRequest.setRedirect_uri(REDIRECT_URI);
+        registerUserRequest.setFirstName(USER_FIRST_NAME);
+        registerUserRequest.setLastName(USER_LAST_NAME);
+        registerUserRequest.setJwt(JWT);
+        registerUserRequest.setUsername(USER_EMAIL);
+        registerUserRequest.setState(STATE);
+        return registerUserRequest;
+    }
+
     /**
      * @verifies put email in model and return usercreated view if register user service returns http code 201
      * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
      */
     @Test
     public void upliftRegister_shouldPutEmailInModelAndReturnUsercreatedViewIfRegisterUserServiceReturnsHttpCode201() throws Exception {
-        given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willReturn(ResponseEntity.status(HttpStatus.CREATED).build());
+        given(spiService.registerUser(eq(aRegisterUserRequest()))).willReturn(ResponseEntity.status(HttpStatus.CREATED).build());
 
         mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
@@ -334,7 +265,7 @@ public class AppControllerTest {
      */
     @Test
     public void upliftRegister_shouldPutRightErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionWith404HttpStatusCode() throws Exception {
-        given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+        given(spiService.registerUser(eq(aRegisterUserRequest()))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
@@ -360,7 +291,7 @@ public class AppControllerTest {
      */
     @Test
     public void upliftRegister_shouldPutGenericErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionAnHttpStatusCodeDifferentFrom404() throws Exception {
-        given(spiService.registerUser(eq(USER_FIRST_NAME), eq(USER_LAST_NAME), eq(USER_EMAIL), eq(JWT), eq(REDIRECT_URI), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+        given(spiService.registerUser(eq(aRegisterUserRequest()))).willThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
         mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
             .param(JWT_PARAMETER, JWT)
@@ -527,7 +458,7 @@ public class AppControllerTest {
      */
     @Test public void upliftLogin_shouldUpliftUser() throws Exception {
 
-        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE)).willReturn("upliftResult");
+        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE)).willReturn("upliftResult");
 
         mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
@@ -535,11 +466,12 @@ public class AppControllerTest {
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isFound())
             .andExpect(view().name("redirect:upliftResult"));
 
-        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE);
     }
 
     /**
@@ -559,7 +491,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -634,7 +566,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", USERNAME_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -654,7 +586,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", PASSWORD_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -674,7 +606,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", JWT_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -694,7 +626,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", REDIRECT_URI));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -714,7 +646,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", CLIENT_ID_PARAMETER));
 
-        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+        verify(spiService, never()).uplift(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     /**
@@ -723,7 +655,7 @@ public class AppControllerTest {
      */
     @Test public void upliftLogin_shouldReturnToTheRegistrationPageIfTheCredentialsAreInvalid() throws Exception {
 
-        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE))
+        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE))
             .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 
         mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
@@ -732,11 +664,12 @@ public class AppControllerTest {
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
             .andExpect(view().name(UPLIFT_LOGIN_VIEW));
 
-        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE);
     }
 
     /**
@@ -745,7 +678,7 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldReturnErrorPageViewIfOAuth2DetailsAreMissing() throws Exception {
-        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+        mockMvc.perform(get(LOGIN_ENDPOINT)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(CLIENT_ID_PARAMETER, MISSING))
             .andExpect(status().isOk())
@@ -759,19 +692,20 @@ public class AppControllerTest {
      */
     @Test public void upliftLogin_shouldReturnToTheRegistrationPageIfThereIsAnException() throws Exception {
 
-        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE)).willThrow(new RuntimeException());
+        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE)).willThrow(new RuntimeException());
 
         mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECT_URI, REDIRECT_URI)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(STATE_PARAMETER, STATE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
             .andExpect(view().name(UPLIFT_LOGIN_VIEW));
 
-        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE);
     }
 
     /**
@@ -1161,33 +1095,34 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model correct data  then call authorize service and redirect using redirect url returned by service
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
+    public void login_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
 
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(REDIRECT_URI);
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE))).willReturn(REDIRECT_URI);
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
-        verify(spiService).authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID));
+        verify(spiService).authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE));
     }
 
     /**
      * @verifies put in model correct data if username or  password are empty.
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelCorrectDataIfUsernameOrPasswordAreEmpty() throws Exception {
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+    public void login_shouldPutInModelCorrectDataIfUsernameOrPasswordAreEmpty() throws Exception {
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, BLANK)
             .param(PASSWORD_PARAMETER, BLANK)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1203,13 +1138,13 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model the correct data and return login view if authorize service doesn't return a response url
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willReturn(MISSING);
+    public void login_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE))).willReturn(MISSING);
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1223,28 +1158,29 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
+    public void login_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(status().isOk())
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), any())).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
 
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1256,16 +1192,17 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), any())).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
 
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(model().attribute(IS_ACCOUNT_SUSPENDED, true))
             .andExpect(status().isOk())
 
@@ -1275,19 +1212,20 @@ public class AppControllerTest {
 
     /**
      * @verifies put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
-     * @see AppController#authorize(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, org.springframework.ui.Model)
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void authorize_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
-        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+    public void login_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
+        given(spiService.authorize(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID), eq(CUSTOM_SCOPE))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
-        mockMvc.perform(post(AUTHORIZE_ENDPOINT).with(csrf())
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().isOk())
             .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(view().name(LOGIN_VIEW));
@@ -1404,8 +1342,55 @@ public class AppControllerTest {
      */
     @Test public void tacticalActivate_shouldReturnTacticalActivateExpired() throws Exception {
         mockMvc.perform(get(TACTICAL_ACTIVATE_ENDPOINT))
+            .andExpect(status().isOk())
             .andExpect(view().name(TACTICAL_ACTIVATE_VIEW));
     }
 
+    /**
+     * @verifies return view
+     * @see AppController#cookiesView()
+     */
+    @Test
+    public void cookiesView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/cookies"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(COOKIES_VIEW));
+    }
 
+    /**
+     * @verifies return view
+     * @see AppController#privacyPolicyView()
+     */
+    @Test
+    public void privacyPolicyView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/privacy-policy"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(PRIVACY_POLICY_VIEW));
+    }
+
+    /**
+     * @verifies return view
+     * @see AppController#termsAndConditionsView()
+     */
+    @Test
+    public void termsAndConditionsView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/terms-and-conditions"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(TERMS_AND_CONDITIONS_VIEW));
+    }
+
+    /**
+     * @verifies return view
+     * @see AppController#contactUsView()
+     */
+    @Test
+    public void contactUsView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/contact-us"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(CONTACT_US_VIEW));
+    }
 }
