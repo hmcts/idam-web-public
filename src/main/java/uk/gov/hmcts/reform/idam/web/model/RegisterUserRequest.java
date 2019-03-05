@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.model;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

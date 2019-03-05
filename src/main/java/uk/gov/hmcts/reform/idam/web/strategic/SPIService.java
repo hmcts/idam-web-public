@@ -55,7 +55,6 @@ public class SPIService {
         this.configurationProperties = configurationProperties;
     }
 
-
     /**
      * @should call IDM with the right  body
      */
@@ -75,7 +74,6 @@ public class SPIService {
 
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getActivation(), HttpMethod.PATCH, entity, String.class);
     }
-
 
     /**
      * @should call api with the correct data and return api response body if response code is 200
@@ -260,7 +258,7 @@ public class SPIService {
         request.setEmail(registerUserRequest.getUsername());
         request.setClientId(registerUserRequest.getClient_id());
         request.setRedirectUri(registerUserRequest.getRedirect_uri());
-        request.setState(registerUserRequest.getState());
+//        request.setState(registerUserRequest.getState());
 
         HttpEntity<uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + registerUserRequest.getJwt(), HttpMethod.POST, requestEntity, String.class);
@@ -276,7 +274,6 @@ public class SPIService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(selfRegisterRequest), headers);
-
 
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegistration(), HttpMethod.POST, entity, String.class);
     }
@@ -335,13 +332,11 @@ public class SPIService {
         return Optional.empty();
     }
 
-
     private HttpEntity<MultiValueMap<String, String>> prepareOauth2AuthenticationRequest(final String username, final String password,
                                                                                          final String redirectUri, final String state,
                                                                                          final String clientId, final String scope) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(4);
 

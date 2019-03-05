@@ -68,7 +68,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
-
 import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.model.Service;
 import uk.gov.hmcts.reform.idam.api.model.User;
@@ -84,7 +83,6 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 @Slf4j
 @Controller
 public class AppController {
-
 
     @Autowired
     private SPIService spiService;
@@ -256,7 +254,6 @@ public class AppController {
         }
         return nextPage;
     }
-
 
     /**
      * @should put in model correct data and return forgot password view
@@ -475,7 +472,6 @@ public class AppController {
         return FORGOTPASSWORD_VIEW;
     }
 
-
     /**
      * @should put in model redirect uri if service returns http 200 and redirect uri is present in response then return reset password success view
      * @should put in model the correct error code if HttpClientErrorException with http 412 is thrown by service then return reset password view.
@@ -586,9 +582,9 @@ public class AppController {
     }
 
     private boolean isSelfRegistrationEnabled(String clientId) {
-        if(Objects.nonNull(clientId) && !clientId.isEmpty()) {
+        if (Objects.nonNull(clientId) && !clientId.isEmpty()) {
             Optional<Service> service = spiService.getServiceByClientId(clientId);
-            return service.isPresent() && service.get().getSelfRegistrationAllowed();
+            return service.isPresent() && service.get().isSelfRegistrationAllowed();
         }
         return false;
     }
