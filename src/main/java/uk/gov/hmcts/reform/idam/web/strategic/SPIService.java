@@ -258,7 +258,7 @@ public class SPIService {
         request.setEmail(registerUserRequest.getUsername());
         request.setClientId(registerUserRequest.getClient_id());
         request.setRedirectUri(registerUserRequest.getRedirect_uri());
-//        request.setState(registerUserRequest.getState());
+        request.setState(registerUserRequest.getState());
 
         HttpEntity<uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + registerUserRequest.getJwt(), HttpMethod.POST, requestEntity, String.class);
