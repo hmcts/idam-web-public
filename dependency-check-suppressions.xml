@@ -79,10 +79,10 @@
     <!-- Ignored as we don't do XML parsing. -->
     <suppress>
         <notes><![CDATA[
-   file name: javax.json-api-1.1.jar
+   file name: javax.json-api-1.1.x.jar
    ]]></notes>
         <gav regex="true">^javax\.json:javax\.json-api:1\.1.*$</gav>
-        <cpe>cpe:/a:processing:processing:1.1</cpe>
+        <cve>CVE-2018-1000840</cve>
     </suppress>
 
     <!-- Ignored. -->
