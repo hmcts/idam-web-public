@@ -53,12 +53,16 @@ allprojects  {
     // range of 0-10 fails the build, anything greater and it doesn't fail the build
     failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'false' ? 11 : 0
     suppressionFile = 'dependency-check-suppressions.xml'
+
+    analyzers {
+      // Disable scanning of .NET related binaries
+      assemblyEnabled = false
+    }
   }
 
   dependencies {
     compile group: 'uk.gov.hmcts.reform.idam', name: 'idam-api-spec'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-//    compile group: 'org.springframework.boot', name: 'spring-boot-actuator-docs'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     compile group: 'org.springframework.security', name: 'spring-security-taglibs'
