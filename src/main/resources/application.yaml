@@ -24,6 +24,7 @@ management:
       enabled: true
     health:
       enabled: true
+      sensitive: false
 
 ssl:
   verification:
