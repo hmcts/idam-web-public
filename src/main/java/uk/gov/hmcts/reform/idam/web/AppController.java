@@ -406,7 +406,7 @@ public class AppController {
                                @RequestParam(value = "redirect_uri") String redirectUri,
                                @RequestParam(value = "state", required = false) String state,
                                @RequestParam(value = "client_id") String clientId,
-                               Map<String, Object> model) {
+                               Map<String, Object> model) { //NOSONAR
 
         //Quick null check to avoid calling backend
         if (StringUtils.isBlank(pin)) {
@@ -416,7 +416,7 @@ public class AppController {
 
         try {
 
-            return "redirect:" + spiService.loginWithPin(pin, redirectUri, state, clientId);
+            return "redirect:" + spiService.loginWithPin(pin, redirectUri, state, clientId); //NOSONAR
 
         } catch (HttpClientErrorException | BadCredentialsException e) {
             log.error("Problem with pin: {}", e.getMessage());

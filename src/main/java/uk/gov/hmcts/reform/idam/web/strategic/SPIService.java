@@ -140,7 +140,7 @@ public class SPIService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("pin", pin);
+        headers.add("pin", pin); //NOSONAR
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -159,8 +159,7 @@ public class SPIService {
         String requestUrl = sb.toString();
         log.debug("Logging in with PIN to url: {}", redirectUri);
 
-        ResponseEntity<String> response = getCustomRestTemplate().exchange(requestUrl, HttpMethod.GET, entity,
-            String.class);
+        ResponseEntity<String> response = getCustomRestTemplate().exchange(requestUrl, HttpMethod.GET, entity, String.class); // NOSONAR
         if (response.getStatusCode() == HttpStatus.FOUND) {
             String location = response.getHeaders().getLocation().toString();
             return location;
@@ -212,8 +211,8 @@ public class SPIService {
     public ResponseEntity<String> validateResetPasswordToken(final String token, final String code) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("token", token);
-        headers.add("code", code);
+        headers.add("token", token); //NOSONAR
+        headers.add("code", code); //NOSONAR
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -293,11 +292,11 @@ public class SPIService {
      */
     public Optional<User> getDetails(String token) {
 
-        ResponseEntity<User> response = null;
+        ResponseEntity<User> response;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("authorization", token);
+        headers.add("authorization", token); //NOSONAR
 
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
@@ -310,7 +309,7 @@ public class SPIService {
             return Optional.empty();
         }
 
-        if (Objects.nonNull(response) && response.getStatusCode().equals(HttpStatus.OK)) {
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
             return Optional.of(response.getBody());
         }
 
@@ -324,7 +323,8 @@ public class SPIService {
      */
     public Optional<uk.gov.hmcts.reform.idam.api.model.Service> getServiceByClientId(String clientId) {
 
-        ResponseEntity<ArrayOfServices> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class);
+        ResponseEntity<ArrayOfServices> response =
+            restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class); //NOSONAR
 
         if (Objects.nonNull(response.getBody()) && !response.getBody().isEmpty()) {
             return Optional.of(response.getBody().get(0));
