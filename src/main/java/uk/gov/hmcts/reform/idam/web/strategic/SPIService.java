@@ -288,7 +288,6 @@ public class SPIService {
      * @should call api with the correct data and return api response if status code is 200
      * @should return optional empty if status code is not 200
      * @should return optional empty if any Exception occurs
-     * @should return optional empty if api response is null
      */
     public Optional<User> getDetails(String token) {
 
@@ -303,17 +302,11 @@ public class SPIService {
         try {
 
             response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getDetails(), HttpMethod.GET, entity, User.class);
-
+            return Optional.of(response.getBody());
         } catch (Exception e) {
             log.error("Error getting User Details", e);
             return Optional.empty();
         }
-
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return Optional.of(response.getBody());
-        }
-
-        return Optional.empty();
     }
 
     /**
