@@ -47,6 +47,36 @@ class IdamHelper extends Helper {
         });
     }
 
+    getBase64(email_address, password) {
+        console.log("BASE64-ENCODED " + Buffer.from(email_address+":"+password).toString('base64'))
+        return Buffer.from(email_address+":"+password).toString('base64')
+    }
+
+    getAuthorizeCode(serviceName, serviceRedirect, oauth2Scope, base64) {
+        var searchParams = new URLSearchParams();
+        searchParams.set('response_type', 'code');
+        searchParams.set('client_id', serviceName);
+        searchParams.set('redirect_uri', serviceRedirect);
+        searchParams.set('scope', oauth2Scope);
+
+        console.log("body: " + searchParams);
+        console.log(base64)
+
+        return fetch(`${TestData.IDAM_API}/oauth2/authorize`, {
+            agent: agent,
+            method: 'POST',
+            body: searchParams,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Basic ' + base64}
+        }).then(response => {
+            return response.json();
+        }).then((json) => {
+            console.log("Code: " + json.code);
+            return json.code;
+        })
+    }
+
+
+
     createService(serviceName, roleId, token, scope='') {
         let data;
 
@@ -90,7 +120,10 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createServiceWithRoles(serviceName, serviceRoles, betaRole, token, scope='') {
+    createServiceWithRoles(serviceName, serviceRoles, betaRole, token, scope) {
+        if(scope == null) {
+            scope = ''
+        }
         const data = {
             label: serviceName,
             description: serviceName,
@@ -359,27 +392,25 @@ class IdamHelper extends Helper {
     getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
         var searchParams = new URLSearchParams();
         searchParams.set('code', code);
-        searchParams.set('client_id', serviceName);
         searchParams.set('redirect_uri', serviceRedirect);
-        searchParams.set('client_secret', clientSecret);
+        searchParams.set('grant_type', 'authorization_code')
 
         return fetch(`${TestData.IDAM_API}/oauth2/token`, {
             agent: agent,
             method: 'POST',
             body: searchParams,
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Basic ' + this.getBase64(serviceName, clientSecret)}
         }).then(response => {
+            console.log(response)
             return response.json();
-        })
-            .then((json) => {
-                console.log("Token: " + json.access_token);
-                return json.access_token;
-            })
-            .catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
-            });
+        }).then((json) => {
+            console.log("Token: " + json.access_token);
+            return json.access_token;
+        }).catch(err => {
+            console.log(err)
+            let browser = this.helpers['Puppeteer'].browser;
+            browser.close();
+        });
     }
 
     getUserInfo(accessToken) {
@@ -408,6 +439,28 @@ class IdamHelper extends Helper {
         }).then((response) => {
             if (response.status != 201) {
                 console.log('Error granting role', response.status);
+                throw new Error()
+            }
+        });
+    }
+
+    registerUserWithRoles(bearerToken, userEmail, userFirstName, userLastName, userRoles) {
+        const data = {
+            email: userEmail,
+            firstName: userFirstName,
+            lastName: userLastName,
+            roles: [userRoles]
+        };
+
+        return fetch(`${TestData.IDAM_API}/user/registration`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
+        }).then((response) => {
+            if (response.status != 200) {
+                console.log('Error creating user', response.status);
+                console.log(JSON.stringify(data))
                 throw new Error()
             }
         });
