@@ -28,6 +28,7 @@
                 <c:param name="redirectUri" value="${redirect_uri}"/>
                 <c:param name="clientId" value="${client_id}"/>
                 <c:param name="state" value="${state}"/>
+                <c:param name="scope" value="${scope}"/>
             </c:url>
 
             <spring:hasBindErrors name="authorizeCommand">
@@ -163,7 +164,6 @@
 
                 <input class="button" type="submit" name="save"
                        value="<spring:message code="public.login.form.submit" />">
-                <form:input path="state" type="hidden" id="state" name="state"/>
                 <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled" name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
             </div>
             <c:if test="${selfRegistrationEnabled}">
@@ -176,6 +176,7 @@
                             <c:param name="redirect_uri" value="${redirect_uri}"/>
                             <c:param name="client_id" value="${client_id}"/>
                             <c:param name="state" value="${state}"/>
+                            <c:param name="scope" value="${scope}"/>
                         </c:url>
                         <a href="${selfRegisterUrl}">
                             <spring:message code="public.common.create.account"/>

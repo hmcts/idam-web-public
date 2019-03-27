@@ -47,7 +47,7 @@ class IdamHelper extends Helper {
         });
     }
 
-    createService(serviceName, roleId, token) {
+    createService(serviceName, roleId, token, scope='') {
         let data;
 
         if (roleId === '') {
@@ -57,7 +57,7 @@ class IdamHelper extends Helper {
                 oauth2ClientId: serviceName,
                 oauth2ClientSecret: 'autotestingservice',
                 oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
-                oauth2Scope: 'create-user',
+                oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 activationRedirectUrl: "https://idam.testservice.gov.uk",
@@ -70,7 +70,7 @@ class IdamHelper extends Helper {
                 oauth2ClientId: serviceName,
                 oauth2ClientSecret: 'autotestingservice',
                 oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
-                oauth2Scope: 'create-user',
+                oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 allowedRoles: [roleId, 'auto-admin_role'],
@@ -90,14 +90,14 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createServiceWithRoles(serviceName, serviceRoles, betaRole, token) {
+    createServiceWithRoles(serviceName, serviceRoles, betaRole, token, scope='') {
         const data = {
             label: serviceName,
             description: serviceName,
             oauth2ClientId: serviceName,
             oauth2ClientSecret: 'autotestingservice',
             oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
-            oauth2Scope: 'create-user',
+            oauth2Scope: scope,
             onboardingEndpoint: '/autotest',
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
@@ -300,7 +300,7 @@ class IdamHelper extends Helper {
     const helper = this.helpers['Puppeteer'];
     helper.page.setRequestInterception(true);
     helper.page.on('request', request => {
-        if (request.url().indexOf('/login') > 0) {
+        if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0) {
             request.continue();
         } else {
             request.respond({
@@ -317,7 +317,7 @@ class IdamHelper extends Helper {
         helper.page.setRequestInterception(false);
     }
 
-    getPin(firstname, lastname) {
+    getPinUser(firstname, lastname) {
         const data = {
             firstName: firstname,
             lastName: lastname,
@@ -329,7 +329,7 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json'},
         }).then(res => res.json())
             .then((json) => {
-                return json.pin;
+                return json;
             })
             .catch(err => {
                 console.log(err)
@@ -382,76 +382,36 @@ class IdamHelper extends Helper {
             });
     }
 
-    getBearerToken(serviceName, clientSecret, scope, grantType) {
-            var searchParams = new URLSearchParams();
-            searchParams.set('client_id', serviceName);
-            searchParams.set('client_secret', clientSecret);
-            searchParams.set('scope', scope);
-            searchParams.set('grant_type', grantType);
-
-            return fetch(`${TestData.IDAM_API}/oauth2/token`, {
-                agent: agent,
-                method: 'POST',
-                body: searchParams,
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            }).then(response => {
-                return response.json();
-            })
-            .then((json) => {
-                console.log("Token: " + json.access_token);
-                return json.access_token;
-            })
-            .catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
-            });
+    getUserInfo(accessToken) {
+        return fetch(`${TestData.IDAM_API}/details`, {
+            agent: agent,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        }).then(response => {
+            return response.json();
+        })
     }
 
-    registerUser(bearerToken, userEmail, userFirstName, userLastName) {
-
-            const data = {
-                email: userEmail,
-                firstName: userFirstName,
-                lastName: userLastName,
-                roles: []
-            };
-
-            return fetch(`${TestData.IDAM_API}/user/registration`, {
-                agent: agent,
-                method: 'POST',
-                body: JSON.stringify(data),
-                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
-            })
-                .then(res => res.json())
-                .then((json) => {
-                    return json;
-                })
-                .catch(err => err);
-        }
-
-    registerUserWithRoles(bearerToken, userEmail, userFirstName, userLastName, userRoles) {
-
-                const data = {
-                    email: userEmail,
-                    firstName: userFirstName,
-                    lastName: userLastName,
-                    roles: userRoles
-                };
-
-                return fetch(`${TestData.IDAM_API}/user/registration`, {
-                    agent: agent,
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
-                })
-                    .then(res => res.json())
-                    .then((json) => {
-                        return json;
-                    })
-                    .catch(err => err);
+    grantRoleToUser(roleName, accessToken) {
+        return fetch(`${TestData.IDAM_API}/account/role`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify({
+              "name": roleName
+            }),
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': 'Bearer ' + accessToken
             }
-
+        }).then((response) => {
+            if (response.status != 201) {
+                console.log('Error granting role', response.status);
+                throw new Error()
+            }
+        });
+    }
 }
 
 module.exports = IdamHelper;

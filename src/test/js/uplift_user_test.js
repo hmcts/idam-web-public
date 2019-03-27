@@ -28,8 +28,8 @@ BeforeSuite(async (I) => {
     await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token);
     await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_admin", "IDAM_ADMIN_USER"]);
 
-    var pin = await I.getPin(randomUserFirstName, randomUserLastName);
-    var code = await I.loginAsPin(pin, serviceName, redirectUri);
+    var pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
+    var code = await I.loginAsPin(pinUser.pin, serviceName, redirectUri);
     accessToken = await I.getAccessToken(code, serviceName, redirectUri, clientSecret);
 });
 
