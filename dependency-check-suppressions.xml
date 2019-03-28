@@ -79,10 +79,10 @@
     <!-- Ignored as we don't do XML parsing. -->
     <suppress>
         <notes><![CDATA[
-   file name: javax.json-api-1.1.jar
+   file name: javax.json-api-1.1.x.jar
    ]]></notes>
         <gav regex="true">^javax\.json:javax\.json-api:1\.1.*$</gav>
-        <cpe>cpe:/a:processing:processing:1.1</cpe>
+        <cve>CVE-2018-1000840</cve>
     </suppress>
 
     <!-- Ignored. -->
@@ -102,7 +102,14 @@
         <gav regex="true">^net\.sourceforge\.pmd:pmd-core:.*$</gav>
         <cve>CVE-2019-7722</cve>
     </suppress>
-    
+
+    <!-- Ignored since we are not using Spring Framework 5.0.5 -->
+    <suppress>
+        <notes>suppress false positives - only relevant to spring.framework 5.0.5</notes>
+        <gav regex="true">^org\.springframework\.security:spring-security.*$</gav>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+
     <suppress>
         <notes>suppress false positives - only relevant to tomcat &lt;= 8.4</notes>
         <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>

@@ -14,7 +14,7 @@
               method="post"
               _lpchecked="1"
               action="doForgotPassword"
-              commandName="forgotPasswordCommand">
+              modelAttribute="forgotPasswordCommand">
 
             <spring:hasBindErrors name="forgotPasswordCommand">
                 <script>

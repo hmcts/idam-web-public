@@ -150,7 +150,7 @@ public class UserController {
             return ERRORPAGE_VIEW;
         }
 
-        if (service.isPresent() && service.get().getSelfRegistrationAllowed()) {
+        if (service.isPresent() && service.get().isSelfRegistrationAllowed()) {
             model.addAttribute("selfRegisterCommand", new SelfRegisterRequest());
             model.addAttribute(REDIRECTURI, redirectUri);
             model.addAttribute(CLIENTID, clientId);
