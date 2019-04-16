@@ -528,7 +528,7 @@ public class AppController {
     private boolean checkUserAuthorised(String jwt, Map<String, Object> model) {
         Optional<User> user = spiService.getDetails(jwt);
 
-        if (!user.isPresent() || Objects.isNull(user.get().getRoles()) || !user.get().getRoles().contains("letter-holder")) {
+        if (!user.isPresent()) {
             model.put(ERROR_MSG, "error.page.not.authorized");
             model.put(ERROR_SUB_MSG, "public.error.page.please.contact.admin");
             return false;
