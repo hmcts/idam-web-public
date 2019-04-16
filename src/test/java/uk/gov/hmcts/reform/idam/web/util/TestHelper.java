@@ -59,17 +59,19 @@ public class TestHelper {
         return requestBuilder;
     }
 
+    /**
+     * With the removal of letter-holder, an "authorized" user is just.. anybody
+     * @return a User
+     */
     public static User anAuthorizedUser() {
-        User user = new User();
-        user.setRoles(Arrays.asList("letter-holder"));
-        return user;
+        return new User();
     }
 
     public static ResponseEntity getFoundResponseEntity(String url) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         headers.setLocation(new URL(url).toURI());
-        return new ResponseEntity<String>("", headers, HttpStatus.FOUND);
+        return new ResponseEntity<>("", headers, HttpStatus.FOUND);
     }
 
     public static SelfRegisterRequest getSelfRegisterRequest() {

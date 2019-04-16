@@ -732,7 +732,7 @@ public class AppControllerTest {
      */
     @Test public void upliftRegisterView_shouldReturnErrorPageIfTheUserIsNotAuthorized() throws Exception {
 
-        given(spiService.getDetails(JWT)).willReturn(Optional.of(new User()));
+        given(spiService.getDetails(JWT)).willReturn(Optional.empty());
 
         mockMvc.perform(get(UPLIFT_REGISTER_ENDPOINT)
             .param(JWT_PARAMETER, JWT)
@@ -768,7 +768,7 @@ public class AppControllerTest {
      */
     @Test public void upliftLoginView_shouldReturnErrorPageIfTheUserIsNotAuthorized() throws Exception {
 
-        given(spiService.getDetails(JWT)).willReturn(Optional.of(new User()));
+        given(spiService.getDetails(JWT)).willReturn(Optional.empty());
 
         mockMvc.perform(get(UPLIFT_LOGIN_ENDPOINT)
             .param(JWT_PARAMETER, JWT)
