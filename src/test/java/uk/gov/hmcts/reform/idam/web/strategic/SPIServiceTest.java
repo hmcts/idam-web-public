@@ -90,14 +90,14 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.model.ArrayOfServices;
-import uk.gov.hmcts.reform.idam.api.model.ForgotPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.ResetPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest;
-import uk.gov.hmcts.reform.idam.api.model.Service;
-import uk.gov.hmcts.reform.idam.api.model.User;
-import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.Service;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
+import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
@@ -129,7 +129,7 @@ public class SPIServiceTest {
 
     /**
      * @verifies call correct endpoint to register user
-     * @see SPIService#registerUser(String, String, String, String, String, String)
+     * @see SPIService#registerUser(RegisterUserRequest)
      */
     @Test
     public void registerUser_shouldCallCorrectEndpointToRegisterUser() throws Exception {
@@ -142,7 +142,7 @@ public class SPIServiceTest {
 
     /**
      * @verifies register user with correct details
-     * @see SPIService#registerUser(String, String, String, String, String, String)
+     * @see SPIService#registerUser(RegisterUserRequest)
      */
     @Test
     public void registerUser_shouldRegisterUserWithCorrectDetails() throws Exception {
@@ -164,7 +164,7 @@ public class SPIServiceTest {
 
     /**
      * @verifies return what API call returns
-     * @see SPIService#registerUser(String, String, String, String, String, String)
+     * @see SPIService#registerUser(RegisterUserRequest)
      */
     @Test
     public void registerUser_shouldReturnWhatAPICallReturns() throws Exception {

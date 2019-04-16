@@ -30,12 +30,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.model.ArrayOfServices;
-import uk.gov.hmcts.reform.idam.api.model.ForgotPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.ResetPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.User;
-import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
+import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
@@ -251,7 +251,7 @@ public class SPIService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest request = new uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest();
+        uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest request = new uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest();
         request.setFirstName(registerUserRequest.getFirstName());
         request.setLastName(registerUserRequest.getLastName());
         request.setEmail(registerUserRequest.getUsername());
@@ -259,7 +259,7 @@ public class SPIService {
         request.setRedirectUri(registerUserRequest.getRedirect_uri());
         request.setState(registerUserRequest.getState());
 
-        HttpEntity<uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + registerUserRequest.getJwt(), HttpMethod.POST, requestEntity, String.class);
     }
 
@@ -314,7 +314,7 @@ public class SPIService {
      * @should return Optional empty if api returns an http status different from 200
      * @should return Optional empty if api returns empty response body
      */
-    public Optional<uk.gov.hmcts.reform.idam.api.model.Service> getServiceByClientId(String clientId) {
+    public Optional<uk.gov.hmcts.reform.idam.api.internal.model.Service> getServiceByClientId(String clientId) {
 
         ResponseEntity<ArrayOfServices> response =
             restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class); //NOSONAR
