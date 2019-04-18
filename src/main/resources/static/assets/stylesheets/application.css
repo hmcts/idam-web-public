@@ -442,7 +442,7 @@ hr {
     text-transform: none;
     font-size: 18px;
     line-height: 1.2;
-    background-image: url("/public/images/icon-pointer.png");
+    background-image: url("/assets/images/icons/icon-pointer.png");
     background-repeat: no-repeat;
     background-position: 100% 50%;
     padding: 0.36842em 2.15789em 0.21053em 0.84211em;
@@ -459,7 +459,7 @@ hr {
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .button-start,
     .button-get-started {
-        background-image: url("/public/images/icon-pointer-2x.png");
+        background-image: url("/assets/images/icons/icon-pointer-2x.png");
         background-size: 30px 19px;
     }
 }
@@ -473,12 +473,12 @@ hr {
 .icon-calendar {
     width: 27px;
     height: 27px;
-    background-image: url("/public/images/icon-calendar.png");
+    background-image: url("/assets/images/icons/icon-calendar.png");
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .icon-calendar {
-        background-image: url("/public/images/icon-calendar-2x.png");
+        background-image: url("/assets/images/icons/icon-calendar-2x.png");
         background-size: 100%;
     }
 }
@@ -486,12 +486,12 @@ hr {
 .icon-file-download {
     width: 30px;
     height: 39px;
-    background-image: url("/public/images/icon-file-download.png");
+    background-image: url("/assets/images/icons/icon-file-download.png");
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .icon-file-download {
-        background-image: url("/public/images/icon-file-download-2x.png");
+        background-image: url("/assets/images/icons/icon-file-download-2x.png");
         background-size: 100%;
     }
 }
@@ -499,12 +499,12 @@ hr {
 .icon-important {
     width: 35px;
     height: 35px;
-    background-image: url("/public/images/icon-important.png");
+    background-image: url("/assets/images/icons/icon-important.png");
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .icon-important {
-        background-image: url("/public/images/icon-important-2x.png");
+        background-image: url("/assets/images/icons/icon-important-2x.png");
         background-size: 100%;
     }
 }
@@ -512,12 +512,12 @@ hr {
 .icon-information {
     width: 27px;
     height: 27px;
-    background-image: url("/public/images/icon-information.png");
+    background-image: url("/assets/images/icons/icon-information.png");
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .icon-information {
-        background-image: url("/public/images/icon-information-2x.png");
+        background-image: url("/assets/images/icons/icon-information-2x.png");
         background-size: 100%;
     }
 }
@@ -525,12 +525,12 @@ hr {
 .icon-locator {
     width: 26px;
     height: 36px;
-    background-image: url("/public/images/icon-locator.png");
+    background-image: url("/assets/images/icons/icon-locator.png");
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .icon-locator {
-        background-image: url("/public/images/icon-locator-2x.png");
+        background-image: url("/assets/images/icons/icon-locator-2x.png");
         background-size: 100%;
     }
 }
@@ -538,12 +538,12 @@ hr {
 .icon-pointer {
     width: 30px;
     height: 19px;
-    background-image: url("/public/images/icon-pointer.png");
+    background-image: url("/assets/images/icons/icon-pointer.png");
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .icon-pointer {
-        background-image: url("/public/images/icon-pointer-2x.png");
+        background-image: url("/assets/images/icons/icon-pointer-2x.png");
         background-size: 100%;
     }
 }
@@ -551,12 +551,12 @@ hr {
 .icon-pointer-black {
     width: 23px;
     height: 23px;
-    background-image: url("/public/images/icon-pointer-black.png");
+    background-image: url("/assets/images/icons/icon-pointer-black.png");
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .icon-pointer-black {
-        background-image: url("/public/images/icon-pointer-black-2x.png");
+        background-image: url("/assets/images/icons/icon-pointer-black-2x.png");
         background-size: 100%;
     }
 }
@@ -564,12 +564,12 @@ hr {
 .icon-search {
     width: 30px;
     height: 22px;
-    background-image: url("/public/images/icon-search.png");
+    background-image: url("/assets/images/icons/icon-search.png");
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 20 / 10), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     .icon-search {
-        background-image: url("/public/images/icon-search-2x.png");
+        background-image: url("/assets/images/icons/icon-search-2x.png");
         background-size: 100%;
     }
 }
