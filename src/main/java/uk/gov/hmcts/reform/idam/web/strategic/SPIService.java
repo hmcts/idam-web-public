@@ -23,18 +23,22 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.model.ForgotPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.ResetPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.User;
-import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
+import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
+import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
 @Slf4j
@@ -50,7 +54,6 @@ public class SPIService {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
     }
-
 
     /**
      * @should call IDM with the right  body
@@ -72,13 +75,12 @@ public class SPIService {
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getActivation(), HttpMethod.PATCH, entity, String.class);
     }
 
-
     /**
      * @should call api with the correct data and return api response body if response code is 200
      * @should return api location in header in api response if response code is 302
      * @should return null if api response code is not 200 nor 302
      */
-    public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, String state) {
+    public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, final String state, final String scope) {
         ResponseEntity<String> response;
         long startTime = System.currentTimeMillis();
 
@@ -96,6 +98,7 @@ public class SPIService {
         form.add("redirectUri", redirectUri);
         form.add("clientId", clientId);
         form.add("state", state);
+        form.add("scope", scope);
 
         entity = new HttpEntity<>(form, headers);
 
@@ -115,12 +118,12 @@ public class SPIService {
 
     /**
      * @should call api with the correct data and return location in header in api response if response code is 302
-     * @should not send state parameter in form if it is not send as parameter in the service
+     * @should not send state and scope parameters in form if they are not send as parameter in the service
      * @should return null if api response code is not 302
      */
-    public String authorize(final String username, final String password, final String redirectUri, final String state, final String clientId) {
+    public String authorize(final String username, final String password, final String redirectUri, final String state, final String clientId, final String scope) {
 
-        HttpEntity<MultiValueMap<String, String>> entity = prepareOauth2AuthenticationRequest(username, password, redirectUri, state, clientId);
+        HttpEntity<MultiValueMap<String, String>> entity = prepareOauth2AuthenticationRequest(username, password, redirectUri, state, clientId, scope);
 
         ResponseEntity<String> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getAuthorizeOauth2(), HttpMethod.POST, entity,
             String.class);
@@ -137,7 +140,7 @@ public class SPIService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("pin", pin);
+        headers.add("pin", pin); //NOSONAR
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -156,8 +159,7 @@ public class SPIService {
         String requestUrl = sb.toString();
         log.debug("Logging in with PIN to url: {}", redirectUri);
 
-        ResponseEntity<String> response = getCustomRestTemplate().exchange(requestUrl, HttpMethod.GET, entity,
-            String.class);
+        ResponseEntity<String> response = getCustomRestTemplate().exchange(requestUrl, HttpMethod.GET, entity, String.class); // NOSONAR
         if (response.getStatusCode() == HttpStatus.FOUND) {
             String location = response.getHeaders().getLocation().toString();
             return location;
@@ -209,8 +211,8 @@ public class SPIService {
     public ResponseEntity<String> validateResetPasswordToken(final String token, final String code) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("token", token);
-        headers.add("code", code);
+        headers.add("token", token); //NOSONAR
+        headers.add("code", code); //NOSONAR
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -244,20 +246,21 @@ public class SPIService {
      * @should register user with correct details
      * @should return what API call returns
      */
-    public ResponseEntity<String> registerUser(String firstName, String lastName, String userName, String jwtToken, String redirectUri, String clientId) {
+    public ResponseEntity<String> registerUser(RegisterUserRequest registerUserRequest) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest request = new uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest();
-        request.setFirstName(firstName);
-        request.setLastName(lastName);
-        request.setEmail(userName);
-        request.setClientId(clientId);
-        request.setRedirectUri(redirectUri);
+        uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest request = new uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest();
+        request.setFirstName(registerUserRequest.getFirstName());
+        request.setLastName(registerUserRequest.getLastName());
+        request.setEmail(registerUserRequest.getUsername());
+        request.setClientId(registerUserRequest.getClient_id());
+        request.setRedirectUri(registerUserRequest.getRedirect_uri());
+        request.setState(registerUserRequest.getState());
 
-        HttpEntity<uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
-        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + jwtToken, HttpMethod.POST, requestEntity, String.class);
+        HttpEntity<uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + registerUserRequest.getJwt(), HttpMethod.POST, requestEntity, String.class);
     }
 
     /**
@@ -271,48 +274,62 @@ public class SPIService {
 
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(selfRegisterRequest), headers);
 
-
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegistration(), HttpMethod.POST, entity, String.class);
     }
 
+    /**
+     * @should call api health check
+     */
+    public ResponseEntity<HealthCheckStatus> healthCheck() throws RestClientException {
+        return restTemplate.getForEntity(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getHealth(), HealthCheckStatus.class);
+    }
 
     /**
      * @should call api with the correct data and return api response if status code is 200
      * @should return optional empty if status code is not 200
      * @should return optional empty if any Exception occurs
-     * @should return optional empty if api response is null
      */
     public Optional<User> getDetails(String token) {
 
-        ResponseEntity<User> response = null;
+        ResponseEntity<User> response;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("authorization", token);
+        headers.add("authorization", token); //NOSONAR
 
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         try {
 
             response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getDetails(), HttpMethod.GET, entity, User.class);
-
+            return Optional.of(response.getBody());
         } catch (Exception e) {
             log.error("Error getting User Details", e);
             return Optional.empty();
         }
+    }
 
-        if (Objects.nonNull(response) && response.getStatusCode().equals(HttpStatus.OK)) {
-            return Optional.of(response.getBody());
+    /**
+     * @should call api with the correct data and return the service if api response is not empty and http status code is 200
+     * @should return Optional empty if api returns an http status different from 200
+     * @should return Optional empty if api returns empty response body
+     */
+    public Optional<uk.gov.hmcts.reform.idam.api.internal.model.Service> getServiceByClientId(String clientId) {
+
+        ResponseEntity<ArrayOfServices> response =
+            restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class); //NOSONAR
+
+        if (Objects.nonNull(response.getBody()) && !response.getBody().isEmpty()) {
+            return Optional.of(response.getBody().get(0));
         }
-
         return Optional.empty();
     }
 
     private HttpEntity<MultiValueMap<String, String>> prepareOauth2AuthenticationRequest(final String username, final String password,
-                                                                                         final String redirectUri, final String state, final String clientId) {
+                                                                                         final String redirectUri, final String state,
+                                                                                         final String clientId, final String scope) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(4);
 
@@ -322,6 +339,9 @@ public class SPIService {
         form.add("client_id", clientId);
         if (state != null) {
             form.add("state", state);
+        }
+        if (scope != null) {
+            form.add("scope", scope);
         }
 
         return new HttpEntity<>(form, headers);

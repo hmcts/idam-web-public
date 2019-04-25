@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.model;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,10 +25,12 @@ public class UpliftRequest {
     private String jwt;
 
     @NotEmpty
-    private String redirectUri;
+    private String redirect_uri;
 
     private String state;
 
+    private String scope;
+
     @NotEmpty
-    private String clientId;
+    private String client_id;
 }

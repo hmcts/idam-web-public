@@ -35,12 +35,15 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_TOKEN_VIEW
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_COMMAND;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_LABEL;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_INVALID_RESPONSE;
@@ -61,8 +64,10 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_END
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getActivateUserPostRequest;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getActivationResult;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterPostRequest;
+import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getService;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,8 +82,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -166,24 +171,6 @@ public class UserControllerTest {
             .andExpect(model().attribute(REDIRECT_URI, nullValue()))
             .andExpect(model().attribute(ERROR_MSG, ALREADY_ACTIVATED_KEY))
             .andExpect(view().name(ERROR_VIEW_NAME));
-    }
-
-    /**
-     * @verifies return selfRegister view and  have redirect_uri, selfRegisterCommand, client_id, state attributes in model
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
-     */
-    @Test
-    public void selfRegister_shouldReturnSelfRegisterViewAndHaveRedirect_uriSelfRegisterCommandClient_idStateAttributesInModel() throws Exception {
-        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
-            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
-            .param(STATE_PARAMETER, STATE))
-            .andExpect(status().isOk())
-            .andExpect(model().attribute(SELF_REGISTER_COMMAND, notNullValue()))
-            .andExpect(model().attribute(REDIRECTURI, GOOGLE_WEB_ADDRESS))
-            .andExpect(model().attribute(CLIENTID_PARAMETER, CLIENT_ID))
-            .andExpect(model().attribute(STATE_PARAMETER, STATE))
-            .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
     }
 
     /**
@@ -382,5 +369,91 @@ public class UserControllerTest {
         mockMvc.perform(get(USERS_ENDPOINT))
             .andExpect(status().isOk())
             .andExpect(view().name(USERS_VIEW_NAME));
+    }
+
+
+    /**
+     * @verifies call spi service with correct parameter then return selfRegister view and  have redirect_uri, selfRegisterCommand, client_id attributes in model if self registration is allowed for service
+     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     */
+    @Test
+    public void selfRegister_shouldCallSpiServiceWithCorrectParameterThenReturnSelfRegisterViewAndHaveRedirect_uriSelfRegisterCommandClient_idAttributesInModelIfSelfRegistrationIsAllowedForService() throws Exception {
+
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID))).willReturn(Optional.of(getService(SERVICE_LABEL, SERVICE_CLIENT_ID, true)));
+
+        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
+            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
+            .param(CLIENT_ID_PARAMETER, SERVICE_CLIENT_ID)
+            .param(STATE_PARAMETER, STATE))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(SELF_REGISTER_COMMAND, notNullValue()))
+            .andExpect(model().attribute(REDIRECTURI, GOOGLE_WEB_ADDRESS))
+            .andExpect(model().attribute(CLIENTID_PARAMETER, SERVICE_CLIENT_ID))
+            .andExpect(model().attribute(STATE_PARAMETER, STATE))
+            .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
+
+        verify(spiService).getServiceByClientId(eq(SERVICE_CLIENT_ID));
+    }
+
+    /**
+     * @verifies return 404 view if clientId or redirectUri are missing
+     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     */
+    @Test
+    public void selfRegister_shouldReturn404ViewIfClientIdOrRedirectUriAreMissing() throws Exception {
+        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
+            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
+            .param(STATE_PARAMETER, STATE))
+            .andExpect(status().isOk())
+            .andExpect(view().name(NOT_FOUND_VIEW));
+    }
+
+    /**
+     * @verifies return generic error with generic error message if an exception is thrown
+     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     */
+    @Test
+    public void selfRegister_shouldReturnGenericErrorWithGenericErrorMessageIfAnExceptionIsThrown() throws Exception {
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", TOKEN_INVALID_RESPONSE.getBytes(), null));
+
+        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
+            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
+            .param(CLIENT_ID_PARAMETER, SERVICE_CLIENT_ID)
+            .param(STATE_PARAMETER, STATE))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR_MSG, GENERIC_ERROR_KEY))
+            .andExpect(view().name(ERROR_VIEW_NAME));
+    }
+
+    /**
+     * @verifies return 404 view if service is empty
+     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     */
+    @Test
+    public void selfRegister_shouldReturn404ViewIfServiceIsEmpty() throws Exception {
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID))).willReturn(Optional.empty());
+
+        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
+            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
+            .param(CLIENT_ID_PARAMETER, SERVICE_CLIENT_ID)
+            .param(STATE_PARAMETER, STATE))
+            .andExpect(status().isOk())
+            .andExpect(view().name(NOT_FOUND_VIEW));
+    }
+
+    /**
+     * @verifies return 404 view if self registration is not allowed
+     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     */
+    @Test
+    public void selfRegister_shouldReturn404ViewIfSelfRegistrationIsNotAllowed() throws Exception {
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID))).willReturn(Optional.of(getService(SERVICE_LABEL, SERVICE_CLIENT_ID, false)));
+
+        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
+            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
+            .param(CLIENT_ID_PARAMETER, SERVICE_CLIENT_ID)
+            .param(STATE_PARAMETER, STATE))
+            .andExpect(status().isOk())
+            .andExpect(view().name(NOT_FOUND_VIEW));
     }
 }

@@ -1,10 +1,11 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page session="false" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.template.footer.support.link.contact.us">
     <article class="content__body">
         <a href="javascript:history.back()" class="link-back">Back</a>
         <h1 class="heading-large">

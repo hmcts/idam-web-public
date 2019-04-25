@@ -13,27 +13,25 @@ public class TestConstants {
     public static final String LOGIN_PIN_CODE = "e2c0afac-fd92-4e9a-b1e9-03944384a083";
 
 
-    //enpoints
+    //endpoints
     public static final String USERS_ENDPOINT = "/users";
     public static final String SELF_REGISTER_ENDPOINT = "/users/selfRegister";
     public static final String VALIDATE_TOKEN_ENDPOINT = "/users/register";
     public static final String VALIDATE_TOKEN_API_ENDPOINT = "/validate";
     public static final String USERS_SELF_ENDPOINT = "users/self";
-    public static final String REGISTER_USER_ENDPOINT = "/registerUser";
-    public static final String REGISTER_ENDPOINT = "/register";
+    public static final String UPLIFT_REGISTER_ENDPOINT = "/login/uplift";
     public static final String RESET_PASSWORD_ENDPOINT = "resetPassword";
     public static final String FORGOT_PASSWORD_SPI_ENDPOINT = "forgotPassword";
     public static final String FORGOT_PASSWORD_WEB_ENDPOINT = "/reset/doForgotPassword";
     public static final String PASSWORD_RESET_ENDPOINT = "/passwordReset";
     public static final String DO_RESET_PASSWORD_ENDPOINT = "/doResetPassword";
-    public static final String UPLIFT_ENDPOINT = "/uplift";
-    public static final String LOGIN_UPLIFT_ENDPOINT = "/login/uplift";
+    public static final String UPLIFT_LOGIN_ENDPOINT = "/register";
+    public static final String API_LOGIN_UPLIFT_ENDPOINT = "/login/uplift";
     public static final String ACTIVATE_USER_ENDPOINT = "/users/activate";
     public static final String LOGIN_ENDPOINT = "/login";
     public static final String EXPIRED_TOKEN_ENDPOINT = "/expiredtoken";
     public static final String LOGIN_PIN_ENDPOINT = "/login/pin";
     public static final String LOGOUT_ENDPOINT = "/logout";
-    public static final String AUTHORIZE_ENDPOINT = "/authorize";
     public static final String RESET_FORGOT_PASSWORD_ENDPOINT = "/reset/forgotpassword";
     public static final String LOGIN_WITH_PIN_ENDPOINT = "/loginWithPin";
     public static final String ACTIVATE_ENDPOINT = "/activate";
@@ -41,6 +39,9 @@ public class TestConstants {
     public static final String VALIDATE_RESET_PASSWORD_ENDPOINT = "validateResetPasswordToken";
     public static final String SELF_REGISTRATION_ENDPOINT = "users/selfregister";
     public static final String DETAILS_ENDPOINT = "details";
+    public static final String SERVICES_ENDPOINT = "services";
+    public static final String TACTICAL_ACTIVATE_ENDPOINT = "/activate";
+    public static final String HEALTH_ENDPOINT = "health";
 
     //uris
     public static final String GOOGLE_WEB_ADDRESS = "https://www.google.com";
@@ -60,8 +61,6 @@ public class TestConstants {
     public static final String USER_ACTIVATED_VIEW_NAME = "useractivated";
     public static final String ERROR_VIEW_NAME = "errorpage";
     public static final String USER_CREATED_VIEW_NAME = "usercreated";
-    public static final String UPLIFT_USER_VIEW_NAME = "upliftUser";
-    public static final String REGISTER_VIEW_NAME = "register";
     public static final String RESETPASSWORD_VIEW_NAME = "resetpassword";
     public static final String EXPIREDTOKEN_VIEW_NAME = "expiredtoken";
     public static final String FORGOT_PASSWORD_VIEW = "forgotpassword";
@@ -71,6 +70,8 @@ public class TestConstants {
     public static final String LOGIN_VIEW = "login";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
     public static final String LOGIN_LOGOUT_VIEW = "/login?logout";
+    public static final String NOT_FOUND_VIEW = "404";
+    public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
 
 
     //User
@@ -86,6 +87,11 @@ public class TestConstants {
     public static final String USER_NAME = "userName";
 
 
+    //Service
+    public static final String SERVICE_LABEL = "label";
+    public static final String SERVICE_CLIENT_ID = "client_id";
+
+
     //Parameters
     public static final String ACTION_PARAMETER = "action";
     public static final String TOKEN_PARAMETER = "token";
@@ -95,6 +101,7 @@ public class TestConstants {
     public static final String USER_EMAIL_PARAMETER = "email";
     public static final String JWT_PARAMETER = "jwt";
     public static final String STATE_PARAMETER = "state";
+    public static final String SCOPE_PARAMETER = "scope";
     public static final String CLIENT_ID_PARAMETER = "client_id";
     public static final String CLIENTID_PARAMETER = "clientId";
     public static final String USERNAME_PARAMETER = "username";
@@ -102,6 +109,7 @@ public class TestConstants {
     public static final String RESPONSE_TYPE_PARAMETER = "response_type";
     public static final String PIN_PARAMETER = "pin";
     public static final String AUTHORIZATION_PARAMETER = "authorization";
+	public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
 
 
     //Errors
@@ -147,6 +155,7 @@ public class TestConstants {
     public static final String STATE = "state test";
     public static final String CLIENT_ID = "clientId";
     public static final String REDIRECTURI = "redirectUri";
+    public static final String CUSTOM_SCOPE = "manage-roles";
 
 
     //Responses

@@ -1,14 +1,18 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page session="false" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.login.subheading.sign.in">
     <article class="content__body">
-        <c:set var="redirectUri" value="${empty param['redirectUri'] ? param['redirect_uri'] : param['redirectUri']}" />
-        <c:set var="clientId" value="${empty param['clientId'] ? param['client_id'] : param['clientId']}" />
         <c:set var="hasError" value="${error != null}" />
         <c:if test="${hasError}">
+            <script>
+                sendEvent('Uplift', 'Error', 'Login error occurred');
+            </script>
             <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                 <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                         ${errorTitle}
@@ -23,18 +27,19 @@
         <h1 class="heading-large"><spring:message code="public.login.heading" /></h1>
         <div class="grid-row">
             <div class="column-one-half column--bordered">
-                <form name="upliftUser"
+                <form:form name="upliftUser"
                       class="form form-section"
                       novalidate=""
-                      method="post"
-                      _lpchecked="1"
-                      action="/uplift">
+                      _lpchecked="1">
 
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
                     <div class="form-group ${hasError? 'form-group-error': ''}">
                         <label for="username">
                             <span class="form-label-bold"><spring:message code="public.common.email.address.label" /></span>
                             <c:if test="${hasError}">
+                                <script>
+                                    sendEvent('Uplift', 'Error', 'Email address error occurred');
+                                </script>
                                 <span class="error-message"><spring:message code="public.common.error.enter.username" /></span>
                             </c:if>
                         </label>
@@ -45,6 +50,9 @@
                         <label for="password">
                             <span class="form-label-bold"><spring:message code="public.common.password.label" /></span>
                             <c:if test="${hasError}">
+                                <script>
+                                    sendEvent('Uplift', 'Error', 'Password error occurred');
+                                </script>
                                 <span class="error-message"><spring:message code="public.common.error.enter.password" /></span>
                             </c:if>
                         </label>
@@ -52,25 +60,36 @@
                     </div>
 
                     <div class="form-group">
-                        <a href="/reset/forgotpassword?redirectUri=${param['redirect_uri']}&clientId=${param['client_id']}&state=${param['state']}">
+                        <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
+                            <c:param name="redirectUri" value="${param['redirect_uri']}" />
+                            <c:param name="clientId" value="${param['client_id']}" />
+                            <c:param name="state" value="${param['state']}" />
+                            <c:param name="scope" value="${param['scope']}" />
+                        </c:url>
+                        <a href="${forgotPasswordUrl}">
                             <spring:message code="public.login.forgotten.password" />
                         </a>
                     </div>
 
-                    <spring:message code="public.login.form.submit" var="signInCta" />
-                    <input class="button" type="submit" value="${signInCta}">
 
-                    <input type="hidden" id="jwt" name="jwt" value="${param['jwt']}"/>
-                    <input type="hidden" id="redirectUri" name="redirectUri" value="${redirectUri}"/>
-                    <input type="hidden" id="clientId" name="clientId" value="${clientId}"/>
-                    <input type="hidden" id="state" name="state" value="${param['state']}"/>
-                </form>
+                    <input class="button" type="submit" value="<spring:message code="public.login.form.submit"/>">
+                </form:form>
             </div>
             <div class="column-one-half">
                 <h2 class="heading-medium"><spring:message code="public.login.subheading.create.account"/></h2>
                 <p>
-                    <spring:message code="public.login.create.account.body"
-                                    arguments="/login/uplift?state=${param['state']}&redirect_uri=${param['redirect_uri']}&client_id=${param['client_id']}&jwt=${param['jwt']}" />
+                    <spring:message code="public.login.create.account.body" />
+                    <c:url value="/login/uplift" var="loginUpliftUrl">
+                        <c:param name="redirect_uri" value="${param['redirect_uri']}" />
+                        <c:param name="client_id" value="${param['client_id']}" />
+                        <c:param name="state" value="${param['state']}" />
+                        <c:param name="scope" value="${param['scope']}" />
+                        <c:param name="jwt" value="${param['jwt']}" />
+                    </c:url>
+                    <a href="${loginUpliftUrl}">
+                        <spring:message code="public.common.create.account" />
+                    </a>
+                    <spring:message code="public.login.create.account.body.to.use.service" />
                 </p>
             </div>
         </div>

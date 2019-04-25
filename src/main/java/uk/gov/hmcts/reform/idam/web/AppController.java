@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.idam.web;
 
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
@@ -14,16 +16,23 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_USER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
 
@@ -42,24 +51,26 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
-import uk.gov.hmcts.reform.idam.api.model.User;
+import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.internal.model.Service;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
@@ -73,9 +84,8 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 @Controller
 public class AppController {
 
-
     @Autowired
-    private SPIService service;
+    private SPIService spiService;
 
     @Autowired
     private ValidationService validationService;
@@ -86,19 +96,21 @@ public class AppController {
     /**
      * @should return index view
      */
-    @RequestMapping("/")
-    public String index(final Map<String, Object> model) {
+    @GetMapping("/")
+    public String indexView(final Map<String, Object> model) {
 
         return MvcKeys.INDEX_VIEW;
     }
 
     /**
      * @should put correct data in model and return login view
+     * @should set self-registration to false if disabled for the service
+     * @should set self-registration to false if the clientId is invalid
      * @should return error page view if OAuth2 details are missing
      */
-    @RequestMapping("/login")
-    public String login(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
-                        BindingResult bindingResult, Model model) {
+    @GetMapping("/login")
+    public String loginView(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
+                            BindingResult bindingResult, Model model) {
         if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
             model.addAttribute(ERROR_MSG, "error.page.access.denied");
             model.addAttribute(ERROR_SUB_MSG, "public.error.page.access.denied.text");
@@ -108,14 +120,17 @@ public class AppController {
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
+        model.addAttribute(SCOPE, request.getScope());
+
         return LOGIN_VIEW;
     }
 
     /**
      * @should return expired token view
      */
-    @RequestMapping("/expiredtoken")
-    public String expiredtoken(final Map<String, Object> model) {
+    @GetMapping("/expiredtoken")
+    public String expiredTokenView(final Map<String, Object> model) {
 
         return EXPIREDTOKEN_VIEW;
     }
@@ -123,8 +138,8 @@ public class AppController {
     /**
      * @should return login with pin view
      */
-    @RequestMapping("/login/pin")
-    public String loginWithPin(final Map<String, Object> model) {
+    @GetMapping("/login/pin")
+    public String loginWithPinView(final Map<String, Object> model) {
 
         return LOGIN_WITH_PIN_VIEW;
     }
@@ -133,31 +148,35 @@ public class AppController {
      * @should return user uplift page if the user is authorized
      * @should return error page if the user is not authorized
      */
-    @RequestMapping("/login/uplift")
-    public String uplift(
-        @RequestParam(value = "jwt") String jwt,
-        @ModelAttribute("registerUserCommand") RegisterUserRequest request,
-        final Map<String, Object> model) {
+    @GetMapping("/login/uplift")
+    public String upliftRegisterView(@RequestParam("client_id") String clientId,
+                                     @RequestParam("redirect_uri") String redirectUri,
+                                     @RequestParam String jwt,
+                                     @ModelAttribute("registerUserCommand") RegisterUserRequest request,
+                                     final Map<String, Object> model) {
 
         if (!checkUserAuthorised(jwt, model)) {
             return ERRORPAGE_VIEW;
         }
 
-        return UPLIFT_USER_VIEW;
+        return UPLIFT_REGISTER_VIEW;
     }
 
     /**
      * @should return user registration page if the user is authorized
      * @should return error page if the user is not authorized
      */
-    @RequestMapping("/register")
-    public String selfRegister(@RequestParam(value = "jwt") String jwt, final Map<String, Object> model) {
+    @GetMapping("/register")
+    public String upliftLoginView(@RequestParam String jwt,
+                                  @RequestParam(value = "client_id") String clientId,
+                                  @RequestParam(value = "redirect_uri") String redirectUri,
+                                  final Map<String, Object> model) {
 
         if (!checkUserAuthorised(jwt, model)) {
-            return ERRORPAGE_VIEW;
+            return PAGE_NOT_FOUND_VIEW;
         }
 
-        return REGISTER_VIEW;
+        return UPLIFT_LOGIN_VIEW;
     }
 
     /**
@@ -173,27 +192,28 @@ public class AppController {
      * @should reject request if the redirect URI is missing
      * @should reject request if the clientId is missing
      */
-    @RequestMapping("/registerUser")
-    public String registerUser(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request, BindingResult bindingResult, final Map<String, Object> model, RedirectAttributes redirectAttributes) {
+    @PostMapping("/login/uplift")
+    public String upliftRegister(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request,
+                                 BindingResult bindingResult,
+                                 final Map<String, Object> model,
+                                 RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             ErrorHelper.showLoginError("Information is missing or invalid",
                 "Please fix the following",
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
-            return UPLIFT_USER_VIEW;
+            return UPLIFT_REGISTER_VIEW;
         }
 
         try {
-            ResponseEntity<String> resetPasswordEntity = service.registerUser(request.getFirstName(), request.getLastName(), request.getUsername(), request.getJwt(), request.getRedirectUri(), request.getClientId());
-            if (resetPasswordEntity.getStatusCode() == HttpStatus.CREATED) {
-                model.put(EMAIL, request.getUsername());
-                model.put(REDIRECTURI, request.getRedirectUri());
-                model.put(CLIENTID, request.getClientId());
-                return USERCREATED_VIEW;
-            } else {
-                return UPLIFT_USER_VIEW;
-            }
+            spiService.registerUser(request);
+            model.put(EMAIL, request.getUsername());
+            model.put(REDIRECTURI, request.getRedirect_uri());
+            model.put(CLIENTID, request.getClient_id());
+            model.put(JWT, request.getJwt());
+            model.put(STATE, request.getState());
+            return USERCREATED_VIEW;
         } catch (HttpClientErrorException ex) {
             String msg = "";
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
@@ -202,10 +222,13 @@ public class AppController {
 
             ErrorHelper.showLoginError("Sorry, there was an error",
                 String.format("Please try your action again. %s", msg),
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
+            // We use spring:hasBindErrors so make sure the 'showLoginError' is rendered to the page
+            // by adding a binding error
+            bindingResult.reject("non-existent-error-code");
 
-            return UPLIFT_USER_VIEW;
+            return UPLIFT_REGISTER_VIEW;
         }
     }
 
@@ -213,9 +236,8 @@ public class AppController {
      * @should redirect to login view
      */
     @RequestMapping("/logout")
-    public String logout(final Map<String, Object> model) {
-
-        return LOGIN_VIEW;
+    public RedirectView logout(final Map<String, Object> model) {
+        return new RedirectView("/" + LOGIN_VIEW + "?logout");
     }
 
     /**
@@ -226,13 +248,12 @@ public class AppController {
     public String passwordReset(@RequestParam("action") String action, @RequestParam("token") String token, @RequestParam("code") String code) {
         String nextPage = RESETPASSWORD_VIEW;
         try {
-            service.validateResetPasswordToken(token, code);
+            spiService.validateResetPasswordToken(token, code);
         } catch (Exception e) {
             nextPage = EXPIREDTOKEN_VIEW;
         }
         return nextPage;
     }
-
 
     /**
      * @should put in model correct data and return forgot password view
@@ -249,10 +270,11 @@ public class AppController {
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
      * @should put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
      * @should put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
+     * @should return forbidden if csrf token is invalid
      */
-    @RequestMapping(method = RequestMethod.POST, path = "/authorize")
-    public String authorize(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
-                            BindingResult bindingResult, Model model) {
+    @PostMapping("/login")
+    public String login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
+                        BindingResult bindingResult, Model model) {
         String nextPage = LOGIN_VIEW;
         model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(PASSWORD, request.getPassword());
@@ -260,6 +282,8 @@ public class AppController {
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SCOPE, request.getScope());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
         try {
             if (bindingResult.hasErrors()) {
                 if (StringUtils.isEmpty(request.getUsername())) {
@@ -270,17 +294,23 @@ public class AppController {
                 }
                 model.addAttribute(HAS_ERRORS, true);
             } else {
-                String responseUrl = service.authorize(request.getUsername(), request.getPassword(), request.getRedirect_uri(), request.getState(), request.getClient_id());
+                String responseUrl = spiService.authorize(
+                    request.getUsername(),
+                    request.getPassword(),
+                    request.getRedirect_uri(),
+                    request.getState(),
+                    request.getClient_id(),
+                    request.getScope());
                 if (responseUrl != null) {
                     nextPage = "redirect:" + responseUrl;
                 } else {
-                    log.info("There is a problem while login in  user - " + request.getUsername());
+                    log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
                     model.addAttribute(HAS_LOGIN_FAILED, true);
                     bindingResult.reject("Login failure");
                 }
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
-            log.info("Login failed for user - " + request.getUsername());
+            log.info("Login failed for user - " + obfuscateEmailAddress(request.getUsername()));
             if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
 
                 getLoginFailureReason(he, model, bindingResult);
@@ -325,12 +355,22 @@ public class AppController {
      * @should return to the registration page if the credentials are invalid
      * @should return to the registration page if there is an exception
      */
-    @RequestMapping("/uplift")
-    public ModelAndView uplift(@Validated UpliftRequest request, final Map<String, Object> model, ModelMap modelMap) {
+    @PostMapping("/register")
+    public ModelAndView upliftLogin(@Validated UpliftRequest request, BindingResult bindingResult,
+                                    final Map<String, Object> model, ModelMap modelMap) {
+
+        if (bindingResult.hasErrors()) {
+            ErrorHelper.showLoginError("Information is missing or invalid",
+                "Please fix the following",
+                request.getRedirect_uri(),
+                model);
+            return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
+        }
+
         String redirectUrl = "redirect:";
         try {
-            final String jsonResponse = service.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
-                request.getRedirectUri(), request.getClientId(), request.getState());
+            final String jsonResponse = spiService.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
+                request.getRedirect_uri(), request.getClient_id(), request.getState(), request.getScope());
             if (jsonResponse != null) {
                 redirectUrl += jsonResponse;
             }
@@ -339,18 +379,18 @@ public class AppController {
 
             ErrorHelper.showLoginError("Incorrect email/password combination",
                 "Please check your email address and password and try again",
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
-            return new ModelAndView(REGISTER_VIEW, modelMap);
+            return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
 
         } catch (Exception ex) {
             log.error("Uplift process exception: {}", ex.getMessage());
 
             ErrorHelper.showLoginError("Sorry, there was an error",
                 "Please try your action again.",
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
-            return new ModelAndView(REGISTER_VIEW, modelMap);
+            return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
         }
         return new ModelAndView(redirectUrl, modelMap);
     }
@@ -366,7 +406,7 @@ public class AppController {
                                @RequestParam(value = "redirect_uri") String redirectUri,
                                @RequestParam(value = "state", required = false) String state,
                                @RequestParam(value = "client_id") String clientId,
-                               Map<String, Object> model) {
+                               Map<String, Object> model) { //NOSONAR
 
         //Quick null check to avoid calling backend
         if (StringUtils.isBlank(pin)) {
@@ -376,7 +416,7 @@ public class AppController {
 
         try {
 
-            return "redirect:" + service.loginWithPin(pin, redirectUri, state, clientId);
+            return "redirect:" + spiService.loginWithPin(pin, redirectUri, state, clientId); //NOSONAR
 
         } catch (HttpClientErrorException | BadCredentialsException e) {
             log.error("Problem with pin: {}", e.getMessage());
@@ -413,13 +453,17 @@ public class AppController {
         model.put(CLIENTID, forgotPasswordRequest.getClientId());
         model.put(EMAIL, forgotPasswordRequest.getEmail());
         model.put(STATE, forgotPasswordRequest.getState());
+        model.put(SCOPE, forgotPasswordRequest.getScope());
 
         try {
             if (!bindingResult.hasErrors()) {
-                service.forgetPassword(
+                spiService.forgetPassword(
                     forgotPasswordRequest.getEmail(),
                     forgotPasswordRequest.getRedirectUri(),
                     forgotPasswordRequest.getClientId());
+
+                model.put(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(forgotPasswordRequest.getClientId()));
+
                 return FORGOTPASSWORDSUCCESS_VIEW;
             }
         } catch (Exception e) {
@@ -427,7 +471,6 @@ public class AppController {
         }
         return FORGOTPASSWORD_VIEW;
     }
-
 
     /**
      * @should put in model redirect uri if service returns http 200 and redirect uri is present in response then return reset password success view
@@ -441,7 +484,7 @@ public class AppController {
     public String resetPassword(final String action, final String password1, final String password2, final String token, final String code, final Map<String, Object> model) throws IOException {
         try {
             if (validationService.validateResetPasswordRequest(password1, password2, model)) {
-                ResponseEntity<String> resetPasswordEntity = service.resetPassword(password1, token, code);
+                ResponseEntity<String> resetPasswordEntity = spiService.resetPassword(password1, token, code);
 
                 if (resetPasswordEntity.getStatusCode() == HttpStatus.OK) {
                     String redirectUri = getRedirectUri(resetPasswordEntity.getBody());
@@ -482,10 +525,10 @@ public class AppController {
         }
     }
 
-    public boolean checkUserAuthorised(String jwt, Map<String, Object> model) {
-        Optional<User> user = service.getDetails(jwt);
+    private boolean checkUserAuthorised(String jwt, Map<String, Object> model) {
+        Optional<User> user = spiService.getDetails(jwt);
 
-        if (!user.isPresent() || Objects.isNull(user.get().getRoles()) || !user.get().getRoles().contains("letter-holder")) {
+        if (!user.isPresent()) {
             model.put(ERROR_MSG, "error.page.not.authorized");
             model.put(ERROR_SUB_MSG, "public.error.page.please.contact.admin");
             return false;
@@ -494,23 +537,55 @@ public class AppController {
         return true;
     }
 
-    @RequestMapping("/cookies")
-    public String cookies() {
-        return "cookies";
+    private String obfuscateEmailAddress(String email) {
+        return email.replaceAll("(^[^@]{3}|(?!^)\\G)[^@]", "$1*");
     }
 
-    @RequestMapping("/privacy-policy")
-    public String privacyPolicy() {
-        return "privacypolicy";
+    /**
+     * @should return view
+     */
+    @GetMapping("/cookies")
+    public String cookiesView() {
+        return COOKIES_VIEW;
     }
 
-    @RequestMapping("/terms-and-conditions")
-    public String termsAndConditions() {
-        return "tandc";
+    /**
+     * @should return view
+     */
+    @GetMapping("/privacy-policy")
+    public String privacyPolicyView() {
+        return PRIVACY_POLICY_VIEW;
     }
 
-    @RequestMapping("/contact-us")
-    public String contactUs() {
-        return "contactus";
+    /**
+     * @should return view
+     */
+    @GetMapping("/terms-and-conditions")
+    public String termsAndConditionsView() {
+        return TERMS_AND_CONDITIONS_VIEW;
+    }
+
+    /**
+     * @should return view
+     */
+    @GetMapping("/contact-us")
+    public String contactUsView() {
+        return CONTACT_US_VIEW;
+    }
+
+    /**
+     * @should return tacticalActivateExpired
+     */
+    @GetMapping("/activate")
+    public String tacticalActivate() {
+        return TACTICAL_ACTIVATE_VIEW;
+    }
+
+    private boolean isSelfRegistrationEnabled(String clientId) {
+        if (Objects.nonNull(clientId) && !clientId.isEmpty()) {
+            Optional<Service> service = spiService.getServiceByClientId(clientId);
+            return service.isPresent() && service.get().isSelfRegistrationAllowed();
+        }
+        return false;
     }
 }

@@ -3,11 +3,31 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ tag description="Simple Wrapper Tag" pageEncoding="UTF-8" %>
+<%@attribute name="titleKey" required="true"%>
 <!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
 <!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
+    <!-- Google Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '<spring:eval expression="@environment.getProperty(\'ga.tracking.id\')" />', 'auto');
+
+    ga('send', 'pageview');
+    </script>
+    <!-- End Google Analytics -->
+
+    <script>
+        function sendEvent(eventCategory, eventAction, eventLabel) {
+            ga('send', 'event', eventCategory, eventAction, eventLabel);
+        }
+    </script>
+
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>IdAM Public</title>
+    <title><spring:message code="${titleKey}"/> <spring:message code="public.common.title"/></title>
 
     <link href="/assets/stylesheets/application.css" media="all" rel="stylesheet"/>
     <!--[if gt IE 8]><!-->
@@ -41,9 +61,9 @@
     <meta property="og:image" content="/assets/images/opengraph-image.png">
 
     <script
-        src="https://code.jquery.com/jquery-1.12.4.min.js"
-        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-        crossorigin="anonymous"></script>
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
 </head>
 <body>
 <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
@@ -58,6 +78,7 @@
     <div id="global-cookie-message">
         <p>
             <spring:message
+                htmlEscape="false"
                 code="public.template.cookie.message"
                 arguments="https://www.gov.uk/help/cookies"
             />
@@ -103,6 +124,7 @@
                 <strong class="phase-tag"><spring:message code="public.template.header.phase.tag" /></strong>
                 <span>
                     <spring:message
+                        htmlEscape="false"
                         code="public.template.header.phase.description"
                         arguments="http://www.smartsurvey.co.uk/s/58DYD/"
                     />
@@ -154,6 +176,7 @@
 
                     <p>
                         <spring:message
+                            htmlEscape="false"
                             code="public.template.licence.description"
                             arguments="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
                         />
@@ -164,7 +187,7 @@
 
             <div class="copyright">
                 <a href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">
-                    <spring:message code="public.template.copyright" />
+                    <spring:message code="public.template.copyright" htmlEscape="false" />
                 </a>
             </div>
         </div>

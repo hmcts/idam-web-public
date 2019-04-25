@@ -48,6 +48,68 @@
         <cve>CVE-2015-0254</cve>
     </suppress>
 
+    <!-- This CVE is about Spring Security in combination with Spring Framework 5.0.5.RELEASE - we do not use
+    Spring 5 -->
+    <suppress>
+        <notes><![CDATA[
+   This suppresses false positives identified on Spring Security.
+   ]]></notes>
+        <gav regex="true">^org\.springframework:spring-.*$</gav>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+
+    <!-- This CVE is Java serialization in Guava -->
+    <suppress>
+        <notes><![CDATA[
+   This suppresses false positives identified on Guava
+   ]]></notes>
+        <gav regex="true">^com.google.guava:guava:.*$</gav>
+        <cve>CVE-2018-10237</cve>
+    </suppress>
+
+    <!-- This CVE is about EventData in Slf4j -->
+    <suppress>
+        <notes><![CDATA[
+   This suppresses false positives identified on Slf4j
+   ]]></notes>
+        <gav regex="true">^^.*slf4j.*$$</gav>
+        <cve>CVE-2018-8088</cve>
+    </suppress>
+
+    <!-- Ignored as we don't do XML parsing. -->
+    <suppress>
+        <notes><![CDATA[
+   file name: javax.json-api-1.1.x.jar
+   ]]></notes>
+        <gav regex="true">^javax\.json:javax\.json-api:1\.1.*$</gav>
+        <cve>CVE-2018-1000840</cve>
+    </suppress>
+
+    <!-- Ignored. -->
+    <suppress>
+        <notes><![CDATA[
+   file name: pmd-java-5.6.1.jar
+   ]]></notes>
+        <gav regex="true">^net\.sourceforge\.pmd:pmd-java:.*$</gav>
+        <cve>CVE-2019-7722</cve>
+    </suppress>
+
+    <!-- Ignored. -->
+    <suppress>
+        <notes><![CDATA[
+   file name: pmd-core-5.6.1.jar
+   ]]></notes>
+        <gav regex="true">^net\.sourceforge\.pmd:pmd-core:.*$</gav>
+        <cve>CVE-2019-7722</cve>
+    </suppress>
+
+    <!-- Ignored since we are not using Spring Framework 5.0.5 -->
+    <suppress>
+        <notes>suppress false positives - only relevant to spring.framework 5.0.5</notes>
+        <gav regex="true">^org\.springframework\.security:spring-security.*$</gav>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+
     <suppress>
         <notes>suppress false positives - only relevant to tomcat &lt;= 8.4</notes>
         <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>

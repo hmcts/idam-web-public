@@ -1,13 +1,19 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page session="false" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<t:wrapper>
+<t:wrapper titleKey="public.user.activation.title.text">
     <article class="content__body">
         <c:set var="hasError" value="${error != null}" />
-        <form name="useractivation" action="activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
+        <form:form name="useractivation" action="activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
             <c:if test="${hasError}">
+                <script>
+                    sendEvent('User activation', 'Error', 'An error occurred for create password');
+                </script>
                 <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                         <spring:message code="public.common.error.password.heading" text="default"/>
@@ -34,7 +40,7 @@
                         <span class="error-message"><spring:message code="${errorLabelOne}" text=""/></span>
                     </c:if>
                 </label>
-                <input class="form-control ${hasPassword1Error ? "form-control-error" : ""}" type="password" id="password1" name="password1" value="${password1}" autocomplete="off">
+                <input class="form-control ${hasPassword1Error ? "form-control-error" : ""}" type="password" id="password1" name="password1" value="${fn:escapeXml(password1)}" autocomplete="off">
             </div>
 
             <c:set var="hasPassword2Error" value="${not empty errorLabelTwo}" />
@@ -45,14 +51,13 @@
                         <span class="error-message"><spring:message code="${errorLabelTwo}" text=""/></span>
                     </c:if>
                 </label>
-                <input class="form-control ${hasPassword2Error ? "form-control-error" : ""}" type="password" id="password2" name="password2" value="${password2}" autocomplete="off">
+                <input class="form-control ${hasPassword2Error ? "form-control-error" : ""}" type="password" id="password2" name="password2" value="${fn:escapeXml(password2)}" autocomplete="off">
             </div>
 
-            <spring:message code="public.common.button.continue.text" var="formCta" />
-            <input class="button" type="submit" value="${formCta}" id="activate">
+            <input class="button" type="submit" value="<spring:message code="public.common.button.continue.text"/>" id="activate">
 
-            <input type="hidden" id="token" name="token" value="${token}">
-            <input type="hidden" id="code" name="code" value="${code}">
-        </form>
+            <input type="hidden" id="token" name="token" value="${fn:escapeXml(token)}">
+            <input type="hidden" id="code" name="code" value="${fn:escapeXml(code)}">
+        </form:form>
     </article>
 </t:wrapper>

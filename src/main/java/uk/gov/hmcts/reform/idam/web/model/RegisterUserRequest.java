@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.model;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,10 +26,10 @@ public class RegisterUserRequest {
     private String jwt;
 
     @NotEmpty
-    private String redirectUri;
+    private String redirect_uri;
 
     @NotEmpty
-    private String clientId;
+    private String client_id;
 
     private String state;
 }

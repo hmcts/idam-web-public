@@ -7,7 +7,6 @@ import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -21,6 +20,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.client.RestTemplate;
 
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -47,7 +48,8 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
             SSLContext sslContext = SSLContexts.custom()
                 .loadTrustMaterial(null, acceptingTrustStrategy)
                 .build();
-            HostnameVerifier allowAllHostnameVerifier = (hostName, session) -> true;
+            // ignore Sonar's weak hostname verifier as we are deliberately disabling SSL verification
+            HostnameVerifier allowAllHostnameVerifier = (hostName, session) -> true; // NOSONAR
 
             SSLConnectionSocketFactory allowAllSslSocketFactory = new SSLConnectionSocketFactory(
                 sslContext,
@@ -69,7 +71,8 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
+            .csrf().csrfTokenRepository(new CookieCsrfTokenRepository()).and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
             .antMatchers("/resources/**").permitAll()
             .antMatchers("/assets/**").permitAll()
