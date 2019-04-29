@@ -1,6 +1,6 @@
 ga_tracking_id = "UA-122164129-3"
-idam_api_url_override = "http://idam-api-idam-perftest.service.core-compute-idam-perftest.internal"
-ssl_verification_enabled = false
+idam_api_url_override = "https://idam-api.perftest.platform.hmcts.net"
+ssl_verification_enabled = true
 
-asp_name_override = "idam-idam-perftest"
-asp_rg_override = "idam-idam-perftest"
+asp_name_override = "idam-web-public-idam-perftest"
+asp_rg_override = "idam-web-public-idam-perftest"
