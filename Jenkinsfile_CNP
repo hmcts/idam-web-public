@@ -12,6 +12,7 @@ env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
 env.PROD_ENVIRONMENT_NAME    = 'idam-prod'
 env.DEMO_ENVIRONMENT_NAME    = 'idam-demo'
 env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+env.PERFTEST_ENVIRONMENT_NAME = 'idam-perftest'
 
 List<LinkedHashMap<String, Object>> secrets = [
     secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
