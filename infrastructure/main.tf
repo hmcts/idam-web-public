@@ -17,7 +17,7 @@ locals {
   asp_name                     = "${coalesce(var.asp_name_override, local.default_asp_name)}"
   default_asp_rg               = "${var.product}-${var.env}"
   asp_rg                       = "${coalesce(var.asp_rg_override, local.default_asp_rg)}"
-  common_tags_local            = "${map("environment","${var.env}${var.env == "idam-preview" ? "" : "-permanent"}","changeUrl","${lookup(var.common_tags,"changeUrl")}","Team Name","${lookup(var.common_tags,"Team Name")}")}"
+  common_tags_local            = "${map("environment","${var.env}${var.env == "idam-preview" ? "-permanent" : ""}","changeUrl","${lookup(var.common_tags,"changeUrl")}","Team Name","${lookup(var.common_tags,"Team Name")}")}"
 }
 
 module "idam-web-public" {
