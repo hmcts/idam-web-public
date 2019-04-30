@@ -36,7 +36,7 @@ module "idam-web-public" {
   https_only                      = "${var.https_only}"
   additional_host_name            = "${local.external_host_name}"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
-  common_tags                     = "${map("environment","${var.env}-permanent") }"
+  common_tags                     = "${map("environment","${var.env}-permanent","changeUrl", "${lookup(var.common_tags,"changeUrl")}","Team Name","${lookup(var.common_tags,"Team Name")"}) }"
 
   asp_name = "${local.asp_name}"
   asp_rg   = "${local.asp_rg}"
