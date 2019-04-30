@@ -21,6 +21,7 @@ locals {
 }
 
 module "idam-web-public" {
+  count                           = "${var.env == "idam-preview" ? 0 : 1}"
   source                          = "git@github.com:hmcts/cnp-module-webapp?ref=0.1.1"
   product                         = "${var.product}-${var.app}"
   location                        = "${var.location}"
@@ -32,7 +33,37 @@ module "idam-web-public" {
   https_only                      = "${var.https_only}"
   additional_host_name            = "${local.external_host_name}"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
-  common_tags                     = "${var.env == "idam-preview" ? var.common_tags : local.common_tags_preview}"
+  common_tags                     = "${var.common_tags}"
+
+  asp_name = "${local.asp_name}"
+  asp_rg   = "${local.asp_rg}"
+
+  app_settings = {
+    MANAGEMENT_SECURITY_ENABLED = "${local.secure_actuator_endpoints}"
+    ENDPOINTS_ENABLED           = "${local.secure_actuator_endpoints ? false : true}"
+
+    SSL_VERIFICATION_ENABLED = "${var.ssl_verification_enabled}"
+
+    STRATEGIC_SERVICE_URL = "${local.idam_api_url}"
+
+    GA_TRACKING_ID = "${var.ga_tracking_id}"
+  }
+}
+
+module "idam-web-public" {
+  count                           = "${var.env == "idam-preview" ? 1 : 0}"
+  source                          = "git@github.com:hmcts/cnp-module-webapp?ref=0.1.1"
+  product                         = "${var.product}-${var.app}"
+  location                        = "${var.location}"
+  env                             = "${var.env}"
+  ilbIp                           = "${var.ilbIp}"
+  is_frontend                     = "${var.env == "idam-preview" ? 0 : 1}"
+  subscription                    = "${var.subscription}"
+  capacity                        = "${lookup(var.capacity_env, var.env)}"
+  https_only                      = "${var.https_only}"
+  additional_host_name            = "${local.external_host_name}"
+  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
+  common_tags                     = "${local.common_tags_preview}"
 
   asp_name = "${local.asp_name}"
   asp_rg   = "${local.asp_rg}"
