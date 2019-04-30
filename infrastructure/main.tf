@@ -32,7 +32,7 @@ module "idam-web-public" {
   ilbIp                           = "${var.ilbIp}"
   is_frontend                     = "${var.env == "idam-preview" ? 0 : 1}"
   subscription                    = "${var.subscription}"
-  capacity                        = "${var.capacity}"
+  capacity                        = "${lookup(var.capacity_env, var.env)}"
   https_only                      = "${var.https_only}"
   additional_host_name            = "${local.external_host_name}"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
