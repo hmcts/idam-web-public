@@ -44,6 +44,10 @@ variable "common_tags" {
   type = "map"
 }
 
+variable "common_tags_preview" {
+  type = "map"
+}
+
 variable "ga_tracking_id" {
   description = "Google Analytics tracking ID"
   default     = ""
