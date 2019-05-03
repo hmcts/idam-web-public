@@ -3,3 +3,5 @@ ssl_verification_enabled = false
 
 asp_name_override = "idam-idam-sandbox"
 asp_rg_override = "idam-idam-sandbox"
+
+capacity = 1

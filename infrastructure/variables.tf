@@ -21,20 +21,6 @@ variable "capacity" {
   default = "2"
 }
 
-variable "capacity_env" {
-  type = "map"
-
-  default = {
-    "idam-sandbox"  = "1"
-    "idam-preview"  = "1"
-    "idam-demo"     = "1"
-    "idam-ithc"     = "1"
-    "idam-perftest" = "2"
-    "idam-aat"      = "2"
-    "idam-prod"     = "2"
-  }
-}
-
 variable "appinsights_instrumentation_key" {
   description = "Instrumentation key of the App Insights instance this webapp should use. Module will create own App Insights resource if this is not provided."
   default     = ""
@@ -82,4 +68,9 @@ variable asp_name_override {
 variable asp_rg_override {
   description = "App Service Plan Resource Group"
   default     = ""
+}
+
+variable vault_name_override {
+  description = "Vault Name"
+  default = ""
 }
