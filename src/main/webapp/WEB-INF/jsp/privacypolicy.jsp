@@ -14,9 +14,7 @@
         <div id="tabs" class="ui-tabs ui-corner-all ui-widget ui-widget-content">
             <div id="nav-links">
 
-
                 <ol class="nav-list ui-tabs-nav ui-corner-all ui-helper-reset ui-helper-clearfix ui-widget-header" role="tablist">
-
                     <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-1" aria-labelledby="ui-id-1" aria-selected="false" aria-expanded="false"><a href="#tabs-1" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-1">Overview</a></li>
                     <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-4" aria-labelledby="ui-id-2" aria-selected="false" aria-expanded="false"><a href="#tabs-4" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-2">Appeal a benefit decision service</a></li>
                     <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-3" aria-labelledby="ui-id-3" aria-selected="false" aria-expanded="false"><a href="#tabs-3" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-3">Apply for divorce service</a></li>
@@ -24,7 +22,6 @@
                     <li role="tab" tabindex="0" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-2" aria-labelledby="ui-id-5" aria-selected="true" aria-expanded="true"><a href="#tabs-2" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-5">Money claims service</a></li>
                 </ol>
                 <hr>
-
 
                 <div id="tabs-1" aria-labelledby="ui-id-1" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
 
@@ -55,7 +52,6 @@
 
                     <p>Some services collect more personal data. Find out more about the <a href="#otherservices">personal data that is collected by the service you are using</a> . </p>
 
-
                     <h2 class="heading-medium">Using your data</h2>
                     <p>As part of your claim you’ll be asked to use your email address to set up an account. You will be able to use this email and password to sign into other HMCTS services.</p>
                     <p>We may ask for your permission to use your email address to send you emails using GOV.UK Notify. This system processes emails only within the European Economic Area until the point where emails are handed over to the email provider you use.</p>
@@ -66,7 +62,6 @@
                         <li>the region or town where you are using your computer, phone or tablet</li>
                         <li>the web browser you use</li>
                     </ul>
-
 
                     <h2 class="heading-medium">Storing your data</h2>
 
@@ -138,11 +133,7 @@
 
                         <li><a onclick="window.location.reload().scrollTop(0);" href="#tabs-2">Using the money claims service</a> </li>
                     </ul>
-
-
-
                 </div>
-
 
                 <div id="tabs-3" aria-labelledby="ui-id-3" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
                     <h2 class="heading-large" id="divorce">Using the apply for a divorce service</h2>
@@ -180,6 +171,16 @@
 
                     <p>The remainder of the case information is stored for an additional 82 years. After a total of 100 years this data will be deleted.</p>
 
+                    <h2 class="heading-medium">Sharing your data</h2>
+                    <p>While processing your claim or application, another government department, agency or organisation might be involved and we may share your data with them.</p>
+
+                    <p>Any data you provide which needs to be printed will be shared with Xerox (UK) Ltd. For example, the divorce application will be printed so that it can be sent to the respondent by post.</p>
+
+                    <p>Any data which is posted in to support a divorce application will be shared with Exela Technologies Limited. For example, a posted marriage certificate will be received by Exela and sent to the court as a scanned image.</p>
+
+                    <p>If you contact us and ask for help with the service you're using, your personal data may be shared with the Good Things Foundation. This is a company who we have partnered with to offer face to face support.</p>
+
+                    <p>In some circumstances we may share your data for example, to prevent or detect crime, or to produce anonymised statistics.</p>
                 </div>
                 <div id="tabs-2" aria-labelledby="ui-id-5" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" style="display: block;" aria-hidden="false">
                     <h2 class="heading-large">Using the money claims service</h2>
@@ -202,13 +203,11 @@
                     <p>If you are responding to a money claim we ask you to check the personal information about you that was provided by the claimant which includes your name, your address and contact details.</p>
                     <p>We may ask you to provide:</p>
                     <ul class="list list-bullet">
-
                         <li>your date of birth</li>
                         <li>your business or organisation if you are acting on their behalf</li>
                         <li>your response to the claim made against you</li>
                         <li>the timeline of events leading to the dispute</li>
                         <li>a list of any evidence you have to support your claim</li>
-
                     </ul>
 
                     <h2 class="heading-medium">Storing your data</h2>
@@ -228,9 +227,8 @@
                     <p>The information you submit will be shared with everyone who is named on the claim. This excludes any payment details that you use to pay court fees.</p>
 
                     <p>If a judgment is made on a case some information is shared with Registry Trust Limited who provide financial information about court judgments to banks and credit agencies.</p>
-
-
                 </div>
+
                 <div id="tabs-4" aria-labelledby="ui-id-2" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
                     <h2 class="heading-large" id="probate">Using the appeal a benefit decision service</h2>
                     <h2 class="heading-medium">The personal data we need</h2>
@@ -255,9 +253,6 @@
                         <li>their National Insurance number</li>
                     </ul>
 
-
-
-
                     <h2 class="heading-medium">Receiving notifications</h2>
                     <p>As part of your appeal we’ll ask if you want to receive text message and email notifications to keep you updated with your appeal.</p>
 
@@ -270,9 +265,6 @@
                     <p>Your data will be shared with the government department that made the decision you are appealing against. For example, the Department for Work and Pensions or HM Revenue and Customs. This is so that department can respond to your appeal.</p>
 
                     <p>After you complete your application it will be stored for 2 years. It will be deleted after that.</p>
-
-
-
                 </div>
 
                 <div id="tabs-5" aria-labelledby="ui-id-4" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
@@ -300,8 +292,6 @@
                     <h2 class="heading-medium">After you submit your information</h2>
 
                     <p>Grants of probate are stored as public records. However, your email address and telephone number won’t be publicly available.</p>
-
-
                 </div>
             </div>
         </div>
