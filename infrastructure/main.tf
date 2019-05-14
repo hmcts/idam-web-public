@@ -20,6 +20,11 @@ locals {
   common_tags_local            = "${map("environment","${var.env}${var.env == "idam-preview" ? "-permanent" : ""}","changeUrl","${lookup(var.common_tags,"changeUrl")}","Team Name","${lookup(var.common_tags,"Team Name")}")}"
 }
 
+data "azurerm_key_vault" "cert_vault" {
+  name = "infra-vault-${var.subscription}"
+  resource_group_name = "${var.env == "prod" ? "core-infra-prod" : "cnp-core-infra"}"
+}
+
 module "idam-web-public" {
   source                          = "git@github.com:hmcts/cnp-module-webapp?ref=0.1.1"
   product                         = "${var.product}-${var.app}"
@@ -36,6 +41,9 @@ module "idam-web-public" {
 
   asp_name = "${local.asp_name}"
   asp_rg   = "${local.asp_rg}"
+
+  certificate_name         = "${var.certificate_name}"
+  certificate_key_vault_id = "${data.azurerm_key_vault.cert_vault.id}"
 
   app_settings = {
     MANAGEMENT_SECURITY_ENABLED = "${local.secure_actuator_endpoints}"
