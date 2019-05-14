@@ -7,6 +7,10 @@ variable "location" {
   default = "UK South"
 }
 
+variable "certificate_name" {
+  default = ""
+}
+
 variable "env" {}
 
 variable "ilbIp" {}
