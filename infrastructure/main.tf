@@ -26,7 +26,7 @@ data "azurerm_key_vault" "cert_vault" {
 }
 
 module "idam-web-public" {
-  source                          = "git@github.com:hmcts/cnp-module-webapp?ref=0.1.1"
+  source                          = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product                         = "${var.product}-${var.app}"
   location                        = "${var.location}"
   env                             = "${var.env}"
