@@ -6,3 +6,5 @@ certificate_name="wildcard-ithc-platform-hmcts-net"
 
 asp_name_override = "idam-web-public-idam-ithc"
 asp_rg_override = "idam-web-public-idam-ithc"
+
+capacity = 1
