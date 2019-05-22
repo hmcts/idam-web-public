@@ -17,8 +17,8 @@ BeforeSuite(async(I) => {
 
 AfterSuite(async(I) => {
     return Promise.all([
-        I.deleteService(serviceName),
-        I.deleteUser(citizenEmail)
+        I.deleteUser(citizenEmail),
+        I.deleteService(serviceName)
     ]);
 });
 
@@ -80,7 +80,7 @@ Scenario('@functional @selfregister Account already created', async (I) => {
 Scenario('@functional @selfregister I can self register', async (I) => {
 
     const email = 'test_citizen.' + now + emailSuffix;
-    const loginPage = TestData.WEB_PUBLIC_URL + '/login' + parameters + serviceName + '&state=';
+    const loginPage = TestData.WEB_PUBLIC_URL + '/login' + parameters + serviceName + '&state=selfreg';
 
     I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister' + parameters + serviceName);
     I.waitInUrl('users/selfRegister', 180);
@@ -91,9 +91,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('lastName', 'User');
     I.fillField('email', email);
     I.click("Continue");
-
     I.waitForText('Check your email', 20, 'h1');
-
     I.wait(2);
     let userActivationUrl = await I.extractUrl(email);
     I.amOnPage(userActivationUrl);
@@ -105,6 +103,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
+    I.seeInCurrentUrl("state=selfreg");
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', email);
     I.fillField('#password', 'Passw0rd1234');
@@ -114,7 +113,4 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
-
 });
-
-

@@ -107,4 +107,8 @@ withPipeline(type, product, component) {
     after('smoketest:idam-demo-staging') {
       sh "./gradlew --no-daemon --init-script init.gradle --info --rerun-tasks functional"
     }
+    
+    before('buildinfra:idam-prod') {
+        error('Stopping pipeline before Prod stages')
+    }
 }

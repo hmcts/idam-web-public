@@ -53,6 +53,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon-180x180.png">
     <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/apple-touch-icon-167x167.png">
     <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/images/apple-touch-icon-120x120.png">
     <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
 
     <meta name="theme-color" content="#0b0c0c"/>

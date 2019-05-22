@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
@@ -579,6 +580,11 @@ public class AppController {
     @GetMapping("/activate")
     public String tacticalActivate() {
         return TACTICAL_ACTIVATE_VIEW;
+    }
+
+    @GetMapping("/reset")
+    public String tacticalResetPwd() {
+        return TACTICAL_RESET_PWD_VIEW;
     }
 
     private boolean isSelfRegistrationEnabled(String clientId) {
