@@ -34,6 +34,7 @@ allprojects  {
   def idamBomVersion = '1.5.13'
 
   ext['tomcat.version'] = '9.0.19'
+  ext['jackson.version'] = '2.9.9'
 
   dependencyManagement {
     imports {
