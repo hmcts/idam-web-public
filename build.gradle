@@ -31,9 +31,10 @@ allprojects  {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.5.7'
+  def idamBomVersion = '1.5.13'
 
   ext['tomcat.version'] = '9.0.19'
+  ext['jackson.version'] = '2.9.9'
 
   dependencyManagement {
     imports {
@@ -43,7 +44,6 @@ allprojects  {
 
   repositories {
     mavenCentral()
-    mavenLocal()
     maven {
        url "https://dl.bintray.com/hmcts/hmcts-maven"
     }
