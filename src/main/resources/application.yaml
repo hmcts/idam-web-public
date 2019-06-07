@@ -44,7 +44,7 @@ strategic:
   service:
     url: https://idam-api
   endpoint:
-    authorize: authorize
+    authorize: authenticate
     loginWithPin: pin
     uplift: login/uplift
     forgotPassword: forgotPassword
@@ -55,7 +55,7 @@ strategic:
     activation: activate
     userrole: users/{userId}/roles/{roleId}
     search: users
-    authorizeOauth2: authorizationCode
+    authorizeOauth2: o/authorize
     selfRegisterUser: users/self
     selfRegistration: users/selfregister
     details: details

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -117,20 +119,51 @@ public class SPIService {
     }
 
     /**
+     * @should return null if no cookie is found
+     * @should return a set-cookie header
+     */
+    public String authenticate(final String username, final String password) {
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("username", username);
+        form.add("password", password);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        ResponseEntity<Void> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl()
+                + "/" + configurationProperties.getStrategic().getEndpoint().getAuthorize(), HttpMethod.POST,
+            new HttpEntity<>(form, headers), Void.class);
+
+        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
+            return response.getHeaders().get(HttpHeaders.SET_COOKIE).stream()
+                .findFirst().orElse(null);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * @should call api with the correct data and return location in header in api response if response code is 302
      * @should not send state and scope parameters in form if they are not send as parameter in the service
      * @should return null if api response code is not 302
      */
-    public String authorize(final String username, final String password, final String redirectUri, final String state, final String clientId, final String scope) {
+    public String authorize(final Map<String, String> params, final String cookie) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        if (cookie != null) {
+            headers.add(HttpHeaders.COOKIE, cookie);
+        }
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>(14);
+        params.forEach(form::add);
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
 
-        HttpEntity<MultiValueMap<String, String>> entity = prepareOauth2AuthenticationRequest(username, password, redirectUri, state, clientId, scope);
-
-        ResponseEntity<String> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getAuthorizeOauth2(), HttpMethod.POST, entity,
-            String.class);
+        ResponseEntity<String> response = restTemplate.exchange(configurationProperties.getStrategic()
+                .getService().getUrl() + "/" + configurationProperties.getStrategic()
+                .getEndpoint().getAuthorizeOauth2(),
+            HttpMethod.POST, entity, String.class);
 
         if (response.getStatusCode() == HttpStatus.FOUND) {
-            String location = response.getHeaders().getLocation().toString();
-            return location;
+            return response.getHeaders().getLocation().toString();
         } else {
             return null;
         }
@@ -174,7 +207,8 @@ public class SPIService {
             .disableAuthCaching()
             .useSystemProperties()
             .setRedirectStrategy(new LaxRedirectStrategy() {
-                @Override protected boolean isRedirectable(String method) {
+                @Override
+                protected boolean isRedirectable(String method) {
                     return false;
                 }
             }).build();
@@ -323,27 +357,5 @@ public class SPIService {
             return Optional.of(response.getBody().get(0));
         }
         return Optional.empty();
-    }
-
-    private HttpEntity<MultiValueMap<String, String>> prepareOauth2AuthenticationRequest(final String username, final String password,
-                                                                                         final String redirectUri, final String state,
-                                                                                         final String clientId, final String scope) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>(4);
-
-        form.add("username", username);
-        form.add("password", password);
-        form.add("redirect_uri", redirectUri);
-        form.add("client_id", clientId);
-        if (state != null) {
-            form.add("state", state);
-        }
-        if (scope != null) {
-            form.add("scope", scope);
-        }
-
-        return new HttpEntity<>(form, headers);
     }
 }

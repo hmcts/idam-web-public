@@ -38,12 +38,16 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -81,6 +85,10 @@ import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @Slf4j
 @Controller
 public class AppController {
@@ -101,30 +109,6 @@ public class AppController {
     public String indexView(final Map<String, Object> model) {
 
         return MvcKeys.INDEX_VIEW;
-    }
-
-    /**
-     * @should put correct data in model and return login view
-     * @should set self-registration to false if disabled for the service
-     * @should set self-registration to false if the clientId is invalid
-     * @should return error page view if OAuth2 details are missing
-     */
-    @GetMapping("/login")
-    public String loginView(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
-                            BindingResult bindingResult, Model model) {
-        if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
-            model.addAttribute(ERROR_MSG, "error.page.access.denied");
-            model.addAttribute(ERROR_SUB_MSG, "public.error.page.access.denied.text");
-            return ERRORPAGE_VIEW;
-        }
-        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
-        model.addAttribute(STATE, request.getState());
-        model.addAttribute(CLIENT_ID, request.getClient_id());
-        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
-        model.addAttribute(SCOPE, request.getScope());
-
-        return LOGIN_VIEW;
     }
 
     /**
@@ -266,6 +250,31 @@ public class AppController {
     }
 
     /**
+     * @should put correct data in model and return login view
+     * @should set self-registration to false if disabled for the service
+     * @should set self-registration to false if the clientId is invalid
+     * @should return error page view if OAuth2 details are missing
+     */
+    @GetMapping("/login")
+    public String loginView(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
+                            BindingResult bindingResult, Model model) {
+        if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
+            model.addAttribute(ERROR_MSG, "error.page.access.denied");
+            model.addAttribute(ERROR_SUB_MSG, "public.error.page.access.denied.text");
+            return ERRORPAGE_VIEW;
+        }
+
+        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
+        model.addAttribute(STATE, request.getState());
+        model.addAttribute(CLIENT_ID, request.getClient_id());
+        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
+        model.addAttribute(SCOPE, request.getScope());
+
+        return LOGIN_VIEW;
+    }
+
+    /**
      * @should put in model correct data  then call authorize service and redirect using redirect url returned by service
      * @should put in model correct data if username or  password are empty.
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
@@ -275,7 +284,8 @@ public class AppController {
      */
     @PostMapping("/login")
     public String login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
-                        BindingResult bindingResult, Model model) {
+                        BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
+                        HttpServletResponse response) {
         String nextPage = LOGIN_VIEW;
         model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(PASSWORD, request.getPassword());
@@ -295,14 +305,17 @@ public class AppController {
                 }
                 model.addAttribute(HAS_ERRORS, true);
             } else {
-                String responseUrl = spiService.authorize(
-                    request.getUsername(),
-                    request.getPassword(),
-                    request.getRedirect_uri(),
-                    request.getState(),
-                    request.getClient_id(),
-                    request.getScope());
-                if (responseUrl != null) {
+                String cookie = spiService.authenticate(request.getUsername(), request.getPassword());
+                String responseUrl = null;
+                if (cookie != null) {
+                    Map<String, String> params = new HashMap<>();
+                    httpRequest.getParameterMap().forEach((key, values) ->
+                        params.put(key, stringArrayToDeliminatedString(values, " "))
+                    );
+                    responseUrl = spiService.authorize(params, cookie);
+                }
+                if (responseUrl != null && !responseUrl.contains("error")) {
+                    response.addHeader(HttpHeaders.SET_COOKIE, cookie);
                     nextPage = "redirect:" + responseUrl;
                 } else {
                     log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
@@ -313,11 +326,8 @@ public class AppController {
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("Login failed for user - " + obfuscateEmailAddress(request.getUsername()));
             if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
-
                 getLoginFailureReason(he, model, bindingResult);
-
             } else {
-
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
             }
@@ -593,5 +603,9 @@ public class AppController {
             return service.isPresent() && service.get().isSelfRegistrationAllowed();
         }
         return false;
+    }
+
+    private static String stringArrayToDeliminatedString(String[] array, String delim) {
+        return Arrays.stream(array).reduce((string1, string2) -> string1 + " " + string2).orElse("");
     }
 }
