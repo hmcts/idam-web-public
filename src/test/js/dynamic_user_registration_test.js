@@ -38,8 +38,8 @@ BeforeSuite(async (I) => {
 AfterSuite(async (I) => {
 return Promise.all([
     I.deleteUser(userEmail),
-    I.deleteService(serviceName),
-    I.deleteUser(adminEmail)
+    I.deleteUser(adminEmail),
+    I.deleteService(serviceName)
     ]);
 });
 

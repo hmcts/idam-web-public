@@ -19,7 +19,6 @@
     <article class="content__body">
         <form:form name="loginForm"
                    class="form"
-                   commandName="authorizeCommand"
                    modelAttribute="authorizeCommand"
                    novalidate=""
                    _lpchecked="1">

@@ -6,3 +6,5 @@ certificate_name = "STAR-sandbox-platform-hmcts-net"
 
 asp_name_override = "idam-idam-sandbox"
 asp_rg_override = "idam-idam-sandbox"
+
+capacity = 1

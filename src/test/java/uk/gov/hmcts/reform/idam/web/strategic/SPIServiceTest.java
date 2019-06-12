@@ -12,6 +12,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTIVATE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTIVATE_USER_REQUEST;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.API_LOGIN_UPLIFT_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.API_URL;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZATION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZATION_TOKEN;
@@ -24,9 +25,9 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.DETAILS_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_SPI_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_URI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HEALTH_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.API_LOGIN_UPLIFT_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.OAUTH2_AUTHORIZE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
@@ -61,7 +62,6 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_RESET_PASSWORD_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_API_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HEALTH_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getFoundResponseEntity;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterRequest;
@@ -90,18 +90,17 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.model.ArrayOfServices;
-import uk.gov.hmcts.reform.idam.api.model.ForgotPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.ResetPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest;
-import uk.gov.hmcts.reform.idam.api.model.Service;
-import uk.gov.hmcts.reform.idam.api.model.User;
-import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.Service;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
+import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class SPIServiceTest {
@@ -130,7 +129,7 @@ public class SPIServiceTest {
 
     /**
      * @verifies call correct endpoint to register user
-     * @see SPIService#registerUser(String, String, String, String, String, String)
+     * @see SPIService#registerUser(RegisterUserRequest)
      */
     @Test
     public void registerUser_shouldCallCorrectEndpointToRegisterUser() throws Exception {
@@ -143,7 +142,7 @@ public class SPIServiceTest {
 
     /**
      * @verifies register user with correct details
-     * @see SPIService#registerUser(String, String, String, String, String, String)
+     * @see SPIService#registerUser(RegisterUserRequest)
      */
     @Test
     public void registerUser_shouldRegisterUserWithCorrectDetails() throws Exception {
@@ -165,7 +164,7 @@ public class SPIServiceTest {
 
     /**
      * @verifies return what API call returns
-     * @see SPIService#registerUser(String, String, String, String, String, String)
+     * @see SPIService#registerUser(RegisterUserRequest)
      */
     @Test
     public void registerUser_shouldReturnWhatAPICallReturns() throws Exception {
@@ -401,7 +400,6 @@ public class SPIServiceTest {
         assertThat(form.getFirst(STATE_PARAMETER), equalTo(STATE));
         assertThat(form.getFirst(CLIENT_ID_PARAMETER), equalTo(CLIENT_ID));
 
-
     }
 
     /**
@@ -545,21 +543,6 @@ public class SPIServiceTest {
     }
 
     /**
-     * @verifies return optional empty if api response is null
-     * @see SPIService#getDetails(String)
-     */
-    @Test
-    public void getDetails_shouldReturnOptionalEmptyIfApiResponseIsNull() throws Exception {
-        given(configurationProperties.getStrategic().getEndpoint().getDetails()).willReturn(DETAILS_ENDPOINT);
-        given(restTemplate.exchange(eq(API_URL + SLASH + DETAILS_ENDPOINT), eq(HttpMethod.GET), any(HttpEntity.class), eq(User.class))).willReturn(null);
-
-        Optional<User> response = spiService.getDetails(AUTHORIZATION_TOKEN);
-
-        assertThat(response, equalTo(Optional.empty()));
-    }
-
-
-    /**
      * @verifies call api with the correct data and return the service if api response is not empty and http status code is 200
      * @see SPIService#getServiceByClientId(String)
      */
@@ -580,7 +563,6 @@ public class SPIServiceTest {
         verify(restTemplate).exchange(eq(API_URL + SLASH + SERVICES_ENDPOINT + "?clientId=" + SERVICE_CLIENT_ID), eq(HttpMethod.GET), captor.capture(), eq(ArrayOfServices.class));
 
     }
-
 
     /**
      * @verifies return Optional empty if api returns an http status different from 200

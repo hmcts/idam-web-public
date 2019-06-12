@@ -1,20 +1,18 @@
 provider "azurerm" {
-  version = "1.19.0"
+  version = "1.22.1"
 }
 
 locals {
-  preview_vault_name = "idam-idam-preview"
-  non_preview_vault_name = "${var.product}-${var.env}"
-  vault_name = "${var.env == "idam-preview" ? local.preview_vault_name : local.non_preview_vault_name}"
-
+  default_vault_name = "${var.product}-${var.env}"
+  vault_name = "${coalesce(var.vault_name_override, local.default_vault_name)}"
   vault_uri = "https://${local.vault_name}.vault.azure.net/"
-  secure_actuator_endpoints = "${var.env == "idam-prod" || var.env == "idam-demo" ? true : false}"
 
   default_external_host_name = "idam-web-public.${replace(var.env, "idam-", "")}.platform.hmcts.net"
   external_host_name = "${var.external_host_name_override != "" ? var.external_host_name_override : local.default_external_host_name}"
 
   default_idam_api = "https://idam-api.${replace(var.env, "idam-", "")}.platform.hmcts.net"
   idam_api_url = "${var.idam_api_url_override != "" ? var.idam_api_url_override : local.default_idam_api}"
+
   idam_api_testing_support_url = "${var.idam_api_testing_support_url_override != "" ? var.idam_api_testing_support_url_override : local.idam_api_url}"
 
   default_asp_name = "${var.product}-${var.env}"
@@ -22,21 +20,33 @@ locals {
 
   default_asp_rg = "${var.product}-${var.env}"
   asp_rg = "${coalesce(var.asp_rg_override, local.default_asp_rg)}"
+
+  secure_actuator_endpoints = "${var.env == "idam-prod" || var.env == "idam-demo" ? true : false}"
+
+  env = "${var.env == "idam-preview" && var.product == "idam" ? "idam-dev" : var.env}"
+
+  // in PRs var.product = "pr-XX-idam"
+  tags = "${merge(var.common_tags, map("environment", local.env))}"
+}
+
+data "azurerm_key_vault" "cert_vault" {
+  name = "infra-vault-${var.subscription}"
+  resource_group_name = "${var.env == "prod" ? "core-infra-prod" : "cnp-core-infra"}"
 }
 
 module "idam-web-public" {
-  source                = "git@github.com:hmcts/cnp-module-webapp?ref=0.1.1"
-  product               = "${var.product}-${var.app}"
-  location              = "${var.location}"
-  env                   = "${var.env}"
-  ilbIp                 = "${var.ilbIp}"
-  is_frontend           = "${var.env == "idam-preview" ? 0 : 1}"
-  subscription          = "${var.subscription}"
-  capacity              = "${var.capacity}"
-  https_only            = "${var.https_only}"
-  additional_host_name  = "${local.external_host_name}"
+  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
+  product = "${var.product}-${var.app}"
+  location = "${var.location}"
+  env = "${var.env}"
+  ilbIp = "${var.ilbIp}"
+  is_frontend = "${local.env == "idam-preview" ? 0 : 1}"
+  subscription = "${var.subscription}"
+  capacity = "${var.capacity}"
+  https_only = "${var.https_only}"
+  additional_host_name = "${local.external_host_name}"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
-  common_tags = "${var.common_tags}"
+  common_tags = "${local.tags}"
 
   asp_name = "${local.asp_name}"
   asp_rg = "${local.asp_rg}"

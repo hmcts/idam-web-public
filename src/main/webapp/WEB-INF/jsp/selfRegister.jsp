@@ -10,7 +10,7 @@
     <article class="content__body">
         <form:form name="selfRegisterForm" class="form form-section"
                    method="post" _lpchecked="1"
-                   action="/users/selfRegister" commandName="selfRegisterCommand" novalidate="">
+                   action="/users/selfRegister" modelAttribute="selfRegisterCommand" novalidate="">
             <spring:hasBindErrors name="selfRegisterCommand">
                 <div class="error-summary" role="group"
                      aria-labelledby="validation-error-summary-heading" tabindex="-1">

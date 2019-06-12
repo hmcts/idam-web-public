@@ -44,7 +44,7 @@
         <div class="grid-row">
             <div class="column-one-half column--bordered">
                 <form:form name="registerForm"
-                    commandName="registerUserCommand"
+                    modelAttribute="registerUserCommand"
                     class="form form-section"
                     novalidate="true"
                     _lpchecked="1">

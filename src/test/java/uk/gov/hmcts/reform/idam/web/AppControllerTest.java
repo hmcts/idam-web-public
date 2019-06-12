@@ -18,9 +18,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
-import uk.gov.hmcts.reform.idam.api.model.Service;
-import uk.gov.hmcts.reform.idam.api.model.User;
+import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.internal.model.Service;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
@@ -732,7 +732,7 @@ public class AppControllerTest {
      */
     @Test public void upliftRegisterView_shouldReturnErrorPageIfTheUserIsNotAuthorized() throws Exception {
 
-        given(spiService.getDetails(JWT)).willReturn(Optional.of(new User()));
+        given(spiService.getDetails(JWT)).willReturn(Optional.empty());
 
         mockMvc.perform(get(UPLIFT_REGISTER_ENDPOINT)
             .param(JWT_PARAMETER, JWT)
@@ -768,7 +768,7 @@ public class AppControllerTest {
      */
     @Test public void upliftLoginView_shouldReturnErrorPageIfTheUserIsNotAuthorized() throws Exception {
 
-        given(spiService.getDetails(JWT)).willReturn(Optional.of(new User()));
+        given(spiService.getDetails(JWT)).willReturn(Optional.empty());
 
         mockMvc.perform(get(UPLIFT_LOGIN_ENDPOINT)
             .param(JWT_PARAMETER, JWT)

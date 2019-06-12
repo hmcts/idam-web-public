@@ -30,12 +30,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.model.ArrayOfServices;
-import uk.gov.hmcts.reform.idam.api.model.ForgotPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.ResetPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.User;
-import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
+import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
@@ -54,7 +54,6 @@ public class SPIService {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
     }
-
 
     /**
      * @should call IDM with the right  body
@@ -75,7 +74,6 @@ public class SPIService {
 
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getActivation(), HttpMethod.PATCH, entity, String.class);
     }
-
 
     /**
      * @should call api with the correct data and return api response body if response code is 200
@@ -142,7 +140,7 @@ public class SPIService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("pin", pin);
+        headers.add("pin", pin); //NOSONAR
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -161,8 +159,7 @@ public class SPIService {
         String requestUrl = sb.toString();
         log.debug("Logging in with PIN to url: {}", redirectUri);
 
-        ResponseEntity<String> response = getCustomRestTemplate().exchange(requestUrl, HttpMethod.GET, entity,
-            String.class);
+        ResponseEntity<String> response = getCustomRestTemplate().exchange(requestUrl, HttpMethod.GET, entity, String.class); // NOSONAR
         if (response.getStatusCode() == HttpStatus.FOUND) {
             String location = response.getHeaders().getLocation().toString();
             return location;
@@ -214,8 +211,8 @@ public class SPIService {
     public ResponseEntity<String> validateResetPasswordToken(final String token, final String code) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("token", token);
-        headers.add("code", code);
+        headers.add("token", token); //NOSONAR
+        headers.add("code", code); //NOSONAR
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -254,7 +251,7 @@ public class SPIService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest request = new uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest();
+        uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest request = new uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest();
         request.setFirstName(registerUserRequest.getFirstName());
         request.setLastName(registerUserRequest.getLastName());
         request.setEmail(registerUserRequest.getUsername());
@@ -262,7 +259,7 @@ public class SPIService {
         request.setRedirectUri(registerUserRequest.getRedirect_uri());
         request.setState(registerUserRequest.getState());
 
-        HttpEntity<uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + registerUserRequest.getJwt(), HttpMethod.POST, requestEntity, String.class);
     }
 
@@ -276,7 +273,6 @@ public class SPIService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(selfRegisterRequest), headers);
-
 
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegistration(), HttpMethod.POST, entity, String.class);
     }
@@ -292,32 +288,25 @@ public class SPIService {
      * @should call api with the correct data and return api response if status code is 200
      * @should return optional empty if status code is not 200
      * @should return optional empty if any Exception occurs
-     * @should return optional empty if api response is null
      */
     public Optional<User> getDetails(String token) {
 
-        ResponseEntity<User> response = null;
+        ResponseEntity<User> response;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("authorization", token);
+        headers.add("authorization", token); //NOSONAR
 
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         try {
 
             response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getDetails(), HttpMethod.GET, entity, User.class);
-
+            return Optional.of(response.getBody());
         } catch (Exception e) {
             log.error("Error getting User Details", e);
             return Optional.empty();
         }
-
-        if (Objects.nonNull(response) && response.getStatusCode().equals(HttpStatus.OK)) {
-            return Optional.of(response.getBody());
-        }
-
-        return Optional.empty();
     }
 
     /**
@@ -325,9 +314,10 @@ public class SPIService {
      * @should return Optional empty if api returns an http status different from 200
      * @should return Optional empty if api returns empty response body
      */
-    public Optional<uk.gov.hmcts.reform.idam.api.model.Service> getServiceByClientId(String clientId) {
+    public Optional<uk.gov.hmcts.reform.idam.api.internal.model.Service> getServiceByClientId(String clientId) {
 
-        ResponseEntity<ArrayOfServices> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class);
+        ResponseEntity<ArrayOfServices> response =
+            restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class); //NOSONAR
 
         if (Objects.nonNull(response.getBody()) && !response.getBody().isEmpty()) {
             return Optional.of(response.getBody().get(0));
@@ -335,13 +325,11 @@ public class SPIService {
         return Optional.empty();
     }
 
-
     private HttpEntity<MultiValueMap<String, String>> prepareOauth2AuthenticationRequest(final String username, final String password,
                                                                                          final String redirectUri, final String state,
                                                                                          final String clientId, final String scope) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(4);
 

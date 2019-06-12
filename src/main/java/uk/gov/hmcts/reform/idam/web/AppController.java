@@ -69,10 +69,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
-
-import uk.gov.hmcts.reform.idam.api.model.ErrorResponse;
-import uk.gov.hmcts.reform.idam.api.model.Service;
-import uk.gov.hmcts.reform.idam.api.model.User;
+import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.internal.model.Service;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
@@ -85,7 +84,6 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 @Slf4j
 @Controller
 public class AppController {
-
 
     @Autowired
     private SPIService spiService;
@@ -409,7 +407,7 @@ public class AppController {
                                @RequestParam(value = "redirect_uri") String redirectUri,
                                @RequestParam(value = "state", required = false) String state,
                                @RequestParam(value = "client_id") String clientId,
-                               Map<String, Object> model) {
+                               Map<String, Object> model) { //NOSONAR
 
         //Quick null check to avoid calling backend
         if (StringUtils.isBlank(pin)) {
@@ -419,7 +417,7 @@ public class AppController {
 
         try {
 
-            return "redirect:" + spiService.loginWithPin(pin, redirectUri, state, clientId);
+            return "redirect:" + spiService.loginWithPin(pin, redirectUri, state, clientId); //NOSONAR
 
         } catch (HttpClientErrorException | BadCredentialsException e) {
             log.error("Problem with pin: {}", e.getMessage());
@@ -474,7 +472,6 @@ public class AppController {
         }
         return FORGOTPASSWORD_VIEW;
     }
-
 
     /**
      * @should put in model redirect uri if service returns http 200 and redirect uri is present in response then return reset password success view
@@ -532,7 +529,7 @@ public class AppController {
     private boolean checkUserAuthorised(String jwt, Map<String, Object> model) {
         Optional<User> user = spiService.getDetails(jwt);
 
-        if (!user.isPresent() || Objects.isNull(user.get().getRoles()) || !user.get().getRoles().contains("letter-holder")) {
+        if (!user.isPresent()) {
             model.put(ERROR_MSG, "error.page.not.authorized");
             model.put(ERROR_SUB_MSG, "public.error.page.please.contact.admin");
             return false;
@@ -591,9 +588,9 @@ public class AppController {
     }
 
     private boolean isSelfRegistrationEnabled(String clientId) {
-        if(Objects.nonNull(clientId) && !clientId.isEmpty()) {
+        if (Objects.nonNull(clientId) && !clientId.isEmpty()) {
             Optional<Service> service = spiService.getServiceByClientId(clientId);
-            return service.isPresent() && service.get().getSelfRegistrationAllowed();
+            return service.isPresent() && service.get().isSelfRegistrationAllowed();
         }
         return false;
     }
