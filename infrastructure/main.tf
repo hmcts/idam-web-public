@@ -51,9 +51,6 @@ module "idam-web-public" {
   asp_name = "${local.asp_name}"
   asp_rg = "${local.asp_rg}"
 
-  certificate_name         = "${local.env == "idam-preview" ? "" : var.certificate_name}"
-
-
   app_settings = {
     MANAGEMENT_SECURITY_ENABLED   = "${local.secure_actuator_endpoints}"
     ENDPOINTS_ENABLED             = "${local.secure_actuator_endpoints ? false : true}"
