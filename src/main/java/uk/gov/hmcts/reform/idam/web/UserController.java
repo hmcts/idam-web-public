@@ -51,11 +51,11 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 public class UserController {
 
     private static final String ERROR_MSG = "errorMsg";
-    public static final String ERROR_SUB_MSG = "errorSubMsg";
-    private static final String GENERIC_ERROR_KEY = "public.error.page.generic.error";
-    private static final String GENERIC_SUB_ERROR_KEY = "public.error.page.generic.sub.error";
+    private static final String ERROR_SUB_MSG = "errorSubMsg";
+    static final String GENERIC_ERROR_KEY = "public.error.page.generic.error";
+    static final String GENERIC_SUB_ERROR_KEY = "public.error.page.generic.sub.error";
     private static final String ALREADY_ACTIVATED_KEY = "public.error.page.already.activated.description";
-    public static final String PAGE_NOT_FOUND_VIEW = "404";
+    private static final String PAGE_NOT_FOUND_VIEW = "404";
 
     @Autowired
     private ObjectMapper mapper;

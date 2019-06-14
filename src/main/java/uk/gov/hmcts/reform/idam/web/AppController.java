@@ -1,50 +1,9 @@
 package uk.gov.hmcts.reform.idam.web;
 
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_SUB_MSG;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIREDTOKEN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import com.google.common.collect.ImmutableMap;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -67,12 +26,6 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
@@ -85,9 +38,18 @@ import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
+import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 
 @Slf4j
 @Controller
@@ -312,6 +274,8 @@ public class AppController {
                     httpRequest.getParameterMap().forEach((key, values) ->
                         params.put(key, stringArrayToDeliminatedString(values, " "))
                     );
+                    params.putIfAbsent(RESPONSE_TYPE, "code");
+                    params.putIfAbsent(SCOPE, "openid profile roles");
                     responseUrl = spiService.authorize(params, cookie);
                 }
                 if (responseUrl != null && !responseUrl.contains("error")) {
@@ -603,6 +567,16 @@ public class AppController {
             return service.isPresent() && service.get().isSelfRegistrationAllowed();
         }
         return false;
+    }
+
+    /**
+     * @should return an error page
+     */
+    @GetMapping(path = "/auth-error")
+    public String authorizeError(final Map<String, Object> model) {
+        model.put(ERROR_MSG, GENERIC_ERROR_KEY);
+        model.put(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
+        return ERRORPAGE_VIEW;
     }
 
     private static String stringArrayToDeliminatedString(String[] array, String delim) {

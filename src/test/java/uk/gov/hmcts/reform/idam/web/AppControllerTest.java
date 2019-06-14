@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1393,5 +1394,17 @@ public class AppControllerTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(view().name(CONTACT_US_VIEW));
+    }
+
+    /**
+     * @verifies return an error page
+     * @see AppController#authorizeError(Map)
+     */
+    @Test
+    public void authorizeError_shouldReturnAnErrorPage() throws Exception {
+        mockMvc.perform(get("/error"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(ERROR_VIEW_NAME));
     }
 }
