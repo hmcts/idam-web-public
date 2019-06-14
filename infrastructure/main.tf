@@ -44,7 +44,6 @@ module "idam-web-public" {
   subscription = "${var.subscription}"
   capacity = "${var.capacity}"
   https_only = "${var.https_only}"
-  additional_host_name = "${local.external_host_name}"
   additional_host_name = "${local.env == "idam-preview" ? "null" : local.external_host_name}"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
   common_tags = "${local.tags}"
