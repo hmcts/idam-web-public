@@ -272,7 +272,7 @@ public class AppController {
                 if (cookie != null) {
                     Map<String, String> params = new HashMap<>();
                     httpRequest.getParameterMap().forEach((key, values) ->
-                        params.put(key, stringArrayToDeliminatedString(values, " "))
+                        params.put(key, String.join(" ", values))
                     );
                     params.putIfAbsent(RESPONSE_TYPE, "code");
                     params.putIfAbsent(SCOPE, "openid profile roles");
@@ -577,9 +577,5 @@ public class AppController {
         model.put(ERROR_MSG, GENERIC_ERROR_KEY);
         model.put(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
         return ERRORPAGE_VIEW;
-    }
-
-    private static String stringArrayToDeliminatedString(String[] array, String delim) {
-        return Arrays.stream(array).reduce((string1, string2) -> string1 + " " + string2).orElse("");
     }
 }
