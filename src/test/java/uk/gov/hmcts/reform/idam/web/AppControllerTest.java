@@ -1402,7 +1402,7 @@ public class AppControllerTest {
      */
     @Test
     public void authorizeError_shouldReturnAnErrorPage() throws Exception {
-        mockMvc.perform(get("/error"))
+        mockMvc.perform(get("/auth-error"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
