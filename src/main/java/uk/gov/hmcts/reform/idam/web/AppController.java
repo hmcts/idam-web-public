@@ -271,8 +271,10 @@ public class AppController {
                 String responseUrl = null;
                 if (cookie != null) {
                     Map<String, String> params = new HashMap<>();
-                    httpRequest.getParameterMap().forEach((key, values) ->
-                        params.put(key, String.join(" ", values))
+                    httpRequest.getParameterMap().forEach((key, values) -> {
+                        if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
+                            params.put(key, String.join(" ", values));
+                        }
                     );
                     params.putIfAbsent(RESPONSE_TYPE, "code");
                     params.putIfAbsent(SCOPE, "openid profile roles");
