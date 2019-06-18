@@ -36,6 +36,7 @@ public class TestConstants {
     public static final String LOGIN_WITH_PIN_ENDPOINT = "/loginWithPin";
     public static final String ACTIVATE_ENDPOINT = "/activate";
     public static final String OAUTH2_AUTHORIZE_ENDPOINT = "oauth2/authorize";
+    public static final String AUTHENTICATE_ENDPOINT = "authenticate";
     public static final String VALIDATE_RESET_PASSWORD_ENDPOINT = "validateResetPasswordToken";
     public static final String SELF_REGISTRATION_ENDPOINT = "users/selfregister";
     public static final String DETAILS_ENDPOINT = "details";
@@ -156,6 +157,7 @@ public class TestConstants {
     public static final String CLIENT_ID = "clientId";
     public static final String REDIRECTURI = "redirectUri";
     public static final String CUSTOM_SCOPE = "manage-roles";
+    public static final String AUTHENTICATE_SESSION_COOKE = "IPlanetDirectoryPro=A_TASTY_TREAT";
 
 
     //Responses

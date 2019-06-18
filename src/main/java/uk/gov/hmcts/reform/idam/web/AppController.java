@@ -1,49 +1,12 @@
 package uk.gov.hmcts.reform.idam.web;
 
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_SUB_MSG;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIREDTOKEN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -63,12 +26,6 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
@@ -80,6 +37,18 @@ import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
+import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 
 @Slf4j
 @Controller
@@ -101,30 +70,6 @@ public class AppController {
     public String indexView(final Map<String, Object> model) {
 
         return MvcKeys.INDEX_VIEW;
-    }
-
-    /**
-     * @should put correct data in model and return login view
-     * @should set self-registration to false if disabled for the service
-     * @should set self-registration to false if the clientId is invalid
-     * @should return error page view if OAuth2 details are missing
-     */
-    @GetMapping("/login")
-    public String loginView(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
-                            BindingResult bindingResult, Model model) {
-        if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
-            model.addAttribute(ERROR_MSG, "error.page.access.denied");
-            model.addAttribute(ERROR_SUB_MSG, "public.error.page.access.denied.text");
-            return ERRORPAGE_VIEW;
-        }
-        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
-        model.addAttribute(STATE, request.getState());
-        model.addAttribute(CLIENT_ID, request.getClient_id());
-        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
-        model.addAttribute(SCOPE, request.getScope());
-
-        return LOGIN_VIEW;
     }
 
     /**
@@ -266,6 +211,31 @@ public class AppController {
     }
 
     /**
+     * @should put correct data in model and return login view
+     * @should set self-registration to false if disabled for the service
+     * @should set self-registration to false if the clientId is invalid
+     * @should return error page view if OAuth2 details are missing
+     */
+    @GetMapping("/login")
+    public String loginView(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
+                            BindingResult bindingResult, Model model) {
+        if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
+            model.addAttribute(ERROR_MSG, "error.page.access.denied");
+            model.addAttribute(ERROR_SUB_MSG, "public.error.page.access.denied.text");
+            return ERRORPAGE_VIEW;
+        }
+
+        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
+        model.addAttribute(STATE, request.getState());
+        model.addAttribute(CLIENT_ID, request.getClient_id());
+        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
+        model.addAttribute(SCOPE, request.getScope());
+
+        return LOGIN_VIEW;
+    }
+
+    /**
      * @should put in model correct data  then call authorize service and redirect using redirect url returned by service
      * @should put in model correct data if username or  password are empty.
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
@@ -275,7 +245,8 @@ public class AppController {
      */
     @PostMapping("/login")
     public String login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
-                        BindingResult bindingResult, Model model) {
+                        BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
+                        HttpServletResponse response) {
         String nextPage = LOGIN_VIEW;
         model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(PASSWORD, request.getPassword());
@@ -295,14 +266,21 @@ public class AppController {
                 }
                 model.addAttribute(HAS_ERRORS, true);
             } else {
-                String responseUrl = spiService.authorize(
-                    request.getUsername(),
-                    request.getPassword(),
-                    request.getRedirect_uri(),
-                    request.getState(),
-                    request.getClient_id(),
-                    request.getScope());
-                if (responseUrl != null) {
+                String cookie = spiService.authenticate(request.getUsername(), request.getPassword());
+                String responseUrl = null;
+                if (cookie != null) {
+                    Map<String, String> params = new HashMap<>();
+                    httpRequest.getParameterMap().forEach((key, values) -> {
+                        if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
+                            params.put(key, String.join(" ", values));
+                        }
+                    );
+                    params.putIfAbsent(RESPONSE_TYPE, "code");
+                    params.putIfAbsent(SCOPE, "openid profile roles");
+                    responseUrl = spiService.authorize(params, cookie);
+                }
+                if (responseUrl != null && !responseUrl.contains("error")) {
+                    response.addHeader(HttpHeaders.SET_COOKIE, cookie);
                     nextPage = "redirect:" + responseUrl;
                 } else {
                     log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
@@ -313,11 +291,8 @@ public class AppController {
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("Login failed for user - " + obfuscateEmailAddress(request.getUsername()));
             if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
-
                 getLoginFailureReason(he, model, bindingResult);
-
             } else {
-
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
             }
@@ -593,5 +568,15 @@ public class AppController {
             return service.isPresent() && service.get().isSelfRegistrationAllowed();
         }
         return false;
+    }
+
+    /**
+     * @should return an error page
+     */
+    @GetMapping(path = "/auth-error")
+    public String authorizeError(final Map<String, Object> model) {
+        model.put(ERROR_MSG, GENERIC_ERROR_KEY);
+        model.put(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
+        return ERRORPAGE_VIEW;
     }
 }
