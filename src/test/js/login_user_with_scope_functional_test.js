@@ -1,6 +1,11 @@
 var TestData = require('./config/test_data');
 var assert = require('assert');
 
+const deepEqualInAnyOrder = require('deep-equal-in-any-order');
+const chai = require('chai');
+chai.use(deepEqualInAnyOrder);
+const { expect } = chai;
+
 Feature('Service can request a scope on user authentication');
 
 const customScope = 'manage-roles';
@@ -18,7 +23,7 @@ const dynamicRoleNameForPinUser = 'dynamic-respondent-role-' + Date.now();
 
 const loginUrl = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName + '&scope=' + customScope;
 
-let citizenFirstName, citizenLastName, citizenEmail, respondentEmail;
+let auth_token, citizenFirstName, citizenLastName, citizenEmail, respondentEmail;
 
 BeforeSuite(async (I) => {
     let randomText = await I.generateRandomText();
@@ -26,10 +31,10 @@ BeforeSuite(async (I) => {
     citizenEmail = 'citizen.' + randomText + testMailSuffix;
     respondentEmail = 'respondent.' + randomText + testMailSuffix;
 
-    let token = await I.getAuthToken();
-    await I.createRole(dynamicRoleNameForCitizenUser, '', '', token)
-    await I.createRole(dynamicRoleNameForPinUser, '', '', token)
-    await I.createServiceWithRoles(serviceName, [ dynamicRoleNameForCitizenUser, dynamicRoleNameForPinUser ], '', token, customScope);
+    authToken = await I.getAuthToken();
+    await I.createRole(dynamicRoleNameForCitizenUser, '', '', authToken)
+    await I.createRole(dynamicRoleNameForPinUser, '', '', authToken)
+    await I.createServiceWithRoles(serviceName, [ dynamicRoleNameForCitizenUser, dynamicRoleNameForPinUser ], '', authToken, customScope);
     await I.createUserWithRoles(citizenEmail, 'Citizen', []);
     await I.createUserWithRoles(respondentEmail, 'Respondent', []);
 });
@@ -42,7 +47,7 @@ return Promise.all([
     ]);
 });
 
-Scenario('@functional As a service, I can request a custom scope on user login',  async (I) => {
+Scenario('@functional @debug As a service, I can request a custom scope on user login',  async (I) => {
   I.amOnPage(loginUrl);
   I.waitForText('Sign in', 20, 'h1');
   I.fillField('#username', citizenEmail);
@@ -60,13 +65,13 @@ Scenario('@functional As a service, I can request a custom scope on user login',
   await I.grantRoleToUser(dynamicRoleNameForCitizenUser, accessToken);
 
   let userInfo = await I.getUserInfo(accessToken);
-  assert.deepStrictEqual(userInfo.roles, [ dynamicRoleNameForCitizenUser ]);
+  expect(userInfo.roles).to.deep.equal([ dynamicRoleNameForCitizenUser ]);
 
   I.resetRequestInterception();
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional As a service, I can request a custom scope on PIN user login',  async (I) => {
+Scenario('@functional @debug As a service, I can request a custom scope on PIN user login',  async (I) => {
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
     let code = await I.loginAsPin(pinUser.pin, serviceName, serviceRedirectUri);
@@ -89,8 +94,8 @@ Scenario('@functional As a service, I can request a custom scope on PIN user log
     await I.grantRoleToUser(dynamicRoleNameForPinUser, accessToken);
 
     let userInfo = await I.retry({retries:3, minTimeout:10000}).getUserInfo(accessToken);
-    assert.deepStrictEqual(userInfo.roles, [ pinUserRole, citizenRole, dynamicRoleNameForPinUser ]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([ pinUserRole, citizenRole, dynamicRoleNameForPinUser ]);
 
     I.resetRequestInterception();
 
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
+})
