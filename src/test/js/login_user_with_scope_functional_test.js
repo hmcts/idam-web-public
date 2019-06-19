@@ -23,7 +23,7 @@ const dynamicRoleNameForPinUser = 'dynamic-respondent-role-' + Date.now();
 
 const loginUrl = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName + '&scope=' + customScope;
 
-let auth_token, citizenFirstName, citizenLastName, citizenEmail, respondentEmail;
+let citizenFirstName, citizenLastName, citizenEmail, respondentEmail;
 
 BeforeSuite(async (I) => {
     let randomText = await I.generateRandomText();
@@ -31,10 +31,10 @@ BeforeSuite(async (I) => {
     citizenEmail = 'citizen.' + randomText + testMailSuffix;
     respondentEmail = 'respondent.' + randomText + testMailSuffix;
 
-    authToken = await I.getAuthToken();
-    await I.createRole(dynamicRoleNameForCitizenUser, '', '', authToken)
-    await I.createRole(dynamicRoleNameForPinUser, '', '', authToken)
-    await I.createServiceWithRoles(serviceName, [ dynamicRoleNameForCitizenUser, dynamicRoleNameForPinUser ], '', authToken, customScope);
+    let token = await I.getAuthToken();
+    await I.createRole(dynamicRoleNameForCitizenUser, '', '', token)
+    await I.createRole(dynamicRoleNameForPinUser, '', '', token)
+    await I.createServiceWithRoles(serviceName, [ dynamicRoleNameForCitizenUser, dynamicRoleNameForPinUser ], '', token, customScope);
     await I.createUserWithRoles(citizenEmail, 'Citizen', []);
     await I.createUserWithRoles(respondentEmail, 'Respondent', []);
 });
@@ -47,7 +47,7 @@ return Promise.all([
     ]);
 });
 
-Scenario('@functional @debug As a service, I can request a custom scope on user login',  async (I) => {
+Scenario('@functional As a service, I can request a custom scope on user login',  async (I) => {
   I.amOnPage(loginUrl);
   I.waitForText('Sign in', 20, 'h1');
   I.fillField('#username', citizenEmail);
@@ -71,7 +71,7 @@ Scenario('@functional @debug As a service, I can request a custom scope on user 
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @debug As a service, I can request a custom scope on PIN user login',  async (I) => {
+Scenario('@functional As a service, I can request a custom scope on PIN user login',  async (I) => {
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
     let code = await I.loginAsPin(pinUser.pin, serviceName, serviceRedirectUri);
