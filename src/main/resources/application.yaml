@@ -12,6 +12,7 @@ server:
   tomcat:
     remote-ip-header: x-forwarded-for
     protocol-header: x-forwarded-proto
+  max-http-header-size: 24KB
 
 management:
   # Enable the info and health endpoints
