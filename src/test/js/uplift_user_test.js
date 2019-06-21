@@ -15,10 +15,11 @@ const redirectUri = 'https://idam.testservice.gov.uk';
 const clientSecret = 'autotestingservice';
 
 BeforeSuite(async (I) => {
-    randomUserLastName = await I.generateRandomText();
-    randomUserFirstName = await I.generateRandomText();
-    adminEmail = 'admin.' + randomUserLastName + testMailSuffix;
-    citizenEmail = 'citizen.' + randomUserLastName + testMailSuffix;
+    randomUserLastName = await I.generateRandomText() + 'pinępinç';
+    randomUserFirstName = await I.generateRandomText() + 'ępinçłpin';
+    randomUserName = await I.generateRandomText();
+    adminEmail = 'admin.' + randomUserName + testMailSuffix;
+    citizenEmail = 'citizen.' + randomUserName + testMailSuffix;
 
     var token = await I.getAuthToken();
     await I.createRole(serviceName + "_beta", 'beta description', '', token);

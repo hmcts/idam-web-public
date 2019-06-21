@@ -47,6 +47,7 @@ module "idam-web-public" {
   additional_host_name = "${local.env == "idam-preview" ? "null" : local.external_host_name}"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
   common_tags = "${local.tags}"
+  java_container_version = "9.0"
 
   asp_name = "${local.asp_name}"
   asp_rg = "${local.asp_rg}"
