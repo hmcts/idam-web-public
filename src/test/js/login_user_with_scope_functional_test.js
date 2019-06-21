@@ -1,6 +1,11 @@
 var TestData = require('./config/test_data');
 var assert = require('assert');
 
+const deepEqualInAnyOrder = require('deep-equal-in-any-order');
+const chai = require('chai');
+chai.use(deepEqualInAnyOrder);
+const { expect } = chai;
+
 Feature('Service can request a scope on user authentication');
 
 const customScope = 'manage-roles';
@@ -60,7 +65,7 @@ Scenario('@functional As a service, I can request a custom scope on user login',
   await I.grantRoleToUser(dynamicRoleNameForCitizenUser, accessToken);
 
   let userInfo = await I.getUserInfo(accessToken);
-  assert.deepStrictEqual(userInfo.roles, [ dynamicRoleNameForCitizenUser ]);
+  expect(userInfo.roles).to.deep.equal([ dynamicRoleNameForCitizenUser ]);
 
   I.resetRequestInterception();
 
@@ -89,8 +94,8 @@ Scenario('@functional As a service, I can request a custom scope on PIN user log
     await I.grantRoleToUser(dynamicRoleNameForPinUser, accessToken);
 
     let userInfo = await I.retry({retries:3, minTimeout:10000}).getUserInfo(accessToken);
-    assert.deepStrictEqual(userInfo.roles, [ pinUserRole, citizenRole, dynamicRoleNameForPinUser ]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([ pinUserRole, citizenRole, dynamicRoleNameForPinUser ]);
 
     I.resetRequestInterception();
 
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
+})
