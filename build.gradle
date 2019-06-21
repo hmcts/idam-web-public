@@ -31,11 +31,10 @@ allprojects  {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.5.16'
+  def idamBomVersion = '1.5.17'
 
   ext['tomcat.version'] = '9.0.19'
   ext['jackson.version'] = '2.9.9'
-  ext['spring.boot.version'] = '2.1.6.RELEASE'
 
   dependencyManagement {
     imports {
@@ -68,7 +67,7 @@ allprojects  {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-    compile (group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.1.1.RELEASE') {
+    compile (group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul') {
       exclude(module: 'rxnetty-contexts')
       exclude(module: 'rxnetty-servo')
       exclude(module: 'rxnetty')
