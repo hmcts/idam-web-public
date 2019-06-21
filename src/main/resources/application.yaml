@@ -20,6 +20,10 @@ zuul:
       sensitiveHeaders: Set-Cookie
       url: ${strategic.service.url}/o
 
+ribbon:
+  ConnectTimeout: 10000
+  ReadTimeout: 10000
+
 management:
   # Enable the info and health endpoints
   # A given environment (such as prod) might disable all endpoints,

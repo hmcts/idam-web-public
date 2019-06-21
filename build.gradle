@@ -68,7 +68,14 @@ allprojects  {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.1.1.RELEASE'
+    compile (group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.1.1.RELEASE') {
+      exclude(module: 'rxnetty-contexts')
+      exclude(module: 'rxnetty-servo')
+      exclude(module: 'rxnetty')
+    }
+    compile group: 'io.reactivex', name: 'rxnetty', version: '0.4.12'
+    compile group: 'io.reactivex', name: 'rxnetty-contexts', version: '0.4.12'
+    compile group: 'io.reactivex', name: 'rxnetty-servo', version: '0.4.12'
     compile group: 'org.springframework.security', name: 'spring-security-taglibs'
     compile group: 'org.projectlombok', name: 'lombok'
     compile group: 'javax.servlet', name: 'jstl'
