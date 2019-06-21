@@ -5,12 +5,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.ComponentScan;
 
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
 @SpringBootApplication
 @ComponentScan("uk.gov.hmcts.reform.idam")
+@EnableZuulProxy
 @EnableConfigurationProperties(ConfigurationProperties.class)
 public class Application extends SpringBootServletInitializer {
 
