@@ -73,9 +73,6 @@ allprojects  {
       exclude(module: 'rxnetty-servo')
       exclude(module: 'rxnetty')
     }
-    compile group: 'io.reactivex', name: 'rxnetty', version: '0.5.3'
-    compile group: 'io.reactivex', name: 'rxnetty-contexts', version: '0.5.3'
-    compile group: 'io.reactivex', name: 'rxnetty-servo', version: '0.5.3'
     compile group: 'org.springframework.security', name: 'spring-security-taglibs'
     compile group: 'org.projectlombok', name: 'lombok'
     compile group: 'javax.servlet', name: 'jstl'
