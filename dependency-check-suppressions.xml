@@ -103,18 +103,11 @@
         <cve>CVE-2019-7722</cve>
     </suppress>
 
-    <!-- The feign clients are not exposed so not an issue. -->
+    <!-- Suppressing as it seems a false positive as per https://github.com/jeremylong/DependencyCheck/issues/1573 -->
     <suppress>
-        <notes><![CDATA[SslHandler in Netty]]></notes>
-        <gav regex="true">^.*$</gav>
+        <notes><![CDATA[Shadowed dependency from AppInsights]]></notes>
+        <gav regex="true">^io\.netty:netty-tcnative-boringssl-static:2\.0\.17\.Final$</gav>
         <cve>CVE-2014-3488</cve>
-        <cve>CVE-2016-4970</cve>
-    </suppress>
-
-    <!-- The feign clients are not exposed so not an issue. -->
-    <suppress>
-        <notes><![CDATA[HttpOnly bypass in Netty]]></notes>
-        <gav regex="true">^.*$</gav>
         <cve>CVE-2015-2156</cve>
     </suppress>
 
