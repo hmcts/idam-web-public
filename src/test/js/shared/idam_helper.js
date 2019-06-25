@@ -48,8 +48,8 @@ class IdamHelper extends Helper {
     }
 
     getBase64(email_address, password) {
-        console.log("BASE64-ENCODED " + Buffer.from(email_address+":"+password).toString('base64'))
-        return Buffer.from(email_address+":"+password).toString('base64')
+        console.log("BASE64-ENCODED " + Buffer.from(email_address + ":" + password).toString('base64'))
+        return Buffer.from(email_address + ":" + password).toString('base64')
     }
 
     getAuthorizeCode(serviceName, serviceRedirect, oauth2Scope, base64) {
@@ -76,8 +76,7 @@ class IdamHelper extends Helper {
     }
 
 
-
-    createService(serviceName, roleId, token, scope='') {
+    createService(serviceName, roleId, token, scope = '') {
         let data;
 
         if (roleId === '') {
@@ -121,7 +120,7 @@ class IdamHelper extends Helper {
     }
 
     createServiceWithRoles(serviceName, serviceRoles, betaRole, token, scope) {
-        if(scope == null) {
+        if (scope == null) {
             scope = ''
         }
         const data = {
@@ -297,7 +296,7 @@ class IdamHelper extends Helper {
         );
     }
 
-   async extractUrl(searchEmail) {
+    async extractUrl(searchEmail) {
         let emailResponse = await this.getEmail(searchEmail);
         return this.extractUrlFromBody(emailResponse);
     }
@@ -313,15 +312,15 @@ class IdamHelper extends Helper {
         return result;
     }
 
-  extractUrlFromBody(emailResponse) {
-    if (emailResponse) {
-        var regex = "(https.+)"
-        var url = emailResponse.body.match(regex);
-        if (url[0]) {
-            return url[0].replace(/https:\/\/idam-web-public\..+?\.platform\.hmcts\.net/i, TestData.WEB_PUBLIC_URL);
+    extractUrlFromBody(emailResponse) {
+        if (emailResponse) {
+            var regex = "(https.+)"
+            var url = emailResponse.body.match(regex);
+            if (url[0]) {
+                return url[0].replace(/https:\/\/idam-web-public\..+?\.platform\.hmcts\.net/i, TestData.WEB_PUBLIC_URL);
+            }
         }
     }
-  }
 
     async getCurrentUrl() {
         const helper = this.helpers['Puppeteer'];
@@ -329,21 +328,21 @@ class IdamHelper extends Helper {
         return helper.page.url();
     }
 
-  interceptRequestsAfterSignin() {
-    const helper = this.helpers['Puppeteer'];
-    helper.page.setRequestInterception(true);
-    helper.page.on('request', request => {
-        if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0) {
-            request.continue();
-        } else {
-            request.respond({
-                status: 200,
-                contentType: 'application/javascript; charset=utf-8',
-                body: request.url()
-            });
-        }
-    });
-  }
+    interceptRequestsAfterSignin() {
+        const helper = this.helpers['Puppeteer'];
+        helper.page.setRequestInterception(true);
+        helper.page.on('request', request => {
+            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0) {
+                request.continue();
+            } else {
+                request.respond({
+                    status: 200,
+                    contentType: 'application/javascript; charset=utf-8',
+                    body: request.url()
+                });
+            }
+        });
+    }
 
     resetRequestInterception() {
         const helper = this.helpers['Puppeteer'];
@@ -399,7 +398,10 @@ class IdamHelper extends Helper {
             agent: agent,
             method: 'POST',
             body: searchParams,
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Basic ' + this.getBase64(serviceName, clientSecret)}
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic ' + this.getBase64(serviceName, clientSecret)
+            }
         }).then(response => {
             console.log(response)
             return response.json();
@@ -430,7 +432,7 @@ class IdamHelper extends Helper {
             agent: agent,
             method: 'POST',
             body: JSON.stringify({
-              "name": roleName
+                "name": roleName
             }),
             headers: {
                 'Content-type': 'application/json',
@@ -464,6 +466,19 @@ class IdamHelper extends Helper {
                 throw new Error()
             }
         });
+    }
+
+    getOidcEndPointsConfig(url) {
+        return fetch(`${url}/o/.well-known/openid-configuration`, {
+            agent: agent,
+            method: 'GET',
+        }).then(res => res.json())
+            .then((json) => {
+                return json;
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 }
 
