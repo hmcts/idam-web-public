@@ -332,7 +332,7 @@ class IdamHelper extends Helper {
         const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
         helper.page.on('request', request => {
-            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0) {
+            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0 || request.url().indexOf('/activate') > 0) {
                 request.continue();
             } else {
                 request.respond({
@@ -477,7 +477,7 @@ class IdamHelper extends Helper {
             roles: [userRoles]
         };
 
-        return fetch(`${TestData.IDAM_API}/user/registration`, {
+        return fetch(`${TestData.IDAM_API}/api/v1/users/registration`, {
             agent: agent,
             method: 'POST',
             body: JSON.stringify(data),
@@ -504,11 +504,11 @@ class IdamHelper extends Helper {
             });
     }
 
-    getUserById(userId, apiAuthToken) {
-        return fetch(`${TestData.IDAM_API}/users/${userId}`, {
+    getUserById(userId, bearerToken) {
+        return fetch(`${TestData.IDAM_API}/api/v1/users/${userId}`, {
             agent: agent,
             method: 'GET',
-            headers: {'Authorization': 'AdminApiAuthToken ' + apiAuthToken},
+            headers: {'Authorization': 'Bearer ' + bearerToken},
         }).then(res => res.json())
             .then((json) => {
                 return json;
