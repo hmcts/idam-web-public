@@ -332,7 +332,7 @@ class IdamHelper extends Helper {
         const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
         helper.page.on('request', request => {
-            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0) {
+            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0 || request.url().indexOf('/activate') > 0) {
                 request.continue();
             } else {
                 request.respond({
@@ -468,10 +468,47 @@ class IdamHelper extends Helper {
         });
     }
 
+    registerUserWithId(bearerToken, userEmail, userFirstName, userLastName, userId, userRoles) {
+        const data = {
+            id: userId,
+            email: userEmail,
+            firstName: userFirstName,
+            lastName: userLastName,
+            roles: [userRoles]
+        };
+
+        return fetch(`${TestData.IDAM_API}/api/v1/users/registration`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
+        }).then((response) => {
+            if (response.status != 200) {
+                console.log('Error creating user', response.status);
+                console.log(JSON.stringify(data))
+                throw new Error()
+            }
+        });
+    }
+
     getOidcEndPointsConfig(url) {
         return fetch(`${url}/o/.well-known/openid-configuration`, {
             agent: agent,
             method: 'GET',
+        }).then(res => res.json())
+            .then((json) => {
+                return json;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    getUserById(userId, bearerToken) {
+        return fetch(`${TestData.IDAM_API}/api/v1/users/${userId}`, {
+            agent: agent,
+            method: 'GET',
+            headers: {'Authorization': 'Bearer ' + bearerToken},
         }).then(res => res.json())
             .then((json) => {
                 return json;
