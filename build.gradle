@@ -35,6 +35,7 @@ allprojects  {
 
   ext['tomcat.version'] = '9.0.19'
   ext['jackson.version'] = '2.9.9'
+  ext['lombok.version'] = '1.18.8'
 
   dependencyManagement {
     imports {
@@ -73,7 +74,10 @@ allprojects  {
       exclude(module: 'rxnetty')
     }
     compile group: 'org.springframework.security', name: 'spring-security-taglibs'
-    compile group: 'org.projectlombok', name: 'lombok'
+    compileOnly("org.projectlombok:lombok")
+    testCompileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
     compile group: 'javax.servlet', name: 'jstl'
     compile group: 'javax.json', name: 'javax.json-api'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
