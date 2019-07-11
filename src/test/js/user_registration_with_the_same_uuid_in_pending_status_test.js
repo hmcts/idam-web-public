@@ -81,8 +81,6 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     expect(responseAfterCurrentUserActivation.email).to.equal(currentUserEmail);
     expect(responseAfterCurrentUserActivation.roles).to.eql([serviceName + "_assignable"]);
 
-    I.resetRequestInterception();
-
     let previousUserUrl = await I.extractUrl(previousUserEmail);
 
     I.amOnPage(previousUserUrl);
