@@ -517,6 +517,21 @@ class IdamHelper extends Helper {
                 console.log(err);
             });
     }
+
+    async getUserByEmail(userEmail) {
+        let authToken = await this.getAuthToken();
+        return fetch(`${TestData.IDAM_API}/users?email=${userEmail}`, {
+            agent: agent,
+            method: 'GET',
+            headers: {'Authorization': 'AdminApiAuthToken ' + authToken},
+        }).then(res => res.json())
+            .then((json) => {
+                return json;
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
 }
 
 module.exports = IdamHelper;
