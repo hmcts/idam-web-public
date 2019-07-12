@@ -35,7 +35,9 @@ allprojects  {
 
   ext['tomcat.version'] = '9.0.19'
   ext['jackson.version'] = '2.9.9'
-
+  ext['applicationinsights.version'] = '2.4.0'
+  ext['applicationinsights.spring-boot-starter.version'] = '2.4.0'
+  
   dependencyManagement {
     imports {
       mavenBom "uk.gov.hmcts.reform.idam:idam-bom:${idamBomVersion}"
