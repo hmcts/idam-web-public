@@ -43,6 +43,8 @@ import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
+import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
+
 @Slf4j
 @Service
 public class SPIService {
@@ -122,14 +124,14 @@ public class SPIService {
      * @should return null if no cookie is found
      * @should return a set-cookie header
      */
-    public String authenticate(final String username, final String password) {
+    public String authenticate(final String username, final String password, final String ipAddress) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
         form.add("username", username);
         form.add("password", password);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
+        headers.add(X_FORWARDED_FOR, ipAddress);
         ResponseEntity<Void> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl()
                 + "/" + configurationProperties.getStrategic().getEndpoint().getAuthorize(), HttpMethod.POST,
             new HttpEntity<>(form, headers), Void.class);
