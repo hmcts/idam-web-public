@@ -1185,6 +1185,7 @@ public class AppControllerTest {
 
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1200,6 +1201,7 @@ public class AppControllerTest {
 
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
