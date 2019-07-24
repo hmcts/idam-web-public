@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.filters.RemoteIpFilter;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -46,6 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
@@ -266,7 +269,10 @@ public class AppController {
                 }
                 model.addAttribute(HAS_ERRORS, true);
             } else {
-                String cookie = spiService.authenticate(request.getUsername(), request.getPassword());
+                final String ipAddress = ObjectUtils.defaultIfNull(
+                    httpRequest.getHeader(X_FORWARDED_FOR),
+                    httpRequest.getRemoteAddr());
+                final String cookie = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
                 String responseUrl = null;
                 if (cookie != null) {
                     Map<String, String> params = new HashMap<>();
