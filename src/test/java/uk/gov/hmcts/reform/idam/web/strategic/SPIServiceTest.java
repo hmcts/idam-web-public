@@ -589,7 +589,7 @@ public class SPIServiceTest {
 
     /**
      * @verifies return null if no cookie is found
-     * @see SPIService#authenticate(String, String)
+     * @see SPIService#authenticate(String, String, String)
      */
     @Test
     public void authenticate_shouldReturnNullIfNoCookieIsFound() {
@@ -597,20 +597,20 @@ public class SPIServiceTest {
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
             eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
             .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie).build());
-        String result = spiService.authenticate(USER_NAME, PASSWORD_ONE);
+        String result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
         assertThat(result, equalTo(cookie));
     }
 
     /**
      * @verifies return a set-cookie header
-     * @see SPIService#authenticate(String, String)
+     * @see SPIService#authenticate(String, String, String)
      */
     @Test
     public void authenticate_shouldReturnASetcookieHeader() {
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
             eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
             .willReturn(ResponseEntity.ok().build());
-        String result = spiService.authenticate(USER_NAME, PASSWORD_ONE);
+        String result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
         assertNull(result);
     }
 }

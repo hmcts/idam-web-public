@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
@@ -1097,10 +1098,11 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD))).willReturn(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
         given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(REDIRECT_URI);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1140,10 +1142,11 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD))).willReturn(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
         given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(MISSING);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1161,10 +1164,11 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD))).willReturn(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
         given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1216,10 +1220,11 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD))).willReturn(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
         given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(PASSWORD_PARAMETER, USER_PASSWORD)
             .param(REDIRECT_URI, REDIRECT_URI)
