@@ -5,8 +5,8 @@ const TestData = require('./config/test_data');
 
 Scenario('@smoke Verify OpenId connect endpoints config through web public', async (I) => {
     let isHttp = TestData.IDAM_API.startsWith("http://");
-    let response = await I.getOidcEndPointsConfig(TestData.WEB_PUBLIC_URL);
     let expectedBaseUrl = isHttp ? TestData.WEB_PUBLIC_URL.replace("https://", "http://") : TestData.WEB_PUBLIC_URL;
+    let response = await I.getOidcEndPointsConfig(expectedBaseUrl);
     expect(response.authorization_endpoint, 'authorization endpoint').to.equal(expectedBaseUrl+'/o/authorize');
     expect(response.token_endpoint, 'token endpoint').to.equal(expectedBaseUrl+'/o/token');
     expect(response.userinfo_endpoint, 'user info endpoint').to.equal(expectedBaseUrl+'/o/userinfo');
