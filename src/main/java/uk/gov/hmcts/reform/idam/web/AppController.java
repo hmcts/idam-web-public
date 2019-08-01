@@ -184,7 +184,7 @@ public class AppController {
     /**
      * @should redirect to login view
      */
-    @RequestMapping("/logout")
+    @GetMapping("/logout")
     public RedirectView logout(final Map<String, Object> model) {
         return new RedirectView("/" + LOGIN_VIEW + "?logout");
     }
@@ -193,7 +193,7 @@ public class AppController {
      * @should redirect to reset password page if token is valid
      * @should redirect to token expired page if token is invalid
      */
-    @RequestMapping("/passwordReset")
+    @GetMapping("/passwordReset")
     public String passwordReset(@RequestParam("action") String action, @RequestParam("token") String token, @RequestParam("code") String code) {
         String nextPage = RESETPASSWORD_VIEW;
         try {
@@ -207,9 +207,8 @@ public class AppController {
     /**
      * @should put in model correct data and return forgot password view
      */
-    @RequestMapping("/reset/forgotpassword")
+    @GetMapping("/reset/forgotpassword")
     public String resetForgotPassword(@ModelAttribute("forgotPasswordCommand") ForgotPasswordRequest forgotPasswordRequest) {
-
         return FORGOTPASSWORD_VIEW;
     }
 
