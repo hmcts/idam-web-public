@@ -32,6 +32,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
+    enableDockerBuild()
+
     after('test') {
         publishHTML target: [
             allowMissing         : true,
