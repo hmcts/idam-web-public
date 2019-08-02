@@ -16,6 +16,7 @@ BeforeSuite(async (I) => {
     adminEmail = 'admin.' + randomUserLastName + testMailSuffix;
     citizenEmail = 'citizen.' + randomUserLastName + testMailSuffix;
     otherCitizenEmail = 'other.' + randomUserLastName + testMailSuffix;
+    plusCitizenEmail = 'plus.' + randomUserLastName + "+extra" + testMailSuffix;
 
     var token = await I.getAuthToken();
     await I.createRole(serviceName + "_beta", 'beta description', '', token);
@@ -26,6 +27,7 @@ BeforeSuite(async (I) => {
     await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_admin", "IDAM_ADMIN_USER"]);
     await I.createUserWithRoles(citizenEmail, 'Citizen', ["citizen"]);
     await I.createUserWithRoles(otherCitizenEmail, 'Citizen', ["citizen"]);
+    await I.createUserWithRoles(plusCitizenEmail, 'Citizen', ["citizen"]);
 
 });
 
@@ -34,6 +36,7 @@ return Promise.all([
      I.deleteUser(adminEmail),
      I.deleteUser(citizenEmail),
      I.deleteUser(otherCitizenEmail),
+     I.deleteUser(plusCitizenEmail),
      I.deleteService(serviceName)
     ]);
 });
@@ -69,6 +72,37 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.resetRequestInterception();
 });
  // NOTE: Retrying this scenario is problematic.
+
+Scenario('@functional @resetpass As a citizen user with a plus email I can reset my password', async (I) => {
+    var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName + '&state=';
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password', 20, 'h1');
+    I.fillField('#email', plusCitizenEmail);
+    I.click('Submit');
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(2);
+    var resetPasswordUrl = await I.extractUrl(plusCitizenEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a new password', 20, 'h1');
+    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.fillField('#password1', 'Passw0rd1234');
+    I.fillField('#password2', 'Passw0rd1234');
+    I.click('Continue');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.')
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', plusCitizenEmail);
+    I.fillField('#password', 'Passw0rd1234');
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText('https://idam.testservice.gov.uk/');
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
 
 Scenario('@functional @resetpass Validation displayed when I try to reset my password with a blacklisted/invalid password', async (I) => {
     var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName + '&state=';
