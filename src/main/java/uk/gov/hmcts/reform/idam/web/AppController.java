@@ -8,6 +8,7 @@ import org.apache.catalina.filters.RemoteIpFilter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -68,6 +69,9 @@ public class AppController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Value("${authentication.secureCookie}")
+    private Boolean useSecureCookie;
 
     /**
      * @should return index view
@@ -289,6 +293,7 @@ public class AppController {
                     responseUrl = spiService.authorize(params, cookie);
                 }
                 if (responseUrl != null && !responseUrl.contains("error")) {
+                    log.info("COOKIE IS THIS " + makeCookieSecure(cookie));
                     response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
                     nextPage = "redirect:" + responseUrl;
                 } else {
@@ -310,7 +315,10 @@ public class AppController {
     }
 
     private String makeCookieSecure(String cookie) {
-        return cookie + "; Path=/; Secure; HttpOnly";
+        if (useSecureCookie) {
+            return cookie + "; Path=/; Secure; HttpOnly";
+        }
+        return cookie + "; Path=/; HttpOnly";
     }
 
     private void getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {
