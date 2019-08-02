@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.filters.RemoteIpFilter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,12 +189,17 @@ public class AppController {
         return new RedirectView("/" + LOGIN_VIEW + "?logout");
     }
 
+    @GetMapping
+    public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
+        return this.passwordReset(token, code);
+    }
+
     /**
      * @should redirect to reset password page if token is valid
      * @should redirect to token expired page if token is invalid
      */
-    @RequestMapping(value = "/passwordReset", method = {RequestMethod.GET, RequestMethod.POST})
-    public String passwordReset(@RequestParam("action") String action, @RequestParam("token") String token, @RequestParam("code") String code) {
+    @PostMapping(value = "/passwordReset")
+    public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
         String nextPage = RESETPASSWORD_VIEW;
         try {
             spiService.validateResetPasswordToken(token, code);
