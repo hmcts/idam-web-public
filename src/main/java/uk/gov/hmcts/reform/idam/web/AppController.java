@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -193,7 +194,7 @@ public class AppController {
      * @should redirect to reset password page if token is valid
      * @should redirect to token expired page if token is invalid
      */
-    @GetMapping("/passwordReset")
+    @RequestMapping(value = "/passwordReset", method = {RequestMethod.GET, RequestMethod.POST})
     public String passwordReset(@RequestParam("action") String action, @RequestParam("token") String token, @RequestParam("code") String code) {
         String nextPage = RESETPASSWORD_VIEW;
         try {
