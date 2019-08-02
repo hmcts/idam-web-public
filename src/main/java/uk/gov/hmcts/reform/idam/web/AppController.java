@@ -8,6 +8,7 @@ import org.apache.catalina.filters.RemoteIpFilter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +41,11 @@ import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -286,7 +289,7 @@ public class AppController {
                     responseUrl = spiService.authorize(params, cookie);
                 }
                 if (responseUrl != null && !responseUrl.contains("error")) {
-                    response.addHeader(HttpHeaders.SET_COOKIE, cookie);
+                    response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
                     nextPage = "redirect:" + responseUrl;
                 } else {
                     log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
@@ -304,6 +307,10 @@ public class AppController {
             }
         }
         return nextPage;
+    }
+
+    private String makeCookieSecure(String cookie) {
+        return cookie + "; Path=/; Secure; HttpOnly";
     }
 
     private void getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {
