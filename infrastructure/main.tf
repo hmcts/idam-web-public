@@ -31,7 +31,7 @@ locals {
 
 data "azurerm_key_vault" "cert_vault" {
   name = "infra-vault-${var.subscription}"
-  resource_group_name = "${var.env == "prod" ? "core-infra-prod" : "cnp-core-infra"}"
+  resource_group_name = "${var.env == "prod" || var.env == "idam-prod" ? "core-infra-prod" : "cnp-core-infra"}"
 }
 
 module "idam-web-public" {
