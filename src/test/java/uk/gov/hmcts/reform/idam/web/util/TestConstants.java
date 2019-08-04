@@ -158,7 +158,7 @@ public class TestConstants {
     public static final String CLIENT_ID = "clientId";
     public static final String REDIRECTURI = "redirectUri";
     public static final String CUSTOM_SCOPE = "manage-roles";
-    public static final String AUTHENTICATE_SESSION_COOKE = "IPlanetDirectoryPro=A_TASTY_TREAT; Path=/; Secure; HttpOnly";
+    public static final String AUTHENTICATE_SESSION_COOKE = "Idam.Session=A_TASTY_TREAT; Path=/; Secure; HttpOnly";
 
     //Responses
     public static final String PASSWORD_BLACKLISTED_RESPONSE = "{\"code\":\"PASSWORD_BLACKLISTED\"}";
