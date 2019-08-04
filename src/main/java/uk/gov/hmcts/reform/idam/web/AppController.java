@@ -293,7 +293,6 @@ public class AppController {
                     responseUrl = spiService.authorize(params, cookie);
                 }
                 if (responseUrl != null && !responseUrl.contains("error")) {
-                    log.info("COOKIE IS THIS " + makeCookieSecure(cookie));
                     response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
                     nextPage = "redirect:" + responseUrl;
                 } else {
