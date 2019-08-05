@@ -30,7 +30,7 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.see('Create an account');
 
     I.click("Continue");
-
+    I.wait(5);
     I.waitForText('Information is missing or invalid', 20, 'h2');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
@@ -53,6 +53,7 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.see('Your email address is invalid');
     I.see('Sign in to your account.');
     I.click('Sign in to your account.');
+    I.wait(5);
     I.waitForText('Sign in', 20, 'h1');
     I.see('Sign in');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -91,6 +92,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('lastName', 'User');
     I.fillField('email', email);
     I.click("Continue");
+    I.wait(5);
     I.waitForText('Check your email', 20, 'h1');
     I.wait(2);
     let userActivationUrl = await I.extractUrl(email);
@@ -100,6 +102,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('#password1', 'Passw0rd1234');
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
+    I.wait(5);
     I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
@@ -109,6 +112,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(5);
     I.waitForText('https://idam.testservice.gov.uk/');
     I.see('code=');
     I.dontSee('error=');

@@ -50,7 +50,9 @@ return Promise.all([
      I.fillField('#username', citizenEmail);
      I.scrollPageToBottom();
      I.click('Continue');
+     I.wait(5);
      I.waitForText('Check your email', 20, 'h1');
+     I.wait(10);
      var url = await I.extractUrl(citizenEmail);
      if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
@@ -60,6 +62,7 @@ return Promise.all([
      I.fillField('#password1', password);
      I.fillField('#password2', password);
      I.click('Continue');
+     I.wait(5);
      I.waitForText('Account created', 60, 'h1');
      I.see('You can now sign in to your account.');
  });

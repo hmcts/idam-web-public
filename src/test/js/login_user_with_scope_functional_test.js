@@ -78,12 +78,14 @@ Scenario('@functional As a service, I can request a custom scope on PIN user log
     let accessToken = await I.getAccessToken(code, serviceName, serviceRedirectUri, serviceClientSecret);
 
     I.amOnPage(TestData.WEB_PUBLIC_URL + '/register?client_id=' + serviceName + '&redirect_uri=' + serviceRedirectUri + '&scope=' + customScope + '&jwt=' + accessToken);
+    I.wait(5);
     I.waitForText('Sign in or create an account', 30, 'h1');
     I.fillField('#username', respondentEmail);
     I.fillField('#password', citizenPassword);
 
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(5);
     I.waitForText(serviceRedirectUri);
     I.see('code=');
 
