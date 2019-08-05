@@ -98,6 +98,7 @@ Scenario('@functional As a service, I can request a custom scope on PIN user log
     let userInfo = await I.retry({retries:3, minTimeout:10000}).getUserInfo(accessToken);
     expect(userInfo.roles).to.deep.equalInAnyOrder([ pinUserRole, citizenRole, dynamicRoleNameForPinUser ]);
 
+    I.wait(5);
     I.resetRequestInterception();
 
 })

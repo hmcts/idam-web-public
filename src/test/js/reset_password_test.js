@@ -51,7 +51,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(2);
+    I.wait(5);
     var resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -63,6 +63,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.waitForText('Your password has been changed', 20, 'h1');
     I.see('You can now sign in with your new password.')
     I.amOnPage(loginPage);
+    I.wait(5);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', citizenEmail);
     I.fillField('#password', 'Passw0rd1234');
@@ -70,6 +71,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.click('Sign in');
     I.wait(5);
     I.waitForText('https://idam.testservice.gov.uk/');
+    I.wait(5)
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
@@ -87,14 +89,16 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.click('Submit');
     I.wait(5);
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(2);
+    I.wait(5);
     var resetPasswordUrl = await I.extractUrl(plusCitizenEmail);
     I.amOnPage(resetPasswordUrl);
+    I.wait(5);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', 'Passw0rd1234');
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
+    I.wait(5);
     I.waitForText('Your password has been changed', 20, 'h1');
     I.see('You can now sign in with your new password.')
     I.amOnPage(loginPage);
@@ -105,6 +109,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.click('Sign in');
     I.wait(5);
     I.waitForText('https://idam.testservice.gov.uk/');
+    I.wait(5);
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
@@ -139,8 +144,9 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.fillField('password1', 'Lincoln1');
     I.fillField('password2', 'Lincoln1');
     I.click('Continue');
-    I.wait(2);
+    I.wait(5);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.wait(5);
     I.see("This password is used often and is not secure. Create a more secure password");
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
