@@ -90,12 +90,16 @@ Scenario('@functional As a service, I can request a custom scope on PIN user log
     I.see('code=');
 
     let pageSource = await I.grabSource();
+    I.wait(5);
     code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     accessToken = await I.getAccessToken(code, serviceName, serviceRedirectUri, serviceClientSecret);
+    I.wait(5);
 
     await I.grantRoleToUser(dynamicRoleNameForPinUser, accessToken);
+    I.wait(5);
 
     let userInfo = await I.retry({retries:3, minTimeout:10000}).getUserInfo(accessToken);
+    I.wait(5);
     expect(userInfo.roles).to.deep.equalInAnyOrder([ pinUserRole, citizenRole, dynamicRoleNameForPinUser ]);
 
     I.wait(5);
