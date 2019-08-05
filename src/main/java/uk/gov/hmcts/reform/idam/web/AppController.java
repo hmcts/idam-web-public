@@ -189,7 +189,7 @@ public class AppController {
         return new RedirectView("/" + LOGIN_VIEW + "?logout");
     }
 
-    @GetMapping
+    @GetMapping(value = "/passwordReset")
     public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
         return this.passwordReset(token, code);
     }
