@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.filters.RemoteIpFilter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -184,17 +184,22 @@ public class AppController {
     /**
      * @should redirect to login view
      */
-    @RequestMapping("/logout")
+    @GetMapping("/logout")
     public RedirectView logout(final Map<String, Object> model) {
         return new RedirectView("/" + LOGIN_VIEW + "?logout");
+    }
+
+    @GetMapping(value = "/passwordReset")
+    public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
+        return this.passwordReset(token, code);
     }
 
     /**
      * @should redirect to reset password page if token is valid
      * @should redirect to token expired page if token is invalid
      */
-    @RequestMapping("/passwordReset")
-    public String passwordReset(@RequestParam("action") String action, @RequestParam("token") String token, @RequestParam("code") String code) {
+    @PostMapping(value = "/passwordReset")
+    public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
         String nextPage = RESETPASSWORD_VIEW;
         try {
             spiService.validateResetPasswordToken(token, code);
@@ -207,9 +212,8 @@ public class AppController {
     /**
      * @should put in model correct data and return forgot password view
      */
-    @RequestMapping("/reset/forgotpassword")
+    @GetMapping("/reset/forgotpassword")
     public String resetForgotPassword(@ModelAttribute("forgotPasswordCommand") ForgotPasswordRequest forgotPasswordRequest) {
-
         return FORGOTPASSWORD_VIEW;
     }
 
