@@ -42,6 +42,7 @@ public class TestConstants {
     public static final String DETAILS_ENDPOINT = "details";
     public static final String SERVICES_ENDPOINT = "services";
     public static final String TACTICAL_ACTIVATE_ENDPOINT = "/activate";
+    public static final String TACTICAL_RESET_ENDPOINT = "/reset";
     public static final String HEALTH_ENDPOINT = "health";
 
     //uris
