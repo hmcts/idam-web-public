@@ -14,9 +14,10 @@ Scenario('@smoke after forgot password you do not see create an account options 
   I.waitForText('Sign in', 20, 'h1');
   I.click('Forgotten password?');
   I.waitInUrl('/reset/forgotpassword', 180);
+  I.waitForElement('#email', 30);
   I.fillField('#email', 'resetpasswordtest@mailtest.gov.uk');
   I.click('Submit');
   I.waitInUrl('reset/doForgotPassword', 180);
   I.waitForText('Check your email', 20, 'h1');
-  I.see('If you have entered an email address that is not connected with an account, you will not receive an email. You will need to contact us to create an account');
+  I.waitForText('If you have entered an email address that is not connected with an account, you will not receive an email. You will need to contact us to create an account', 20);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

@@ -781,7 +781,7 @@ public class AppControllerTest {
 
     /**
      * @verifies redirect to reset password page if token is valid
-     * @see AppController#passwordReset(String, String, String)
+     * @see #passwordReset(String, String)
      */
     @Test public void passwordReset_shouldRedirectToResetPasswordPageIfTokenIsValid() throws Exception {
 
@@ -799,7 +799,7 @@ public class AppControllerTest {
 
     /**
      * @verifies redirect to token expired page if token is invalid
-     * @see AppController#passwordReset(String, String, String)
+     * @see #passwordReset(String, String)
      */
     @Test public void passwordReset_shouldRedirectToTokenExpiredPageIfTokenIsInvalid() throws Exception {
 

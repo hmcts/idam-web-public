@@ -31,11 +31,13 @@ allprojects  {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.5.18'
+  def idamBomVersion = '1.5.21'
 
   ext['tomcat.version'] = '9.0.22'
   ext['jackson.version'] = '2.9.9'
-
+  ext['applicationinsights.version'] = '2.4.0'
+  ext['applicationinsights.spring-boot-starter.version'] = '2.4.0'
+  
   dependencyManagement {
     imports {
       mavenBom "uk.gov.hmcts.reform.idam:idam-bom:${idamBomVersion}"
@@ -73,7 +75,9 @@ allprojects  {
       exclude(module: 'rxnetty')
     }
     compile group: 'org.springframework.security', name: 'spring-security-taglibs'
-    compile group: 'org.projectlombok', name: 'lombok'
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    
     compile group: 'javax.servlet', name: 'jstl'
     compile group: 'javax.json', name: 'javax.json-api'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9.1'
@@ -91,6 +95,8 @@ allprojects  {
     compile group: 'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: '0.5'
 
     // TODO mockito version is not correctly resolved from IdAM BOM. Remove version when this is fixed
+    testCompileOnly("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.8.9'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-devtools'
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
