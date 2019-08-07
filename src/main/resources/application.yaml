@@ -51,6 +51,7 @@ spring:
 
 authentication:
   useOAuth2: true
+  secureCookie: true
 
 strategic:
   service:
