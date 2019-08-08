@@ -105,8 +105,4 @@ withPipeline(type, product, component) {
             reportName           : "IDAM Web Public E2E functional tests result"
         ]
     }
-    
-    after('smoketest:idam-demo-staging') {
-      sh "./gradlew --no-daemon --init-script init.gradle --info --rerun-tasks functional"
-    }
 }
