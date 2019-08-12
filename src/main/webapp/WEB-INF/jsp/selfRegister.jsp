@@ -24,14 +24,28 @@
                         <c:if test="${not empty errors.getFieldError('firstName')}">
                             <li>
                                 <a href="#${errors.getFieldError('firstName').field}">
-                                    <spring:message code="public.common.error.invalid.first.name"/>
+                                    <c:choose>
+                                        <c:when test="${empty errors.getFieldError('firstName').rejectedValue}">
+                                            <spring:message code="public.common.error.empty.first.name" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <spring:message code="public.common.error.invalid.first.name"/>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </a>
                             </li>
                         </c:if>
                         <c:if test="${not empty errors.getFieldError('lastName')}">
                             <li>
                                 <a href="#${errors.getFieldError('lastName').field}">
-                                    <spring:message code="public.common.error.invalid.last.name"/>
+                                    <c:choose>
+                                        <c:when test="${empty errors.getFieldError('lastName').rejectedValue}">
+                                            <spring:message code="public.common.error.empty.last.name" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <spring:message code="public.common.error.invalid.last.name"/>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </a>
                             </li>
                         </c:if>
@@ -43,7 +57,7 @@
                                             <spring:message code="public.common.error.enter.username" />
                                         </c:when>
                                         <c:otherwise>
-                                            <spring:message code="Email.selfRegisterCommand.email"/>
+                                            <spring:message code="public.common.error.invalid.username"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </a>

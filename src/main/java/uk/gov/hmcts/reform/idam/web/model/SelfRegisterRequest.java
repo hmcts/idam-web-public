@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.idam.web.model;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,12 +17,17 @@ public class SelfRegisterRequest {
      */
     private static final String BLACKLISTED_CHARACTERS = "\\*\\(\\)!/;:@#£\\$%=\\+";
 
-    @Size(min = 2)
-    @Pattern(regexp = "^[^" + BLACKLISTED_CHARACTERS + "]*$")
+    /**
+     * Matches empty strings or strings longer than 1 character that don't include blacklisted characters nor digits.
+     */
+    private static final String NAME_REGEX_PATTERN = "^(|[^" + BLACKLISTED_CHARACTERS + "\\d]{2,})$";
+
+    @NotEmpty
+    @Pattern(regexp = NAME_REGEX_PATTERN)
     private String firstName;
 
-    @Size(min = 2)
-    @Pattern(regexp = "^[^" + BLACKLISTED_CHARACTERS + "]*$")
+    @NotEmpty
+    @Pattern(regexp = NAME_REGEX_PATTERN)
     private String lastName;
 
     @Email
