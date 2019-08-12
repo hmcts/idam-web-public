@@ -21,20 +21,34 @@
                         <spring:message code="public.common.error.please.fix.following"/>
                     </p>
                     <ul class="error-summary-list">
-                        <c:forEach var="error" items="${errors.fieldErrors}">
+                        <c:if test="${not empty errors.getFieldError('firstName')}">
                             <li>
-                                <a href="#${error.field}">
+                                <a href="#${errors.getFieldError('firstName').field}">
+                                    <spring:message code="public.common.error.invalid.first.name"/>
+                                </a>
+                            </li>
+                        </c:if>
+                        <c:if test="${not empty errors.getFieldError('lastName')}">
+                            <li>
+                                <a href="#${errors.getFieldError('lastName').field}">
+                                    <spring:message code="public.common.error.invalid.last.name"/>
+                                </a>
+                            </li>
+                        </c:if>
+                        <c:if test="${not empty errors.getFieldError('email')}">
+                            <li>
+                                <a href="#${errors.getFieldError('email').field}">
                                     <c:choose>
-                                        <c:when test="${error.field == 'email' && empty error.rejectedValue}">
+                                        <c:when test="${empty errors.getFieldError('email').rejectedValue}">
                                             <spring:message code="public.common.error.enter.username" />
                                         </c:when>
                                         <c:otherwise>
-                                            <spring:message message="${error}"/>
+                                            <spring:message code="Email.selfRegisterCommand.email"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </a>
                             </li>
-                        </c:forEach>
+                        </c:if>
                     </ul>
                 </div>
             </spring:hasBindErrors>
@@ -52,7 +66,13 @@
                                         <script>
                                             sendEvent('Self Register', 'Error', 'First name is empty');
                                         </script>
-                                        <span class="error-message"><spring:message code="public.common.error.empty.first.name"/></span>
+                                        <span class="error-message">
+                                            <ul>
+                                                <c:forEach var="error" items="${status.errorCodes}">
+                                                    <li><spring:message code="${error}${'.selfRegisterCommand.firstName'}"></spring:message></li>
+                                                </c:forEach>
+                                            </ul>
+                                        </span>
                                     </c:if>
                                 </label>
                                 <form:input
@@ -72,7 +92,13 @@
                                         <script>
                                             sendEvent('Self Register', 'Error', 'Last name is empty');
                                         </script>
-                                        <span class="error-message"><spring:message code="public.common.error.empty.last.name" /></span>
+                                        <span class="error-message">
+                                            <ul>
+                                                <c:forEach var="error" items="${status.errorCodes}">
+                                                    <li><spring:message code="${error}${'.selfRegisterCommand.lastName'}"></spring:message></li>
+                                                </c:forEach>
+                                            </ul>
+                                        </span>
                                     </c:if>
                                 </label>
                                 <form:input
