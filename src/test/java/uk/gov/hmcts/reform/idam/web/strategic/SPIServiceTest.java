@@ -593,7 +593,7 @@ public class SPIServiceTest {
      */
     @Test
     public void authenticate_shouldReturnNullIfNoCookieIsFound() {
-        String cookie = "IPlanetDirectoryPro=1234567890";
+        String cookie = "Idam.Session=1234567890";
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
             eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
             .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie).build());

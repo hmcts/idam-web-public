@@ -33,6 +33,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     enableDockerBuild()
+    enableSlackNotifications('#idam_tech')
 
     after('test') {
         publishHTML target: [
@@ -104,13 +105,5 @@ withPipeline(type, product, component) {
             reportFiles          : "idam-web-public-e2e-result.html",
             reportName           : "IDAM Web Public E2E functional tests result"
         ]
-    }
-    
-    after('smoketest:idam-demo-staging') {
-      sh "./gradlew --no-daemon --init-script init.gradle --info --rerun-tasks functional"
-    }
-    
-    before('buildinfra:idam-prod') {
-        error('Stopping pipeline before Prod stages')
     }
 }

@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.filters.RemoteIpFilter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -51,7 +50,42 @@ import java.util.Optional;
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_SUB_MSG;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIREDTOKEN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
 
 @Slf4j
 @Controller
@@ -65,6 +99,9 @@ public class AppController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Value("${authentication.secureCookie}")
+    private Boolean useSecureCookie;
 
     /**
      * @should return index view
@@ -182,19 +219,27 @@ public class AppController {
     }
 
     /**
-     * @should redirect to login view
+     * @should redirect to logout view
      */
-    @RequestMapping("/logout")
+    @GetMapping("/logout")
     public RedirectView logout(final Map<String, Object> model) {
         return new RedirectView("/" + LOGIN_VIEW + "?logout");
+    }
+
+    /**
+     * @should redirect to passwordReset view
+     */
+    @GetMapping(value = "/passwordReset")
+    public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
+        return this.passwordReset(token, code);
     }
 
     /**
      * @should redirect to reset password page if token is valid
      * @should redirect to token expired page if token is invalid
      */
-    @RequestMapping("/passwordReset")
-    public String passwordReset(@RequestParam("action") String action, @RequestParam("token") String token, @RequestParam("code") String code) {
+    @PostMapping(value = "/passwordReset")
+    public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
         String nextPage = RESETPASSWORD_VIEW;
         try {
             spiService.validateResetPasswordToken(token, code);
@@ -207,9 +252,8 @@ public class AppController {
     /**
      * @should put in model correct data and return forgot password view
      */
-    @RequestMapping("/reset/forgotpassword")
+    @GetMapping("/reset/forgotpassword")
     public String resetForgotPassword(@ModelAttribute("forgotPasswordCommand") ForgotPasswordRequest forgotPasswordRequest) {
-
         return FORGOTPASSWORD_VIEW;
     }
 
@@ -286,7 +330,7 @@ public class AppController {
                     responseUrl = spiService.authorize(params, cookie);
                 }
                 if (responseUrl != null && !responseUrl.contains("error")) {
-                    response.addHeader(HttpHeaders.SET_COOKIE, cookie);
+                    response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
                     nextPage = "redirect:" + responseUrl;
                 } else {
                     log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
@@ -304,6 +348,13 @@ public class AppController {
             }
         }
         return nextPage;
+    }
+
+    private String makeCookieSecure(String cookie) {
+        if (useSecureCookie) {
+            return cookie + "; Path=/; Secure; HttpOnly";
+        }
+        return cookie + "; Path=/; HttpOnly";
     }
 
     private void getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {
@@ -424,6 +475,7 @@ public class AppController {
      * @should call forget password with the right parameters
      * @should not call forget password if there are validation errors
      * @should return forgot password success view when there are no errors
+     * @should return forgot password success view when there are no errors and service does not have self registration enabled
      * @should return forgot password view with correct model data when there are validation errors
      * @should return error view when there is an unexpected error
      */
@@ -459,6 +511,7 @@ public class AppController {
      * @should put in model the correct error code if HttpClientErrorException with http 412 is thrown by service then return reset password view.
      * @should put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password is blacklisted then return reset password view.
      * @should put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password is previously used then return reset password view.
+     * @should not put redirect uri in model if service returns http 200 and redirect uri is not present in response then return reset password success view
      * @should redirect to expired token if HttpClientErrorException with http 404 is thrown by service.
      * @should return reset password view if request validation fails.
      */
@@ -563,6 +616,9 @@ public class AppController {
         return TACTICAL_ACTIVATE_VIEW;
     }
 
+    /**
+     * @should return tacticalReset
+     */
     @GetMapping("/reset")
     public String tacticalResetPwd() {
         return TACTICAL_RESET_PWD_VIEW;
