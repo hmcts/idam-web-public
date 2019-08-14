@@ -77,13 +77,13 @@
                                 <label for="firstName">
                                     <span class="form-label-bold"><spring:message code="public.self.register.first.name.label"/></span>
                                     <c:if test="${status.error}">
-                                        <script>
-                                            sendEvent('Self Register', 'Error', 'First name is empty');
-                                        </script>
                                         <span class="error-message">
                                             <ul>
                                                 <c:forEach var="error" items="${status.errorCodes}">
                                                     <li><spring:message code="${error}${'.selfRegisterCommand.firstName'}"></spring:message></li>
+                                                    <script>
+                                                        sendEvent('Self Register', 'Error', 'First name error code: ${status.errorCode}');
+                                                    </script>
                                                 </c:forEach>
                                             </ul>
                                         </span>
@@ -103,13 +103,13 @@
                                 <label for="lastName">
                                     <span class="form-label-bold"><spring:message code="public.self.register.last.name.label"/></span>
                                     <c:if test="${status.error}">
-                                        <script>
-                                            sendEvent('Self Register', 'Error', 'Last name is empty');
-                                        </script>
                                         <span class="error-message">
                                             <ul>
                                                 <c:forEach var="error" items="${status.errorCodes}">
                                                     <li><spring:message code="${error}${'.selfRegisterCommand.lastName'}"></spring:message></li>
+                                                    <script>
+                                                        sendEvent('Self Register', 'Error', 'Last name error code: ${status.errorCode}');
+                                                    </script>
                                                 </c:forEach>
                                             </ul>
                                         </span>

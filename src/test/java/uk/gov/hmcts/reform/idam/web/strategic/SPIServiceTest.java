@@ -577,8 +577,8 @@ public class SPIServiceTest {
 
     private RegisterUserRequest aRegisterUserRequest() {
         RegisterUserRequest registerUserRequest = new RegisterUserRequest();
-        registerUserRequest.setClient_id(SERVICE_OAUTH2_CLIENT_ID);
-        registerUserRequest.setRedirect_uri(SERVICE_OAUTH2_REDIRECT_URI);
+        registerUserRequest.setClientId(SERVICE_OAUTH2_CLIENT_ID);
+        registerUserRequest.setRedirectUri(SERVICE_OAUTH2_REDIRECT_URI);
         registerUserRequest.setFirstName(USER_FIRST_NAME);
         registerUserRequest.setLastName(USER_LAST_NAME);
         registerUserRequest.setJwt(JWT);

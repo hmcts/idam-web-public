@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -291,8 +290,8 @@ public class SPIService {
         request.setFirstName(registerUserRequest.getFirstName());
         request.setLastName(registerUserRequest.getLastName());
         request.setEmail(registerUserRequest.getUsername());
-        request.setClientId(registerUserRequest.getClient_id());
-        request.setRedirectUri(registerUserRequest.getRedirect_uri());
+        request.setClientId(registerUserRequest.getClientId());
+        request.setRedirectUri(registerUserRequest.getRedirectUri());
         request.setState(registerUserRequest.getState());
 
         HttpEntity<uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);

@@ -4,32 +4,19 @@ import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import uk.gov.hmcts.reform.idam.web.validation.Email;
 
-/**
- * @author Ivano
- */
 @Data
-@EqualsAndHashCode
-public class RegisterUserRequest {
-
-    @NotEmpty
-    private String firstName;
-
-    @NotEmpty
-    private String lastName;
-
-    @Email
-    private String username;
+@EqualsAndHashCode(callSuper = true)
+public class RegisterUserRequest extends AbstractRegisterRequest  {
 
     @NotEmpty
     private String jwt;
 
-    @NotEmpty
-    private String redirect_uri;
+    public String getUsername() {
+        return super.getEmail();
+    }
 
-    @NotEmpty
-    private String client_id;
-
-    private String state;
+    public void setUsername(String username) {
+        super.setEmail(username);
+    }
 }
