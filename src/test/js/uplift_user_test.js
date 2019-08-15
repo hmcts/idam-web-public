@@ -49,7 +49,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.waitForText('Information is missing or invalid', 20, 'h2');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
-    I.see('You have not entered your email address, FAIL on purpose to get the screenshot');
+    I.see('You have not entered your email address');
     I.fillField('firstName', 'L');
     I.fillField('lastName', '@@');
     I.click('Continue');
