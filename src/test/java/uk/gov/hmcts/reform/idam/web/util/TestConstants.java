@@ -168,7 +168,8 @@ public class TestConstants {
     public static final String HAS_LOGIN_FAILED_RESPONSE = "{\"code\":\"HAS_LOGIN_FAILED\"}";
     public static final String ERR_LOCKED_FAILED_RESPONSE = "{\"code\":\"ACCOUNT_LOCKED\"}";
     public static final String ERR_SUSPENDED_RESPONSE = "{\"code\":\"ACCOUNT_SUSPENDED\"}";
-    public static final String SELF_REGISTRATION_RESPONSE = "{\"firstName\":\"" + USER_FIRST_NAME + "\",\"lastName\":\"" + USER_LAST_NAME + "\",\"state\":\""  + STATE +  "\",\"email\":\"" + USER_EMAIL + "\",\"redirectUri\":\"" + REDIRECT_URI + "\",\"clientId\":\"clientId\"}";
+    public static final String SELF_REGISTRATION_RESPONSE = "{\"firstName\":\"" + USER_FIRST_NAME + "\",\"lastName\":\"" + USER_LAST_NAME + "\",\"email\":\"" + USER_EMAIL + "\",\"redirectUri\":\"" + REDIRECT_URI + "\",\"clientId\":\"clientId\",\"state\":\"" + STATE + "\"}";
+
 
     //Requests
     public static final String ACTIVATE_USER_REQUEST = "{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + PASSWORD_ONE + "\"}";
