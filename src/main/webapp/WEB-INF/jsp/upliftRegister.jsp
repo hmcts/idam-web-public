@@ -45,11 +45,11 @@
                             </a>
                         </li>
                     </c:if>
-                    <c:if test="${not empty errors.getFieldError('email')}">
+                    <c:if test="${not empty errors.getFieldError('username')}">
                         <li>
-                            <a href="#${errors.getFieldError('email').field}">
+                            <a href="#${errors.getFieldError('username').field}">
                                 <c:choose>
-                                    <c:when test="${empty errors.getFieldError('email').rejectedValue}">
+                                    <c:when test="${empty errors.getFieldError('username').rejectedValue}">
                                         <spring:message code="public.common.error.enter.username" />
                                     </c:when>
                                     <c:otherwise>
@@ -127,9 +127,9 @@
                         </div>
                     </spring:bind>
 
-                    <spring:bind path="email">
+                    <spring:bind path="username">
                         <div class="form-group ${status.error ? 'form-group-error' : ''}">
-                            <label for="email">
+                            <label for="username">
                                 <span class="form-label-bold"><spring:message code="public.common.email.address.label"/></span>
                                 <c:if test="${status.error && not empty status.value}">
                                     <script>
@@ -147,8 +147,8 @@
                             <form:input
                                 path="username"
                                 class="form-control form-control-3-4 ${status.error ? 'form-control-error' : ''}"
-                                id="email"
-                                value="${email}"
+                                id="username"
+                                value="${username}"
                                 autocomplete="off"/>
                         </div>
                     </spring:bind>

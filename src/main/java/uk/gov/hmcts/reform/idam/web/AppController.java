@@ -187,7 +187,7 @@ public class AppController {
         if (bindingResult.hasErrors()) {
             ErrorHelper.showLoginError("Information is missing or invalid",
                 "Please fix the following",
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
             return UPLIFT_REGISTER_VIEW;
         }
@@ -195,8 +195,8 @@ public class AppController {
         try {
             spiService.registerUser(request);
             model.put(EMAIL, request.getUsername());
-            model.put(REDIRECTURI, request.getRedirectUri());
-            model.put(CLIENTID, request.getClientId());
+            model.put(REDIRECTURI, request.getRedirect_uri());
+            model.put(CLIENTID, request.getClient_id());
             model.put(JWT, request.getJwt());
             model.put(STATE, request.getState());
             return USERCREATED_VIEW;
@@ -208,7 +208,7 @@ public class AppController {
 
             ErrorHelper.showLoginError("Sorry, there was an error",
                 String.format("Please try your action again. %s", msg),
-                request.getRedirectUri(),
+                request.getRedirect_uri(),
                 model);
             // We use spring:hasBindErrors so make sure the 'showLoginError' is rendered to the page
             // by adding a binding error

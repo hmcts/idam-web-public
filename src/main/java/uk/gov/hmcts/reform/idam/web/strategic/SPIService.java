@@ -290,8 +290,8 @@ public class SPIService {
         request.setFirstName(registerUserRequest.getFirstName());
         request.setLastName(registerUserRequest.getLastName());
         request.setEmail(registerUserRequest.getUsername());
-        request.setClientId(registerUserRequest.getClientId());
-        request.setRedirectUri(registerUserRequest.getRedirectUri());
+        request.setClientId(registerUserRequest.getClient_id());
+        request.setRedirectUri(registerUserRequest.getRedirect_uri());
         request.setState(registerUserRequest.getState());
 
         HttpEntity<uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);

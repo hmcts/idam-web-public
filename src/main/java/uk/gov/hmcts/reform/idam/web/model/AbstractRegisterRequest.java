@@ -30,12 +30,5 @@ abstract class AbstractRegisterRequest {
     @Pattern(regexp = NAME_REGEX_PATTERN)
     private String lastName;
 
-    @Email
-    private String email;
-
-    private String redirectUri;
-
-    private String clientId;
-
     private String state;
 }

@@ -226,8 +226,8 @@ public class AppControllerTest {
 
     private RegisterUserRequest aRegisterUserRequest() {
         RegisterUserRequest registerUserRequest = new RegisterUserRequest();
-        registerUserRequest.setClientId(CLIENT_ID);
-        registerUserRequest.setRedirectUri(REDIRECT_URI);
+        registerUserRequest.setClient_id(CLIENT_ID);
+        registerUserRequest.setRedirect_uri(REDIRECT_URI);
         registerUserRequest.setFirstName(USER_FIRST_NAME);
         registerUserRequest.setLastName(USER_LAST_NAME);
         registerUserRequest.setJwt(JWT);
