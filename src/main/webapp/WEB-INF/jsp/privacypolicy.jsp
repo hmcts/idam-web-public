@@ -20,6 +20,7 @@
                     <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-3" aria-labelledby="ui-id-3" aria-selected="false" aria-expanded="false"><a href="#tabs-3" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-3">Apply for divorce service</a></li>
                     <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-5" aria-labelledby="ui-id-4" aria-selected="false" aria-expanded="false"><a href="#tabs-5" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-4">Apply for probate service</a></li>
                     <li role="tab" tabindex="0" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-2" aria-labelledby="ui-id-5" aria-selected="true" aria-expanded="true"><a href="#tabs-2" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-5">Money claims service</a></li>
+                    <li role="tab" tabindex="0" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-2" aria-labelledby="ui-id-5" aria-selected="true" aria-expanded="true"><a href="#tabs-6" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-6">Family public law service</a></li>
                 </ol>
                 <hr>
 
@@ -292,6 +293,54 @@
                     <h2 class="heading-medium">After you submit your information</h2>
 
                     <p>Grants of probate are stored as public records. However, your email address and telephone number won’t be publicly available.</p>
+                </div>
+                <div id="tabs-6" aria-labelledby="ui-id-3" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
+                    <h2 class="heading-large">Using the family public law service</h2>
+                    <h2 class="heading-medium">What is the personal data that we collect</h2>
+                    <p>When you use the Family Public Law service, we collect the following personal data:</p>
+                    <ul class="list list-bullet">
+                        <li>the applicant's name, address, job role and contact details</li>
+                        <li>the Local Authority solicitor's name, address and contact details</li>
+                        <li>the social worker's name, address and contact details</li>
+                        <li>name, date of birth, gender, and address of children in the case</li>
+                        <li>name, date of birth, gender, address and contact details of respondents in the case</li>
+                        <li>name, address and contact details of other parties in the case, for example witnesses</li>
+                        <li>details of any disability or litigation capacity (ability to understand proceedings) of any child, respondent or other party in the case</li>
+                        <li>details of other court cases respondents or children in the case have been involved in</li>
+                        <li>evidence supporting the case</li>
+                    </ul>
+                    <p>We also collect</p>
+                    <ul class="list list-bullet">
+                        <li>information that tells us if you open an email from us, or click on a link in an email</li>
+                        <li>information about how you use this service, like your IP address and the web browser you use. We do this by <a href="/cookies">using cookies</a></li>
+                    </ul>
+                    <h2 class="heading-medium">What we do with your data</h2>
+                    <p>We collect personal data to:</p>
+                    <ul class="list list-bullet">
+                        <li>process the application</li>
+                        <li>meet legal requirements</li>
+                        <li>make improvements to this service</li>
+                    </ul>
+                    <p>Personal data is processed by our staff in the UK and the data is stored in the UK.</p>
+                    <p>Data relating to a case is stored until the youngest child reaches 18 years old, unless the case results in adoption where the data is stored for 100 years.</p>
+                    <p>We use GOV.UK Notify to send emails. These are processed within the EEA until the point where emails are handed over to your email provider.</p>
+                    <h2 class="heading-medium">Your rights</h2>
+                    <p>You can ask:</p>
+                    <ul class="list list-bullet">
+                        <li>to see the personal data that we hold on you</li>
+                        <li>to have the personal data corrected</li>
+                        <li>to have the personal data removed or deleted (this will depend on the circumstances, for example if you decide not to continue your claim or application)</li>
+                        <li>that access to the personal data is restricted (for example, you can ask to have your data stored for longer and not automatically deleted)</li>
+                    </ul>
+                    <p>Email <a href="mailto:data.access@justice.gov.uk">data.access@justice.gov.uk</a> if you want to see any of this information.</p>
+                    <h2 class="heading-medium">Sharing your data</h2>
+                    <p>We allow Google to use or share our website analytics data, find out about this in our <a href="/terms-and-conditions">terms and conditions</a>.	</p>
+                    <h2 class="heading-medium">Receiving notifications</h2>
+                    <p>As part of your application we will send you notifications to let you know how your application is proceeding.</p>
+                    <p>Email <a href="mailto:dcd-familypubliclawservicedesk@hmcts.net">dcd-familypubliclawservicedesk@hmcts.net</a> if you want to cancel email updates.</p>
+                    <h2 class="heading-medium">How to complain</h2>
+                    <p>If you want to complain about how we have handled your personal data, email <a href="mailto:data.compliance@justice.gov.uk">data.compliance@justice.gov.uk</a>.</p>
+                    <p>You can complain to the <a href="https://ico.org.uk/global/contact-us">Information Commissioner’s Office</a> if you are unsatisfied with our response or believe we are not legally processing your personal data.</p>
                 </div>
             </div>
         </div>
