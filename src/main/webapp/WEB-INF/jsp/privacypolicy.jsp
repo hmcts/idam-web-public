@@ -27,13 +27,12 @@
                 <div id="tabs-1" aria-labelledby="ui-id-1" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
 
                     <h2 class="heading-large" id="overview">Overview</h2>
+                    <p>This privacy policy explains why we collect your personal data, what we do with it, and your rights. More information about using this service is in the <a href="/terms-and-conditions">terms and conditions</a>.</p>
 
-                    <p>This privacy policy explains why we collect your personal data and what we do with it. It also explains your rights and how to enforce them.</p>
                     <h2 class="heading-medium">Who manages this service</h2>
-                    <p>This service is managed by Her Majesty’s Courts and Tribunals Service (HMCTS), which is an executive agency of the Ministry of Justice (MoJ).</p>
-                    <p>The MoJ is known as the data controller for data protection purposes. The  <a href="https://www.gov.uk/government/organisations/ministry-of-justice/about/personal-information-charter">MoJ personal information charter</a> explains how the MoJ processes personal data.</p>
-                    <p>As part of the MoJ, HMCTS is responsible for deciding how your personal data is used and for protecting the personal data you provide.</p>
-                    <p>More information about using this service is in the <a href="/terms-and-conditions">terms and conditions</a>.</p>
+                    <p>This service is managed by Her Majesty’s Courts and Tribunals Service (HMCTS) and we’re responsible for protecting the personal data you provide.</p>
+                    <p>HMCTS is an executive agency of the Ministry of Justice (MoJ). The MoJ is the data controller and their <a href="https://www.gov.uk/government/organisations/ministry-of-justice/about/personal-information-charter">personal information charter</a> explains more about how they process personal data.</p>
+                    <p>When you use this service we (HMCTS) willask you to provide some personal data.</p>
 
                     <h2 class="heading-medium">Why we collect your personal data</h2>
                     <p>We collect your personal data to:</p>
