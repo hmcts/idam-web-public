@@ -214,8 +214,14 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    generateRandomText() {
-        return Math.random().toString(36).substr(2, 5);
+    generateRandomText(stringLength = 5) {
+        let randomString = '';
+        let randomAscii;
+        for(let i = 0; i < stringLength; i++) {
+            randomAscii = Math.floor((Math.random() * 25) + 97);
+            randomString += String.fromCharCode(randomAscii)
+        }
+        return randomString
     }
 
     createUser(email, forename, role, serviceRole) {
