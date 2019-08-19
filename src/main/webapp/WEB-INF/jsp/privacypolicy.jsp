@@ -32,7 +32,7 @@
                     <h2 class="heading-medium">Who manages this service</h2>
                     <p>This service is managed by Her Majesty’s Courts and Tribunals Service (HMCTS) and we’re responsible for protecting the personal data you provide.</p>
                     <p>HMCTS is an executive agency of the Ministry of Justice (MoJ). The MoJ is the data controller and their <a href="https://www.gov.uk/government/organisations/ministry-of-justice/about/personal-information-charter">personal information charter</a> explains more about how they process personal data.</p>
-                    <p>When you use this service we (HMCTS) willask you to provide some personal data.</p>
+                    <p>When you use this service we (HMCTS) will ask you to provide some personal data.</p>
 
                     <h2 class="heading-medium">Why we collect your personal data</h2>
                     <p>We collect your personal data to:</p>
