@@ -356,6 +356,7 @@ public class AppController {
     }
 
     /**
+     * @should return a secure cookie if useSecureCookie is true
      * @should return a non-secure cookie if useSecureCookie is false
      */
     protected String makeCookieSecure(String cookie, boolean withSecureCookie) {

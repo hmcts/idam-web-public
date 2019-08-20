@@ -1490,6 +1490,16 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
     }
+
+    /**
+     * @verifies return a secure cookie if useSecureCookie is true
+     * @see AppController#makeCookieSecure(String, boolean)
+     */
+    @Test
+    public void makeCookieSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
+        AppController appController = new AppController();
+        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, true), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; Secure; HttpOnly"));
+    }
     
     /**
      * @verifies return a non-secure cookie if useSecureCookie is false
@@ -1500,4 +1510,5 @@ public class AppControllerTest {
         AppController appController = new AppController();
         assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, false), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; HttpOnly"));
     }
+
 }
