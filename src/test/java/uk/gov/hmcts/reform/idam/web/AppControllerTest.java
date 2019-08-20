@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
+import uk.gov.hmcts.reform.idam.web.util.TestConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -1487,4 +1490,25 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
     }
+
+    /**
+     * @verifies return a secure cookie if useSecureCookie is true
+     * @see AppController#makeCookieSecure(String, boolean)
+     */
+    @Test
+    public void makeCookieSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
+        AppController appController = new AppController();
+        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, true), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; Secure; HttpOnly"));
+    }
+    
+    /**
+     * @verifies return a non-secure cookie if useSecureCookie is false
+     * @see AppController#makeCookieSecure(String, boolean)
+     */
+    @Test
+    public void makeCookieSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
+        AppController appController = new AppController();
+        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, false), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; HttpOnly"));
+    }
+
 }

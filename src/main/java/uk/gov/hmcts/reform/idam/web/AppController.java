@@ -350,8 +350,17 @@ public class AppController {
         return nextPage;
     }
 
+
     private String makeCookieSecure(String cookie) {
-        if (useSecureCookie) {
+        return makeCookieSecure(cookie, useSecureCookie);
+    }
+
+    /**
+     * @should return a secure cookie if useSecureCookie is true
+     * @should return a non-secure cookie if useSecureCookie is false
+     */
+    protected String makeCookieSecure(String cookie, boolean withSecureCookie) {
+        if (withSecureCookie) {
             return cookie + "; Path=/; Secure; HttpOnly";
         }
         return cookie + "; Path=/; HttpOnly";
