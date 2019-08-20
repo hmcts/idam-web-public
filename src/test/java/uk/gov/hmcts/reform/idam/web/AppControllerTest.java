@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -1487,4 +1488,25 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
     }
+
+    /**
+     * @verifies return a secure cookie if useSecureCookie is true
+     * @see AppController#makeCookieSecure(String, boolean)
+     */
+    @Test
+    public void makeCookieSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
+        AppController appController = new AppController();
+        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, true), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; Secure; HttpOnly"));
+    }
+
+    /**
+     * @verifies return a non-secure cookie if useSecureCookie is false
+     * @see AppController#makeCookieSecure(String, boolean)
+     */
+    @Test
+    public void makeCookieSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
+        AppController appController = new AppController();
+        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, false), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; HttpOnly"));
+    }
+
 }
