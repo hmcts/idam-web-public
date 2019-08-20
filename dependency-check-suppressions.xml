@@ -111,6 +111,16 @@
         <cve>CVE-2015-2156</cve>
     </suppress>
 
+    <!-- https://github.com/jeremylong/DependencyCheck/issues/1573
+    false positive matching on name -->
+    <suppress>
+        <notes>suppress false positives matching just the netty name</notes>
+        <gav regex="true">^.*$</gav>
+        <cve>CVE-2014-3488</cve>
+        <cve>CVE-2016-4970</cve>
+        <cve>CVE-2015-2156</cve>
+    </suppress>
+
     <!-- Ignored since we are not using Spring Framework 5.0.5 -->
     <suppress>
         <notes>suppress false positives - only relevant to spring.framework 5.0.5</notes>
@@ -126,6 +136,25 @@
         <notes>suppress false positives - only relevant if mysql connector is in the classpath</notes>
         <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind.*$</gav>
         <cve>CVE-2019-12086</cve>
+    </suppress>
+
+    <!--
+    This vulnerability can only be explored if ehcache is in the application classpath,
+    hence not relevant to us.
+    -->
+    <suppress>
+        <notes>only relevant if ehcache is used</notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind.*$</gav>
+        <cve>CVE-2019-14379</cve>
+    </suppress>
+
+    <!--
+    This vulnerability can only be explored if default typing is enabled in ObjectMapper.
+    -->
+    <suppress>
+        <notes>only relevant if objectMapper.enableDefaultTyping</notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind.*$</gav>
+        <cve>CVE-2019-14439</cve>
     </suppress>
 
     <suppress>
