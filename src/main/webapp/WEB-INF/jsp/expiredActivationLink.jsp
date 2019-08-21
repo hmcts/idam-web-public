@@ -9,11 +9,14 @@
     <article class="content__body">
         <header class="page-header group">
             <h1 class="heading-large">
-                <spring:message code="public.user.activation.expired.heading" text="default"/>
+                <spring:message code="public.user.link.expired.heading"/>
             </h1>
         </header>
         <p class="lede">
-            <spring:message code="public.user.activation.expired.text" text="default"/>
+            <spring:message code="public.user.activation.expired.text.p1"/>
+        </p>
+        <p class="lede">
+            <spring:message code="public.user.activation.expired.text.p2"/>
         </p>
         <c:if test="${redirect_uri != null}">
             <p><a href="${fn:escapeXml(redirect_uri)}"><spring:message code="public.user.activation.expired.link.click.here" text=""/></a> <spring:message code="public.user.activation.expired.link.sing.into" text=""/></p>

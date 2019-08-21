@@ -1,17 +1,10 @@
 package uk.gov.hmcts.reform.idam.web;
 
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,13 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
@@ -41,6 +27,19 @@ import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_ACTIVATION_LINK_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 
 /**
  * @author Ivano
@@ -95,7 +94,7 @@ public class UserController {
             if (Objects.nonNull(activationResult)) {
                 log.info("The token {} has expired", token);
                 model.put("redirect_uri", activationResult.getRedirectUri());
-                return "expiredtoken";
+                return EXPIRED_ACTIVATION_LINK_VIEW;
             }
             model.put("token", token);
             model.put("code", code);

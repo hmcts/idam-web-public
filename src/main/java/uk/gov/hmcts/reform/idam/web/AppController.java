@@ -58,7 +58,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_SUB_MSG;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIREDTOKEN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_PASSWORD_RESET_LINK_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
@@ -118,7 +118,7 @@ public class AppController {
     @GetMapping("/expiredtoken")
     public String expiredTokenView(final Map<String, Object> model) {
 
-        return EXPIREDTOKEN_VIEW;
+        return EXPIRED_PASSWORD_RESET_LINK_VIEW;
     }
 
     /**
@@ -244,7 +244,7 @@ public class AppController {
         try {
             spiService.validateResetPasswordToken(token, code);
         } catch (Exception e) {
-            nextPage = EXPIREDTOKEN_VIEW;
+            nextPage = EXPIRED_PASSWORD_RESET_LINK_VIEW;
         }
         return nextPage;
     }
