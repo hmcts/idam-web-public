@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -56,6 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
@@ -838,6 +840,28 @@ public class AppControllerTest {
     }
 
     /**
+     * @verifies not put redirect uri in model if service returns http 200 and redirect uri is not present in response then return reset password success view
+     * @see AppController#resetPassword(String, String, String, String, String, Map)
+     */
+    @Test
+    public void resetPassword_shouldNotPutRedirectUriInModeIfServiceReturnsHttp200AndRedirectUriIsNotPresentInResponseThenReturnResetPasswordSuccessView() throws Exception {
+        given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
+        given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willReturn(ResponseEntity.ok("{}"));
+
+        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
+            .param(ACTION_PARAMETER, UNUSED)
+            .param(PASSWORD_ONE, PASSWORD_ONE)
+            .param(PASSWORD_TWO, PASSWORD_TWO)
+            .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
+            .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeDoesNotExist(REDIRECTURI))
+            .andExpect(view().name(RESET_PASSWORD_SUCCESS_VIEW));
+
+        verify(spiService).resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE));
+    }
+
+    /**
      * @verifies put in model the correct error code if HttpClientErrorException with http 412 is thrown by service then return reset password view.
      * @see AppController#resetPassword(String, String, String, String, String, Map)
      */
@@ -1001,6 +1025,11 @@ public class AppControllerTest {
     @Test
     public void forgotPassword_shouldReturnForgotPasswordSuccessViewWhenThereAreNoErrors()
         throws Exception {
+        Service service = new Service();
+        service.selfRegistrationAllowed(true);
+
+        given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.of(service));
+
         mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
             .param(USER_EMAIL_PARAMETER, USER_EMAIL)
             .param(REDIRECTURI, REDIRECT_URI)
@@ -1008,9 +1037,24 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(FORGOT_PASSWORD_SUCCESS_VIEW))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(model().attribute(CLIENTID_PARAMETER, CLIENT_ID));
+            .andExpect(model().attribute(CLIENTID_PARAMETER, CLIENT_ID))
+            .andExpect(model().attribute(SELF_REGISTRATION_ENABLED, true));
     }
 
+    /**
+     * @verifies return forgot password success view when there are no errors and service does not have self registration enabled
+     * @see AppController#forgotPassword(uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest, org.springframework.validation.BindingResult, Map)
+     */
+    @Test
+    public void forgotPassword_shouldReturnForgotPasswordSuccessViewWhenThereAreNoErrorsAndServiceDoesNotHaveSelfRegistrationEnabled() throws Exception {
+        mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
+            .param(USER_EMAIL_PARAMETER, USER_EMAIL)
+            .param(REDIRECTURI, REDIRECT_URI))
+            .andExpect(status().isOk())
+            .andExpect(view().name(FORGOT_PASSWORD_SUCCESS_VIEW))
+            .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
+            .andExpect(model().attribute(SELF_REGISTRATION_ENABLED, false));
+    }
     /**
      * @verifies return forgot password view with correct model data when there are validation errors
      * @see AppController#forgotPassword(uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest, org.springframework.validation.BindingResult, Map)
@@ -1082,14 +1126,27 @@ public class AppControllerTest {
 
 
     /**
-     * @verifies redirect to login view
+     * @verifies redirect to logout view
      * @see AppController#logout(Map)
      */
     @Test
-    public void logout_shouldRedirectToLoginView() throws Exception {
+    public void logout_shouldRedirectToLogouView() throws Exception {
         mockMvc.perform(get(LOGOUT_ENDPOINT))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(LOGIN_LOGOUT_VIEW));
+    }
+
+    /**
+     * @verifies redirect to passwordReset view
+     * @see AppController#logout(Map)
+     */
+    @Test
+    public void getPasswordReset_shouldRedirectToPasswordResetView() throws Exception {
+        given(spiService.validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE)).willReturn(ResponseEntity.ok("{irrelevant}"));
+
+        mockMvc.perform(get(PASSWORD_RESET_ENDPOINT + "?token=" + RESET_PASSWORD_TOKEN + "&code=" + RESET_PASSWORD_CODE))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(RESETPASSWORD_VIEW_NAME));
     }
 
     /**
@@ -1344,6 +1401,14 @@ public class AppControllerTest {
             .andExpect(status().isForbidden());
     }
 
+    @Test
+    public void login_shouldReturnForbiddenIfCsrfTokenIsInvalid2() throws Exception {
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf().useInvalidToken())
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(CLIENT_ID_PARAMETER, MISSING))
+            .andExpect(status().isForbidden());
+    }
+
     /**
      * @verifies return tacticalActivateExpired
      * @see AppController#tacticalActivate()
@@ -1352,6 +1417,16 @@ public class AppControllerTest {
         mockMvc.perform(get(TACTICAL_ACTIVATE_ENDPOINT))
             .andExpect(status().isOk())
             .andExpect(view().name(TACTICAL_ACTIVATE_VIEW));
+    }
+
+    /**
+     * @verifies return tacticalReset
+     * @see AppController#tacticalResetPwd() ()
+     */
+    @Test public void tacticalResetPwd_shouldReturnTacticalReset() throws Exception {
+        mockMvc.perform(get(TACTICAL_RESET_ENDPOINT))
+            .andExpect(status().isOk())
+            .andExpect(view().name(TACTICAL_RESET_PWD_VIEW));
     }
 
     /**
@@ -1413,4 +1488,25 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(ERROR_VIEW_NAME));
     }
+
+    /**
+     * @verifies return a secure cookie if useSecureCookie is true
+     * @see AppController#makeCookieSecure(String, boolean)
+     */
+    @Test
+    public void makeCookieSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
+        AppController appController = new AppController();
+        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, true), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; Secure; HttpOnly"));
+    }
+
+    /**
+     * @verifies return a non-secure cookie if useSecureCookie is false
+     * @see AppController#makeCookieSecure(String, boolean)
+     */
+    @Test
+    public void makeCookieSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
+        AppController appController = new AppController();
+        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, false), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; HttpOnly"));
+    }
+
 }

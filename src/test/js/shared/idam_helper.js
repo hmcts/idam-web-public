@@ -423,6 +423,10 @@ class IdamHelper extends Helper {
                 'Authorization': 'Bearer ' + accessToken
             }
         }).then(response => {
+            if (response.status != 200) {
+                console.log('Error getting user details', response.status);
+                throw new Error()
+            }
             return response.json();
         })
     }
