@@ -80,7 +80,7 @@ allprojects  {
     
     compile group: 'javax.servlet', name: 'jstl'
     compile group: 'javax.json', name: 'javax.json-api'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9.1'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9.3'
     compile group: 'com.nimbusds', name: 'nimbus-jose-jwt'
     compile group: 'org.apache.httpcomponents', name: 'httpclient'
     compile group: 'org.apache.httpcomponents', name: 'httpcore'
