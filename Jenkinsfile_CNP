@@ -9,16 +9,18 @@ def product = "idam"
 def component = "web-public"
 
 env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
-env.PROD_ENVIRONMENT_NAME    = 'idam-prod'
-env.DEMO_ENVIRONMENT_NAME    = 'idam-demo'
+env.PROD_ENVIRONMENT_NAME = 'idam-prod'
+env.DEMO_ENVIRONMENT_NAME = 'idam-demo'
 env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
 env.PERFTEST_ENVIRONMENT_NAME = 'idam-perftest'
 env.ITHC_ENVIRONMENT_NAME = 'idam-ithc'
 
-List<LinkedHashMap<String, Object>> secrets = [
-    secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
-    secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
-    secret('notify-api-key', 'NOTIFY_API_KEY')
+def secrets = [
+    'idam-idam-${env}': [
+        secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
+        secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
+        secret('notify-api-key', 'NOTIFY_API_KEY')
+    ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -79,7 +81,7 @@ withPipeline(type, product, component) {
             reportName           : "IDAM Web Public E2E smoke tests result"
         ]
     }
-    
+
     after('functionalTest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
 
