@@ -14,6 +14,7 @@ env.DEMO_ENVIRONMENT_NAME = 'idam-demo'
 env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
 env.PERFTEST_ENVIRONMENT_NAME = 'idam-perftest'
 env.ITHC_ENVIRONMENT_NAME = 'idam-ithc'
+env.NO_SKIP_IMG_BUILD = 'true'
 
 def secrets = [
     'idam-idam-${env}': [
