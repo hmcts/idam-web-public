@@ -16,7 +16,7 @@ locals {
   idam_api_testing_support_url = "${var.idam_api_testing_support_url_override != "" ? var.idam_api_testing_support_url_override : local.idam_api_url}"
 
   default_asp_name = "${var.product}-${var.env}"
-  asp_name = "${coalesce(var.asp_name_override, local.default_asp_name)}"
+  asp_name = "${substr(var.product, 0, 3) == "pr-" ? local.default_asp_name : coalesce(var.asp_name_override, local.default_asp_name)}"
 
   default_asp_rg = "${var.product}-${var.env}"
   asp_rg = "${coalesce(var.asp_rg_override, local.default_asp_rg)}"
