@@ -179,7 +179,7 @@ public class UserControllerTest {
      */
     @Test
     public void selfRegisterUser_shouldReturnSelfRegisterViewIfRequestMandatoryFieldsValidationFails() throws Exception {
-        mockMvc.perform(getSelfRegisterPostRequest(USER_EMAIL, USER_FIRST_NAME, null))
+        mockMvc.perform(getSelfRegisterPostRequest(USER_EMAIL, USER_FIRST_NAME, ""))
             .andExpect(status().isOk())
             .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
     }
