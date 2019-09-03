@@ -604,11 +604,6 @@
                             <td>Protects your session using encryption</td>
                             <td>When you close your browser</td>
                         </tr>
-                        <tr>
-                            <th>session_ID</th>
-                            <td>Keeps track of your answers</td>
-                            <td>When you close your browser</td>
-                        </tr>
                         </tbody>
                     </table>
                     <h3 class="heading-medium">Cookies used to identify you when you come back to the service</h3>
@@ -625,11 +620,6 @@
                         <tr>
                             <th>__auth-token</th>
                             <td>Identifies you to the service</td>
-                            <td>When you close your browser</td>
-                        </tr>
-                        <tr>
-                            <th>lang</th>
-                            <td>Used in the Money claims service to identify your prefered language</td>
                             <td>When you close your browser</td>
                         </tr>
                         </tbody>
