@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +41,7 @@ import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
+import uk.gov.hmcts.reform.idam.web.model.RegisterFormData;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -115,6 +119,7 @@ public class UserController {
     }
 
     /**
+     * @should populate the model with the users details if called with a valid form_data param
      * @should call spi service with correct parameter then return selfRegister view and  have redirect_uri, selfRegisterCommand, client_id attributes in model if self registration is allowed for service
      * @should return 404 view if clientId or redirectUri are missing
      * @should return generic error with generic error message if an exception is thrown
@@ -122,14 +127,16 @@ public class UserController {
      * @should return 404 view if self registration is not allowed
      */
 
-    @RequestMapping(path = "/selfRegister", method = RequestMethod.GET)
+    @GetMapping(path = "/selfRegister")
     public String selfRegister(
+        @RequestParam(name = "form_data", required = false) String formData,
         @RequestParam(name = "redirect_uri", required = false) String redirectUri,
         @RequestParam(name = "client_id", required = false) String clientId,
         @RequestParam(name = "state", required = false) String state,
         @RequestParam(name = "scope", required = false) String scope,
         Model model) {
 
+        parseFormData(formData, model);
         Optional<Service> service;
 
         if (StringUtils.isEmpty(clientId) || StringUtils.isEmpty(redirectUri)) {
@@ -160,6 +167,21 @@ public class UserController {
         }
 
         return PAGE_NOT_FOUND_VIEW;
+    }
+
+    private void parseFormData(String formData, Model model) {
+        if (formData != null) {
+            try {
+                final RegisterFormData data = mapper
+                    .readerFor(RegisterFormData.class)
+                    .readValue(Base64.decode(formData.getBytes()));
+                model.addAttribute("firstName", data.getFirstName());
+                model.addAttribute("lastName", data.getLastName());
+                model.addAttribute("email", data.getEmail());
+            } catch (Exception e) {
+                log.error("form_data parameter could not be parsed", e);
+            }
+        }
     }
 
     /**
