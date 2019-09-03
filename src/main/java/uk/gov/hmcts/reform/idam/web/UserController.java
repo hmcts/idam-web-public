@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Base64;
+import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -137,6 +138,7 @@ public class UserController {
         Model model) {
 
         parseFormData(formData, model);
+
         Optional<Service> service;
 
         if (StringUtils.isEmpty(clientId) || StringUtils.isEmpty(redirectUri)) {
@@ -169,15 +171,15 @@ public class UserController {
         return PAGE_NOT_FOUND_VIEW;
     }
 
-    private void parseFormData(String formData, Model model) {
+    private void parseFormData(final String formData, final Model model) {
         if (formData != null) {
             try {
                 final RegisterFormData data = mapper
                     .readerFor(RegisterFormData.class)
                     .readValue(Base64.decode(formData.getBytes()));
-                model.addAttribute("firstName", data.getFirstName());
-                model.addAttribute("lastName", data.getLastName());
-                model.addAttribute("email", data.getEmail());
+                model.addAttribute("firstName", Encode.forHtml(data.getFirstName()));
+                model.addAttribute("lastName", Encode.forHtml(data.getLastName()));
+                model.addAttribute("email", Encode.forHtml(data.getEmail()));
             } catch (Exception e) {
                 log.error("form_data parameter could not be parsed", e);
             }
