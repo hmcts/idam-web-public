@@ -1,0 +1,52 @@
+java:
+  image: 'hmctspublic.azurecr.io/idam/web-public:preview'
+  replicas: 3
+  applicationPort: 8080
+  keyVaults:
+    "idam-idam":
+      resourceGroup: idam-idam
+      excludeEnvironmentSuffix: false
+      secretRef: "kvcreds"
+      secrets:
+        - web-admin-client-secret
+  environment:
+    STRATEGIC_SERVICE_URL: http://idam-api
+    MANAGEMENT_SECURITY_ENABLED: false
+    ENDPOINTS_ENABLED: true
+    SSL_VERIFICATION_ENABLED: false
+    GA_TRACKING_ID: ''
+
+  cpuRequests: '2000m'
+  cpuLimits: '2500m'
+  memoryRequests: '1024Mi'
+  memoryLimits: '2048Mi'
+
+  readinessPath: '/health'
+  readinessDelay: 30
+  readinessTimeout: 3
+  readinessPeriod: 15
+  livenessPath: '/health'
+  livenessDelay: 30
+  livenessTimeout: 3
+  livenessPeriod: 15
+  livenessFailureThreshold: 3
+  
+  applicationInsightsInstrumentKey: '00000000-0000-0000-0000-000000000000'
+  
+  useInterpodAntiAffinity: false
+  
+  pdb:
+    enabled: true
+    maxUnavailable: 50%
+
+  aadIdentity: idam
+
+  global:
+    subscriptionId: '00000000-0000-0000-0000-000000000000'
+    tenantId: '00000000-0000-0000-0000-000000000000'
+    resourceGroup: sbox-00-rg
+    environment: sandbox
+    enableKeyVaults: true
+
+postgresql:
+  enabled: false
