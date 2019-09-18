@@ -52,6 +52,11 @@ class IdamHelper extends Helper {
         return Buffer.from(email_address + ":" + password).toString('base64')
     }
 
+    getBase64FromJsonObject(jsonObject) {
+        console.log("BASE64-ENCODED " + Buffer.from(jsonObject).toString('base64'))
+        return Buffer.from(jsonObject).toString('base64')
+    }
+
     getAuthorizeCode(serviceName, serviceRedirect, oauth2Scope, base64) {
         var searchParams = new URLSearchParams();
         searchParams.set('response_type', 'code');

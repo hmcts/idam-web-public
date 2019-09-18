@@ -8,16 +8,22 @@ const serviceName = 'TEST_SERVICE_' + now;
 const emailSuffix = '@mailtest.gov.uk';
 const citizenEmail = 'citizen.' + now + emailSuffix;
 const parameters = '?redirect_uri=https://idam.testservice.gov.uk&client_id=';
+let randomUserFirstName;
+let randomUserLastName;
+let randomUserEmailAddress;
 
 BeforeSuite(async(I) => {
+    randomUserFirstName = await I.generateRandomText();
+    randomUserLastName = await I.generateRandomText();
+    randomUserEmailAddress = 'citizen.' + randomUserFirstName + emailSuffix;
     await I.createServiceData(serviceName);
     await I.createUserWithRoles(citizenEmail, 'Citizen', ["citizen"]);
-
 });
 
 AfterSuite(async(I) => {
     return Promise.all([
         I.deleteUser(citizenEmail),
+        I.deleteUser(randomUserEmailAddress),
         I.deleteService(serviceName)
     ]);
 });
@@ -114,6 +120,51 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.seeInCurrentUrl("state=selfreg");
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', email);
+    I.fillField('#password', 'Passw0rd1234');
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText('https://idam.testservice.gov.uk/');
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
+
+
+Scenario('@functional @selfregister @prePopulatedScreen I can self register with pre-populated user account screen', async (I) => {
+    const loginPage = TestData.WEB_PUBLIC_URL + '/login' + parameters + serviceName + '&state=selfreg';
+    const userAccountDetails = {
+        firstName: randomUserFirstName,
+        lastName: randomUserLastName,
+        email: randomUserEmailAddress
+    };
+    const base64EncodedJsonObject = await I.getBase64FromJsonObject(JSON.stringify(userAccountDetails));
+
+    I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister' + parameters + serviceName + "&form_data=" + base64EncodedJsonObject);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+
+    I.see('Create an account');
+
+    I.seeInField('firstName', randomUserFirstName);
+    I.seeInField('lastName', randomUserLastName);
+    I.seeInField('email', randomUserEmailAddress);
+
+    I.click("Continue");
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(2);
+    let userActivationUrl = await I.extractUrl(randomUserEmailAddress);
+    I.amOnPage(userActivationUrl);
+    I.waitForText('Create a password', 20, 'h1');
+    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.fillField('#password1', 'Passw0rd1234');
+    I.fillField('#password2', 'Passw0rd1234');
+    I.click('Continue');
+    I.waitForText('Account created', 20, 'h1');
+    I.see('You can now sign in to your account.');
+    I.amOnPage(loginPage);
+    I.seeInCurrentUrl("state=selfreg");
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', randomUserEmailAddress);
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
