@@ -48,6 +48,7 @@ public class TestConstants {
     //uris
     public static final String GOOGLE_WEB_ADDRESS = "https://www.google.com";
     public static final String REDIRECT_URI = "redirect_uri";
+    public static final String FORM_DATA = "form_data";
     public static final String SERVICE_OAUTH2_REDIRECT_URI = "https://cmc.reform.hmcts.net/start";
     public static final String API_URL = "http://api.reform.hmcts.net";
     public static final String SELF_REGISTRATION_URL = String.format("%s/%s?jwt=%s", API_URL, USERS_SELF_ENDPOINT, JWT);
@@ -88,6 +89,7 @@ public class TestConstants {
     public static final String PASSWORD_ONE = "password1";
     public static final String PASSWORD_TWO = "password2";
     public static final String USER_NAME = "userName";
+    public static final String BASE64_ENC_FORM_DATA = "ewogICJmaXJzdE5hbWUiOiAiSm9obiIsCiAgImxhc3ROYW1lIjogIkRvZSIsCiAgImVtYWlsIjogImpvaG4uZG9lQGVtYWlsLmNvbSIKfQ==";
 
 
     //Service

@@ -13,54 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ALREADY_ACTIVATED_KEY;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_BLACKLISTED_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CAPITAL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_ENTER_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_INVALID_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_ONE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_TWO;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MESSAGE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MSG;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_PASSWORD_DETAILS;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_TITLE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_TOKEN_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GENERIC_ERROR_KEY;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_COMMAND;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_LABEL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_INVALID_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERS_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERS_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATED_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_CODE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_TOKEN;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_CREATED_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.*;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getActivateUserPostRequest;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getActivationResult;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterPostRequest;
@@ -69,6 +22,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getService;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -374,7 +328,7 @@ public class UserControllerTest {
 
     /**
      * @verifies call spi service with correct parameter then return selfRegister view and  have redirect_uri, selfRegisterCommand, client_id attributes in model if self registration is allowed for service
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldCallSpiServiceWithCorrectParameterThenReturnSelfRegisterViewAndHaveRedirect_uriSelfRegisterCommandClient_idAttributesInModelIfSelfRegistrationIsAllowedForService() throws Exception {
@@ -397,7 +351,7 @@ public class UserControllerTest {
 
     /**
      * @verifies return 404 view if clientId or redirectUri are missing
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldReturn404ViewIfClientIdOrRedirectUriAreMissing() throws Exception {
@@ -410,7 +364,7 @@ public class UserControllerTest {
 
     /**
      * @verifies return generic error with generic error message if an exception is thrown
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldReturnGenericErrorWithGenericErrorMessageIfAnExceptionIsThrown() throws Exception {
@@ -427,7 +381,7 @@ public class UserControllerTest {
 
     /**
      * @verifies return 404 view if service is empty
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldReturn404ViewIfServiceIsEmpty() throws Exception {
@@ -443,7 +397,7 @@ public class UserControllerTest {
 
     /**
      * @verifies return 404 view if self registration is not allowed
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldReturn404ViewIfSelfRegistrationIsNotAllowed() throws Exception {
@@ -455,5 +409,37 @@ public class UserControllerTest {
             .param(STATE_PARAMETER, STATE))
             .andExpect(status().isOk())
             .andExpect(view().name(NOT_FOUND_VIEW));
+    }
+
+    /**
+     * @verifies populate the model with the users details if called with a valid form_data param
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
+     */
+    @Test
+    public void selfRegister_shouldPopulateTheModelWithTheUsersDetailsIfCalledWithAValidForm_dataParam() throws Exception {
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID)))
+            .willReturn(Optional.of(getService(SERVICE_LABEL, SERVICE_CLIENT_ID, true)));
+
+        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
+            .param(FORM_DATA, BASE64_ENC_FORM_DATA)
+            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
+            .param(CLIENT_ID_PARAMETER, SERVICE_CLIENT_ID)
+            .param(STATE_PARAMETER, STATE))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute("firstName", "John"))
+            .andExpect(model().attribute("lastName", "Doe"))
+            .andExpect(model().attribute("email", "john.doe@email.com"))
+            .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
+
+        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
+            .param(FORM_DATA, "1234567890")
+            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
+            .param(CLIENT_ID_PARAMETER, SERVICE_CLIENT_ID)
+            .param(STATE_PARAMETER, STATE))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute("firstName", nullValue()))
+            .andExpect(model().attribute("lastName", nullValue()))
+            .andExpect(model().attribute("email", nullValue()))
+            .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
     }
 }
