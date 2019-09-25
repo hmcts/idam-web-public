@@ -124,7 +124,7 @@
                     <spring:message
                         htmlEscape="false"
                         code="public.template.header.phase.description"
-                        arguments="https://www.smartsurvey.co.uk/s/IDAMSurvey/"
+                        arguments="http://www.smartsurvey.co.uk/s/58DYD/"
                     />
                 </span>
             </p>

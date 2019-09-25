@@ -20,6 +20,12 @@
             <li> <a href="https://www.gov.uk/call-charges">Find out about call charges</a> </li>
 
         </ul>
+
+        <h2 class="heading-medium">Family Public Law</h2>
+        <ul class="list">
+            <li>Email: dcd-familypubliclawservicedesk@hmcts.net</li>
+
+        </ul>
         <h2 class="heading-medium">Money Claims</h2>
         <ul class="list">
             <li>Email: moneyclaims@justice.gov.uk</li>
