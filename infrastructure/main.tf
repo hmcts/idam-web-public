@@ -25,8 +25,6 @@ locals {
 
   env = "${var.env == "idam-preview" && var.product == "idam" ? "idam-dev" : var.env}"
 
-  ssl_verification_enabled = "${var.env == "idam-preview" ? 0 : var.ssl_verification_enabled}"
-
   // in PRs var.product = "pr-XX-idam"
   tags = "${merge(var.common_tags, map("environment", local.env))}"
 }
@@ -58,7 +56,7 @@ module "idam-web-public" {
     MANAGEMENT_SECURITY_ENABLED   = "${local.secure_actuator_endpoints}"
     ENDPOINTS_ENABLED             = "${local.secure_actuator_endpoints ? false : true}"
 
-    SSL_VERIFICATION_ENABLED      = "${local.ssl_verification_enabled}"
+    SSL_VERIFICATION_ENABLED      = "${var.ssl_verification_enabled}"
 
     STRATEGIC_SERVICE_URL         = "${local.idam_api_url}"
 
