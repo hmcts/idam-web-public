@@ -67,6 +67,7 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.see('Last name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Sign in to your account.');
     I.click('Sign in to your account.');
+    I.wait(2);
     I.waitForText('Sign in', 20, 'h1');
     I.see('Sign in');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
