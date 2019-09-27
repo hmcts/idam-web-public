@@ -98,6 +98,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(2);
     I.waitForText('https://idam.testservice.gov.uk/');
     I.see('code=');
     I.dontSee('error=');

@@ -65,11 +65,13 @@ Scenario('@functional user registration pending status and post activation redir
     I.fillField('#password1', password);
     I.fillField('#password2', password);
     I.click('Continue');
+    I.wait(5);
     I.waitForText('Account created', 20, 'h1');
     I.waitForText('You can now sign in to your account.', 20);
     I.waitForText('Continue', 20);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
+    I.wait(2);
     I.waitUrlEquals('https://idam.testservice.gov.uk/', 60);
 
     let responseAfterActivation = await I.getUserById(userId, accessToken);

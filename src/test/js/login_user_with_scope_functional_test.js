@@ -55,6 +55,7 @@ Scenario('@functional As a service, I can request a custom scope on user login',
 
   I.interceptRequestsAfterSignin();
   I.click('Sign in');
+  I.wait(2);
   I.waitForText(serviceRedirectUri);
   I.see('code=');
 
@@ -71,7 +72,7 @@ Scenario('@functional As a service, I can request a custom scope on user login',
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional As a service, I can request a custom scope on PIN user login',  async (I) => {
+Scenario('@functional @pinlogin As a service, I can request a custom scope on PIN user login',  async (I) => {
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
     let code = await I.loginAsPin(pinUser.pin, serviceName, serviceRedirectUri);
@@ -84,6 +85,7 @@ Scenario('@functional As a service, I can request a custom scope on PIN user log
 
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(2);
     I.waitForText(serviceRedirectUri);
     I.see('code=');
 

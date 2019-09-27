@@ -67,7 +67,7 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.see('Last name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Sign in to your account.');
     I.click('Sign in to your account.');
-    I.wait(2);
+    I.wait(5);
     I.waitForText('Sign in', 20, 'h1');
     I.see('Sign in');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -169,6 +169,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(2);
     I.waitForText('https://idam.testservice.gov.uk/');
     I.see('code=');
     I.dontSee('error=');
