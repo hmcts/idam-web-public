@@ -85,6 +85,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.fillField('#username', citizenEmail);
     I.scrollPageToBottom();
     I.click('Continue');
+    I.wait(5);
     I.waitForText('Check your email', 20, 'h1');
     var url = await I.extractUrl(citizenEmail);
     if (url) {
