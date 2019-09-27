@@ -115,6 +115,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('#password1', 'Passw0rd1234');
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
+    I.wait(2);
     I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
@@ -124,6 +125,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(2);
     I.waitForText('https://idam.testservice.gov.uk/');
     I.see('code=');
     I.dontSee('error=');
@@ -160,6 +162,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.fillField('#password1', 'Passw0rd1234');
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
+    I.wait(2);
     I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);

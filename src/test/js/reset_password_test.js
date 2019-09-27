@@ -66,6 +66,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(2);
     I.waitForText('https://idam.testservice.gov.uk/');
     I.see('code=');
     I.dontSee('error=');
@@ -90,6 +91,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.fillField('#password1', 'Passw0rd1234');
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
+    I.wait(2);
     I.waitForText('Your password has been changed', 20, 'h1');
     I.see('You can now sign in with your new password.')
     I.amOnPage(loginPage);
