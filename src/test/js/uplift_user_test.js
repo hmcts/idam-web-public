@@ -96,6 +96,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.fillField('#password1', password);
     I.fillField('#password2', password);
     I.click('Continue');
+    I.wait(5);
     I.waitForText('Account created', 60, 'h1');
     I.see('You can now sign in to your account.');
 });
