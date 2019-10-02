@@ -2,7 +2,7 @@ spring:
   cloud:
     propertiesvolume:
       enabled: true
-      prefixed: true
-      paths: /mnt/secrets/idam-idam
+      prefixed: false
+      paths: /mnt/secrets/idam
       aliases:
-        web-admin-client-secret: SECURITY_OAUTH2_CLIENT_CLIENTSECRET
+        AppInsightsInstrumentationKey: APP_INSIGHTS_INSTRUMENTATION_KEY 
