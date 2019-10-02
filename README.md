@@ -73,6 +73,44 @@ Expected error: Access denied. ForgeRock connection is not yet implemented. Plea
 
 `http://localhost:18002/login/pin?client_id=tstsrv456&redirect_uri=http://localhost:8084/ui/login`
 
+### AKS Troubleshooting Mode
+
+Use the `/configprops` & `/env` endpoints to learn more about the target configuration. To bypass sanitisation, use either of the implemtations below.
+
+```yaml
+# application.yaml
+management:
+  security:
+    enabled: false
+  endpoint:
+    configprops:
+      keys-to-sanitize:
+        - nothing
+    env:
+     keys-to-sanitize:
+        - nothing
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health,info,configprops,env
+    ...
+# values.yaml
+  ...
+  environment:
+    MANAGEMENT_ENDPOINT_CONFIGPROPS_KEYS-TO-SANITIZE_0: nothing
+    MANAGEMENT_ENDPOINT_ENV_KEYS-TO-SANITIZE_0: nothing
+    MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,configprops,env
+  ...
+# K8s manifest
+        - name: MANAGEMENT_ENDPOINT_CONFIGPROPS_KEYS-TO-SANITIZE_0
+          value: nothing
+        - name: MANAGEMENT_ENDPOINT_ENV_KEYS-TO-SANITIZE_0
+          value: nothing
+        - name: MANAMANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+          value: health,info,configprops,env
+```
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.

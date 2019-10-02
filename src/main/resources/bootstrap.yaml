@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    propertiesvolume:
+      enabled: true
+      prefixed: false
+      paths: /mnt/secrets/idam
+      aliases:
+        AppInsightsInstrumentationKey: APP_INSIGHTS_INSTRUMENTATION_KEY 
