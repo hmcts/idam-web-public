@@ -173,7 +173,7 @@
                         <c:param name="scope" value="${param['scope']}" />
                         <c:param name="jwt" value="${param['jwt']}" />
                     </c:url>
-                    <a href="${registerUrl}" id="reg-sign-in-url"><spring:message code="public.register.sign.in" /></a>
+                    <a href="${registerUrl}"><spring:message code="public.register.sign.in" /></a>
                 </p>
             </div>
         </div>
