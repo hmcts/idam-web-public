@@ -1,6 +1,7 @@
 java:
   releaseNameOverride: ${SERVICE_NAME}
   image: ${IMAGE_NAME}
+  replicas: 1
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP} 
