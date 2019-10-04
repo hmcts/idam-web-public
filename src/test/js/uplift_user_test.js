@@ -42,38 +42,43 @@ return Promise.all([
     ]);
 });
 
-Scenario('@functional @selfregister User Validation errors', (I) => {
+Scenario('@functional @upliftvalid User Validation errors', (I) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
     I.waitForText('Create an account or sign in', 30, 'h1');
     I.click("Continue");
+    I.wait(2);
     I.waitForText('Information is missing or invalid', 20, 'h2');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('firstName', 'Lucy');
     I.click('Continue');
-    I.wait(5);
+    I.wait(2);
     I.dontSee('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('lastName', 'Lu');
     I.click('Continue');
-    I.wait(5);
+    I.wait(2);
     I.dontSee('You have not entered your first name');
     I.dontSee('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('email', '111');
     I.click('Continue');
-    I.wait(5);
+    I.wait(2);
     I.see('Your email address is invalid');
     I.fillField('firstName', 'L');
     I.fillField('lastName', '@@');
     I.click('Continue');
-    I.wait(5);
+    I.wait(2);
     I.see('Your first name is invalid');
     I.see('First name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Your last name is invalid');
     I.see('Last name has to be longer than 1 character and should not include digits nor any of these characters:')
+    I.click('Sign in to your account.');
+    I.wait(2);
+    I.seeInCurrentUrl('redirect_uri=' + encodeURIComponent(redirectUri).toLowerCase());
+    I.seeInCurrentUrl('client_id=' + serviceName);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 

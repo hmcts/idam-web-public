@@ -7,6 +7,8 @@ if (process.env.PROXY_SERVER) {
     console.log('using proxy agent: ' + process.env.PROXY_SERVER);
     const HttpsProxyAgent = require('https-proxy-agent');
     agentToUse = new HttpsProxyAgent(process.env.PROXY_SERVER);
+} else if (process.env.LOCAL_TEST_SERVER) {
+    // default agent
 } else {
     console.log('using real agent');
     const Https = require('https');
