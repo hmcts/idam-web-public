@@ -1,6 +1,7 @@
 java:
   releaseNameOverride: idam-web-public
   image: 'hmctspublic.azurecr.io/idam/web-public:preview'
+  ingressHost: "{{ .Chart.Name }}-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
   replicas: 3
   applicationPort: 8080
   keyVaults:

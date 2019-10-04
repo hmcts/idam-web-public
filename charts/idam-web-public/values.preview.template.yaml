@@ -5,3 +5,5 @@ java:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP} 
+  environment:
+    STRATEGIC_SERVICE_URL: https://idam-api.aat.platform.hmcts.net
