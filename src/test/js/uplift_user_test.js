@@ -6,6 +6,7 @@ let adminEmail;
 let randomUserFirstName;
 let randomUserLastName;
 let citizenEmail;
+let existingCitizenEmail;
 let accessToken;
 
 const serviceName = 'TEST_SERVICE_' + Date.now();
@@ -20,6 +21,7 @@ BeforeSuite(async (I) => {
     randomUserName = await I.generateRandomText();
     adminEmail = 'admin.' + randomUserName + testMailSuffix;
     citizenEmail = 'citizen.' + randomUserName + testMailSuffix;
+    existingCitizenEmail = 'existingcitizen.' + randomUserName + testMailSuffix;
 
     var token = await I.getAuthToken();
     await I.createRole(serviceName + "_beta", 'beta description', '', token);
@@ -28,6 +30,7 @@ BeforeSuite(async (I) => {
     var serviceRoles = [serviceName + "_beta", serviceName + "_admin", serviceName + "_super"];
     await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token);
     await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_admin", "IDAM_ADMIN_USER"]);
+    await I.createUserWithRoles(existingCitizenEmail, 'Citizen', ["citizen"]);
 
     var pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     var code = await I.loginAsPin(pinUser.pin, serviceName, redirectUri);
@@ -103,4 +106,19 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.waitForText('Account created', 60, 'h1');
     I.see('You can now sign in to your account.');
 });
- // NOTE: Retrying this scenario is problematic.
+
+Scenario('@functional @upliftLogin I am able to use a pin to create an account as an uplift user', async (I) => {
+    I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
+    I.waitForText('Create an account or sign in', 30, 'h1');
+    I.click('Sign in to your account.');
+    I.wait(2);
+    I.seeInCurrentUrl('register?redirect_uri=' + encodeURIComponent(redirectUri).toLowerCase() + '&client_id=' + serviceName);
+    I.fillField('#username', existingCitizenEmail);
+    I.fillField('#password', password);
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText("https://idam.testservice.gov.uk");
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
