@@ -164,7 +164,7 @@ public class AppControllerTest {
         mockMvc.perform(get(EXPIRED_TOKEN_ENDPOINT))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(view().name(EXPIREDTOKEN_VIEW_NAME));
+            .andExpect(view().name(EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME));
     }
 
     /**
@@ -812,7 +812,7 @@ public class AppControllerTest {
             .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
             .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
             .andExpect(status().isOk())
-            .andExpect(view().name(EXPIRED_TOKEN_VIEW_NAME));
+            .andExpect(view().name(EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME));
 
         verify(spiService).validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE);
     }
@@ -961,7 +961,7 @@ public class AppControllerTest {
             .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
             .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl(EXPIRED_TOKEN_VIEW_NAME));
+            .andExpect(redirectedUrl(EXPIREDTOKEN_VIEW_NAME));
 
         verify(spiService).resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE));
     }
