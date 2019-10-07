@@ -6,6 +6,6 @@ Scenario('@smoke @expiredlinks I try to reset my password with an expired reset 
 
   I.amOnPage('/passwordReset?action=start&token=invalidtoken&code=somecode');
   I.waitForText('Your link has expired', 180, 'h1');
-  I.see('To get a new link, you need to create your account again');
+  I.see('For security, your link is only valid for 8 hours.');
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
