@@ -60,7 +60,7 @@ public class TestConstants {
     public static final String USERS_VIEW_NAME = "users";
     public static final String SELF_REGISTER_VIEW_NAME = "selfRegister";
     public static final String EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME = "expiredPasswordResetLink";
-    public static final String EXPIRED_ACTIVATION_TOKEN_VIEW_NAME = "expiredPasswordResetLink";
+    public static final String EXPIRED_ACTIVATION_TOKEN_VIEW_NAME = "expiredActivationLink";
     public static final String USER_ACTIVATION_VIEW_NAME = "useractivation";
     public static final String USER_ACTIVATED_VIEW_NAME = "useractivated";
     public static final String ERROR_VIEW_NAME = "errorpage";
