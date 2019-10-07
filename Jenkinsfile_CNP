@@ -37,6 +37,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
+    env.IDAMAPI = (env.PREVIEW_ENVIRONMENT_NAME == 'preview') ? "https://idam-api.aat.platform.hmcts.net" : "https://idam-api.${env}.platform.hmcts.net"
+
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     enableDockerBuild()
