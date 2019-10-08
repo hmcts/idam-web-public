@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
+import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
@@ -63,6 +64,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_POLICY_CHECK_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
@@ -99,6 +101,9 @@ public class AppController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PolicyService policyService;
 
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
@@ -327,11 +332,23 @@ public class AppController {
                     );
                     params.putIfAbsent(RESPONSE_TYPE, "code");
                     params.putIfAbsent(SCOPE, "openid profile roles");
+
                     responseUrl = spiService.authorize(params, cookie);
                 }
-                if (responseUrl != null && !responseUrl.contains("error")) {
+                final boolean loginSucces = responseUrl != null && !responseUrl.contains("error");
+                final boolean policyCheckFailed;
+                if (loginSucces) {
+                    policyCheckFailed = !policyService.evaluatePoliciesForUser(responseUrl, cookie, ipAddress);
+                } else {
+                    policyCheckFailed = false;
+                }
+                if (loginSucces && !policyCheckFailed) {
                     response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
                     nextPage = "redirect:" + responseUrl;
+                } else if (policyCheckFailed) {
+                    log.info("User failed policy checks - " + obfuscateEmailAddress(request.getUsername()));
+                    model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
+                    bindingResult.reject("Policy check failure");
                 } else {
                     log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
                     model.addAttribute(HAS_LOGIN_FAILED, true);
