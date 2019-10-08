@@ -58,6 +58,7 @@ Scenario('@functional user registration pending status and post activation redir
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
+    I.wait(10)
     let url = await I.extractUrl(userEmail);
 
     I.amOnPage(url);

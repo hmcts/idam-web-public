@@ -85,7 +85,7 @@ Scenario('@functional @selfregister Account already created', async (I) => {
 
     I.waitForText('Check your email', 20, 'h1');
 
-    I.wait(2);
+    I.wait(10);
     let emailResponse = await I.getEmail(citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
@@ -106,7 +106,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(2);
+    I.wait(10);
     let userActivationUrl = await I.extractUrl(email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
@@ -151,7 +151,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
 
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(2);
+    I.wait(10);
     let userActivationUrl = await I.extractUrl(randomUserEmailAddress);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
