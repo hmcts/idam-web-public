@@ -14,6 +14,7 @@ env.DEMO_ENVIRONMENT_NAME = 'idam-demo'
 env.PERFTEST_ENVIRONMENT_NAME = 'idam-perftest'
 env.ITHC_ENVIRONMENT_NAME = 'idam-ithc'
 env.NO_SKIP_IMG_BUILD = 'true'
+env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
 
 def vaultOverrides = [
   'preview': 'aat'
@@ -36,11 +37,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
+
 withPipeline(type, product, component) {
-    sh("echo env.ENVIRONMENT_NAME = ${env.ENVIRONMENT_NAME}")
-    def NO_IDAM_ENVIRONMENT_NAME = "${env.ENVIRONMENT_NAME.substring(1, ${env.ENVIRONMENT_NAME.indexOf('-')})}"
-    env.IDAMAPI = (env.ENVIRONMENT_NAME =~ 'preview') ? "https://idam-api.aat.platform.hmcts.net" : "https://idam-api.${NO_IDAM_ENVIRONMENT_NAME}.platform.hmcts.net"
-    
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     enableDockerBuild()
@@ -66,7 +64,6 @@ withPipeline(type, product, component) {
             reportName           : "IdAM Web Public PMD Report"
         ]
     }
-
 
     after('smoketest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
