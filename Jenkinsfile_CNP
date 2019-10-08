@@ -2,13 +2,13 @@
 
 @Library("Infrastructure")
 
-env.NO_SKIP_IMG_BUILD = 'true'
-
 def type = "java"
 
 def product = "idam"
 
 def component = "web-public"
+
+env.NO_SKIP_IMG_BUILD = 'true'
 
 def vaultOverrides = [
   'preview': 'aat'
