@@ -109,6 +109,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
 
 Scenario('@functional @upliftLogin uplift a user via login journey', async (I) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
+    I.wait(2);
     I.waitForText('Create an account or sign in', 30, 'h1');
     I.click('Sign in to your account.');
     I.wait(2);
