@@ -5,8 +5,8 @@ java:
   replicas: 3
   applicationPort: 8080
   keyVaults:
-    "idam":
-      resourceGroup: idam
+    "idam-idam":
+      resourceGroup: idam-idam
       excludeEnvironmentSuffix: false
       secretRef: "kvcreds"
       secrets:
