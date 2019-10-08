@@ -6,4 +6,5 @@ java:
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP} 
   environment:
-    STRATEGIC_SERVICE_URL: https://idam-api.aat.platform.hmcts.net
+    STRATEGIC_SERVICE_URL: http://idam-api-pr-23
+    SSL_VERIFICATION_ENABLED: false
