@@ -3,6 +3,6 @@ spring:
     propertiesvolume:
       enabled: true
       prefixed: false
-      paths: /mnt/secrets/idam
+      paths: /mnt/secrets/idam-idam
       aliases:
         AppInsightsInstrumentationKey: APP_INSIGHTS_INSTRUMENTATION_KEY 
