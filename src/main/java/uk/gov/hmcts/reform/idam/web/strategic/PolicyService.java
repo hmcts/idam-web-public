@@ -40,6 +40,13 @@ public class PolicyService {
         this.configurationProperties = configurationProperties;
     }
 
+    /**
+     * @should return true when all actions return true
+     * @should return false when any action returns false
+     * @should throw exception when response is not successful
+     * @should return true when no actions are returned
+     * @should return true when actions is null
+     */
     public boolean evaluatePoliciesForUser(final String uri, final String cookie, final String ipAddress) {
         final String applicationName = configurationProperties.getStrategic().getPolicies().getApplicationName();
 

@@ -293,6 +293,7 @@ public class AppController {
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
      * @should put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
      * @should put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
+     * @should put in model the correct error variable in case policy check fails
      * @should return forbidden if csrf token is invalid
      */
     @PostMapping("/login")
