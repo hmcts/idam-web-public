@@ -1,5 +1,5 @@
 module.exports = {
-  WEB_PUBLIC_URL: process.env.TEST_URL,
+  WEB_PUBLIC_URL: process.env.TEST_URL.replace('https', 'http'),
   IDAM_API: process.env.IDAMAPI,
   SMOKE_TEST_USER_USERNAME: process.env.SMOKE_TEST_USER_USERNAME,
   SMOKE_TEST_USER_PASSWORD: process.env.SMOKE_TEST_USER_PASSWORD,

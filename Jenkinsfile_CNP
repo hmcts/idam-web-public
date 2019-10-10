@@ -95,7 +95,7 @@ withPipeline(type, product, component) {
     }
 
     before('functionalTest:preview') {
-        env.IDAMAPI = "https://idam-api-pr-423.service.core-compute-preview.internal"
+        env.IDAMAPI = "http://idam-api-pr-423.service.core-compute-preview.internal"
         println "Using IDAMAPI: ${env.IDAMAPI}"
     }
 
