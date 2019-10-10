@@ -58,6 +58,17 @@ public class PolicyService {
             .subject(new Subject().ssoToken(userSsoToken))
             .environment(ImmutableMap.of("requestIp", singletonList(ipAddress)));
 
+        final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookie, userSsoToken, request);
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new HttpClientErrorException(response.getStatusCode(), ERROR_POLICY_CHECK_EXCEPTION);
+        }
+
+        final boolean result = checkNoActionsBlockingUser(response);
+        return result;
+    }
+
+    private ResponseEntity<EvaluatePoliciesResponse> doEvaluatePolicies(final String cookie, final String userSsoToken, final EvaluatePoliciesRequest request) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.put(HttpHeaders.COOKIE, Collections.singletonList(cookie));
@@ -71,15 +82,10 @@ public class PolicyService {
         final ResponseEntity<EvaluatePoliciesResponse> response = restTemplate
             .exchange(url, HttpMethod.POST, httpEntity, EvaluatePoliciesResponse.class);
 
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new HttpClientErrorException(response.getStatusCode(), ERROR_POLICY_CHECK_EXCEPTION);
-        }
-
-        final boolean result = evaluateResult(response);
-        return result;
+        return response;
     }
 
-    private boolean evaluateResult(ResponseEntity<EvaluatePoliciesResponse> response) {
+    private boolean checkNoActionsBlockingUser(ResponseEntity<EvaluatePoliciesResponse> response) {
         final EvaluatePoliciesResponse result = ofNullable(response.getBody())
             .orElse(new EvaluatePoliciesResponse());
         for (EvaluatePoliciesResponseInner resultItem : result) {

@@ -24,8 +24,6 @@ import uk.gov.hmcts.reform.idam.api.external.model.EvaluatePoliciesResponseInner
 import uk.gov.hmcts.reform.idam.api.external.model.Subject;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
-import java.util.Collections;
-
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +33,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.ResponseEntity.ok;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IDAM_SESSION_COOKIE_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PolicyServiceTest {
@@ -74,7 +73,7 @@ public class PolicyServiceTest {
     HttpHeaders expectedHeaders(String token) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.put(HttpHeaders.COOKIE, Collections.singletonList("Idam.Session=" + token));
+        headers.put(HttpHeaders.COOKIE, singletonList(String.format("%s=%s", IDAM_SESSION_COOKIE_NAME, token)));
         headers.setBearerAuth(token);
         return headers;
     }

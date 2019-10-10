@@ -336,17 +336,17 @@ public class AppController {
 
                     responseUrl = spiService.authorize(params, cookie);
                 }
-                final boolean loginSucces = responseUrl != null && !responseUrl.contains("error");
+                final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
                 final boolean policyCheckFailed;
-                if (loginSucces) {
+                if (loginSuccess) {
                     policyCheckFailed = !policyService.evaluatePoliciesForUser(responseUrl, cookie, ipAddress);
                 } else {
                     policyCheckFailed = false;
                 }
-                if (loginSucces && !policyCheckFailed) {
+                if (loginSuccess && !policyCheckFailed) {
                     response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
                     nextPage = "redirect:" + responseUrl;
-                } else if (policyCheckFailed) {
+                } else if (policyCheckFailed && policyCheckFailed) {
                     log.info("User failed policy checks - " + obfuscateEmailAddress(request.getUsername()));
                     model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
                     bindingResult.reject("Policy check failure");
