@@ -1222,6 +1222,8 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(view().name(LOGIN_VIEW));
+
+        verify(policyService, never()).evaluatePoliciesForUser(any(), any(), any());
     }
 
     /**
