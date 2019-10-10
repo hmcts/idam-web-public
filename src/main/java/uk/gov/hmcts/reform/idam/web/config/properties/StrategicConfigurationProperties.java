@@ -11,6 +11,7 @@ public class StrategicConfigurationProperties {
 
     private ServiceConfigurationProperties service;
     private EndpointConfigurationProperties endpoint;
+    private Policies policies;
 
 
     @Data
@@ -39,5 +40,11 @@ public class StrategicConfigurationProperties {
         private String details;
         private String services;
         private String health;
+        private String evaluatePolicies;
+    }
+
+    @Data
+    public static class Policies {
+        private String applicationName;
     }
 }
