@@ -70,7 +70,7 @@ Scenario('@functional user registration pending status and post activation redir
     I.waitForText('Continue', 20);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
-    I.wait(2);
+    I.wait(10);
     I.waitUrlEquals('https://idam.testservice.gov.uk/', 60);
 
     let responseAfterActivation = await I.getUserById(userId, accessToken);
