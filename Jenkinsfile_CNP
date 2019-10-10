@@ -10,10 +10,6 @@ def component = "web-public"
 
 env.NO_SKIP_IMG_BUILD = 'true'
 
-def vaultOverrides = [
-  'preview': 'aat'
-]
-
 def secrets = [
     'idam-idam-${env}': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
@@ -32,7 +28,6 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
-    overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     enableDockerBuild()
     enableSlackNotifications('#idam_tech')
