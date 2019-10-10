@@ -97,7 +97,7 @@ public class UserController {
             ActivationResult activationResult = responseEntity.getBody();
             if (Objects.nonNull(activationResult)) {
                 log.info("The token {} has expired", token);
-                model.put("redirect_uri", activationResult.getRedirectUri());
+                model.put("redirect_uri", buildRegistrationLink(activationResult));
                 return EXPIRED_ACTIVATION_LINK_VIEW;
             }
             model.put("token", token);
@@ -115,6 +115,11 @@ public class UserController {
             return "errorpage";
         }
         return "useractivation";
+    }
+
+    private String buildRegistrationLink(ActivationResult activationResult) {
+        return "/users/selfRegister?redirect_uri=" + activationResult.getRedirectUri() +
+            "&client_id=" + activationResult.getClientId();
     }
 
     /**

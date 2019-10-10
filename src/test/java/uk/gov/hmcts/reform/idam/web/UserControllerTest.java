@@ -108,6 +108,26 @@ public class UserControllerTest {
      */
     @Test
     public void userActivation_shouldReturnExpiredtokenViewAndHaveRedirect_uriAttributeInModelIfTokenExpired() throws Exception {
+        ActivationResult activationResult = getActivationResult("", GOOGLE_WEB_ADDRESS, CLIENT_ID_PARAMETER);
+        given(spiService.validateActivationToken(ArgumentMatchers.any())).willReturn(ResponseEntity.ok(activationResult));
+
+        mockMvc.perform(get(VALIDATE_TOKEN_ENDPOINT)
+            .param(TOKEN_PARAMETER, USER_ACTIVATION_TOKEN)
+            .param(CODE_PARAMETER, USER_ACTIVATION_CODE))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(REDIRECT_URI, "/users/selfRegister?redirect_uri=" + GOOGLE_WEB_ADDRESS +
+                "&client_id=" + CLIENT_ID_PARAMETER))
+            .andExpect(view().name(EXPIRED_ACTIVATION_TOKEN_VIEW_NAME));
+
+    }
+
+    /**
+     * @verifies return useractivation view and no redirect_uri attribute in model if the token is valid
+     * @see UserController#userActivation(String, String, java.util.Map)
+     */
+    @Test
+    public void userActivation_shouldReturnUseractivationViewAndNoRedirect_uriAttributeInModelIfTheTokenIsValid() throws Exception {
         given(spiService.validateActivationToken(ArgumentMatchers.any())).willReturn(new ResponseEntity<>(HttpStatus.OK));
 
         mockMvc.perform(get(VALIDATE_TOKEN_ENDPOINT)
@@ -117,24 +137,6 @@ public class UserControllerTest {
             .andExpect(status().isOk())
             .andExpect(model().attribute(REDIRECT_URI, nullValue()))
             .andExpect(view().name(USER_ACTIVATION_VIEW_NAME));
-    }
-
-    /**
-     * @verifies return useractivation view and no redirect_uri attribute in model if the token is valid
-     * @see UserController#userActivation(String, String, java.util.Map)
-     */
-    @Test
-    public void userActivation_shouldReturnUseractivationViewAndNoRedirect_uriAttributeInModelIfTheTokenIsValid() throws Exception {
-        ActivationResult activationResult = getActivationResult("", GOOGLE_WEB_ADDRESS);
-        given(spiService.validateActivationToken(ArgumentMatchers.any())).willReturn(ResponseEntity.ok(activationResult));
-
-        mockMvc.perform(get(VALIDATE_TOKEN_ENDPOINT)
-            .param(TOKEN_PARAMETER, USER_ACTIVATION_TOKEN)
-            .param(CODE_PARAMETER, USER_ACTIVATION_CODE))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(model().attribute(REDIRECT_URI, GOOGLE_WEB_ADDRESS))
-            .andExpect(view().name(EXPIRED_ACTIVATION_TOKEN_VIEW_NAME));
     }
 
     /**
