@@ -11,7 +11,7 @@ if (process.env.PROXY_SERVER) {
     // default agent
 } else {
     console.log('using real agent');
-    const Https = require('http');
+    const Https = require('https');
     agentToUse = new Https.Agent({
         rejectUnauthorized: false
     });
@@ -283,7 +283,7 @@ class IdamHelper extends Helper {
             notifyClient
                 .getNotifications("email", null)
                 .then(response => {
-                    console.log("Searching " + response.body.notifications.length + " emails(s) from all queues");
+                    console.log("Searching " + response.body.notifications.length + " emails(s) from sending queue");
                     return this.searchForEmailInResults(response.body.notifications, searchEmail);
                 })
                 .then(emailResponse => {
