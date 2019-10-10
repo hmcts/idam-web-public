@@ -74,6 +74,9 @@ strategic:
     details: details
     services: services
     health: health
+    evaluatePolicies: policies/evaluate
+  policies:
+    applicationName: HmctsPolicySet
 
 validation:
   password:

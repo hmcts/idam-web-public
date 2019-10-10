@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,11 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
+import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
+import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
@@ -76,6 +79,9 @@ public class AppControllerTest {
 
     @MockBean
     private ValidationService validationService;
+
+    @MockBean
+    private PolicyService policyService;
 
 
     /**
@@ -1157,6 +1163,8 @@ public class AppControllerTest {
     public void login_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
         given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(REDIRECT_URI);
+        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
+            .willReturn(true);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
@@ -1171,6 +1179,7 @@ public class AppControllerTest {
             .andExpect(redirectedUrl(REDIRECT_URI));
 
         verify(spiService).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
+        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
     }
 
     /**
@@ -1213,6 +1222,8 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(view().name(LOGIN_VIEW));
+
+        verify(policyService, never()).evaluatePoliciesForUser(any(), any(), any());
     }
 
     /**
@@ -1509,4 +1520,32 @@ public class AppControllerTest {
         assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, false), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; HttpOnly"));
     }
 
+    /**
+     * @verifies put in model the correct error variable in case policy check fails
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void login_shouldPutInModelTheCorrectErrorVariableInCasePolicyCheckFails() throws Exception {
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(REDIRECT_URI);
+        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
+            .willReturn(false);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(MvcKeys.HAS_POLICY_CHECK_FAILED, true))
+            .andExpect(view().name(LOGIN_VIEW));
+
+        verify(spiService).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
+
+        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+    }
 }

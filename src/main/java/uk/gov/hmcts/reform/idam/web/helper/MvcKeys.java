@@ -12,6 +12,7 @@ public class MvcKeys {
     public static final String ERROR_SUB_MSG = "errorSubMsg";
     public static final String HAS_ERRORS = "hasErrors";
     public static final String HAS_LOGIN_FAILED = "hasLoginFailed";
+    public static final String HAS_POLICY_CHECK_FAILED = "hasPolicyCheckFailed";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
     public static final String JWT = "jwt";
