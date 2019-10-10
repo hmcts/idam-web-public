@@ -309,52 +309,39 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
-        try {
-            if (bindingResult.hasErrors()) {
-                if (StringUtils.isEmpty(request.getUsername())) {
-                    model.addAttribute("isUsernameEmpty", true);
-                }
-                if (StringUtils.isEmpty(request.getPassword())) {
-                    model.addAttribute("isPasswordEmpty", true);
-                }
-                model.addAttribute(HAS_ERRORS, true);
-            } else {
-                final String ipAddress = ObjectUtils.defaultIfNull(
-                    httpRequest.getHeader(X_FORWARDED_FOR),
-                    httpRequest.getRemoteAddr());
-                final String cookie = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
-                String responseUrl = null;
-                if (cookie != null) {
-                    Map<String, String> params = new HashMap<>();
-                    httpRequest.getParameterMap().forEach((key, values) -> {
-                        if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
-                            params.put(key, String.join(" ", values));
-                        }
-                    );
-                    params.putIfAbsent(RESPONSE_TYPE, "code");
-                    params.putIfAbsent(SCOPE, "openid profile roles");
 
-                    responseUrl = spiService.authorize(params, cookie);
-                }
-                final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
-                final boolean policyCheckFailed;
-                if (loginSuccess) {
-                    policyCheckFailed = !policyService.evaluatePoliciesForUser(responseUrl, cookie, ipAddress);
-                } else {
-                    policyCheckFailed = false;
-                }
-                if (loginSuccess && !policyCheckFailed) {
-                    response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
-                    nextPage = "redirect:" + responseUrl;
-                } else if (policyCheckFailed && policyCheckFailed) {
-                    log.info("User failed policy checks - " + obfuscateEmailAddress(request.getUsername()));
-                    model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
-                    bindingResult.reject("Policy check failure");
-                } else {
-                    log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
-                    model.addAttribute(HAS_LOGIN_FAILED, true);
-                    bindingResult.reject("Login failure");
-                }
+        final boolean validationErrors = bindingResult.hasErrors();
+        if (validationErrors) {
+            if (StringUtils.isEmpty(request.getUsername())) {
+                model.addAttribute("isUsernameEmpty", true);
+            }
+            if (StringUtils.isEmpty(request.getPassword())) {
+                model.addAttribute("isPasswordEmpty", true);
+            }
+            model.addAttribute(HAS_ERRORS, true);
+            return nextPage;
+        }
+
+        try {
+            final String ipAddress = ObjectUtils.defaultIfNull(
+                httpRequest.getHeader(X_FORWARDED_FOR),
+                httpRequest.getRemoteAddr());
+            final String cookie = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
+            final String responseUrl = authoriseUser(cookie, httpRequest);
+            final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
+            final boolean policyCheckSuccess = loginSuccess && policyService.evaluatePoliciesForUser(responseUrl, cookie, ipAddress);;
+
+            if (loginSuccess && policyCheckSuccess) {
+                response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
+                nextPage = "redirect:" + responseUrl;
+            } else if (loginSuccess && !policyCheckSuccess) {
+                log.info("User failed policy checks - " + obfuscateEmailAddress(request.getUsername()));
+                model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
+                bindingResult.reject("Policy check failure");
+            } else {
+                log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
+                model.addAttribute(HAS_LOGIN_FAILED, true);
+                bindingResult.reject("Login failure");
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("Login failed for user - " + obfuscateEmailAddress(request.getUsername()));
@@ -365,7 +352,25 @@ public class AppController {
                 bindingResult.reject("Login failure");
             }
         }
+
         return nextPage;
+    }
+
+    private String authoriseUser(String cookie, HttpServletRequest httpRequest) {
+        String responseUrl = null;
+        if (cookie != null) {
+            Map<String, String> params = new HashMap<>();
+            httpRequest.getParameterMap().forEach((key, values) -> {
+                    if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
+                        params.put(key, String.join(" ", values));
+                }
+            );
+            params.putIfAbsent(RESPONSE_TYPE, "code");
+            params.putIfAbsent(SCOPE, "openid profile roles");
+
+            responseUrl = spiService.authorize(params, cookie);
+        }
+        return responseUrl;
     }
 
     private String makeCookieSecure(String cookie) {
