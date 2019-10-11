@@ -1500,7 +1500,7 @@ public class AppControllerTest {
         AppController appController = new AppController();
         assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, true), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; Secure; HttpOnly"));
     }
-    
+
     /**
      * @verifies return a non-secure cookie if useSecureCookie is false
      * @see AppController#makeCookieSecure(String, boolean)
