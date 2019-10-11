@@ -9,15 +9,24 @@
     <article class="content__body">
         <header class="page-header group">
             <h1 class="heading-large">
-                <spring:message code="public.user.activation.expired.heading" text="default"/>
+                <spring:message code="public.user.link.expired.heading"/>
             </h1>
         </header>
         <p class="lede">
-            <spring:message code="public.user.activation.expired.text" text="default"/>
+            <spring:message code="public.user.activation.expired.text.p1.1"/>
+            <c:choose>
+                <c:when test="${empty redirect_uri}">
+                    <spring:message code="public.user.activation.expired.text.p1.2"/>
+                </c:when>
+                <c:otherwise>
+                    <a href="${fn:escapeXml(redirect_uri)}"><spring:message code="public.user.activation.expired.text.p1.2" text=""/></a>
+                </c:otherwise>
+            </c:choose>
+            .
         </p>
-        <c:if test="${redirect_uri != null}">
-            <p><a href="${fn:escapeXml(redirect_uri)}"><spring:message code="public.user.activation.expired.link.click.here" text=""/></a> <spring:message code="public.user.activation.expired.link.sing.into" text=""/></p>
-        </c:if>
+        <p class="lede">
+            <spring:message code="public.user.activation.expired.text.p2"/>
+        </p>
     </article>
     <script>
         sendEvent('Expired Token', 'Expired', 'User activation token has expired');
