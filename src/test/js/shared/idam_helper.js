@@ -278,6 +278,60 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
+    createPolicyToBlockUser(name, userEmail, api_auth_token) {
+        const data = {
+            "name": name,
+            "applicationName": "HmctsPolicySet",
+            "description": "Blocks specific user",
+            "active": true,
+            "actionValues": {
+                "GET": false,
+                "POST": false,
+                "DELETE": false,
+                "PATCH": false,
+                "PUT": false,
+                "OPTIONS": false,
+                "HEAD": false
+            },
+            "resourceTypeUuid": "HmctsUrlResourceType",
+            "resources": [
+                "*://*",
+                "*://*:*/*",
+                "*://*:*/*?*",
+                "*://*?*"
+            ],
+            "subject": {
+                "type": "AND",
+                "subjects": [
+                    {
+                        "type": "Identity",
+                        "subjectValues": [
+                            `id=${userEmail},ou=user,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
+                        ]
+                    }
+                ]
+            }
+        };
+        return fetch(`${TestData.IDAM_API}/policies`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        })
+            .then(res => res.json())
+            .catch(err => err);
+    }
+
+    deletePolicy(name, api_auth_token) {
+        return fetch(`${TestData.IDAM_API}/policies/${name}`, {
+            agent: agent,
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        })
+            .then(res => res.json())
+            .catch(err => err);
+    }
+
     getEmail(searchEmail) {
         return (
             notifyClient
