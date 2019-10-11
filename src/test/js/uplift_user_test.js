@@ -108,6 +108,10 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
 });
 
 Scenario('@functional @upliftLogin uplift a user via login journey', async (I) => {
+    var pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
+    var code = await I.loginAsPin(pinUser.pin, serviceName, redirectUri);
+    accessToken = await I.getAccessToken(code, serviceName, redirectUri, clientSecret);
+
     I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
     I.waitForText('Sign in to your account.', 30);
     I.click('Sign in to your account.');
