@@ -155,6 +155,11 @@
         <notes>only relevant if objectMapper.enableDefaultTyping</notes>
         <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind.*$</gav>
         <cve>CVE-2019-14439</cve>
+        <cve>CVE-2019-14540</cve>
+        <cve>CVE-2019-16335</cve>
+        <cve>CVE-2019-16942</cve>
+        <cve>CVE-2019-16943</cve>
+        <cve>CVE-2019-17267</cve>
     </suppress>
 
     <suppress>
