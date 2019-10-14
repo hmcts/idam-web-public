@@ -6,4 +6,4 @@ java:
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP} 
   environment:
-    STRATEGIC_SERVICE_URL: https://idam-api-pr-423.service.core-compute-{{ .Values.global.environment }}.internal
+    STRATEGIC_SERVICE_URL: https://idam-api-pr-423.service.core-compute-preview.internal
