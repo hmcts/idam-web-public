@@ -1,10 +1,9 @@
 java:
   releaseNameOverride: ${SERVICE_NAME}
   image: ${IMAGE_NAME}
-  replicas: 1
+  replicas: 2
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP} 
   environment:
-    STRATEGIC_SERVICE_URL: http://idam-api-pr-423
-    SSL_VERIFICATION_ENABLED: false
+    STRATEGIC_SERVICE_URL: https://idam-api-pr-423.service.core-compute-{{ .Values.global.environment }}.internal
