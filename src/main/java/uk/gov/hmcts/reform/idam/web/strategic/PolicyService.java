@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
 import java.util.Collections;
 
+import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 
@@ -58,7 +59,7 @@ public class PolicyService {
             .subject(new Subject().ssoToken(userSsoToken))
             .environment(ImmutableMap.of("requestIp", singletonList(ipAddress)));
 
-        final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookie, userSsoToken, request);
+        final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookie, userSsoToken, request, ipAddress);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new HttpClientErrorException(response.getStatusCode(), ERROR_POLICY_CHECK_EXCEPTION);
@@ -68,8 +69,12 @@ public class PolicyService {
         return result;
     }
 
-    private ResponseEntity<EvaluatePoliciesResponse> doEvaluatePolicies(final String cookie, final String userSsoToken, final EvaluatePoliciesRequest request) {
+    private ResponseEntity<EvaluatePoliciesResponse> doEvaluatePolicies(final String cookie,
+                                                                        final String userSsoToken,
+                                                                        final EvaluatePoliciesRequest request,
+                                                                        final String ipAddress) {
         final HttpHeaders headers = new HttpHeaders();
+        headers.add(X_FORWARDED_FOR, ipAddress);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.put(HttpHeaders.COOKIE, Collections.singletonList(cookie));
         headers.setBearerAuth(userSsoToken);

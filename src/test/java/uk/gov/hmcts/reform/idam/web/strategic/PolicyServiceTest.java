@@ -70,8 +70,9 @@ public class PolicyServiceTest {
             .environment(ImmutableMap.of("requestIp", singletonList("someIpAddress")));
     }
 
-    HttpHeaders expectedHeaders(String token) {
+    HttpHeaders expectedHeaders(String token, String ipAddress) {
         final HttpHeaders headers = new HttpHeaders();
+        headers.put("X-Forwarded-For", singletonList(ipAddress));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.put(HttpHeaders.COOKIE, singletonList(String.format("%s=%s", IDAM_SESSION_COOKIE_NAME, token)));
         headers.setBearerAuth(token);
@@ -95,7 +96,7 @@ public class PolicyServiceTest {
             eq("idamApi/evaluatePolicies"),
             eq(HttpMethod.POST),
             eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
-                expectedHeaders("someToken"))),
+                expectedHeaders("someToken", "someIpAddress"))),
             eq(EvaluatePoliciesResponse.class));
     }
 
@@ -119,7 +120,7 @@ public class PolicyServiceTest {
             eq("idamApi/evaluatePolicies"),
             eq(HttpMethod.POST),
             eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
-                expectedHeaders("someToken"))),
+                expectedHeaders("someToken", "someIpAddress"))),
             eq(EvaluatePoliciesResponse.class));
     }
 
@@ -143,7 +144,7 @@ public class PolicyServiceTest {
             eq("idamApi/evaluatePolicies"),
             eq(HttpMethod.POST),
             eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
-                expectedHeaders("someToken"))),
+                expectedHeaders("someToken", "someIpAddress"))),
             eq(EvaluatePoliciesResponse.class));
     }
 
@@ -175,7 +176,7 @@ public class PolicyServiceTest {
             eq("idamApi/evaluatePolicies"),
             eq(HttpMethod.POST),
             eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
-                expectedHeaders("someToken"))),
+                expectedHeaders("someToken", "someIpAddress"))),
             eq(EvaluatePoliciesResponse.class));
     }
 }
