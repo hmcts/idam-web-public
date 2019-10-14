@@ -19,7 +19,10 @@ import uk.gov.hmcts.reform.idam.api.external.model.EvaluatePoliciesResponseInner
 import uk.gov.hmcts.reform.idam.api.external.model.Subject;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Collections.singletonList;
@@ -57,7 +60,7 @@ public class PolicyService {
             .resources(singletonList(uri))
             .application(applicationName)
             .subject(new Subject().ssoToken(userSsoToken))
-            .environment(ImmutableMap.of("requestIp", singletonList(ipAddress)));
+            .environment(ImmutableMap.of("requestIp", getRequestIps(ipAddress)));
 
         final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookie, userSsoToken, request, ipAddress);
 
@@ -102,6 +105,26 @@ public class PolicyService {
             }
         }
         return true;
+    }
+
+    /**
+     * Sanitise and return request ips in a list of strings
+     * Examples:
+     * "1.1.1.1" => ["1.1.1.1"]
+     * "51.140.12.192:59286" => ["51.140.12.192"]
+     * "51.140.12.192:59286, 10.97.64.4:59250, 10.97.66.7:57249" => ["51.140.12.192", "10.97.64.4", "10.97.66.7"]
+     *
+     * @should returnSanitisedIpAddresses
+     */
+    protected List<String> getRequestIps(String ipAddress) {
+        if (ipAddress == null) {
+            return null;
+        }
+        final String[] splitArray = StringUtils.split(ipAddress, ",");
+        return Arrays.asList(splitArray).stream()
+            .map(String::trim)
+            .map(s -> StringUtils.substringBefore(s, ":"))
+            .collect(Collectors.toList());
     }
 
 }
