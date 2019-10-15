@@ -22,6 +22,8 @@ import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
@@ -113,6 +115,8 @@ public class PolicyService {
      * "1.1.1.1" => ["1.1.1.1"]
      * "51.140.12.192:59286" => ["51.140.12.192"]
      * "51.140.12.192:59286, 10.97.64.4:59250, 10.97.66.7:57249" => ["51.140.12.192", "10.97.64.4", "10.97.66.7"]
+     * "2001:db8:85a3:8d3:1319:8a2e:370:7348" => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
+     * "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234" => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
      *
      * @should returnSanitisedIpAddresses
      */
@@ -123,7 +127,19 @@ public class PolicyService {
         final String[] splitArray = StringUtils.split(ipAddress, ",");
         return Arrays.asList(splitArray).stream()
             .map(String::trim)
-            .map(s -> StringUtils.substringBefore(s, ":"))
+            .map(s -> {
+                final boolean isIpv4 = StringUtils.countMatches(s, ":") < 2;
+                if (isIpv4) {
+                    // remove port if any
+                    return StringUtils.substringBefore(s, ":");
+                }
+                final Matcher m = Pattern.compile("\\[(.+)\\].*").matcher(s);
+                final boolean isIpv6WithPort = m.matches();
+                if (isIpv6WithPort) {
+                    return m.group(1);
+                }
+                return s;
+            })
             .collect(Collectors.toList());
     }
 
