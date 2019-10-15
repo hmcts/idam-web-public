@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@SIDM_increase_FuncTest_timout")
 
 def type = "java"
 
@@ -8,6 +8,12 @@ def product = "idam"
 
 def component = "web-public"
 
+env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+env.PROD_ENVIRONMENT_NAME    = 'idam-prod'
+env.DEMO_ENVIRONMENT_NAME    = 'idam-demo'
+env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+env.PERFTEST_ENVIRONMENT_NAME = 'idam-perftest'
+env.ITHC_ENVIRONMENT_NAME = 'idam-ithc'
 env.NO_SKIP_IMG_BUILD = 'true'
 
 def vaultOverrides = [
@@ -15,7 +21,7 @@ def vaultOverrides = [
 ]
 
 def secrets = [
-    'idam-idam-${env}': [
+    'idam-${env}': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY')
@@ -38,6 +44,53 @@ withPipeline(type, product, component) {
     enableSlackNotifications('#idam_tech')
     installCharts()
 
+    // AKS Callbacks
+    before('akschartsinstall') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+        println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                   Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".trim()
+    }
+    
+    before('smoketest-aks:idam-preview') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
+        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+        env.IDAMAPI = "https://idam-api-pr-423.service.core-compute-preview.internal"
+        println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                   Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                   Using IDAMAPI: ${env.IDAMAPI}""".trim()
+    }
+
+    before('functionalTest-aks:idam-preview') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+        env.IDAMAPI = "https://idam-api-pr-423.service.core-compute-preview.internal"
+        println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                   Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                   Using IDAMAPI: ${env.IDAMAPI}""".trim()
+    }
+
+    after('akschartsinstall') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+        println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                   Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".trim()
+    }
+    
+    after('smoketest-aks:idam-preview') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+        println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                   Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".trim()
+    }
+
+    after('functionalTest-aks:idam-preview') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+        println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                   Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".trim()
+    }
+    // End AKS Callbacks
     after('test') {
         publishHTML target: [
             allowMissing         : true,
@@ -58,11 +111,6 @@ withPipeline(type, product, component) {
         ]
     }
 
-    before('smoketest:preview') {
-        env.IDAMAPI = "https://idam-api-pr-423.service.core-compute-preview.internal"
-        println "Using IDAMAPI: ${env.IDAMAPI}"
-    }
-
     after('smoketest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
 
@@ -76,12 +124,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    before('smoketest:aat') {
-        env.IDAMAPI = "https://idam-api.service.core-compute-${env.ENVIRONMENT_NAME}.internal"
-        println "Using IDAMAPI: ${env.IDAMAPI}"
-    }
-
-    after('smoketest:aat') {
+    after('smoketest:idam-aat') {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
@@ -94,12 +137,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    before('functionalTest:preview') {
-        env.IDAMAPI = "https://idam-api-pr-423.service.core-compute-preview.internal"
-        println "Using IDAMAPI: ${env.IDAMAPI}"
-    }
-
-    after('functionalTest:preview') {
+    after('functionalTest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
@@ -112,12 +150,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    before('functionalTest:aat') {
-        env.IDAMAPI = "https://idam-api.service.core-compute-${env.ENVIRONMENT_NAME}.internal"
-        println "Using IDAMAPI: ${env.IDAMAPI}"
-    }
-
-    after('functionalTest:aat') {
+    after('functionalTest:idam-aat') {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
