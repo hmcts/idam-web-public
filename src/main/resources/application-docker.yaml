@@ -15,6 +15,7 @@ server:
   max-http-header-size: 24KB
 
 zuul:
+  ssl-hostname-validation-enabled: true
   routes:
     open-id-connect:
       path: /o/**

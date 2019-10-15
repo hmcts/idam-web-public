@@ -8,3 +8,5 @@ java:
   environment:
     STRATEGIC_SERVICE_URL: https://idam-api-pr-423.service.core-compute-preview.internal
     SSL_VERIFICATION_ENABLED: false
+    ZUUL_SSL-HOSTNAME-VALIDATION-ENABLED: false
+
