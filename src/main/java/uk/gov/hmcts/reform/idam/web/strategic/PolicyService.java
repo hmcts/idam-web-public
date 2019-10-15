@@ -36,6 +36,10 @@ public class PolicyService {
 
     public static final String ERROR_POLICY_CHECK_EXCEPTION = "Policy check exception.";
 
+    // Matches and captures ipv6 with port: 1fff:0:a88:85a3::ac1f
+    // [1fff:0:a88:85a3::ac1f]:8001
+    private static final Pattern IPV6_USING_BRACKETS_WITH_PORT_PATTERN = Pattern.compile("\\[(.+)\\].*");
+
     private final RestTemplate restTemplate;
 
     private final ConfigurationProperties configurationProperties;
@@ -62,7 +66,7 @@ public class PolicyService {
             .resources(singletonList(uri))
             .application(applicationName)
             .subject(new Subject().ssoToken(userSsoToken))
-            .environment(ImmutableMap.of("requestIp", getRequestIps(ipAddress)));
+            .environment(ImmutableMap.of("requestIp", sanitiseIpsFromRequest(ipAddress)));
 
         final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookie, userSsoToken, request, ipAddress);
 
@@ -110,7 +114,7 @@ public class PolicyService {
     }
 
     /**
-     * Sanitise and return request ips in a list of strings
+     * Sanitise and returns request ips in a list of strings
      * Examples:
      * "1.1.1.1" => ["1.1.1.1"]
      * "51.140.12.192:59286" => ["51.140.12.192"]
@@ -118,9 +122,9 @@ public class PolicyService {
      * "2001:db8:85a3:8d3:1319:8a2e:370:7348" => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
      * "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234" => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
      *
-     * @should returnSanitisedIpAddresses
+     * @should break multiple ips and remove port
      */
-    protected List<String> getRequestIps(String ipAddress) {
+    protected List<String> sanitiseIpsFromRequest(String ipAddress) {
         if (ipAddress == null) {
             return null;
         }
@@ -133,7 +137,7 @@ public class PolicyService {
                     // remove port if any
                     return StringUtils.substringBefore(s, ":");
                 }
-                final Matcher m = Pattern.compile("\\[(.+)\\].*").matcher(s);
+                final Matcher m = IPV6_USING_BRACKETS_WITH_PORT_PATTERN.matcher(s);
                 final boolean isIpv6WithPort = m.matches();
                 if (isIpv6WithPort) {
                     return m.group(1);

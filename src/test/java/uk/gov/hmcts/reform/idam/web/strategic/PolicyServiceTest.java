@@ -185,32 +185,32 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies returnSanitisedIpAddresses
-     * @see PolicyService#getRequestIps(String)
+     * @verifies break multiple ips and remove port
+     * @see PolicyService#sanitiseIpsFromRequest(String)
      */
     @Test
-    public void getRequestIps_shouldReturnSanitisedIpAddresses() throws Exception {
+    public void sanitiseIpsFromRequest_shouldBreakMultipleIpsAndRemovePort() throws Exception {
         List<String> actual;
 
-        actual = service.getRequestIps(null);
+        actual = service.sanitiseIpsFromRequest(null);
         assertNull(actual);
 
-        actual = service.getRequestIps("1.1.1.1");
+        actual = service.sanitiseIpsFromRequest("1.1.1.1");
         assertThat(actual, is(singletonList("1.1.1.1")));
 
-        actual = service.getRequestIps("1.1.1.1:9999");
+        actual = service.sanitiseIpsFromRequest("1.1.1.1:9999");
         assertThat(actual, is(singletonList("1.1.1.1")));
 
-        actual = service.getRequestIps("1.1.1.1:1111, 2.2.2.2:2222, 3.3.3.3:3333");
+        actual = service.sanitiseIpsFromRequest("1.1.1.1:1111, 2.2.2.2:2222, 3.3.3.3:3333");
         assertThat(actual, is(asList("1.1.1.1", "2.2.2.2", "3.3.3.3")));
 
-        actual = service.getRequestIps("2001:db8:85a3:8d3:1319:8a2e:370:7348, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        actual = service.sanitiseIpsFromRequest("2001:db8:85a3:8d3:1319:8a2e:370:7348, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
         assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
 
-        actual = service.getRequestIps("[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        actual = service.sanitiseIpsFromRequest("[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
         assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
 
-        actual = service.getRequestIps("[2001:db8:85a3:8d3:1319:8a2e:370:7348], 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        actual = service.sanitiseIpsFromRequest("[2001:db8:85a3:8d3:1319:8a2e:370:7348], 2001:db8:85a3:8d3:1319:8a2e:370:7348");
         assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
     }
 }
