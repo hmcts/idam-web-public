@@ -19,7 +19,12 @@ import uk.gov.hmcts.reform.idam.api.external.model.EvaluatePoliciesResponseInner
 import uk.gov.hmcts.reform.idam.api.external.model.Subject;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Collections.singletonList;
@@ -30,6 +35,10 @@ import static java.util.Optional.ofNullable;
 public class PolicyService {
 
     public static final String ERROR_POLICY_CHECK_EXCEPTION = "Policy check exception.";
+
+    // Matches and captures ipv6 with port: 1fff:0:a88:85a3::ac1f
+    // [1fff:0:a88:85a3::ac1f]:8001
+    private static final Pattern IPV6_USING_BRACKETS_WITH_PORT_PATTERN = Pattern.compile("\\[(.+)\\].*");
 
     private final RestTemplate restTemplate;
 
@@ -57,7 +66,7 @@ public class PolicyService {
             .resources(singletonList(uri))
             .application(applicationName)
             .subject(new Subject().ssoToken(userSsoToken))
-            .environment(ImmutableMap.of("requestIp", singletonList(ipAddress)));
+            .environment(ImmutableMap.of("requestIp", sanitiseIpsFromRequest(ipAddress)));
 
         final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookie, userSsoToken, request, ipAddress);
 
@@ -102,6 +111,40 @@ public class PolicyService {
             }
         }
         return true;
+    }
+
+    /**
+     * Sanitise and returns request ips in a list of strings
+     * Examples:
+     * "1.1.1.1" => ["1.1.1.1"]
+     * "51.140.12.192:59286" => ["51.140.12.192"]
+     * "51.140.12.192:59286, 10.97.64.4:59250, 10.97.66.7:57249" => ["51.140.12.192", "10.97.64.4", "10.97.66.7"]
+     * "2001:db8:85a3:8d3:1319:8a2e:370:7348" => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
+     * "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234" => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
+     *
+     * @should break multiple ips and remove port
+     */
+    protected List<String> sanitiseIpsFromRequest(String ipAddress) {
+        if (ipAddress == null) {
+            return null;
+        }
+        final String[] splitArray = StringUtils.split(ipAddress, ",");
+        return Arrays.asList(splitArray).stream()
+            .map(String::trim)
+            .map(s -> {
+                final boolean isIpv4 = StringUtils.countMatches(s, ":") < 2;
+                if (isIpv4) {
+                    // remove port if any
+                    return StringUtils.substringBefore(s, ":");
+                }
+                final Matcher m = IPV6_USING_BRACKETS_WITH_PORT_PATTERN.matcher(s);
+                final boolean isIpv6WithPort = m.matches();
+                if (isIpv6WithPort) {
+                    return m.group(1);
+                }
+                return s;
+            })
+            .collect(Collectors.toList());
     }
 
 }

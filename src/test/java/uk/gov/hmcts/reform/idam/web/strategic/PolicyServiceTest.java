@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.google.common.collect.ImmutableMap;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +23,12 @@ import uk.gov.hmcts.reform.idam.api.external.model.EvaluatePoliciesResponseInner
 import uk.gov.hmcts.reform.idam.api.external.model.Subject;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -90,7 +94,7 @@ public class PolicyServiceTest {
 
         boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
 
-        assertThat(Boolean.valueOf(result), Matchers.is(Boolean.TRUE));
+        assertThat(Boolean.valueOf(result), is(Boolean.TRUE));
 
         verify(restTemplate).exchange(
             eq("idamApi/evaluatePolicies"),
@@ -114,7 +118,7 @@ public class PolicyServiceTest {
 
         boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
 
-        assertThat(Boolean.valueOf(result), Matchers.is(Boolean.TRUE));
+        assertThat(Boolean.valueOf(result), is(Boolean.TRUE));
 
         verify(restTemplate).exchange(
             eq("idamApi/evaluatePolicies"),
@@ -138,7 +142,7 @@ public class PolicyServiceTest {
 
         boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
 
-        assertThat(Boolean.valueOf(result), Matchers.is(Boolean.FALSE));
+        assertThat(Boolean.valueOf(result), is(Boolean.FALSE));
 
         verify(restTemplate).exchange(
             eq("idamApi/evaluatePolicies"),
@@ -170,7 +174,7 @@ public class PolicyServiceTest {
 
         boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
 
-        assertThat(Boolean.valueOf(result), Matchers.is(Boolean.TRUE));
+        assertThat(Boolean.valueOf(result), is(Boolean.TRUE));
 
         verify(restTemplate).exchange(
             eq("idamApi/evaluatePolicies"),
@@ -178,5 +182,35 @@ public class PolicyServiceTest {
             eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
                 expectedHeaders("someToken", "someIpAddress"))),
             eq(EvaluatePoliciesResponse.class));
+    }
+
+    /**
+     * @verifies break multiple ips and remove port
+     * @see PolicyService#sanitiseIpsFromRequest(String)
+     */
+    @Test
+    public void sanitiseIpsFromRequest_shouldBreakMultipleIpsAndRemovePort() throws Exception {
+        List<String> actual;
+
+        actual = service.sanitiseIpsFromRequest(null);
+        assertNull(actual);
+
+        actual = service.sanitiseIpsFromRequest("1.1.1.1");
+        assertThat(actual, is(singletonList("1.1.1.1")));
+
+        actual = service.sanitiseIpsFromRequest("1.1.1.1:9999");
+        assertThat(actual, is(singletonList("1.1.1.1")));
+
+        actual = service.sanitiseIpsFromRequest("1.1.1.1:1111, 2.2.2.2:2222, 3.3.3.3:3333");
+        assertThat(actual, is(asList("1.1.1.1", "2.2.2.2", "3.3.3.3")));
+
+        actual = service.sanitiseIpsFromRequest("2001:db8:85a3:8d3:1319:8a2e:370:7348, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+
+        actual = service.sanitiseIpsFromRequest("[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+
+        actual = service.sanitiseIpsFromRequest("[2001:db8:85a3:8d3:1319:8a2e:370:7348], 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
     }
 }
