@@ -1,5 +1,26 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
+import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
+import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
+
+import java.util.Map;
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,34 +34,59 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.*;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ALREADY_ACTIVATED_KEY;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BASE64_ENC_FORM_DATA;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_BLACKLISTED_PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CAPITAL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_ENTER_PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_INVALID_PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_ONE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_TWO;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MESSAGE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MSG;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_PASSWORD_DETAILS;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_TITLE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_ACTIVATION_TOKEN_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORM_DATA;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GENERIC_ERROR_KEY;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_COMMAND;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_LABEL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_INVALID_RESPONSE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERS_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERS_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATED_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_CODE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_TOKEN;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_CREATED_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getActivateUserPostRequest;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getActivationResult;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterPostRequest;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getService;
-
-import java.util.Map;
-import java.util.Optional;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
-import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
-import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
-import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
-import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(UserController.class)
@@ -62,6 +108,26 @@ public class UserControllerTest {
      */
     @Test
     public void userActivation_shouldReturnExpiredtokenViewAndHaveRedirect_uriAttributeInModelIfTokenExpired() throws Exception {
+        ActivationResult activationResult = getActivationResult("", GOOGLE_WEB_ADDRESS, CLIENT_ID_PARAMETER);
+        given(spiService.validateActivationToken(ArgumentMatchers.any())).willReturn(ResponseEntity.ok(activationResult));
+
+        mockMvc.perform(get(VALIDATE_TOKEN_ENDPOINT)
+            .param(TOKEN_PARAMETER, USER_ACTIVATION_TOKEN)
+            .param(CODE_PARAMETER, USER_ACTIVATION_CODE))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(REDIRECT_URI, "/users/selfRegister?redirect_uri=" + GOOGLE_WEB_ADDRESS +
+                "&client_id=" + CLIENT_ID_PARAMETER))
+            .andExpect(view().name(EXPIRED_ACTIVATION_TOKEN_VIEW_NAME));
+
+    }
+
+    /**
+     * @verifies return useractivation view and no redirect_uri attribute in model if the token is valid
+     * @see UserController#userActivation(String, String, java.util.Map)
+     */
+    @Test
+    public void userActivation_shouldReturnUseractivationViewAndNoRedirect_uriAttributeInModelIfTheTokenIsValid() throws Exception {
         given(spiService.validateActivationToken(ArgumentMatchers.any())).willReturn(new ResponseEntity<>(HttpStatus.OK));
 
         mockMvc.perform(get(VALIDATE_TOKEN_ENDPOINT)
@@ -71,24 +137,6 @@ public class UserControllerTest {
             .andExpect(status().isOk())
             .andExpect(model().attribute(REDIRECT_URI, nullValue()))
             .andExpect(view().name(USER_ACTIVATION_VIEW_NAME));
-    }
-
-    /**
-     * @verifies return useractivation view and no redirect_uri attribute in model if the token is valid
-     * @see UserController#userActivation(String, String, java.util.Map)
-     */
-    @Test
-    public void userActivation_shouldReturnUseractivationViewAndNoRedirect_uriAttributeInModelIfTheTokenIsValid() throws Exception {
-        ActivationResult activationResult = getActivationResult("", GOOGLE_WEB_ADDRESS);
-        given(spiService.validateActivationToken(ArgumentMatchers.any())).willReturn(ResponseEntity.ok(activationResult));
-
-        mockMvc.perform(get(VALIDATE_TOKEN_ENDPOINT)
-            .param(TOKEN_PARAMETER, USER_ACTIVATION_TOKEN)
-            .param(CODE_PARAMETER, USER_ACTIVATION_CODE))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(model().attribute(REDIRECT_URI, GOOGLE_WEB_ADDRESS))
-            .andExpect(view().name(EXPIRED_TOKEN_VIEW_NAME));
     }
 
     /**

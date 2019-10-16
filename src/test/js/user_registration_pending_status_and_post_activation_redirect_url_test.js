@@ -71,7 +71,7 @@ Scenario('@functional user registration pending status and post activation redir
     I.waitForText('Continue', 20);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
-    I.waitUrlEquals('https://idam.testservice.gov.uk/', 60);
+    I.waitForText("https://idam.testservice.gov.uk");
 
     let responseAfterActivation = await I.getUserById(userId, accessToken);
     expect(responseAfterActivation.id).to.equal(userId);

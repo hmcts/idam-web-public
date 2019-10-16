@@ -12,6 +12,7 @@ public class MvcKeys {
     public static final String ERROR_SUB_MSG = "errorSubMsg";
     public static final String HAS_ERRORS = "hasErrors";
     public static final String HAS_LOGIN_FAILED = "hasLoginFailed";
+    public static final String HAS_POLICY_CHECK_FAILED = "hasPolicyCheckFailed";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
     public static final String JWT = "jwt";
@@ -28,7 +29,8 @@ public class MvcKeys {
     public static final String ERROR_VIEW = "error";
     public static final String ERRORPAGE_VIEW = "errorpage";
     public static final String PAGE_NOT_FOUND_VIEW = "404";
-    public static final String EXPIREDTOKEN_VIEW = "expiredtoken";
+    public static final String EXPIRED_PASSWORD_RESET_LINK_VIEW = "expiredPasswordResetLink";
+    public static final String EXPIRED_ACTIVATION_LINK_VIEW = "expiredActivationLink";
     public static final String FORGOTPASSWORD_VIEW = "forgotpassword";
     public static final String FORGOTPASSWORDSUCCESS_VIEW = "forgotpasswordsuccess";
     public static final String INDEX_VIEW = "index";

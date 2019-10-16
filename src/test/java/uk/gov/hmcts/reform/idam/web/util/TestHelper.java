@@ -18,11 +18,11 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.*;
 
 public class TestHelper {
 
-
-    public static ActivationResult getActivationResult(String uuid, String redirectUri) {
+    public static ActivationResult getActivationResult(String uuid, String redirectUri, String clientId) {
         ActivationResult activationResult = new ActivationResult();
         activationResult.setUuid(uuid);
         activationResult.setRedirectUri(redirectUri);
+        activationResult.setClientId(clientId);
         return activationResult;
     }
 
