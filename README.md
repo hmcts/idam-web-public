@@ -95,6 +95,7 @@ management:
       exposure:
         include: health,info,configprops,env
     ...
+
 # values.yaml
   ...
   environment:
@@ -102,6 +103,7 @@ management:
     MANAGEMENT_ENDPOINT_ENV_KEYS-TO-SANITIZE_0: nothing
     MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,configprops,env
   ...
+
 # K8s manifest
         - name: MANAGEMENT_ENDPOINT_CONFIGPROPS_KEYS-TO-SANITIZE_0
           value: nothing
@@ -109,6 +111,26 @@ management:
           value: nothing
         - name: MANAMANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
           value: health,info,configprops,env
+```
+
+
+### Pipeline Overrides
+
+You can add similar callbacks to the below to override the environment values and set testing variables.
+
+```groovy
+withPipeline(type, product, component) {
+  ...
+  before('smoketest-aks:idam-preview') {
+    env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
+    env.NONPROD_ENVIRONMENT_NAME = 'aat'
+    env.PUBLIC_URL = 'https://idam-web-public-pr-207.service.core-compute-preview.internal'
+    println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+               Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+               Using PUBLIC_URL: ${env.PUBLIC_URL}""".stripIndent()
+  }
+  ...
+}
 ```
 
 ## Versioning
