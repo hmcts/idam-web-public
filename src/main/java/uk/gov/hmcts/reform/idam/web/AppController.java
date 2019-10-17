@@ -43,9 +43,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
@@ -316,9 +318,10 @@ public class AppController {
                 final String ipAddress = ObjectUtils.defaultIfNull(
                     httpRequest.getHeader(X_FORWARDED_FOR),
                     httpRequest.getRemoteAddr());
-                final String cookie = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
+                final List<String> cookies =
+                    spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
                 String responseUrl = null;
-                if (cookie != null) {
+                if (cookies != null) {
                     Map<String, String> params = new HashMap<>();
                     httpRequest.getParameterMap().forEach((key, values) -> {
                         if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
@@ -327,10 +330,11 @@ public class AppController {
                     );
                     params.putIfAbsent(RESPONSE_TYPE, "code");
                     params.putIfAbsent(SCOPE, "openid profile roles");
-                    responseUrl = spiService.authorize(params, cookie);
+                    responseUrl = spiService.authorize(params, cookies);
                 }
                 if (responseUrl != null && !responseUrl.contains("error")) {
-                    response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
+                    List<String> secureCookies = makeCookiesSecure(cookies);
+                    secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                     nextPage = "redirect:" + responseUrl;
                 } else {
                     log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
@@ -351,19 +355,25 @@ public class AppController {
     }
 
 
-    private String makeCookieSecure(String cookie) {
-        return makeCookieSecure(cookie, useSecureCookie);
+    private List<String> makeCookiesSecure(List<String> cookies) {
+        return makeCookiesSecure(cookies, useSecureCookie);
     }
 
     /**
      * @should return a secure cookie if useSecureCookie is true
      * @should return a non-secure cookie if useSecureCookie is false
      */
-    protected String makeCookieSecure(String cookie, boolean withSecureCookie) {
-        if (withSecureCookie) {
-            return cookie + "; Path=/; Secure; HttpOnly";
-        }
-        return cookie + "; Path=/; HttpOnly";
+    protected List<String> makeCookiesSecure(List<String> cookies, boolean withSecureCookie) {
+        return cookies.stream()
+            .map(cookie -> {
+                if (!cookie.contains("HttpOnly")) {
+                    if (withSecureCookie) {
+                        return cookie + "; Path=/; Secure; HttpOnly";
+                    }
+                    return cookie + "; Path=/; HttpOnly";
+                }
+                return cookie;
+            }).collect(Collectors.toList());
     }
 
     private void getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {

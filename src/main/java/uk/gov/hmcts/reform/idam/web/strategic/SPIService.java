@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -124,7 +126,7 @@ public class SPIService {
      * @should return null if no cookie is found
      * @should return a set-cookie header
      */
-    public String authenticate(final String username, final String password, final String ipAddress) {
+    public List<String> authenticate(final String username, final String password, final String ipAddress) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
         form.add("username", username);
         form.add("password", password);
@@ -137,8 +139,7 @@ public class SPIService {
             new HttpEntity<>(form, headers), Void.class);
 
         if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
-            return response.getHeaders().get(HttpHeaders.SET_COOKIE).stream()
-                .findFirst().orElse(null);
+            return new ArrayList<>(response.getHeaders().get(HttpHeaders.SET_COOKIE));
         } else {
             return null;
         }
@@ -149,11 +150,11 @@ public class SPIService {
      * @should not send state and scope parameters in form if they are not send as parameter in the service
      * @should return null if api response code is not 302
      */
-    public String authorize(final Map<String, String> params, final String cookie) {
+    public String authorize(final Map<String, String> params, final List<String> cookie) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         if (cookie != null) {
-            headers.add(HttpHeaders.COOKIE, cookie);
+            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookie, ";"));
         }
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(14);
         params.forEach(form::add);
