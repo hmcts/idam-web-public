@@ -81,7 +81,6 @@ allprojects  {
     compile group: 'javax.servlet', name: 'jstl'
     compile group: 'javax.json', name: 'javax.json-api'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9.3'
-    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.1'
     compile group: 'org.apache.httpcomponents', name: 'httpclient'
     compile group: 'org.apache.httpcomponents', name: 'httpcore'
     compile group: 'org.apache.commons', name: 'commons-text'

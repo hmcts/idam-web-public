@@ -159,6 +159,7 @@ public class TestConstants {
     public static final String CLIENT_ID = "clientId";
     public static final String REDIRECTURI = "redirectUri";
     public static final String CUSTOM_SCOPE = "manage-roles";
+    public static final String INSECURE_SESSION_COOKE = "Idam.Session=A_TASTY_TREAT";
     public static final String AUTHENTICATE_SESSION_COOKE = "Idam.Session=A_TASTY_TREAT; Path=/; Secure; HttpOnly";
 
     //Responses

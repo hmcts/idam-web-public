@@ -1501,7 +1501,7 @@ public class AppControllerTest {
     @Test
     public void makeCookiesSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
         AppController appController = new AppController();
-        assertThat(appController.makeCookiesSecure(Collections.singletonList(AUTHENTICATE_SESSION_COOKE), true), is(Collections.singletonList(AUTHENTICATE_SESSION_COOKE + "; Path=/; Secure; HttpOnly")));
+        assertThat(appController.makeCookiesSecure(Collections.singletonList(INSECURE_SESSION_COOKE), true), is(Collections.singletonList(AUTHENTICATE_SESSION_COOKE)));
     }
 
     /**
@@ -1511,7 +1511,7 @@ public class AppControllerTest {
     @Test
     public void makeCookiesSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
         AppController appController = new AppController();
-        assertThat(appController.makeCookiesSecure(Collections.singletonList(AUTHENTICATE_SESSION_COOKE), false), is(Collections.singletonList(AUTHENTICATE_SESSION_COOKE + "; Path=/; HttpOnly")));
+        assertThat(appController.makeCookiesSecure(Collections.singletonList(INSECURE_SESSION_COOKE), false), is(Collections.singletonList(INSECURE_SESSION_COOKE + "; Path=/; HttpOnly")));
     }
 
 }
