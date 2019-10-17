@@ -335,7 +335,7 @@ class IdamHelper extends Helper {
     getEmail(searchEmail) {
         return (
             notifyClient
-                .getNotifications("email", "sending")
+                .getNotifications("email", null)
                 .then(response => {
                     console.log("Searching " + response.body.notifications.length + " emails(s) from sending queue");
                     return this.searchForEmailInResults(response.body.notifications, searchEmail);

@@ -50,7 +50,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(2);
+    I.wait(10);
     var resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -82,7 +82,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.fillField('#email', plusCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(2);
+    I.wait(10);
     var resetPasswordUrl = await I.extractUrl(plusCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -113,7 +113,7 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.fillField('#email', otherCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(2);
+    I.wait(10);
     var resetPasswordUrl = await I.extractUrl(otherCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');

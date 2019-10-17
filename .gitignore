@@ -21,6 +21,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+*.tgz
 
 .DS_Store
 node_modules/
