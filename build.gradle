@@ -31,8 +31,7 @@ allprojects  {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.6.5'
-
+  def idamBomVersion = '1.6.6'
   ext['tomcat.version'] = '9.0.22'
   
   dependencyManagement {
@@ -79,7 +78,8 @@ allprojects  {
     
     implementation group: 'javax.servlet', name: 'jstl'
     implementation group: 'javax.json', name: 'javax.json-api'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+    // TODO remove this hardcoded version when all of jackson > 2.9.9
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9.3'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.apache.commons', name: 'commons-text'
