@@ -4,7 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
 
-
 @ConfigurationProperties(prefix = "strategic")
 @Data
 public class StrategicConfigurationProperties {
@@ -13,11 +12,10 @@ public class StrategicConfigurationProperties {
     private EndpointConfigurationProperties endpoint;
     private Policies policies;
 
-
     @Data
     public static class ServiceConfigurationProperties {
-
         private String url;
+        private String oidcprefix;
     }
 
     @Data

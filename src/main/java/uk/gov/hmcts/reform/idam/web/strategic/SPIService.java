@@ -31,6 +31,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
@@ -42,7 +47,10 @@ import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
+import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_PROTO;
 
 @Slf4j
 @Service
@@ -154,6 +162,7 @@ public class SPIService {
         if (cookie != null) {
             headers.add(HttpHeaders.COOKIE, cookie);
         }
+        addUriHeaders(headers);
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(14);
         params.forEach(form::add);
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
@@ -168,6 +177,17 @@ public class SPIService {
         } else {
             return null;
         }
+    }
+
+    private void addUriHeaders(HttpHeaders headers) {
+        final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+            .getRequest();
+        UriComponents uriComponents = UriComponentsBuilder.
+            fromUriString(request.getRequestURL().toString()).build();
+        headers.add("x-forwarded-proto", uriComponents.getScheme());
+        headers.add("x-forwarded-host", uriComponents.getHost());
+        headers.add("x-forwarded-prefix", configurationProperties.getStrategic()
+            .getService().getOidcprefix());
     }
 
     public String loginWithPin(final String pin, final String redirectUri, final String state, final String clientId) throws NotFoundException {
