@@ -21,7 +21,6 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-*.tgz
 
 .DS_Store
 node_modules/
@@ -31,3 +30,7 @@ out
 output/
 
 **/application-local.yaml
+
+### Helm ###
+**/charts/*.tgz
+charts/*/requirements.lock
