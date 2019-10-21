@@ -5,9 +5,8 @@ java:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
-  aadIdentityName: null
   environment:
-    STRATEGIC_SERVICE_URL: https://idam-api-pr-472.service.core-compute-preview.internal
+    STRATEGIC_SERVICE_URL: https://idam-api-pr-474.service.core-compute-preview.internal
     SSL_VERIFICATION_ENABLED: false
     ZUUL_SSLHOSTNAMEVALIDATIONENABLED: false
 
