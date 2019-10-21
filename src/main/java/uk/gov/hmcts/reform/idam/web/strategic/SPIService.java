@@ -180,14 +180,16 @@ public class SPIService {
     }
 
     private void addUriHeaders(HttpHeaders headers) {
-        final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-            .getRequest();
-        UriComponents uriComponents = UriComponentsBuilder.
-            fromUriString(request.getRequestURL().toString()).build();
-        headers.add("x-forwarded-proto", uriComponents.getScheme());
-        headers.add("x-forwarded-host", uriComponents.getHost());
-        headers.add("x-forwarded-prefix", configurationProperties.getStrategic()
-            .getService().getOidcprefix());
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            final HttpServletRequest request = attributes.getRequest();
+            UriComponents uriComponents = UriComponentsBuilder.
+                fromUriString(request.getRequestURL().toString()).build();
+            headers.add("x-forwarded-proto", uriComponents.getScheme());
+            headers.add("x-forwarded-host", uriComponents.getHost());
+            headers.add("x-forwarded-prefix", configurationProperties.getStrategic()
+                .getService().getOidcprefix());
+        }
     }
 
     public String loginWithPin(final String pin, final String redirectUri, final String state, final String clientId) throws NotFoundException {
