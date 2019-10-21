@@ -29,13 +29,14 @@ management:
   # Enable the info and health endpoints
   # A given environment (such as prod) might disable all endpoints,
   # but info and health should still be enabled
+  endpoint:
+    health:
+      show-details: "always"
   endpoints:
     web:
       base-path: /
-    info:
-      enabled: true
-    health:
-      enabled: true
+      exposure:
+        include: health,info
 
 ssl:
   verification:
