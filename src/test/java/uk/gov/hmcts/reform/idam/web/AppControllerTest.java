@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.idam.web;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +45,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -1210,6 +1210,8 @@ public class AppControllerTest {
     public void login_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
         given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(MISSING);
+        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
+            .willReturn(true);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
@@ -1223,7 +1225,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(view().name(LOGIN_VIEW));
 
-        verify(policyService, never()).evaluatePoliciesForUser(any(), any(), any());
+        verify(policyService, atLeastOnce()).evaluatePoliciesForUser(any(), any(), any());
     }
 
     /**
@@ -1234,6 +1236,8 @@ public class AppControllerTest {
     public void login_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
         given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
+        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
+            .willReturn(true);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
@@ -1292,6 +1296,8 @@ public class AppControllerTest {
     public void login_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
         given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
+            .willReturn(true);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
@@ -1544,7 +1550,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(MvcKeys.HAS_POLICY_CHECK_FAILED, true))
             .andExpect(view().name(LOGIN_VIEW));
 
-        verify(spiService).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
+        verify(spiService, never()).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
 
         verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
     }
