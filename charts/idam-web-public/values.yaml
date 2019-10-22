@@ -6,7 +6,6 @@ java:
   ingressHost: "{{ .Chart.Name }}.service.core-compute-{{ .Values.global.environment }}.internal"
   replicas: 3
   applicationPort: 8080
-  aadIdentityName: idam
   keyVaults:
     "idam-idam":
       resourceGroup: idam-idam

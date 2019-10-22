@@ -326,22 +326,28 @@ public class AppController {
             final String ipAddress = ObjectUtils.defaultIfNull(
                 httpRequest.getHeader(X_FORWARDED_FOR),
                 httpRequest.getRemoteAddr());
-            final String cookie = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
-            final String responseUrl = authoriseUser(cookie, httpRequest);
-            final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
-            final boolean policyCheckSuccess = loginSuccess && policyService.evaluatePoliciesForUser(responseUrl, cookie, ipAddress);;
 
-            if (loginSuccess && policyCheckSuccess) {
-                response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
-                nextPage = "redirect:" + responseUrl;
-            } else if (loginSuccess && !policyCheckSuccess) {
+            final String cookie = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
+            final String redirectUri = httpRequest.getParameter(REDIRECT_URI);
+            final boolean policyCheckSuccess = policyService.evaluatePoliciesForUser(redirectUri, cookie, ipAddress);;
+
+            if (policyCheckSuccess) {
+                final String responseUrl = authoriseUser(cookie, httpRequest);
+                final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
+
+                if (loginSuccess) {
+                    log.info("Successful login - " + obfuscateEmailAddress(request.getUsername()));
+                    response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
+                    nextPage = "redirect:" + responseUrl;
+                } else {
+                    log.info("There is a problem while logging in  user - " + obfuscateEmailAddress(request.getUsername()));
+                    model.addAttribute(HAS_LOGIN_FAILED, true);
+                    bindingResult.reject("Login failure");
+                }
+            } else {
                 log.info("User failed policy checks - " + obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
                 bindingResult.reject("Policy check failure");
-            } else {
-                log.info("There is a problem while login in  user - " + obfuscateEmailAddress(request.getUsername()));
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("Login failed for user - " + obfuscateEmailAddress(request.getUsername()));
