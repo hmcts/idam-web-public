@@ -1,4 +1,6 @@
 java:
+  postgresql:
+    enabled: false
   releaseNameOverride: idam-web-public
   image: 'hmctspublic.azurecr.io/idam/web-public:preview'
   ingressHost: "{{ .Chart.Name }}.service.core-compute-{{ .Values.global.environment }}.internal"
@@ -23,13 +25,7 @@ java:
   memoryRequests: '1024Mi'
   memoryLimits: '2048Mi'
     
-  useInterpodAntiAffinity: false
-  
-  pdb:
-    enabled: true
-    maxUnavailable: 50%
-
-  aadIdentity: idam
-
-  postgresql:
-    enabled: false
+  devmemoryRequests: '512Mi'
+  devcpuRequests: '1000m'
+  devmemoryLimits: '1024Mi'
+  devcpuLimits: '2500m'
