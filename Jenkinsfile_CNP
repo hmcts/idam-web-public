@@ -50,7 +50,7 @@ withPipeline(type, product, component) {
     before('smoketest-aks:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
-        env.IDAMAPI = "https://idam-api-pr-472.service.core-compute-preview.internal"
+        env.IDAMAPI = "https://idam-api-pr-474.service.core-compute-preview.internal"
         println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                    Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                    Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
@@ -59,7 +59,7 @@ withPipeline(type, product, component) {
     before('functionalTest-aks:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
-        env.IDAMAPI = "https://idam-api-pr-472.service.core-compute-preview.internal"
+        env.IDAMAPI = "https://idam-api-pr-474.service.core-compute-preview.internal"
         println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                    Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                    Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
