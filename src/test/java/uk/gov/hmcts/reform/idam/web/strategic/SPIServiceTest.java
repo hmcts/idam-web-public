@@ -87,7 +87,7 @@ public class SPIServiceTest {
     public void registerUser_shouldCallCorrectEndpointToRegisterUser() throws Exception {
         // when
         spiService.registerUser(aRegisterUserRequest());
-
+        // SUPERFLUOUS COMMIT
         // then
         verify(restTemplate).exchange(eq(SELF_REGISTRATION_URL), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
     }
