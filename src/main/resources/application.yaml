@@ -57,6 +57,7 @@ authentication:
 strategic:
   service:
     url: https://idam-api
+    oidcprefix: /o
   endpoint:
     authorize: authenticate
     loginWithPin: pin
