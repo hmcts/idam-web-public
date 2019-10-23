@@ -1,48 +1,55 @@
-var TestData = require('./config/test_data');
+const TestData = require('./config/test_data');
+const randomData = require('./shared/random_data');
 
 Feature('I am able to reset my password');
 
 let adminEmail;
-let randomUserLastName;
+let randomUserFirstName;
 let citizenEmail;
+let otherCitizenEmail;
+let plusCitizenEmail;
+let userFirstNames = [];
+let roleNames = [];
+let serviceNames = [];
 
-const serviceName = 'TEST_SERVICE_' + Date.now();
-const testMailSuffix = '@mailtest.gov.uk';
-const password = "Passw0rdIDAM"
-const serviceRedirectUri = "https://idam.testservice.gov.uk";
+const serviceName = randomData.getRandomServiceName();
+const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
 
 BeforeSuite(async (I) => {
-    randomUserLastName = await I.generateRandomText();
-    adminEmail = 'admin.' + randomUserLastName + testMailSuffix;
-    citizenEmail = 'citizen.' + randomUserLastName + testMailSuffix;
-    otherCitizenEmail = 'other.' + randomUserLastName + testMailSuffix;
-    plusCitizenEmail = 'plus.' + randomUserLastName + "+extra" + testMailSuffix;
+    randomUserFirstName = await I.generateRandomText();
+    adminEmail = 'admin.' + randomData.getRandomEmailAddress();
+    citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
+    otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
+    plusCitizenEmail = 'plus.' + "extra+" + randomData.getRandomEmailAddress();
 
-    var token = await I.getAuthToken();
-    await I.createRole(serviceName + "_beta", 'beta description', '', token);
-    await I.createRole(serviceName + "_admin", 'admin description', serviceName + "_beta", token);
-    await I.createRole(serviceName + "_super", 'super description', serviceName + "_admin", token);
-    var serviceRoles = [serviceName + "_beta", serviceName + "_admin", serviceName + "_super"];
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token);
-    await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_admin", "IDAM_ADMIN_USER"]);
-    await I.createUserWithRoles(citizenEmail, 'Citizen', ["citizen"]);
-    await I.createUserWithRoles(otherCitizenEmail, 'Citizen', ["citizen"]);
-    await I.createUserWithRoles(plusCitizenEmail, 'Citizen', ["citizen"]);
+    const token = await I.getAuthToken();
+    let response;
+    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
+    const serviceBetaRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
+    const serviceAdminRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
+    const serviceSuperRole = response.name;
+    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
+    roleNames.push(serviceRoles);
+    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    serviceNames.push(serviceName);
+    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
+    userFirstNames.push(randomUserFirstName + 'Admin');
+    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Citizen');
+    await I.createUserWithRoles(otherCitizenEmail, randomUserFirstName + 'Other', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Other');
+    await I.createUserWithRoles(plusCitizenEmail, randomUserFirstName + 'Plus', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Plus');
 
 });
 
 AfterSuite(async (I) => {
-return Promise.all([
-     I.deleteUser(adminEmail),
-     I.deleteUser(citizenEmail),
-     I.deleteUser(otherCitizenEmail),
-     I.deleteUser(plusCitizenEmail),
-     I.deleteService(serviceName)
-    ]);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
 Scenario('@functional @resetpass As a citizen user I can reset my password', async (I) => {
-    var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName + '&state=';
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -51,7 +58,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
-    var resetPasswordUrl = await I.extractUrl(citizenEmail);
+    const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
@@ -66,15 +73,14 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText('https://idam.testservice.gov.uk/');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
 });
- // NOTE: Retrying this scenario is problematic.
+// NOTE: Retrying this scenario is problematic.
 
 Scenario('@functional @resetpass As a citizen user with a plus email I can reset my password', async (I) => {
-    var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName + '&state=';
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -83,7 +89,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
-    var resetPasswordUrl = await I.extractUrl(plusCitizenEmail);
+    const resetPasswordUrl = await I.extractUrl(plusCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
@@ -98,14 +104,13 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText('https://idam.testservice.gov.uk/');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
 });
 
 Scenario('@functional @resetpass Validation displayed when I try to reset my password with a blacklisted/invalid password', async (I) => {
-    var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName + '&state=';
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -114,7 +119,7 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
-    var resetPasswordUrl = await I.extractUrl(otherCitizenEmail);
+    const resetPasswordUrl = await I.extractUrl(otherCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');

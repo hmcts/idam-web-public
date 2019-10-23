@@ -1,59 +1,57 @@
-var TestData = require('./config/test_data');
+const TestData = require('./config/test_data');
+const randomData = require('./shared/random_data');
 
 Feature('I am able to register user dynamically');
 
-let adminEmail;
-let randomUserFirstName;
-let randomUserLastName;
 let userEmail;
-let accessToken;
+let userFirstNames = [];
+let roleNames = [];
+let serviceNames = [];
 
-const serviceName = 'TEST_SERVICE_' + Date.now();
-const testMailSuffix = '@mailtest.gov.uk';
-const password = "Passw0rdIDAM"
-const redirectUri = 'https://idam.testservice.gov.uk';
-const clientSecret = 'autotestingservice';
+const serviceName = randomData.getRandomServiceName();
 
 BeforeSuite(async (I) => {
-    randomUserLastName = await I.generateRandomText();
-    randomUserFirstName = await I.generateRandomText();
-    adminEmail = 'admin.' + randomUserLastName + testMailSuffix;
-    userEmail = 'user.' + randomUserLastName + testMailSuffix;
+    const randomUserLastName = randomData.getRandomUserName();
+    const randomUserFirstName = randomData.getRandomUserName();
+    const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
+    userEmail = 'user.' + randomData.getRandomEmailAddress();
 
-    var token = await I.getAuthToken();
-    await I.createRole(serviceName + "_assignable", 'assignable role', '', token);
-    await I.createRole(serviceName + "_dynUsrReg", 'dynamic user reg role', serviceName + "_assignable", token);
-
-    var serviceRoles = [serviceName + "_dynUsrReg", serviceName + "_assignable"];
+    const token = await I.getAuthToken();
+    let response;
+    response = await I.createRole(randomData.getRandomRoleName() + "_assignable", 'assignable role', '', token);
+    const assignableRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_dynUsrReg", 'dynamic user reg role', assignableRole, token);
+    const dynamicUserRegRole = response.name;
+    const serviceRoles = [dynamicUserRegRole, assignableRole];
+    roleNames.push(serviceRoles);
     await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token, 'create-user');
-    await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_dynUsrReg"]);
+    serviceNames.push(serviceName);
+    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', dynamicUserRegRole);
+    userFirstNames.push(randomUserFirstName + 'Admin');
 
-    var base64 = await I.getBase64(adminEmail, password);
-    var code = await I.getAuthorizeCode(serviceName, redirectUri, 'create-user', base64);
-    var accessToken = await I.getAccessToken(code, serviceName, redirectUri, clientSecret);
+    const base64 = await I.getBase64(adminEmail, TestData.PASSWORD);
+    const code = await I.getAuthorizeCode(serviceName, TestData.SERVICE_REDIRECT_URI, 'create-user', base64);
+    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 
-    await I.registerUserWithRoles(accessToken, userEmail, randomUserFirstName, randomUserLastName, serviceName + "_assignable")
+    await I.registerUserWithRoles(accessToken, userEmail, randomUserFirstName + 'User', randomUserLastName, assignableRole)
+    userFirstNames.push(randomUserFirstName + 'User');
 });
 
 AfterSuite(async (I) => {
-return Promise.all([
-    I.deleteUser(userEmail),
-    I.deleteUser(adminEmail),
-    I.deleteService(serviceName)
-    ]);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
 Scenario('@functional Register User Dynamically', async (I) => {
     I.wait(10);
 
-    var url = await I.extractUrl(userEmail);
+    let url = await I.extractUrl(userEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
     I.amOnPage(url);
     I.waitForText('Create a password', 20, 'h1');
-    I.fillField('#password1', password);
-    I.fillField('#password2', password);
+    I.fillField('#password1', TestData.PASSWORD);
+    I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 60, 'h1');
     I.see('You can now sign in to your account.');

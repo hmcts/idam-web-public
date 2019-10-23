@@ -1,4 +1,5 @@
-var TestData = require('./config/test_data');
+const TestData = require('./config/test_data');
+const randomData = require('./shared/random_data');
 
 Feature('I am able to uplift a user');
 
@@ -8,45 +9,47 @@ let randomUserLastName;
 let citizenEmail;
 let existingCitizenEmail;
 let accessToken;
+let userFirstNames = [];
+let roleNames = [];
+let serviceNames = [];
 
-const serviceName = 'TEST_SERVICE_' + Date.now();
-const testMailSuffix = '@mailtest.gov.uk';
-const password = "Passw0rdIDAM"
-const redirectUri = 'https://idam.testservice.gov.uk';
-const clientSecret = 'autotestingservice';
+const serviceName = randomData.getRandomServiceName();
 
 BeforeSuite(async (I) => {
-    randomUserLastName = await I.generateRandomText() + 'pinępinç';
-    randomUserFirstName = await I.generateRandomText() + 'ępinçłpin';
-    randomUserName = await I.generateRandomText();
-    adminEmail = 'admin.' + randomUserName + testMailSuffix;
-    citizenEmail = 'citizen.' + randomUserName + testMailSuffix;
-    existingCitizenEmail = 'existingcitizen.' + randomUserName + testMailSuffix;
+    randomUserLastName = randomData.getRandomUserName() + 'pinępinç';
+    randomUserFirstName = randomData.getRandomUserName() + 'ępinçłpin';
+    adminEmail = 'admin.' + randomData.getRandomEmailAddress();
+    citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
+    existingCitizenEmail = 'existingcitizen.' + randomData.getRandomEmailAddress();
 
-    var token = await I.getAuthToken();
-    await I.createRole(serviceName + "_beta", 'beta description', '', token);
-    await I.createRole(serviceName + "_admin", 'admin description', serviceName + "_beta", token);
-    await I.createRole(serviceName + "_super", 'super description', serviceName + "_admin", token);
-    var serviceRoles = [serviceName + "_beta", serviceName + "_admin", serviceName + "_super"];
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token);
-    await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_admin", "IDAM_ADMIN_USER"]);
-    await I.createUserWithRoles(existingCitizenEmail, 'Citizen', ["citizen"]);
+    const token = await I.getAuthToken();
+    let response;
+    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
+    const serviceBetaRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
+    const serviceAdminRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
+    const serviceSuperRole = response.name;
+    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
+    roleNames.push(serviceRoles);
+    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    serviceNames.push(serviceName);
+    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
+    userFirstNames.push(randomUserFirstName + 'Admin');
+    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Citizen');
 
-    var pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
-    var code = await I.loginAsPin(pinUser.pin, serviceName, redirectUri);
-    accessToken = await I.getAccessToken(code, serviceName, redirectUri, clientSecret);
+    const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
+    const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 });
 
 AfterSuite(async (I) => {
-return Promise.all([
-     I.deleteUser(adminEmail),
-     I.deleteUser(citizenEmail),
-     I.deleteService(serviceName)
-    ]);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
 Scenario('@functional @upliftvalid User Validation errors', (I) => {
-    I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in', 30, 'h1');
     I.click("Continue");
     I.wait(2);
@@ -80,13 +83,13 @@ Scenario('@functional @upliftvalid User Validation errors', (I) => {
     I.see('Last name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.click('Sign in to your account.');
     I.wait(2);
-    I.seeInCurrentUrl('redirect_uri=' + encodeURIComponent(redirectUri).toLowerCase());
+    I.seeInCurrentUrl(`redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}`);
     I.seeInCurrentUrl('client_id=' + serviceName);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 
 Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async (I) => {
-    I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in', 30, 'h1');
     I.fillField('#firstName', randomUserFirstName);
     I.fillField('#lastName', randomUserLastName);
@@ -97,32 +100,32 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.wait(10);
     var url = await I.extractUrl(citizenEmail);
     if (url) {
-    url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
+        url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
     I.amOnPage(url);
     I.waitForText('Create a password', 20, 'h1');
-    I.fillField('#password1', password);
-    I.fillField('#password2', password);
+    I.fillField('#password1', TestData.PASSWORD);
+    I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 60, 'h1');
     I.see('You can now sign in to your account.');
 });
 
 Scenario('@functional @upliftLogin uplift a user via login journey', async (I) => {
-    var pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
-    var code = await I.loginAsPin(pinUser.pin, serviceName, redirectUri);
-    accessToken = await I.getAccessToken(code, serviceName, redirectUri, clientSecret);
+    const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
+    const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 
-    I.amOnPage(TestData.WEB_PUBLIC_URL + '/login/uplift?client_id=' + serviceName + '&redirect_uri=' + redirectUri + '&jwt=' + accessToken);
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Sign in to your account.', 30);
     I.click('Sign in to your account.');
     I.wait(2);
-    I.seeInCurrentUrl('register?redirect_uri=' + encodeURIComponent(redirectUri).toLowerCase() + '&client_id=' + serviceName);
+    I.seeInCurrentUrl(`register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}`);
     I.fillField('#username', existingCitizenEmail);
-    I.fillField('#password', password);
+    I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText("https://idam.testservice.gov.uk");
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();

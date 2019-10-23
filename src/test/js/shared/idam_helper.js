@@ -1,5 +1,5 @@
 let Helper = codecept_helper;
-var TestData = require('../config/test_data');
+const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
 
 let agentToUse;
@@ -31,7 +31,7 @@ const URLSearchParams = require('url').URLSearchParams;
 class IdamHelper extends Helper {
 
     async createServiceData(serviceName) {
-        let token = await this.getAuthToken();
+        const token = await this.getAuthToken();
         this.createService(serviceName, '', token);
     }
 
@@ -60,7 +60,7 @@ class IdamHelper extends Helper {
     }
 
     getAuthorizeCode(serviceName, serviceRedirect, oauth2Scope, base64) {
-        var searchParams = new URLSearchParams();
+        let searchParams = new URLSearchParams();
         searchParams.set('response_type', 'code');
         searchParams.set('client_id', serviceName);
         searchParams.set('redirect_uri', serviceRedirect);
@@ -91,12 +91,12 @@ class IdamHelper extends Helper {
                 label: serviceName,
                 description: serviceName,
                 oauth2ClientId: serviceName,
-                oauth2ClientSecret: 'autotestingservice',
-                oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+                oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+                oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
                 oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
-                activationRedirectUrl: "https://idam.testservice.gov.uk",
+                activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
                 selfRegistrationAllowed: true
             };
         } else {
@@ -104,13 +104,13 @@ class IdamHelper extends Helper {
                 label: serviceName,
                 description: serviceName,
                 oauth2ClientId: serviceName,
-                oauth2ClientSecret: 'autotestingservice',
-                oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+                oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+                oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
                 oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 allowedRoles: [roleId, 'auto-admin_role'],
-                activationRedirectUrl: "https://idam.testservice.gov.uk",
+                activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
                 selfRegistrationAllowed: true
             };
         }
@@ -134,13 +134,13 @@ class IdamHelper extends Helper {
             label: serviceName,
             description: serviceName,
             oauth2ClientId: serviceName,
-            oauth2ClientSecret: 'autotestingservice',
-            oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+            oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+            oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
             oauth2Scope: scope,
             onboardingEndpoint: '/autotest',
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
-            activationRedirectUrl: "https://idam.testservice.gov.uk",
+            activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
             selfRegistrationAllowed: true
         };
         return fetch(`${TestData.IDAM_API}/services`, {
@@ -221,22 +221,12 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    generateRandomText(stringLength = 5) {
-        let randomString = '';
-        let randomAscii;
-        for(let i = 0; i < stringLength; i++) {
-            randomAscii = Math.floor((Math.random() * 25) + 97);
-            randomString += String.fromCharCode(randomAscii)
-        }
-        return randomString
-    }
-
     createUser(email, forename, role, serviceRole) {
         console.log('Creating user with email: ', email);
         const data = {
             email: email,
             forename: forename,
-            password: 'Passw0rdIDAM',
+            password: TestData.PASSWORD,
             roles: [{code: role}, {code: serviceRole}],
             surname: 'User',
             userGroup: {code: 'xxx_private_beta'},
@@ -254,14 +244,14 @@ class IdamHelper extends Helper {
     }
 
     createUserWithRoles(email, forename, userRoles) {
-        var codeUserRoles = [];
-        for (var i = 0; i < userRoles.length; i++) {
+        let codeUserRoles = [];
+        for (let i = 0; i < userRoles.length; i++) {
             codeUserRoles.push({'code': userRoles[i]});
         }
         const data = {
             email: email,
             forename: forename,
-            password: 'Passw0rdIDAM',
+            password: TestData.PASSWORD,
             roles: codeUserRoles,
             surname: 'User',
             userGroup: {code: 'xxx_private_beta'}
@@ -364,12 +354,12 @@ class IdamHelper extends Helper {
     }
 
     async extractUrl(searchEmail) {
-        let emailResponse = await this.getEmail(searchEmail);
+        const emailResponse = await this.getEmail(searchEmail);
         return this.extractUrlFromBody(emailResponse);
     }
 
     searchForEmailInResults(notifications, searchEmail) {
-        var result = notifications.find(currentItem => {
+        const result = notifications.find(currentItem => {
             // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
             if (currentItem.email_address === searchEmail) {
                 return true;
@@ -381,8 +371,8 @@ class IdamHelper extends Helper {
 
     extractUrlFromBody(emailResponse) {
         if (emailResponse) {
-            var regex = "(https.+)"
-            var url = emailResponse.body.match(regex);
+            const regex = "(https.+)"
+            const url = emailResponse.body.match(regex);
             if (url[0]) {
                 return url[0].replace(/https:\/\/idam-web-public\..+?\.platform\.hmcts\.net/i, TestData.WEB_PUBLIC_URL);
             }
@@ -444,8 +434,8 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json', 'pin': pin},
             redirect: 'manual',
         }).then(response => {
-            var location = response.headers.get('location');
-            var code = location.match('(?<=code=)(.*)(?=&scope)');
+            const location = response.headers.get('location');
+            const code = location.match('(?<=code=)(.*)(?=&scope)');
             return code[0];
         })
             .catch(err => {
@@ -456,7 +446,7 @@ class IdamHelper extends Helper {
     }
 
     getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
-        var searchParams = new URLSearchParams();
+        let searchParams = new URLSearchParams();
         searchParams.set('code', code);
         searchParams.set('redirect_uri', serviceRedirect);
         searchParams.set('grant_type', 'authorization_code')
@@ -590,7 +580,7 @@ class IdamHelper extends Helper {
     }
 
     async getUserByEmail(userEmail) {
-        let authToken = await this.getAuthToken();
+        const authToken = await this.getAuthToken();
         return fetch(`${TestData.IDAM_API}/users?email=${userEmail}`, {
             agent: agent,
             method: 'GET',
@@ -602,6 +592,17 @@ class IdamHelper extends Helper {
             .catch(err => {
                 console.log(err);
             });
+    }
+
+    deleteAllTestData(testDataPrefix = '', userNames = [], roleNames = [], serviceNames = [], async = false) {
+        return fetch(`${TestData.IDAM_API}/testing-support/test-data?async=${async}&userNames=${userNames.join(',')}&roleNames=${roleNames.join(',')}&testDataPrefix=${testDataPrefix}&serviceNames=${serviceNames.join(',')}`, {
+            agent: agent,
+            method: 'DELETE'
+        }).then(response => {
+            return response.json();
+        }).catch(err => {
+            console.log(err);
+        });
     }
 }
 
