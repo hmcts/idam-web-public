@@ -2,8 +2,8 @@ java:
   postgresql:
     enabled: false
   releaseNameOverride: idam-web-public
-  image: 'hmctspublic.azurecr.io/idam/web-public:preview'
-  ingressHost: "{{ .Chart.Name }}.service.core-compute-{{ .Values.global.environment }}.internal"
+  image: hmctspublic.azurecr.io/idam/web-public:preview
+  ingressHost: "idam-web-public.service.core-compute-{{ .Values.global.environment }}.internal"
   replicas: 3
   applicationPort: 8080
   keyVaults:
@@ -14,7 +14,7 @@ java:
       secrets:
         - AppInsightsInstrumentationKey
   environment:
-    STRATEGIC_SERVICE_URL: https://idam-api.service.core-compute-{{ .Values.global.environment }}.internal
+    STRATEGIC_SERVICE_URL: http://idam-api
     MANAGEMENT_SECURITY_ENABLED: false
     ENDPOINTS_ENABLED: true
     SSL_VERIFICATION_ENABLED: true

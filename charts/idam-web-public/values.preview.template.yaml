@@ -5,7 +5,3 @@ java:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
-  environment:
-    SSL_VERIFICATION_ENABLED: false
-    ZUUL_SSLHOSTNAMEVALIDATIONENABLED: false
-
