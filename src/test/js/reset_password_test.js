@@ -16,7 +16,7 @@ const serviceName = randomData.getRandomServiceName();
 const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
 
 BeforeSuite(async (I) => {
-    randomUserFirstName = await I.generateRandomText();
+    randomUserFirstName = randomData.getRandomUserName();
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
