@@ -244,10 +244,7 @@ class IdamHelper extends Helper {
     }
 
     createUserWithRoles(email, forename, userRoles) {
-        let codeUserRoles = [];
-        for (let i = 0; i < userRoles.length; i++) {
-            codeUserRoles.push({'code': userRoles[i]});
-        }
+        const codeUserRoles = userRoles.map(role => ({'code': role}));
         const data = {
             email: email,
             forename: forename,
