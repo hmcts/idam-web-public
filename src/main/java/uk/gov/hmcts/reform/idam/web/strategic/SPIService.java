@@ -152,6 +152,36 @@ public class SPIService {
     }
 
     /**
+     * @should return null if no cookie is found
+     * @should return a set-cookie header
+     */
+    public String authenticateOtpe(final String cookie, final String ipAddress) {
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, ipAddress);
+        if (cookie != null) {
+            headers.add(HttpHeaders.COOKIE, cookie);
+        }
+
+        final String endpoint = String.format("%s/%s",
+            configurationProperties.getStrategic().getService().getUrl(),
+            configurationProperties.getStrategic().getEndpoint().getAuthorize());
+
+        ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
+            new HttpEntity<>(form, headers), Void.class);
+
+        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
+            return response.getHeaders().get(HttpHeaders.SET_COOKIE).stream()
+                .findFirst().orElse(null);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * @should call api with the correct data and return location in header in api response if response code is 302
      * @should not send state and scope parameters in form if they are not send as parameter in the service
      * @should return null if api response code is not 302

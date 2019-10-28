@@ -329,9 +329,9 @@ public class AppController {
 
             final String cookie = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
             final String redirectUri = httpRequest.getParameter(REDIRECT_URI);
-            final boolean policyCheckSuccess = policyService.evaluatePoliciesForUser(redirectUri, cookie, ipAddress);;
+            final PolicyService.EvaluatePoliciesAction policyCheckResponse = policyService.evaluatePoliciesForUser(redirectUri, cookie, ipAddress);
 
-            if (policyCheckSuccess) {
+            if (PolicyService.EvaluatePoliciesAction.ALLOW == policyCheckResponse) {
                 final String responseUrl = authoriseUser(cookie, httpRequest);
                 final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
 
@@ -344,6 +344,9 @@ public class AppController {
                     model.addAttribute(HAS_LOGIN_FAILED, true);
                     bindingResult.reject("Login failure");
                 }
+            } else if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
+                log.info("User requires mfa authentication - " + obfuscateEmailAddress(request.getUsername()));
+                return initiateOtpFlow(request, cookie, ipAddress, response);
             } else {
                 log.info("User failed policy checks - " + obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
@@ -360,6 +363,16 @@ public class AppController {
         }
 
         return nextPage;
+    }
+
+    private String initiateOtpFlow(AuthorizeRequest request,
+                                   String idamSessionCookie,
+                                   String ipAddress,
+                                   HttpServletResponse response) {
+        final String authIdCookie = spiService.authenticateOtpe(idamSessionCookie, ipAddress);
+        log.info("Successful OTP request - " + obfuscateEmailAddress(request.getUsername()));
+        response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(authIdCookie));
+        return "redirect:/otp";
     }
 
     private String authoriseUser(String cookie, HttpServletRequest httpRequest) {

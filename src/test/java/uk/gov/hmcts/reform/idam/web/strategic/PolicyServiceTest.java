@@ -84,17 +84,18 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies return true when no actions are returned
+     * @verifies return ALLOW when no actions are returned
      * @see PolicyService#evaluatePoliciesForUser(String, String, String)
      */
     @Test
-    public void evaluatePoliciesForUser_shouldReturnTrueWhenNoActionsAreReturned() {
+    public void evaluatePoliciesForUser_shouldReturnALLOWWhenNoActionsAreReturned() throws Exception {
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
             .willReturn(ok(mockResponse(new ActionMap())));
 
-        boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        final PolicyService.EvaluatePoliciesAction result = service
+            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
 
-        assertThat(Boolean.valueOf(result), is(Boolean.TRUE));
+        assertThat(result, is(PolicyService.EvaluatePoliciesAction.ALLOW));
 
         verify(restTemplate).exchange(
             eq("idamApi/evaluatePolicies"),
@@ -105,20 +106,18 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies return true when all actions return true
+     * @verifies return ALLOW when all actions return true
      * @see PolicyService#evaluatePoliciesForUser(String, String, String)
      */
     @Test
-    public void evaluatePoliciesForUser_shouldReturnTrueWhenAllActionsReturnTrue() {
-        final ActionMap actionMap = new ActionMap();
-        actionMap.put("someKey", Boolean.TRUE);
-        actionMap.put("anotherKey", Boolean.TRUE);
+    public void evaluatePoliciesForUser_shouldReturnALLOWWhenAllActionsReturnTrue() throws Exception {
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
-            .willReturn(ok(mockResponse(actionMap)));
+            .willReturn(ok(mockResponse(new ActionMap())));
 
-        boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        final PolicyService.EvaluatePoliciesAction result = service
+            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
 
-        assertThat(Boolean.valueOf(result), is(Boolean.TRUE));
+        assertThat(result, is(PolicyService.EvaluatePoliciesAction.ALLOW));
 
         verify(restTemplate).exchange(
             eq("idamApi/evaluatePolicies"),
@@ -129,20 +128,54 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies return false when any action returns false
+     * @verifies return BLOCK when any action returns false and advice mfaRequired is not true
      * @see PolicyService#evaluatePoliciesForUser(String, String, String)
      */
     @Test
-    public void evaluatePoliciesForUser_shouldReturnFalseWhenAnyActionReturnsFalse() {
+    public void evaluatePoliciesForUser_shouldReturnBLOCKWhenAnyActionReturnsFalseAndAdviceMfaRequiredIsNotTrue() throws Exception {
         final ActionMap actionMap = new ActionMap();
         actionMap.put("someKey", Boolean.TRUE);
         actionMap.put("anotherKey", Boolean.FALSE);
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
             .willReturn(ok(mockResponse(actionMap)));
 
-        boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        final PolicyService.EvaluatePoliciesAction result = service
+            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
 
-        assertThat(Boolean.valueOf(result), is(Boolean.FALSE));
+        assertThat(result, is(PolicyService.EvaluatePoliciesAction.BLOCK));
+
+        verify(restTemplate).exchange(
+            eq("idamApi/evaluatePolicies"),
+            eq(HttpMethod.POST),
+            eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
+                expectedHeaders("someToken", "someIpAddress"))),
+            eq(EvaluatePoliciesResponse.class));
+    }
+
+    /**
+     * @verifies return MFA_REQUIRED when any action returns false and advice mfaRequired is true
+     * @see PolicyService#evaluatePoliciesForUser(String, String, String)
+     */
+    @Test
+    public void evaluatePoliciesForUser_shouldReturnMFA_REQUIREDWhenAnyActionReturnsFalseAndAdviceMfaRequiredIsTrue() throws Exception {
+        final ActionMap actionMap = new ActionMap();
+        actionMap.put("someKey", Boolean.TRUE);
+        actionMap.put("anotherKey", Boolean.FALSE);
+
+        final EvaluatePoliciesResponseInner mockResponseInner = new EvaluatePoliciesResponseInner()
+            .actions(actionMap)
+            .advices(ImmutableMap.of("mfaRequired", asList("true")));
+
+        final EvaluatePoliciesResponse mockResponse = new EvaluatePoliciesResponse();
+        mockResponse.add(mockResponseInner);
+
+        given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
+            .willReturn(ok(mockResponse));
+
+        final PolicyService.EvaluatePoliciesAction result = service
+            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+
+        assertThat(result, is(PolicyService.EvaluatePoliciesAction.MFA_REQUIRED));
 
         verify(restTemplate).exchange(
             eq("idamApi/evaluatePolicies"),
@@ -164,17 +197,18 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies return true when actions is null
+     * @verifies return ALLOW when actions is null
      * @see PolicyService#evaluatePoliciesForUser(String, String, String)
      */
     @Test
-    public void evaluatePoliciesForUser_shouldReturnTrueWhenActionsIsNull() throws Exception {
+    public void evaluatePoliciesForUser_shouldReturnALLOWWhenActionsIsNull() throws Exception {
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
             .willReturn(ok(mockResponse(null)));
 
-        boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        final PolicyService.EvaluatePoliciesAction result = service
+            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
 
-        assertThat(Boolean.valueOf(result), is(Boolean.TRUE));
+        assertThat(result, is(PolicyService.EvaluatePoliciesAction.ALLOW));
 
         verify(restTemplate).exchange(
             eq("idamApi/evaluatePolicies"),
@@ -213,4 +247,5 @@ public class PolicyServiceTest {
         actual = service.sanitiseIpsFromRequest("[2001:db8:85a3:8d3:1319:8a2e:370:7348], 2001:db8:85a3:8d3:1319:8a2e:370:7348");
         assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
     }
+
 }
