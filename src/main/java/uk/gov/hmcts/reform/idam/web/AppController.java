@@ -420,7 +420,7 @@ public class AppController {
     public String verificationView(
         @ModelAttribute("verificationCommand") VerificationRequest request, BindingResult bindingResult, Model model) {
         return VERIFICATION_VIEW;
-}
+    }
 
     @PostMapping("/verification")
     public String verification(
