@@ -1,55 +1,57 @@
-const chai = require('chai');
-const {expect} = chai;
-var TestData = require('./config/test_data');
+const TestData = require('./config/test_data');
+const randomData = require('./shared/random_data');
 
 Feature('Policy check');
 
 let token;
-
-let adminEmail;
-let randomUserLastName;
 let citizenEmail;
 let policyName;
+let userFirstNames = [];
+let roleNames = [];
+let serviceNames = [];
 
-const serviceName = 'TEST_SERVICE_' + Date.now();
-const testMailSuffix = '@mailtest.gov.uk';
-const password = "Passw0rdIDAM"
-const serviceRedirectUri = "https://idam.testservice.gov.uk";
+const serviceName = randomData.getRandomServiceName();
 
 BeforeSuite(async (I) => {
-    randomUserLastName = await I.generateRandomText();
-    adminEmail = 'admin.' + randomUserLastName + testMailSuffix;
-    citizenEmail = 'citizen.' + randomUserLastName + testMailSuffix;
+    const randomUserFirstName = randomData.getRandomUserName();
+    const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
+    citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     policyName = `SIDM_TEST_POLICY_${serviceName}`;
 
     token = await I.getAuthToken();
-    await I.createRole(serviceName + "_beta", 'beta description', '', token);
-    await I.createRole(serviceName + "_admin", 'admin description', serviceName + "_beta", token);
-    await I.createRole(serviceName + "_super", 'super description', serviceName + "_admin", token);
-    var serviceRoles = [serviceName + "_beta", serviceName + "_admin", serviceName + "_super"];
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token);
-    await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_admin", "IDAM_ADMIN_USER"]);
-    await I.createUserWithRoles(citizenEmail, 'Citizen', ["citizen"]);
+    let response;
+    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
+    const serviceBetaRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
+    const serviceAdminRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
+    const serviceSuperRole = response.name;
+    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
+    roleNames.push(serviceRoles);
+    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    serviceNames.push(serviceName);
+    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
+    userFirstNames.push(randomUserFirstName + 'Admin');
+    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Citizen');
 
     await I.createPolicyToBlockUser(policyName, citizenEmail, token);
 });
 
 AfterSuite(async (I) => {
     return Promise.all([
-        I.deleteUser(adminEmail),
-        I.deleteUser(citizenEmail),
-        I.deleteService(serviceName),
+        I.deleteAllTestData(randomData.TEST_BASE_PREFIX),
         I.deletePolicy(policyName, token),
     ]);
 });
 
 Scenario('@functional @policy As a citizen with policies blocking me from login I should see an error message', async (I) => {
-    var loginUrl = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h1');
     I.fillField('#username', citizenEmail.toUpperCase());
-    I.fillField('#password', password);
+    I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.wait(10);
     I.waitForText('Policies check failed', 10, 'h2');

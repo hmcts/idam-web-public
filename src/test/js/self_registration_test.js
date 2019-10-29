@@ -1,36 +1,34 @@
-var TestData = require('./config/test_data');
-var assert = require('assert');
+const TestData = require('./config/test_data');
+const randomData = require('./shared/random_data');
+const assert = require('assert');
 
 Feature('Self Registration');
 
-const now = Date.now();
-const serviceName = 'TEST_SERVICE_' + now;
-const emailSuffix = '@mailtest.gov.uk';
-const citizenEmail = 'citizen.' + now + emailSuffix;
-const parameters = '?redirect_uri=https://idam.testservice.gov.uk&client_id=';
+const serviceName = randomData.getRandomServiceName();
+const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 let randomUserFirstName;
 let randomUserLastName;
-let randomUserEmailAddress;
+let userFirstNames = [];
+let serviceNames = [];
 
-BeforeSuite(async(I) => {
-    randomUserFirstName = await I.generateRandomText();
-    randomUserLastName = await I.generateRandomText();
-    randomUserEmailAddress = 'citizen.' + randomUserFirstName + emailSuffix;
+const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
+
+BeforeSuite(async (I) => {
+    randomUserFirstName = randomData.getRandomUserName();
+    randomUserLastName = randomData.getRandomUserName();
     await I.createServiceData(serviceName);
-    await I.createUserWithRoles(citizenEmail, 'Citizen', ["citizen"]);
+    serviceNames.push(serviceName);
+    await I.createUserWithRoles(citizenEmail, randomUserFirstName, ["citizen"]);
+    userFirstNames.push(randomUserFirstName);
 });
 
-AfterSuite(async(I) => {
-    return Promise.all([
-        I.deleteUser(citizenEmail),
-        I.deleteUser(randomUserEmailAddress),
-        I.deleteService(serviceName)
-    ]);
+AfterSuite(async (I) => {
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
 Scenario('@functional @selfregister User Validation errors', (I) => {
 
-    I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister' + parameters + serviceName);
+    I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
     I.see('Create an account');
@@ -73,46 +71,46 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
 
 Scenario('@functional @selfregister Account already created', async (I) => {
 
-    I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister'+ parameters + serviceName);
+    I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
 
     I.see('Create an account');
-    I.fillField('firstName', 'Citizen');
-    I.fillField('lastName', 'User');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmail);
     I.click("Continue");
 
     I.waitForText('Check your email', 20, 'h1');
 
     I.wait(10);
-    let emailResponse = await I.getEmail(citizenEmail);
+    const emailResponse = await I.getEmail(citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
 });
 
 Scenario('@functional @selfregister I can self register', async (I) => {
 
-    const email = 'test_citizen.' + now + emailSuffix;
-    const loginPage = TestData.WEB_PUBLIC_URL + '/login' + parameters + serviceName + '&state=selfreg';
+    const email = 'test_citizen.' + randomData.getRandomEmailAddress();
+    const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
 
-    I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister' + parameters + serviceName);
+    I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
 
     I.see('Create an account');
-    I.fillField('firstName', 'Citizen');
-    I.fillField('lastName', 'User');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
-    let userActivationUrl = await I.extractUrl(email);
+    const userActivationUrl = await I.extractUrl(email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.seeTitleEquals('User Activation - HMCTS Access');
-    I.fillField('#password1', 'Passw0rd1234');
-    I.fillField('#password2', 'Passw0rd1234');
+    I.fillField('#password1', TestData.PASSWORD);
+    I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
@@ -120,10 +118,10 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.seeInCurrentUrl("state=selfreg");
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', email);
-    I.fillField('#password', 'Passw0rd1234');
+    I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText('https://idam.testservice.gov.uk/');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
@@ -131,7 +129,8 @@ Scenario('@functional @selfregister I can self register', async (I) => {
 
 
 Scenario('@functional @selfregister @prePopulatedScreen I can self register with pre-populated user account screen', async (I) => {
-    const loginPage = TestData.WEB_PUBLIC_URL + '/login' + parameters + serviceName + '&state=selfreg';
+    const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
+    const randomUserEmailAddress = 'citizen.' + randomData.getRandomEmailAddress();
     const userAccountDetails = {
         firstName: randomUserFirstName,
         lastName: randomUserLastName,
@@ -139,7 +138,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     };
     const base64EncodedJsonObject = await I.getBase64FromJsonObject(JSON.stringify(userAccountDetails));
 
-    I.amOnPage(TestData.WEB_PUBLIC_URL + '/users/selfRegister' + parameters + serviceName + "&form_data=" + base64EncodedJsonObject);
+    I.amOnPage(`${selfRegUrl}&form_data=${base64EncodedJsonObject}`);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
 
@@ -152,12 +151,12 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
-    let userActivationUrl = await I.extractUrl(randomUserEmailAddress);
+    const userActivationUrl = await I.extractUrl(randomUserEmailAddress);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.seeTitleEquals('User Activation - HMCTS Access');
-    I.fillField('#password1', 'Passw0rd1234');
-    I.fillField('#password2', 'Passw0rd1234');
+    I.fillField('#password1', TestData.PASSWORD);
+    I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
@@ -165,10 +164,10 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.seeInCurrentUrl("state=selfreg");
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', randomUserEmailAddress);
-    I.fillField('#password', 'Passw0rd1234');
+    I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText('https://idam.testservice.gov.uk/');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
