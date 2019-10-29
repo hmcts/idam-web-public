@@ -35,6 +35,7 @@ public class MvcKeys {
     public static final String FORGOTPASSWORDSUCCESS_VIEW = "forgotpasswordsuccess";
     public static final String INDEX_VIEW = "index";
     public static final String LOGIN_VIEW = "login";
+    public static final String VERIFICATION_VIEW = "verification";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
     public static final String UPLIFT_LOGIN_VIEW = "upliftLogin";
     public static final String RESETPASSWORD_VIEW = "resetpassword";

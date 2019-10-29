@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
+import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
@@ -88,6 +89,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
 
 @Slf4j
 @Controller
@@ -433,6 +435,20 @@ public class AppController {
             log.error("Authentication error : {}", hex.getResponseBodyAsString(), hex);
             throw new BadCredentialsException("Exception occurred during authentication", hex);
         }
+    }
+
+    @GetMapping("/verification")
+    public String verificationView(
+        @ModelAttribute("verificationCommand") VerificationRequest request, BindingResult bindingResult, Model model) {
+        return VERIFICATION_VIEW;
+    }
+
+    @PostMapping("/verification")
+    public String verification(
+        @ModelAttribute("verificationCommand") VerificationRequest request, BindingResult bindingResult, Model model) {
+        //TODO push code to forgerock and verify: request.getCode();
+        return VERIFICATION_VIEW;
+        //TODO return "redirect:" + responseUrl;
     }
 
     /**
