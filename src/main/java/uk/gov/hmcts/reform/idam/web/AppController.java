@@ -416,13 +416,19 @@ public class AppController {
         return VERIFICATION_VIEW;
     }
 
+    @GetMapping("/verification")
+    public String verificationView(
+        @ModelAttribute("verificationCommand") VerificationRequest request, BindingResult bindingResult, Model model) {
+        return VERIFICATION_VIEW;
+    }
+
     @PostMapping("/verification")
     public String verification(@ModelAttribute("verificationCommand") VerificationRequest request,
                                BindingResult bindingResult,
                                Model model,
                                HttpServletRequest httpRequest,
                                HttpServletResponse response) {
-        final String ipAddress = ObjectUtils.defaultIfNull(
+            final String ipAddress = ObjectUtils.defaultIfNull(
             httpRequest.getHeader(X_FORWARDED_FOR),
             httpRequest.getRemoteAddr());
 
@@ -460,10 +466,18 @@ public class AppController {
             log.info("/verification: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
             if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
                 getLoginFailureReason(he, model, bindingResult);
-            } else {
+                return LOGIN_VIEW;
+            }
+
+            if (HttpStatus.UNAUTHORIZED == he.getStatusCode()
+                && StringUtils.contains(he.getResponseBodyAsString(), "INCORRECT_OTP")) {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
+                return VERIFICATION_VIEW;
             }
+
+            model.addAttribute(HAS_LOGIN_FAILED, true);
+            bindingResult.reject("Login failure");
             return LOGIN_VIEW;
         }
     }
