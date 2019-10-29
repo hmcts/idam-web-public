@@ -519,8 +519,8 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
         }).then((response) => {
             if (response.status != 200) {
-                console.log('Error creating user', response.status);
-                console.log(JSON.stringify(data))
+                console.log('Error registering user', response.status);
+                console.log(JSON.stringify(data));
                 throw new Error()
             }
         });

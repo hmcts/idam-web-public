@@ -26,7 +26,7 @@ BeforeSuite(async (I) => {
     roleNames.push(serviceRoles);
     await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token, 'create-user');
     serviceNames.push(serviceName);
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', dynamicUserRegRole);
+    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [dynamicUserRegRole]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, TestData.PASSWORD);
@@ -54,5 +54,6 @@ Scenario('@functional Register User Dynamically', async (I) => {
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 60, 'h1');
+    I.wait(2);
     I.see('You can now sign in to your account.');
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
+});

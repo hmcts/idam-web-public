@@ -36,7 +36,7 @@ BeforeSuite(async (I) => {
     serviceNames.push(serviceName);
     await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
     userFirstNames.push(randomUserFirstName + 'Admin');
-    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
+    await I.createUserWithRoles(existingCitizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
@@ -98,7 +98,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.click('Continue');
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
-    var url = await I.extractUrl(citizenEmail);
+    let url = await I.extractUrl(citizenEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
@@ -108,6 +108,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 60, 'h1');
+    I.wait(2);
     I.see('You can now sign in to your account.');
 });
 
