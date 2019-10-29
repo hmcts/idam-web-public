@@ -111,6 +111,9 @@ public class PolicyService {
     }
 
     private EvaluatePoliciesAction checkNoActionsBlockingUser(ResponseEntity<EvaluatePoliciesResponse> response) {
+
+        EvaluatePoliciesAction action = EvaluatePoliciesAction.ALLOW;
+
         final EvaluatePoliciesResponse result = ofNullable(response.getBody())
             .orElse(new EvaluatePoliciesResponse());
         for (EvaluatePoliciesResponseInner resultItem : result) {
@@ -118,14 +121,20 @@ public class PolicyService {
             final boolean block = actions.values().stream()
                 .anyMatch(Boolean.FALSE::equals);
             if (block) {
-                final boolean hasAdvices = resultItem.getAdvices() != null && resultItem.getAdvices() instanceof Map;
-                final boolean mfaRequiredAdviceIsTrue = hasAdvices && asList(ADVICE_KEY_MFA_REQUIRED_STRING_VALUE)
-                    .equals(((Map) resultItem.getAdvices()).get(ADVICE_KEY_MFA_REQUIRED));
+                final boolean hasAttributes = resultItem.getAttributes() != null && resultItem.getAttributes() instanceof Map;
+                final boolean mfaRequiredAttributeIsTrue = hasAttributes && asList(ADVICE_KEY_MFA_REQUIRED_STRING_VALUE)
+                    .equals(((Map) resultItem.getAttributes()).get(ADVICE_KEY_MFA_REQUIRED));
 
-                return mfaRequiredAdviceIsTrue ? EvaluatePoliciesAction.MFA_REQUIRED : EvaluatePoliciesAction.BLOCK;
+                // if mfaRequired we downgrade action to mfa_required but still need to check for other possible
+                // actions blocking the user even with mfa
+                if (mfaRequiredAttributeIsTrue) {
+                    action = EvaluatePoliciesAction.MFA_REQUIRED;
+                } else {
+                    return EvaluatePoliciesAction.BLOCK;
+                }
             }
         }
-        return EvaluatePoliciesAction.ALLOW;
+        return action;
     }
 
     /**
