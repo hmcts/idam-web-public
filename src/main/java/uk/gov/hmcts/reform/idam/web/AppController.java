@@ -369,10 +369,18 @@ public class AppController {
                                    String idamSessionCookie,
                                    String ipAddress,
                                    HttpServletResponse response) {
-        final String authIdCookie = spiService.authenticateOtpe(idamSessionCookie, ipAddress);
+        final String authIdCookie = spiService.initiateOtpeAuthentication(idamSessionCookie, ipAddress);
         log.info("Successful OTP request - " + obfuscateEmailAddress(request.getUsername()));
         response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(authIdCookie));
         return "redirect:/otp";
+    }
+
+    public String submitOtpFlow(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
+                        BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
+                        HttpServletResponse response) {
+        final String otp;
+
+
     }
 
     private String authoriseUser(String cookie, HttpServletRequest httpRequest) {

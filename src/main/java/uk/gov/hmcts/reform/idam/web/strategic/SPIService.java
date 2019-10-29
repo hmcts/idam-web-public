@@ -153,17 +153,48 @@ public class SPIService {
 
     /**
      * @should return null if no cookie is found
-     * @should return a set-cookie header
+     * @should return a set-cookie header to set Idam.AuthId if successful
      */
-    public String authenticateOtpe(final String cookie, final String ipAddress) {
+    public String initiateOtpeAuthentication(final String idamSessionCookie, final String ipAddress) {
         final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
         form.add("service", "otpe");
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(X_FORWARDED_FOR, ipAddress);
-        if (cookie != null) {
-            headers.add(HttpHeaders.COOKIE, cookie);
+        if (idamSessionCookie != null) {
+            headers.add(HttpHeaders.COOKIE, idamSessionCookie);
+        }
+
+        final String endpoint = String.format("%s/%s",
+            configurationProperties.getStrategic().getService().getUrl(),
+            configurationProperties.getStrategic().getEndpoint().getAuthorize());
+
+        ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
+            new HttpEntity<>(form, headers), Void.class);
+
+        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
+            return response.getHeaders().get(HttpHeaders.SET_COOKIE).stream()
+                .findFirst().orElse(null);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @should return null if no cookie is found
+     * @should return a set-cookie header to set Idam.Session if successful
+     */
+    public String submitOtpeAuthentication(final String authIdCookie, final String ipAddress, final String otp) {
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        form.add("otp", otp);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, ipAddress);
+        if (authIdCookie != null) {
+            headers.add(HttpHeaders.COOKIE, authIdCookie);
         }
 
         final String endpoint = String.format("%s/%s",
