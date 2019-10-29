@@ -30,26 +30,30 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
+import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
-import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
+import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
+import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
@@ -106,6 +110,9 @@ public class AppController {
 
     @Autowired
     private PolicyService policyService;
+
+    @Autowired
+    private ConfigurationProperties configurationProperties;
 
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
@@ -348,7 +355,7 @@ public class AppController {
                 }
             } else if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
                 log.info("User requires mfa authentication - " + obfuscateEmailAddress(request.getUsername()));
-                return initiateOtpFlow(request, cookie, ipAddress, response);
+                return initiateOtpFlow(request, cookie, ipAddress, response, model);
             } else {
                 log.info("User failed policy checks - " + obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
@@ -370,19 +377,64 @@ public class AppController {
     private String initiateOtpFlow(AuthorizeRequest request,
                                    String idamSessionCookie,
                                    String ipAddress,
-                                   HttpServletResponse response) {
+                                   HttpServletResponse response,
+                                   Model model) {
         final String authIdCookie = spiService.initiateOtpeAuthentication(idamSessionCookie, ipAddress);
         log.info("Successful OTP request - " + obfuscateEmailAddress(request.getUsername()));
         response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(authIdCookie));
-        return "redirect:/otp";
+
+        final VerificationRequest verificationRequest = new VerificationRequest();
+        verificationRequest.setUsername(request.getUsername());
+        verificationRequest.setResponse_type(request.getResponse_type());
+        verificationRequest.setState(request.getState());
+        verificationRequest.setClient_id(request.getClient_id());
+        verificationRequest.setRedirect_uri(request.getRedirect_uri());
+        verificationRequest.setScope(request.getScope());
+        verificationRequest.setSelfRegistrationEnabled(request.isSelfRegistrationEnabled());
+        model.addAttribute("verificationCommand", verificationRequest);
+
+        return VERIFICATION_VIEW;
     }
 
-    public String submitOtpFlow(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
-                        BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
-                        HttpServletResponse response) {
-        final String otp;
+    @PostMapping("/verification")
+    public String verification(@ModelAttribute("verificationCommand") VerificationRequest request,
+                               BindingResult bindingResult,
+                               Model model,
+                               HttpServletRequest httpRequest,
+                               HttpServletResponse response) {
+        final String ipAddress = ObjectUtils.defaultIfNull(
+            httpRequest.getHeader(X_FORWARDED_FOR),
+            httpRequest.getRemoteAddr());
 
+        final String authIdCookieName = configurationProperties.getStrategic().getOtp().getOtpSessionIdCookie();
+        final String authIdCookie = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
+            .filter(c -> authIdCookieName.equals(c.getName())) // find Idam.AuthId
+            .findAny() // get
+            .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
+            .orElse(null); // get
 
+        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
+        model.addAttribute(STATE, request.getState());
+        model.addAttribute(CLIENT_ID, request.getClient_id());
+        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SCOPE, request.getScope());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
+
+        final String cookie = spiService.submitOtpeAuthentication(authIdCookie, ipAddress, request.getCode());
+
+        final String responseUrl = authoriseUser(cookie, httpRequest);
+        final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
+
+        if (loginSuccess) {
+            log.info("Successful login - " + obfuscateEmailAddress(request.getUsername()));
+            response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
+            return "redirect:" + responseUrl;
+        } else {
+            log.info("There is a problem while logging in  user - " + obfuscateEmailAddress(request.getUsername()));
+            model.addAttribute(HAS_LOGIN_FAILED, true);
+            bindingResult.reject("Login failure");
+            return LOGIN_VIEW;
+        }
     }
 
     private String authoriseUser(String cookie, HttpServletRequest httpRequest) {
@@ -435,20 +487,6 @@ public class AppController {
             log.error("Authentication error : {}", hex.getResponseBodyAsString(), hex);
             throw new BadCredentialsException("Exception occurred during authentication", hex);
         }
-    }
-
-    @GetMapping("/verification")
-    public String verificationView(
-        @ModelAttribute("verificationCommand") VerificationRequest request, BindingResult bindingResult, Model model) {
-        return VERIFICATION_VIEW;
-    }
-
-    @PostMapping("/verification")
-    public String verification(
-        @ModelAttribute("verificationCommand") VerificationRequest request, BindingResult bindingResult, Model model) {
-        //TODO push code to forgerock and verify: request.getCode();
-        return VERIFICATION_VIEW;
-        //TODO return "redirect:" + responseUrl;
     }
 
     /**
