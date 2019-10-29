@@ -309,7 +309,6 @@ public class AppController {
     public String login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
                         BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
                         HttpServletResponse response) {
-        String nextPage = LOGIN_VIEW;
         model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(PASSWORD, request.getPassword());
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
@@ -328,7 +327,7 @@ public class AppController {
                 model.addAttribute("isPasswordEmpty", true);
             }
             model.addAttribute(HAS_ERRORS, true);
-            return nextPage;
+            return LOGIN_VIEW;
         }
 
         try {
@@ -337,32 +336,36 @@ public class AppController {
                 httpRequest.getRemoteAddr());
 
             final String cookie = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
-            final String redirectUri = httpRequest.getParameter(REDIRECT_URI);
+            final String redirectUri = request.getRedirect_uri();
             final PolicyService.EvaluatePoliciesAction policyCheckResponse = policyService.evaluatePoliciesForUser(redirectUri, cookie, ipAddress);
 
-            if (PolicyService.EvaluatePoliciesAction.ALLOW == policyCheckResponse) {
-                final String responseUrl = authoriseUser(cookie, httpRequest);
-                final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
-
-                if (loginSuccess) {
-                    log.info("Successful login - " + obfuscateEmailAddress(request.getUsername()));
-                    response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
-                    nextPage = "redirect:" + responseUrl;
-                } else {
-                    log.info("There is a problem while logging in  user - " + obfuscateEmailAddress(request.getUsername()));
-                    model.addAttribute(HAS_LOGIN_FAILED, true);
-                    bindingResult.reject("Login failure");
-                }
-            } else if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
-                log.info("User requires mfa authentication - " + obfuscateEmailAddress(request.getUsername()));
-                return initiateOtpFlow(request, cookie, ipAddress, response, model);
-            } else {
-                log.info("User failed policy checks - " + obfuscateEmailAddress(request.getUsername()));
+            if (policyCheckResponse == PolicyService.EvaluatePoliciesAction.BLOCK) {
+                log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
                 bindingResult.reject("Policy check failure");
+                return LOGIN_VIEW;
+            }
+
+            if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
+                log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
+                return initiateOtpFlow(request, cookie, ipAddress, response, model);
+            }
+
+            final String responseUrl = authoriseUser(cookie, httpRequest);
+            final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
+
+            if (loginSuccess) {
+                log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
+                response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
+                return "redirect:" + responseUrl;
+            } else {
+                log.info("/login: There is a problem while logging in  user - {}", obfuscateEmailAddress(request.getUsername()));
+                model.addAttribute(HAS_LOGIN_FAILED, true);
+                bindingResult.reject("Login failure");
+                return LOGIN_VIEW;
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
-            log.info("Login failed for user - " + obfuscateEmailAddress(request.getUsername()));
+            log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
             if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
                 getLoginFailureReason(he, model, bindingResult);
             } else {
@@ -371,7 +374,24 @@ public class AppController {
             }
         }
 
-        return nextPage;
+        return LOGIN_VIEW;
+    }
+
+    private String authoriseUser(String cookie, HttpServletRequest httpRequest) {
+        String responseUrl = null;
+        if (cookie != null) {
+            Map<String, String> params = new HashMap<>();
+            httpRequest.getParameterMap().forEach((key, values) -> {
+                    if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
+                        params.put(key, String.join(" ", values));
+                }
+            );
+            params.putIfAbsent(RESPONSE_TYPE, "code");
+            params.putIfAbsent(SCOPE, "openid profile roles");
+
+            responseUrl = spiService.authorize(params, cookie);
+        }
+        return responseUrl;
     }
 
     private String initiateOtpFlow(AuthorizeRequest request,
@@ -380,7 +400,7 @@ public class AppController {
                                    HttpServletResponse response,
                                    Model model) {
         final String authIdCookie = spiService.initiateOtpeAuthentication(idamSessionCookie, ipAddress);
-        log.info("Successful OTP request - " + obfuscateEmailAddress(request.getUsername()));
+        log.info("/login: Successful initiate OTP request - {}", obfuscateEmailAddress(request.getUsername()));
         response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(authIdCookie));
 
         final VerificationRequest verificationRequest = new VerificationRequest();
@@ -420,38 +440,32 @@ public class AppController {
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
 
-        final String cookie = spiService.submitOtpeAuthentication(authIdCookie, ipAddress, request.getCode());
+        try {
+            final String cookie = spiService.submitOtpeAuthentication(authIdCookie, ipAddress, request.getCode());
+            log.info("/verification: Successful OTP submission request - {}", obfuscateEmailAddress(request.getUsername()));
 
-        final String responseUrl = authoriseUser(cookie, httpRequest);
-        final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
-
-        if (loginSuccess) {
-            log.info("Successful login - " + obfuscateEmailAddress(request.getUsername()));
-            response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
-            return "redirect:" + responseUrl;
-        } else {
-            log.info("There is a problem while logging in  user - " + obfuscateEmailAddress(request.getUsername()));
-            model.addAttribute(HAS_LOGIN_FAILED, true);
-            bindingResult.reject("Login failure");
+            final String responseUrl = authoriseUser(cookie, httpRequest);
+            final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
+            if (loginSuccess) {
+                log.info("/verification: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
+                response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
+                return "redirect:" + responseUrl;
+            } else {
+                log.info("/verification: There is a problem while logging in user - {}", obfuscateEmailAddress(request.getUsername()));
+                model.addAttribute(HAS_LOGIN_FAILED, true);
+                bindingResult.reject("Login failure");
+                return LOGIN_VIEW;
+            }
+        } catch (HttpClientErrorException | HttpServerErrorException he) {
+            log.info("/verification: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
+            if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
+                getLoginFailureReason(he, model, bindingResult);
+            } else {
+                model.addAttribute(HAS_LOGIN_FAILED, true);
+                bindingResult.reject("Login failure");
+            }
             return LOGIN_VIEW;
         }
-    }
-
-    private String authoriseUser(String cookie, HttpServletRequest httpRequest) {
-        String responseUrl = null;
-        if (cookie != null) {
-            Map<String, String> params = new HashMap<>();
-            httpRequest.getParameterMap().forEach((key, values) -> {
-                    if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
-                        params.put(key, String.join(" ", values));
-                }
-            );
-            params.putIfAbsent(RESPONSE_TYPE, "code");
-            params.putIfAbsent(SCOPE, "openid profile roles");
-
-            responseUrl = spiService.authorize(params, cookie);
-        }
-        return responseUrl;
     }
 
     private String makeCookieSecure(String cookie) {
