@@ -18,6 +18,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -47,7 +49,60 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.*;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTIVATE_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTIVATE_USER_REQUEST;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.API_LOGIN_UPLIFT_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.API_URL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHENTICATE_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZATION_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CUSTOM_SCOPE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.DETAILS_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_SPI_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_URI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HEALTH_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.OAUTH2_AUTHORIZE_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_CODE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_TOKEN;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_URI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SCOPE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_RESPONSE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_URL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICES_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_LABEL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_OAUTH2_CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_OAUTH2_REDIRECT_URI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SLASH;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERNAME_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERS_SELF_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_CODE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_TOKEN;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_IP_ADDRESS;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_RESET_PASSWORD_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_API_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getFoundResponseEntity;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterRequest;
@@ -612,5 +667,111 @@ public class SPIServiceTest {
             .willReturn(ResponseEntity.ok().build());
         String result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
         assertNull(result);
+    }
+
+    /**
+     * @verifies return a set-cookie header to set Idam.AuthId if successful
+     * @see SPIService#initiateOtpeAuthentication(String, String)
+     */
+    @Test
+    public void initiateOtpeAuthentication_shouldReturnASetcookieHeaderToSetIdamAuthIdIfSuccessful() throws Exception {
+        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
+        given(restTemplate.exchange(eq(endpoint),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, "Idam.AuthId=authId").build());
+
+        String result = spiService
+            .initiateOtpeAuthentication("Idam.Session=idamSession", "6.6.6.6");
+        assertThat(result, is("Idam.AuthId=authId"));
+
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, "6.6.6.6");
+        headers.add(HttpHeaders.COOKIE, "Idam.Session=idamSession");
+
+        verify(restTemplate)
+            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
+    }
+
+    /**
+     * @verifies return null if no cookie is found
+     * @see SPIService#initiateOtpeAuthentication(String, String)
+     */
+    @Test
+    public void initiateOtpeAuthentication_shouldReturnNullIfNoCookieIsFound() throws Exception {
+        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
+        given(restTemplate.exchange(eq(endpoint),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().build());
+
+        String result = spiService
+            .initiateOtpeAuthentication("Idam.Session=idamSession", "6.6.6.6");
+        Assert.assertNull(result);
+
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, "6.6.6.6");
+        headers.add(HttpHeaders.COOKIE, "Idam.Session=idamSession");
+
+        verify(restTemplate)
+            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
+    }
+
+    /**
+     * @verifies return a set-cookie header to set Idam.Session if successful
+     * @see SPIService#submitOtpeAuthentication(String, String, String)
+     */
+    @Test
+    public void submitOtpeAuthentication_shouldReturnASetcookieHeaderToSetIdamSessionIfSuccessful() throws Exception {
+        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
+        given(restTemplate.exchange(eq(endpoint),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, "Idam.Session=idamSession").build());
+
+        String result = spiService
+            .submitOtpeAuthentication("Idam.AuthId=authId", "6.6.6.6", "123456");
+        assertThat(result, is("Idam.Session=idamSession"));
+
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        form.add("otp", "123456");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, "6.6.6.6");
+        headers.add(HttpHeaders.COOKIE, "Idam.AuthId=authId");
+
+        verify(restTemplate)
+            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
+    }
+
+    /**
+     * @verifies return null if no cookie is found
+     * @see SPIService#submitOtpeAuthentication(String, String, String)
+     */
+    @Test
+    public void submitOtpeAuthentication_shouldReturnNullIfNoCookieIsFound() throws Exception {
+        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
+        given(restTemplate.exchange(eq(endpoint),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().build());
+
+        String result = spiService
+            .submitOtpeAuthentication("Idam.AuthId=authId", "6.6.6.6", "123456");
+        Assert.assertNull(result);
+
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        form.add("otp", "123456");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, "6.6.6.6");
+        headers.add(HttpHeaders.COOKIE, "Idam.AuthId=authId");
+
+        verify(restTemplate)
+            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
     }
 }

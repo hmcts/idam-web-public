@@ -147,8 +147,8 @@ public class SPIService {
     }
 
     /**
-     * @should return null if no cookie is found
      * @should return a set-cookie header to set Idam.AuthId if successful
+     * @should return null if no cookie is found
      */
     public String initiateOtpeAuthentication(final String idamSessionCookie, final String ipAddress) {
         final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
@@ -177,8 +177,8 @@ public class SPIService {
     }
 
     /**
-     * @should return null if no cookie is found
      * @should return a set-cookie header to set Idam.Session if successful
+     * @should return null if no cookie is found
      */
     public String submitOtpeAuthentication(final String authIdCookie, final String ipAddress, final String otp) {
         final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
