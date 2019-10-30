@@ -472,7 +472,7 @@ public class AppController {
             if (HttpStatus.UNAUTHORIZED == he.getStatusCode()
                 && StringUtils.contains(he.getResponseBodyAsString(), "INCORRECT_OTP")) {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
+                bindingResult.reject("Incorrect OTP");
                 return VERIFICATION_VIEW;
             }
 
