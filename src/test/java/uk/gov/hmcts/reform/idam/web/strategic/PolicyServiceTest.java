@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.idam.api.external.model.EvaluatePoliciesResponseInner
 import uk.gov.hmcts.reform.idam.api.external.model.Subject;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -92,7 +93,7 @@ public class PolicyServiceTest {
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
             .willReturn(ok(mockResponse(new ActionMap())));
 
-        boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        boolean result = service.evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
 
         assertThat(Boolean.valueOf(result), is(Boolean.TRUE));
 
@@ -116,7 +117,7 @@ public class PolicyServiceTest {
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
             .willReturn(ok(mockResponse(actionMap)));
 
-        boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        boolean result = service.evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
 
         assertThat(Boolean.valueOf(result), is(Boolean.TRUE));
 
@@ -140,7 +141,7 @@ public class PolicyServiceTest {
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
             .willReturn(ok(mockResponse(actionMap)));
 
-        boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        boolean result = service.evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
 
         assertThat(Boolean.valueOf(result), is(Boolean.FALSE));
 
@@ -160,7 +161,7 @@ public class PolicyServiceTest {
     public void evaluatePoliciesForUser_shouldThrowExceptionWhenResponseIsNotSuccessful() throws Exception {
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
             .willReturn(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
-        service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        service.evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
     }
 
     /**
@@ -172,7 +173,7 @@ public class PolicyServiceTest {
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
             .willReturn(ok(mockResponse(null)));
 
-        boolean result = service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        boolean result = service.evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
 
         assertThat(Boolean.valueOf(result), is(Boolean.TRUE));
 

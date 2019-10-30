@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -1161,8 +1162,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(REDIRECT_URI);
+        List<String> cookieList = Collections.singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willReturn(REDIRECT_URI);
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(true);
 
@@ -1178,8 +1180,8 @@ public class AppControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
-        verify(spiService).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
-        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+        verify(spiService).authorize(any(), eq(cookieList));
+        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(cookieList), eq(USER_IP_ADDRESS));
     }
 
     /**
@@ -1208,8 +1210,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(MISSING);
+        List<String> cookieList = Collections.singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willReturn(MISSING);
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(true);
 
@@ -1234,8 +1237,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
+        List<String> cookieList = Collections.singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(true);
 
@@ -1253,7 +1257,7 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
 
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
@@ -1269,7 +1273,7 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
 
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
@@ -1294,8 +1298,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+        List<String> cookieList = Collections.singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(true);
 
@@ -1508,22 +1513,22 @@ public class AppControllerTest {
 
     /**
      * @verifies return a secure cookie if useSecureCookie is true
-     * @see AppController#makeCookieSecure(String, boolean)
+     * @see AppController#makeCookiesSecure(List, boolean)
      */
     @Test
-    public void makeCookieSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
+    public void makeCookiesSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
         AppController appController = new AppController();
-        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, true), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; Secure; HttpOnly"));
+        assertThat(appController.makeCookiesSecure(Collections.singletonList(INSECURE_SESSION_COOKE), true), is(Collections.singletonList(AUTHENTICATE_SESSION_COOKE)));
     }
 
     /**
      * @verifies return a non-secure cookie if useSecureCookie is false
-     * @see AppController#makeCookieSecure(String, boolean)
+     * @see AppController#makeCookiesSecure(List, boolean)
      */
     @Test
-    public void makeCookieSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
+    public void makeCookiesSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
         AppController appController = new AppController();
-        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, false), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; HttpOnly"));
+        assertThat(appController.makeCookiesSecure(Collections.singletonList(INSECURE_SESSION_COOKE), false), is(Collections.singletonList(INSECURE_SESSION_COOKE + "; Path=/; HttpOnly")));
     }
 
     /**
@@ -1532,8 +1537,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorVariableInCasePolicyCheckFails() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(REDIRECT_URI);
+        List<String> cookieList = Collections.singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willReturn(REDIRECT_URI);
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(false);
 
@@ -1550,8 +1556,8 @@ public class AppControllerTest {
             .andExpect(model().attribute(MvcKeys.HAS_POLICY_CHECK_FAILED, true))
             .andExpect(view().name(LOGIN_VIEW));
 
-        verify(spiService, never()).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
+        verify(spiService, never()).authorize(any(), eq(cookieList));
 
-        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(cookieList), eq(USER_IP_ADDRESS));
     }
 }
