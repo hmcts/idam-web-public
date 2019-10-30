@@ -69,6 +69,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_POLICY_CHECK_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
@@ -302,7 +303,8 @@ public class AppController {
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
      * @should put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
      * @should put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
-     * @should put in model the correct error variable in case policy check fails
+     * @should put in model the correct error variable in case policy check returns BLOCK
+     * @should initiate OTP flow when policy check returns MFA_REQUIRED
      * @should return forbidden if csrf token is invalid
      */
     @PostMapping("/login")
@@ -348,7 +350,8 @@ public class AppController {
 
             if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
                 log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
-                return initiateOtpFlow(request, cookie, ipAddress, response, model);
+                initiateOtpFlow(request, cookie, ipAddress, response, model);
+                return VERIFICATION_VIEW;
             }
 
             final String responseUrl = authoriseUser(cookie, httpRequest);
@@ -394,7 +397,7 @@ public class AppController {
         return responseUrl;
     }
 
-    private String initiateOtpFlow(AuthorizeRequest request,
+    private void initiateOtpFlow(AuthorizeRequest request,
                                    String idamSessionCookie,
                                    String ipAddress,
                                    HttpServletResponse response,
@@ -412,25 +415,32 @@ public class AppController {
         verificationRequest.setScope(request.getScope());
         verificationRequest.setSelfRegistrationEnabled(request.isSelfRegistrationEnabled());
         model.addAttribute("verificationCommand", verificationRequest);
-
-        return VERIFICATION_VIEW;
     }
 
+    /**
+     * @should return verification view
+     */
     @GetMapping("/verification")
     public String verificationView(
         @ModelAttribute("verificationCommand") VerificationRequest request, BindingResult bindingResult, Model model) {
         return VERIFICATION_VIEW;
     }
 
+    /**
+     * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user
+     * @should return verification view for INCORRECT_OTP 401 response
+     * @should return login view for non INCORRECT_OTP 401 response
+     * @should return login view for 403 response
+     * @should return login view when authorize fails
+     */
     @PostMapping("/verification")
     public String verification(@ModelAttribute("verificationCommand") VerificationRequest request,
                                BindingResult bindingResult,
                                Model model,
                                HttpServletRequest httpRequest,
                                HttpServletResponse response) {
-            final String ipAddress = ObjectUtils.defaultIfNull(
-            httpRequest.getHeader(X_FORWARDED_FOR),
-            httpRequest.getRemoteAddr());
+
+        final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
 
         final String authIdCookieName = configurationProperties.getStrategic().getOtp().getOtpSessionIdCookie();
         final String authIdCookie = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
@@ -464,16 +474,25 @@ public class AppController {
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("/verification: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
-            if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
-                getLoginFailureReason(he, model, bindingResult);
-                return LOGIN_VIEW;
-            }
+            if (HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
 
-            if (HttpStatus.UNAUTHORIZED == he.getStatusCode()
-                && StringUtils.contains(he.getResponseBodyAsString(), "INCORRECT_OTP")) {
+                ErrorResponse error = new ErrorResponse();
+                if (he.getResponseBodyAsString() != null) {
+                    try {
+                        error = objectMapper.readValue(he.getResponseBodyAsString(), ErrorResponse.class);
+                    } catch (IOException e) {
+                        // ignored
+                    }
+                }
+                if (ErrorResponse.CodeEnum.INCORRECT_OTP.equals(error.getCode())) {
+                    model.addAttribute(HAS_OTP_CHECK_FAILED, true);
+                    bindingResult.reject("Incorrect OTP");
+                    return VERIFICATION_VIEW;
+                }
+
                 model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Incorrect OTP");
-                return VERIFICATION_VIEW;
+                bindingResult.reject("Login failure");
+                return LOGIN_VIEW;
             }
 
             model.addAttribute(HAS_LOGIN_FAILED, true);
@@ -497,20 +516,24 @@ public class AppController {
         return cookie + "; Path=/; HttpOnly";
     }
 
-    private void getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {
+    private ErrorResponse getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {
 
         try {
-            ErrorResponse error = objectMapper.readValue(hex.getResponseBodyAsString(), ErrorResponse.class);
+            final ErrorResponse error = objectMapper.readValue(hex.getResponseBodyAsString(), ErrorResponse.class);
             if (ErrorResponse.CodeEnum.ACCOUNT_LOCKED.equals(error.getCode())) {
                 model.addAttribute(IS_ACCOUNT_LOCKED, true);
                 bindingResult.reject("Account locked");
             } else if (ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED.equals(error.getCode())) {
                 model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
                 bindingResult.reject("Account suspended");
+            } else if (ErrorResponse.CodeEnum.INCORRECT_OTP.equals(error.getCode())) {
+                model.addAttribute(HAS_OTP_CHECK_FAILED, true);
+                bindingResult.reject("Incorrect OTP");
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
             }
+            return error;
         } catch (IOException e) {
             log.error("Authentication error : {}", hex.getResponseBodyAsString(), hex);
             throw new BadCredentialsException("Exception occurred during authentication", hex);

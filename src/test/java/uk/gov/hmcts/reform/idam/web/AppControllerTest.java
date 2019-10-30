@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -28,8 +31,10 @@ import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +42,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,6 +71,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIE
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHENTICATE_SESSION_COOKE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
@@ -157,6 +165,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALID_SECURITY_CODE_ERROR;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VERIFICATION_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 
 @RunWith(SpringRunner.class)
@@ -1619,13 +1628,12 @@ public class AppControllerTest {
     }
 
     /**
-     * @verifies put in model the correct error variable in case policy check fails
+     * @verifies put in model the correct error variable in case policy returns BLOCK
      * @see AppController#login(AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
-    public void login_shouldPutInModelTheCorrectErrorVariableInCasePolicyCheckFails() throws Exception {
+    public void login_shouldPutInModelTheCorrectErrorVariableInCasePolicyCheckReturnsBLOCK() throws Exception {
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(REDIRECT_URI);
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(PolicyService.EvaluatePoliciesAction.BLOCK);
 
@@ -1645,5 +1653,230 @@ public class AppControllerTest {
         verify(spiService, never()).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
 
         verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+    }
+
+    /**
+     * @verifies initiate OTP flow when policy check returns MFA_REQUIRED
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void login_shouldInitiateOTPFlowWhenPolicyCheckReturnsMFA_REQUIRED() throws Exception {
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS)))
+            .willReturn(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.initiateOtpeAuthentication(any(), any()))
+            .willReturn("Idam.AuthId=authIdCookie");
+        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
+            .willReturn(PolicyService.EvaluatePoliciesAction.MFA_REQUIRED);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.SET_COOKIE, "Idam.AuthId=authIdCookie; Path=/; Secure; HttpOnly"))
+            .andExpect(model().attribute("verificationCommand", hasProperty(USERNAME_PARAMETER, is(USER_EMAIL))))
+            .andExpect(model().attribute("verificationCommand", hasProperty(REDIRECT_URI, is(REDIRECT_URI))))
+            .andExpect(model().attribute("verificationCommand", hasProperty(STATE_PARAMETER, is(STATE))))
+            .andExpect(model().attribute("verificationCommand", hasProperty(RESPONSE_TYPE_PARAMETER, is(RESPONSE_TYPE))))
+            .andExpect(model().attribute("verificationCommand", hasProperty(CLIENT_ID_PARAMETER, is(CLIENT_ID))))
+            .andExpect(model().attribute("verificationCommand", hasProperty(SCOPE_PARAMETER, is(CUSTOM_SCOPE))))
+            .andExpect(model().attribute("verificationCommand", hasProperty(SELF_REGISTRATION_ENABLED, is(Boolean.FALSE))))
+            .andExpect(view().name(VERIFICATION_VIEW));
+
+        verify(spiService, never()).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
+
+        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+
+        verify(spiService).initiateOtpeAuthentication(eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+    }
+
+    /**
+     * @verifies submit otp authentication using authId cookie and otp code then call authorise and redirect the user
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldSubmitOtpAuthenticationUsingAuthIdCookieAndOtpCodeThenCallAuthoriseAndRedirectTheUser() throws Exception {
+        given(spiService.submitOtpeAuthentication(any(), any(), any()))
+            .willReturn("Idam.Session=idamSessionCookie");
+
+        given(spiService.authorize(any(), any()))
+            .willReturn(REDIRECT_URI);
+
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "12345"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(REDIRECT_URI));
+
+        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+            eq(USER_IP_ADDRESS),
+            eq("12345"));
+
+        ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(spiService).authorize(paramsCaptor.capture(), eq("Idam.Session=idamSessionCookie"));
+
+        Map<String, String> actualParams = paramsCaptor.getValue();
+        assertThat(actualParams, hasEntry(USERNAME_PARAMETER, USER_EMAIL));
+        assertThat(actualParams, hasEntry(REDIRECT_URI, REDIRECT_URI));
+        assertThat(actualParams, hasEntry(STATE_PARAMETER, STATE));
+        assertThat(actualParams, hasEntry(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
+        assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
+        assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
+        assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345"));
+    }
+
+    /**
+     * @verifies return verification view for INCORRECT_OTP 401 response
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldReturnVerificationViewForINCORRECT_OTP401Response() throws Exception {
+        given(spiService.submitOtpeAuthentication(any(), any(), any()))
+            .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+                "statusText",
+                "{\"code\":\"INCORRECT_OTP\"}".getBytes(StandardCharsets.UTF_8),
+                StandardCharsets.UTF_8));
+
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "12345"))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(VERIFICATION_VIEW))
+            .andExpect(model().attribute(MvcKeys.HAS_OTP_CHECK_FAILED, true));
+
+        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+            eq(USER_IP_ADDRESS),
+            eq("12345"));
+    }
+
+    /**
+     * @verifies return login view for non INCORRECT_OTP 401 response
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldReturnLoginViewForNonINCORRECT_OTP401Response() throws Exception {
+        given(spiService.submitOtpeAuthentication(any(), any(), any()))
+            .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
+
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "12345"))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(LOGIN_VIEW))
+            .andExpect(model().attribute(MvcKeys.HAS_OTP_CHECK_FAILED, Matchers.nullValue()))
+            .andExpect(model().attribute(MvcKeys.HAS_LOGIN_FAILED, true));
+
+        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+            eq(USER_IP_ADDRESS),
+            eq("12345"));
+    }
+
+    /**
+     * @verifies return login view for 403 response
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldReturnLoginViewFor403Response() throws Exception {
+        given(spiService.submitOtpeAuthentication(any(), any(), any()))
+            .willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
+
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "12345"))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(LOGIN_VIEW))
+            .andExpect(model().attribute(MvcKeys.HAS_OTP_CHECK_FAILED, Matchers.nullValue()))
+            .andExpect(model().attribute(MvcKeys.HAS_LOGIN_FAILED, true));
+
+        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+            eq(USER_IP_ADDRESS),
+            eq("12345"));
+    }
+
+    /**
+     * @verifies return login view when authorize fails
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldReturnLoginViewWhenAuthorizeFails() throws Exception {
+        given(spiService.submitOtpeAuthentication(any(), any(), any()))
+            .willReturn("Idam.Session=idamSessionCookie");
+
+        given(spiService.authorize(any(), any()))
+            .willReturn(MISSING);
+
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "12345"))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(LOGIN_VIEW))
+            .andExpect(model().attribute(MvcKeys.HAS_LOGIN_FAILED, true));
+
+        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+            eq(USER_IP_ADDRESS),
+            eq("12345"));
+
+        ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(spiService).authorize(paramsCaptor.capture(), eq("Idam.Session=idamSessionCookie"));
+
+        Map<String, String> actualParams = paramsCaptor.getValue();
+        assertThat(actualParams, hasEntry(USERNAME_PARAMETER, USER_EMAIL));
+        assertThat(actualParams, hasEntry(REDIRECT_URI, REDIRECT_URI));
+        assertThat(actualParams, hasEntry(STATE_PARAMETER, STATE));
+        assertThat(actualParams, hasEntry(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
+        assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
+        assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
+        assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345"));
+    }
+
+    /**
+     * @verifies return verification view
+     * @see AppController#verificationView(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model)
+     */
+    @Test
+    public void verificationView_shouldReturnVerificationView() throws Exception {
+        mockMvc.perform(get(VERIFICATION_ENDPOINT).with(csrf()))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(VERIFICATION_VIEW));
     }
 }
