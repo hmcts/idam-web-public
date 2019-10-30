@@ -64,8 +64,8 @@ public class PolicyService {
      * @should return ALLOW when all actions return true
      * @should return ALLOW when no actions are returned
      * @should return ALLOW when actions is null
-     * @should return MFA_REQUIRED when any action returns false and advice mfaRequired is true
-     * @should return BLOCK when any action returns false and advice mfaRequired is not true
+     * @should return MFA_REQUIRED when any action returns false and attribute mfaRequired is true
+     * @should return BLOCK when any action returns false and attribute mfaRequired is not true
      * @should throw exception when response is not successful
      */
     public EvaluatePoliciesAction evaluatePoliciesForUser(final String uri, final String cookie, final String ipAddress) {

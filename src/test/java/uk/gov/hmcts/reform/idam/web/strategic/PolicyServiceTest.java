@@ -128,11 +128,11 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies return BLOCK when any action returns false and advice mfaRequired is not true
+     * @verifies return BLOCK when any action returns false and attribute mfaRequired is not true
      * @see PolicyService#evaluatePoliciesForUser(String, String, String)
      */
     @Test
-    public void evaluatePoliciesForUser_shouldReturnBLOCKWhenAnyActionReturnsFalseAndAdviceMfaRequiredIsNotTrue() throws Exception {
+    public void evaluatePoliciesForUser_shouldReturnBLOCKWhenAnyActionReturnsFalseAndAttributeMfaRequiredIsNotTrue() throws Exception {
         final ActionMap actionMap = new ActionMap();
         actionMap.put("someKey", Boolean.TRUE);
         actionMap.put("anotherKey", Boolean.FALSE);
@@ -153,18 +153,18 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies return MFA_REQUIRED when any action returns false and advice mfaRequired is true
+     * @verifies return MFA_REQUIRED when any action returns false and attribute mfaRequired is true
      * @see PolicyService#evaluatePoliciesForUser(String, String, String)
      */
     @Test
-    public void evaluatePoliciesForUser_shouldReturnMFA_REQUIREDWhenAnyActionReturnsFalseAndAdviceMfaRequiredIsTrue() throws Exception {
+    public void evaluatePoliciesForUser_shouldReturnMFA_REQUIREDWhenAnyActionReturnsFalseAndAttributeMfaRequiredIsTrue() throws Exception {
         final ActionMap actionMap = new ActionMap();
         actionMap.put("someKey", Boolean.TRUE);
         actionMap.put("anotherKey", Boolean.FALSE);
 
         final EvaluatePoliciesResponseInner mockResponseInner = new EvaluatePoliciesResponseInner()
             .actions(actionMap)
-            .advices(ImmutableMap.of("mfaRequired", asList("true")));
+            .attributes(ImmutableMap.of("mfaRequired", asList("true")));
 
         final EvaluatePoliciesResponse mockResponse = new EvaluatePoliciesResponse();
         mockResponse.add(mockResponseInner);
