@@ -10,6 +10,8 @@
         <h1 class="heading-large">Terms and conditions</h1>
         <p>By using this service you're agreeing to these terms of use. This includes the <a href="/privacy-policy">privacy
             policy</a>.</p>
+        <h2 class="heading-medium">Terms and conditions for professional users</h2>
+        <p>If you are a professional user, you'll be asked to agree to the additional terms and conditions of the service after you create a MyHMCTS account.</p>
         <h2 class="heading-medium">Who we are</h2>
         <p>This service is managed by Her Majesty's Courts and Tribunals Service (referred to as 'us' or 'we' from
             now
