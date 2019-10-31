@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,6 +37,8 @@ import static java.util.Optional.ofNullable;
 public class PolicyService {
 
     public static final String ERROR_POLICY_CHECK_EXCEPTION = "Policy check exception.";
+
+    public static final String OPENAM_SSO_COOKIE_NAME = "Idam.Session";
 
     // Matches and captures ipv6 with port: 1fff:0:a88:85a3::ac1f
     // [1fff:0:a88:85a3::ac1f]:8001
@@ -57,10 +61,14 @@ public class PolicyService {
      * @should return true when no actions are returned
      * @should return true when actions is null
      */
-    public boolean evaluatePoliciesForUser(final String uri, final String cookie, final String ipAddress) {
+    public boolean evaluatePoliciesForUser(final String uri, final List<String> cookies, final String ipAddress) {
         final String applicationName = configurationProperties.getStrategic().getPolicies().getApplicationName();
 
-        final String userSsoToken = StringUtils.substringAfter(cookie, "=");
+        String sessionCookie = cookies.stream().
+            filter(cookie -> cookie.contains(OPENAM_SSO_COOKIE_NAME)).findFirst()
+            .orElseThrow(() -> new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "No valid authentication token found."));
+
+        final String userSsoToken = StringUtils.substringAfter(sessionCookie, "=");
 
         final EvaluatePoliciesRequest request = new EvaluatePoliciesRequest()
             .resources(singletonList(uri))
@@ -68,7 +76,7 @@ public class PolicyService {
             .subject(new Subject().ssoToken(userSsoToken))
             .environment(ImmutableMap.of("requestIp", sanitiseIpsFromRequest(ipAddress)));
 
-        final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookie, userSsoToken, request, ipAddress);
+        final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookies, userSsoToken, request, ipAddress);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new HttpClientErrorException(response.getStatusCode(), ERROR_POLICY_CHECK_EXCEPTION);
@@ -78,14 +86,14 @@ public class PolicyService {
         return result;
     }
 
-    private ResponseEntity<EvaluatePoliciesResponse> doEvaluatePolicies(final String cookie,
+    private ResponseEntity<EvaluatePoliciesResponse> doEvaluatePolicies(final List<String> cookies,
                                                                         final String userSsoToken,
                                                                         final EvaluatePoliciesRequest request,
                                                                         final String ipAddress) {
         final HttpHeaders headers = new HttpHeaders();
         headers.add(X_FORWARDED_FOR, ipAddress);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.put(HttpHeaders.COOKIE, Collections.singletonList(cookie));
+        headers.put(HttpHeaders.COOKIE, cookies);
         headers.setBearerAuth(userSsoToken);
 
         final HttpEntity<EvaluatePoliciesRequest> httpEntity = new HttpEntity<>(request, headers);

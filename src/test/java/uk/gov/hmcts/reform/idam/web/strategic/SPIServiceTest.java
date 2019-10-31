@@ -33,9 +33,11 @@ import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -597,8 +599,8 @@ public class SPIServiceTest {
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
             eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
             .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie).build());
-        String result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
-        assertThat(result, equalTo(cookie));
+        List<String> result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
+        assertTrue(result.contains(cookie));
     }
 
     /**
@@ -610,7 +612,7 @@ public class SPIServiceTest {
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
             eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
             .willReturn(ResponseEntity.ok().build());
-        String result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
+        List<String> result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
         assertNull(result);
     }
 }
