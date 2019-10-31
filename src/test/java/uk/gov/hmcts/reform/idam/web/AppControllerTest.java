@@ -62,6 +62,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
@@ -1679,13 +1680,13 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().isOk())
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.SET_COOKIE, "Idam.AuthId=authIdCookie; Path=/; Secure; HttpOnly"))
-            .andExpect(model().attribute("verificationCommand", hasProperty(USERNAME_PARAMETER, is(USER_EMAIL))))
-            .andExpect(model().attribute("verificationCommand", hasProperty(REDIRECT_URI, is(REDIRECT_URI))))
-            .andExpect(model().attribute("verificationCommand", hasProperty(STATE_PARAMETER, is(STATE))))
-            .andExpect(model().attribute("verificationCommand", hasProperty(RESPONSE_TYPE_PARAMETER, is(RESPONSE_TYPE))))
-            .andExpect(model().attribute("verificationCommand", hasProperty(CLIENT_ID_PARAMETER, is(CLIENT_ID))))
-            .andExpect(model().attribute("verificationCommand", hasProperty(SCOPE_PARAMETER, is(CUSTOM_SCOPE))))
-            .andExpect(model().attribute("verificationCommand", hasProperty(SELF_REGISTRATION_ENABLED, is(Boolean.FALSE))))
+            .andExpect(model().attribute("authorizeCommand", hasProperty(USERNAME_PARAMETER, is(USER_EMAIL))))
+            .andExpect(model().attribute("authorizeCommand", hasProperty(REDIRECT_URI, is(REDIRECT_URI))))
+            .andExpect(model().attribute("authorizeCommand", hasProperty(STATE_PARAMETER, is(STATE))))
+            .andExpect(model().attribute("authorizeCommand", hasProperty(RESPONSE_TYPE_PARAMETER, is(RESPONSE_TYPE))))
+            .andExpect(model().attribute("authorizeCommand", hasProperty(CLIENT_ID_PARAMETER, is(CLIENT_ID))))
+            .andExpect(model().attribute("authorizeCommand", hasProperty(SCOPE_PARAMETER, is(CUSTOM_SCOPE))))
+            .andExpect(model().attribute("authorizeCommand", hasProperty(SELF_REGISTRATION_ENABLED, is(Boolean.FALSE))))
             .andExpect(view().name(VERIFICATION_VIEW));
 
         verify(spiService, never()).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
@@ -1697,7 +1698,7 @@ public class AppControllerTest {
 
     /**
      * @verifies submit otp authentication using authId cookie and otp code then call authorise and redirect the user
-     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
     public void verification_shouldSubmitOtpAuthenticationUsingAuthIdCookieAndOtpCodeThenCallAuthoriseAndRedirectTheUser() throws Exception {
@@ -1739,7 +1740,7 @@ public class AppControllerTest {
 
     /**
      * @verifies return verification view for INCORRECT_OTP 401 response
-     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
     public void verification_shouldReturnVerificationViewForINCORRECT_OTP401Response() throws Exception {
@@ -1770,7 +1771,7 @@ public class AppControllerTest {
 
     /**
      * @verifies return login view for non INCORRECT_OTP 401 response
-     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
     public void verification_shouldReturnLoginViewForNonINCORRECT_OTP401Response() throws Exception {
@@ -1787,8 +1788,8 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CODE_PARAMETER, "12345"))
-            .andExpect(status().is2xxSuccessful())
-            .andExpect(view().name(LOGIN_VIEW))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrlPattern("/login*"))
             .andExpect(model().attribute(MvcKeys.HAS_OTP_CHECK_FAILED, Matchers.nullValue()))
             .andExpect(model().attribute(MvcKeys.HAS_LOGIN_FAILED, true));
 
@@ -1799,7 +1800,7 @@ public class AppControllerTest {
 
     /**
      * @verifies return login view for 403 response
-     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
     public void verification_shouldReturnLoginViewFor403Response() throws Exception {
@@ -1816,8 +1817,8 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CODE_PARAMETER, "12345"))
-            .andExpect(status().is2xxSuccessful())
-            .andExpect(view().name(LOGIN_VIEW))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrlPattern("/login*"))
             .andExpect(model().attribute(MvcKeys.HAS_OTP_CHECK_FAILED, Matchers.nullValue()))
             .andExpect(model().attribute(MvcKeys.HAS_LOGIN_FAILED, true));
 
@@ -1828,7 +1829,7 @@ public class AppControllerTest {
 
     /**
      * @verifies return login view when authorize fails
-     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
     public void verification_shouldReturnLoginViewWhenAuthorizeFails() throws Exception {
@@ -1848,8 +1849,8 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CODE_PARAMETER, "12345"))
-            .andExpect(status().is2xxSuccessful())
-            .andExpect(view().name(LOGIN_VIEW))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrlPattern("/login*"))
             .andExpect(model().attribute(MvcKeys.HAS_LOGIN_FAILED, true));
 
         verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
@@ -1867,16 +1868,5 @@ public class AppControllerTest {
         assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
         assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
         assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345"));
-    }
-
-    /**
-     * @verifies return verification view
-     * @see AppController#verificationView(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model)
-     */
-    @Test
-    public void verificationView_shouldReturnVerificationView() throws Exception {
-        mockMvc.perform(get(VERIFICATION_ENDPOINT).with(csrf()))
-            .andExpect(status().is2xxSuccessful())
-            .andExpect(view().name(VERIFICATION_VIEW));
     }
 }

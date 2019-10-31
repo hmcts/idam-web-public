@@ -409,15 +409,6 @@ public class AppController {
     }
 
     /**
-     * @should return verification view
-     */
-    @GetMapping("/verification")
-    public String verificationView(
-        @ModelAttribute("authorizeCommand") AuthorizeRequest request, BindingResult bindingResult, Model model) {
-        return VERIFICATION_VIEW;
-    }
-
-    /**
      * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user
      * @should return verification view for INCORRECT_OTP 401 response
      * @should return login view for non INCORRECT_OTP 401 response
@@ -425,7 +416,7 @@ public class AppController {
      * @should return login view when authorize fails
      */
     @PostMapping("/verification")
-    public String verification(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
+    public ModelAndView verification(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
                                BindingResult bindingResult,
                                Model model,
                                HttpServletRequest httpRequest,
@@ -440,15 +431,12 @@ public class AppController {
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
             .orElse(null); // get
 
-        model.addAttribute(USERNAME, request.getUsername());
-        model.addAttribute(PASSWORD, request.getPassword());
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
-        model.addAttribute("authorizeCommand", request);
 
         try {
             final String cookie = spiService.submitOtpeAuthentication(authIdCookie, ipAddress, request.getCode());
@@ -459,12 +447,12 @@ public class AppController {
             if (loginSuccess) {
                 log.info("/verification: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
                 response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
-                return "redirect:" + responseUrl;
+                return new ModelAndView("redirect:" + responseUrl);
             } else {
                 log.info("/verification: There is a problem while logging in user - {}", obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
-                return LOGIN_VIEW;
+                return new ModelAndView("redirect:/login", model.asMap());
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("/verification: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
@@ -481,17 +469,17 @@ public class AppController {
                 if (ErrorResponse.CodeEnum.INCORRECT_OTP.equals(error.getCode())) {
                     model.addAttribute(HAS_OTP_CHECK_FAILED, true);
                     bindingResult.reject("Incorrect OTP");
-                    return VERIFICATION_VIEW;
+                    return new ModelAndView(VERIFICATION_VIEW, model.asMap());
                 }
 
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
-                return LOGIN_VIEW;
+                return new ModelAndView("redirect:/login", model.asMap());
             }
 
             model.addAttribute(HAS_LOGIN_FAILED, true);
             bindingResult.reject("Login failure");
-            return LOGIN_VIEW;
+            return new ModelAndView("redirect:/login", model.asMap());
         }
     }
 
