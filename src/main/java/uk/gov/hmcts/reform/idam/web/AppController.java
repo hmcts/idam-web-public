@@ -514,7 +514,7 @@ public class AppController {
             }).collect(Collectors.toList());
     }
 
-    private ErrorResponse getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {
+    private void getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {
 
         try {
             final ErrorResponse error = objectMapper.readValue(hex.getResponseBodyAsString(), ErrorResponse.class);
@@ -524,14 +524,10 @@ public class AppController {
             } else if (ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED.equals(error.getCode())) {
                 model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
                 bindingResult.reject("Account suspended");
-            } else if (ErrorResponse.CodeEnum.INCORRECT_OTP.equals(error.getCode())) {
-                model.addAttribute(HAS_OTP_CHECK_FAILED, true);
-                bindingResult.reject("Incorrect OTP");
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
             }
-            return error;
         } catch (IOException e) {
             log.error("Authentication error : {}", hex.getResponseBodyAsString(), hex);
             throw new BadCredentialsException("Exception occurred during authentication", hex);
