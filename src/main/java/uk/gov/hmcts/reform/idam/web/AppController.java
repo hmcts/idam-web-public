@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
-import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -406,15 +405,7 @@ public class AppController {
         log.info("/login: Successful initiate OTP request - {}", obfuscateEmailAddress(request.getUsername()));
         response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(authIdCookie));
 
-        final VerificationRequest verificationRequest = new VerificationRequest();
-        verificationRequest.setUsername(request.getUsername());
-        verificationRequest.setResponse_type(request.getResponse_type());
-        verificationRequest.setState(request.getState());
-        verificationRequest.setClient_id(request.getClient_id());
-        verificationRequest.setRedirect_uri(request.getRedirect_uri());
-        verificationRequest.setScope(request.getScope());
-        verificationRequest.setSelfRegistrationEnabled(request.isSelfRegistrationEnabled());
-        model.addAttribute("verificationCommand", verificationRequest);
+        model.addAttribute("authorizeCommand", request);
     }
 
     /**
@@ -422,7 +413,7 @@ public class AppController {
      */
     @GetMapping("/verification")
     public String verificationView(
-        @ModelAttribute("verificationCommand") VerificationRequest request, BindingResult bindingResult, Model model) {
+        @ModelAttribute("authorizeCommand") AuthorizeRequest request, BindingResult bindingResult, Model model) {
         return VERIFICATION_VIEW;
     }
 
@@ -434,7 +425,7 @@ public class AppController {
      * @should return login view when authorize fails
      */
     @PostMapping("/verification")
-    public String verification(@ModelAttribute("verificationCommand") VerificationRequest request,
+    public String verification(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
                                BindingResult bindingResult,
                                Model model,
                                HttpServletRequest httpRequest,
@@ -449,12 +440,15 @@ public class AppController {
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
             .orElse(null); // get
 
+        model.addAttribute(USERNAME, request.getUsername());
+        model.addAttribute(PASSWORD, request.getPassword());
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
+        model.addAttribute("authorizeCommand", request);
 
         try {
             final String cookie = spiService.submitOtpeAuthentication(authIdCookie, ipAddress, request.getCode());

@@ -11,7 +11,7 @@
         <h1 class="heading-large"><spring:message code="public.verification.subheading.verification.required"/></h1>
         <div class="form-section">
             <p><spring:message code="public.verification.p"/></p>
-            <form:form action="/verification" class="form" modelAttribute="verificationCommand">
+            <form:form action="/verification" class="form" modelAttribute="authorizeCommand">
                 <form:input id="username" name="username" path="username" type="hidden" value="" />
                 <form:input id="response_type" name="response_type" path="response_type" type="hidden" value="" />
                 <form:input id="state" name="state" path="state" type="hidden" value="" />
