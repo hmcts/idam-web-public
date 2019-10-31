@@ -39,6 +39,8 @@ import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -126,7 +128,7 @@ public class SPIService {
      * @should return null if no cookie is found
      * @should return a set-cookie header
      */
-    public String authenticate(final String username, final String password, final String ipAddress) {
+    public List<String> authenticate(final String username, final String password, final String ipAddress) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
         form.add("username", username);
         form.add("password", password);
@@ -139,69 +141,7 @@ public class SPIService {
             new HttpEntity<>(form, headers), Void.class);
 
         if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
-            return response.getHeaders().get(HttpHeaders.SET_COOKIE).stream()
-                .findFirst().orElse(null);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @should return a set-cookie header to set Idam.AuthId if successful
-     * @should return null if no cookie is found
-     */
-    public String initiateOtpeAuthentication(final String idamSessionCookie, final String ipAddress) {
-        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
-        form.add("service", "otpe");
-
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(X_FORWARDED_FOR, ipAddress);
-        if (idamSessionCookie != null) {
-            headers.add(HttpHeaders.COOKIE, idamSessionCookie);
-        }
-
-        final String endpoint = String.format("%s/%s",
-            configurationProperties.getStrategic().getService().getUrl(),
-            configurationProperties.getStrategic().getEndpoint().getAuthorize());
-
-        ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
-            new HttpEntity<>(form, headers), Void.class);
-
-        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
-            return response.getHeaders().get(HttpHeaders.SET_COOKIE).stream()
-                .findFirst().orElse(null);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @should return a set-cookie header to set Idam.Session if successful
-     * @should return null if no cookie is found
-     */
-    public String submitOtpeAuthentication(final String authIdCookie, final String ipAddress, final String otp) {
-        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
-        form.add("service", "otpe");
-        form.add("otp", otp);
-
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(X_FORWARDED_FOR, ipAddress);
-        if (authIdCookie != null) {
-            headers.add(HttpHeaders.COOKIE, authIdCookie);
-        }
-
-        final String endpoint = String.format("%s/%s",
-            configurationProperties.getStrategic().getService().getUrl(),
-            configurationProperties.getStrategic().getEndpoint().getAuthorize());
-
-        ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
-            new HttpEntity<>(form, headers), Void.class);
-
-        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
-            return response.getHeaders().get(HttpHeaders.SET_COOKIE).stream()
-                .findFirst().orElse(null);
+            return new ArrayList<>(response.getHeaders().get(HttpHeaders.SET_COOKIE));
         } else {
             return null;
         }
@@ -212,11 +152,11 @@ public class SPIService {
      * @should not send state and scope parameters in form if they are not send as parameter in the service
      * @should return null if api response code is not 302
      */
-    public String authorize(final Map<String, String> params, final String cookie) {
+    public String authorize(final Map<String, String> params, final List<String> cookie) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         if (cookie != null) {
-            headers.add(HttpHeaders.COOKIE, cookie);
+            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookie, ";"));
         }
         addUriHeaders(headers);
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(14);
@@ -230,6 +170,65 @@ public class SPIService {
 
         if (response.getStatusCode() == HttpStatus.FOUND) {
             return response.getHeaders().getLocation().toString();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @should return a set-cookie header to set Idam.AuthId if successful
+     * @should return null if no cookie is found
+     */
+    public List<String> initiateOtpeAuthentication(final List<String> cookies, final String ipAddress) {
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, ipAddress);
+        if (cookies != null) {
+            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookies, ";"));
+        }
+
+        final String endpoint = String.format("%s/%s",
+            configurationProperties.getStrategic().getService().getUrl(),
+            configurationProperties.getStrategic().getEndpoint().getAuthorize());
+
+        ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
+            new HttpEntity<>(form, headers), Void.class);
+
+        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
+            return new ArrayList<>(response.getHeaders().get(HttpHeaders.SET_COOKIE));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @should return a set-cookie header to set Idam.Session if successful
+     * @should return null if no cookie is found
+     */
+    public List<String> submitOtpeAuthentication(final List<String> cookies, final String ipAddress, final String otp) {
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        form.add("otp", otp);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, ipAddress);
+        if (cookies != null) {
+            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookies, ";"));
+        }
+
+        final String endpoint = String.format("%s/%s",
+            configurationProperties.getStrategic().getService().getUrl(),
+            configurationProperties.getStrategic().getEndpoint().getAuthorize());
+
+        ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
+            new HttpEntity<>(form, headers), Void.class);
+
+        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
+            return new ArrayList<>(response.getHeaders().get(HttpHeaders.SET_COOKIE));
         } else {
             return null;
         }

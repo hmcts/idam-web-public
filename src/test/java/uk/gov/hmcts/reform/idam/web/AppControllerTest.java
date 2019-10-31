@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
@@ -108,6 +109,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HAS_LOGIN_FAILED;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HAS_LOGIN_FAILED_RESPONSE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.INDEX_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.INFORMATION_IS_MISSING_OR_INVALID;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.INSECURE_SESSION_COOKE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_LOCKED;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_SUSPENDED;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT;
@@ -1263,8 +1265,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByService() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(REDIRECT_URI);
+        List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willReturn(REDIRECT_URI);
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(PolicyService.EvaluatePoliciesAction.ALLOW);
 
@@ -1280,8 +1283,8 @@ public class AppControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
-        verify(spiService).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
-        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+        verify(spiService).authorize(any(), eq(cookieList));
+        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(cookieList), eq(USER_IP_ADDRESS));
     }
 
     /**
@@ -1310,8 +1313,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectDataAndReturnLoginViewIfAuthorizeServiceDoesntReturnAResponseUrl() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willReturn(MISSING);
+        List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willReturn(MISSING);
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(PolicyService.EvaluatePoliciesAction.ALLOW);
 
@@ -1336,8 +1340,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorDetailInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIs403ThenReturnLoginView() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
+        List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(PolicyService.EvaluatePoliciesAction.ALLOW);
 
@@ -1355,7 +1360,7 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
 
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
@@ -1371,7 +1376,7 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
 
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
@@ -1396,8 +1401,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorVariableInCaseAuthorizeServiceThrowsAHttpClientErrorExceptionAndStatusCodeIsNot403ThenReturnLoginView() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authorize(any(), eq(AUTHENTICATE_SESSION_COOKE))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+        List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(PolicyService.EvaluatePoliciesAction.ALLOW);
 
@@ -1610,22 +1616,22 @@ public class AppControllerTest {
 
     /**
      * @verifies return a secure cookie if useSecureCookie is true
-     * @see AppController#makeCookieSecure(String, boolean)
+     * @see AppController#makeCookiesSecure(List, boolean)
      */
     @Test
-    public void makeCookieSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
+    public void makeCookiesSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
         AppController appController = new AppController();
-        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, true), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; Secure; HttpOnly"));
+        assertThat(appController.makeCookiesSecure(singletonList(INSECURE_SESSION_COOKE), true), is(singletonList(AUTHENTICATE_SESSION_COOKE)));
     }
 
     /**
      * @verifies return a non-secure cookie if useSecureCookie is false
-     * @see AppController#makeCookieSecure(String, boolean)
+     * @see AppController#makeCookiesSecure(List, boolean)
      */
     @Test
-    public void makeCookieSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
+    public void makeCookiesSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
         AppController appController = new AppController();
-        assertThat(appController.makeCookieSecure(AUTHENTICATE_SESSION_COOKE, false), is(AUTHENTICATE_SESSION_COOKE + "; Path=/; HttpOnly"));
+        assertThat(appController.makeCookiesSecure(singletonList(INSECURE_SESSION_COOKE), false), is(singletonList(INSECURE_SESSION_COOKE + "; Path=/; HttpOnly")));
     }
 
     /**
@@ -1634,7 +1640,9 @@ public class AppControllerTest {
      */
     @Test
     public void login_shouldPutInModelTheCorrectErrorVariableInCasePolicyCheckReturnsBLOCK() throws Exception {
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(AUTHENTICATE_SESSION_COOKE);
+        List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS)))
+            .willReturn(cookieList);
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(PolicyService.EvaluatePoliciesAction.BLOCK);
 
@@ -1651,9 +1659,9 @@ public class AppControllerTest {
             .andExpect(model().attribute(MvcKeys.HAS_POLICY_CHECK_FAILED, true))
             .andExpect(view().name(LOGIN_VIEW));
 
-        verify(spiService, never()).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
+        verify(spiService, never()).authorize(any(), eq(cookieList));
 
-        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(cookieList), eq(USER_IP_ADDRESS));
     }
 
     /**
@@ -1663,9 +1671,9 @@ public class AppControllerTest {
     @Test
     public void login_shouldInitiateOTPFlowWhenPolicyCheckReturnsMFA_REQUIRED() throws Exception {
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS)))
-            .willReturn(AUTHENTICATE_SESSION_COOKE);
+            .willReturn(singletonList(AUTHENTICATE_SESSION_COOKE));
         given(spiService.initiateOtpeAuthentication(any(), any()))
-            .willReturn("Idam.AuthId=authIdCookie");
+            .willReturn(singletonList("Idam.AuthId=authIdCookie"));
         given(policyService.evaluatePoliciesForUser(any(), any(), any()))
             .willReturn(PolicyService.EvaluatePoliciesAction.MFA_REQUIRED);
 
@@ -1689,11 +1697,11 @@ public class AppControllerTest {
             .andExpect(model().attribute("authorizeCommand", hasProperty(SELF_REGISTRATION_ENABLED, is(Boolean.FALSE))))
             .andExpect(view().name(VERIFICATION_VIEW));
 
-        verify(spiService, never()).authorize(any(), eq(AUTHENTICATE_SESSION_COOKE));
+        verify(spiService, never()).authorize(any(), eq(singletonList(AUTHENTICATE_SESSION_COOKE)));
 
-        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(singletonList(AUTHENTICATE_SESSION_COOKE)), eq(USER_IP_ADDRESS));
 
-        verify(spiService).initiateOtpeAuthentication(eq(AUTHENTICATE_SESSION_COOKE), eq(USER_IP_ADDRESS));
+        verify(spiService).initiateOtpeAuthentication(eq(singletonList(AUTHENTICATE_SESSION_COOKE)), eq(USER_IP_ADDRESS));
     }
 
     /**
@@ -1703,7 +1711,7 @@ public class AppControllerTest {
     @Test
     public void verification_shouldSubmitOtpAuthenticationUsingAuthIdCookieAndOtpCodeThenCallAuthoriseAndRedirectTheUser() throws Exception {
         given(spiService.submitOtpeAuthentication(any(), any(), any()))
-            .willReturn("Idam.Session=idamSessionCookie");
+            .willReturn(singletonList("Idam.Session=idamSessionCookie"));
 
         given(spiService.authorize(any(), any()))
             .willReturn(REDIRECT_URI);
@@ -1721,12 +1729,12 @@ public class AppControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
-        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+        verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
             eq("12345"));
 
         ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
-        verify(spiService).authorize(paramsCaptor.capture(), eq("Idam.Session=idamSessionCookie"));
+        verify(spiService).authorize(paramsCaptor.capture(), eq(singletonList("Idam.Session=idamSessionCookie")));
 
         Map<String, String> actualParams = paramsCaptor.getValue();
         assertThat(actualParams, hasEntry(USERNAME_PARAMETER, USER_EMAIL));
@@ -1764,7 +1772,7 @@ public class AppControllerTest {
             .andExpect(view().name(VERIFICATION_VIEW))
             .andExpect(model().attribute(MvcKeys.HAS_OTP_CHECK_FAILED, true));
 
-        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+        verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
             eq("12345"));
     }
@@ -1793,7 +1801,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(MvcKeys.HAS_OTP_CHECK_FAILED, Matchers.nullValue()))
             .andExpect(model().attribute(MvcKeys.HAS_LOGIN_FAILED, true));
 
-        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+        verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
             eq("12345"));
     }
@@ -1822,7 +1830,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(MvcKeys.HAS_OTP_CHECK_FAILED, Matchers.nullValue()))
             .andExpect(model().attribute(MvcKeys.HAS_LOGIN_FAILED, true));
 
-        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+        verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
             eq("12345"));
     }
@@ -1834,7 +1842,7 @@ public class AppControllerTest {
     @Test
     public void verification_shouldReturnLoginViewWhenAuthorizeFails() throws Exception {
         given(spiService.submitOtpeAuthentication(any(), any(), any()))
-            .willReturn("Idam.Session=idamSessionCookie");
+            .willReturn(singletonList("Idam.Session=idamSessionCookie"));
 
         given(spiService.authorize(any(), any()))
             .willReturn(MISSING);
@@ -1853,12 +1861,12 @@ public class AppControllerTest {
             .andExpect(redirectedUrlPattern("/login*"))
             .andExpect(model().attribute(MvcKeys.HAS_LOGIN_FAILED, true));
 
-        verify(spiService).submitOtpeAuthentication(eq("Idam.AuthId=authId"),
+        verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
             eq("12345"));
 
         ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
-        verify(spiService).authorize(paramsCaptor.capture(), eq("Idam.Session=idamSessionCookie"));
+        verify(spiService).authorize(paramsCaptor.capture(), eq(singletonList("Idam.Session=idamSessionCookie")));
 
         Map<String, String> actualParams = paramsCaptor.getValue();
         assertThat(actualParams, hasEntry(USERNAME_PARAMETER, USER_EMAIL));

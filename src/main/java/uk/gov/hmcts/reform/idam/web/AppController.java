@@ -47,9 +47,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
@@ -336,9 +338,17 @@ public class AppController {
                 httpRequest.getHeader(X_FORWARDED_FOR),
                 httpRequest.getRemoteAddr());
 
-            final String cookie = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
+            final List<String> cookies = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
+
+            if (cookies == null) {
+                log.info("/login: Authenticate returned no cookies for user - {}", obfuscateEmailAddress(request.getUsername()));
+                model.addAttribute(HAS_LOGIN_FAILED, true);
+                bindingResult.reject("Login failure");
+                return LOGIN_VIEW;
+            }
+
             final String redirectUri = request.getRedirect_uri();
-            final PolicyService.EvaluatePoliciesAction policyCheckResponse = policyService.evaluatePoliciesForUser(redirectUri, cookie, ipAddress);
+            final PolicyService.EvaluatePoliciesAction policyCheckResponse = policyService.evaluatePoliciesForUser(redirectUri, cookies, ipAddress);
 
             if (policyCheckResponse == PolicyService.EvaluatePoliciesAction.BLOCK) {
                 log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
@@ -349,16 +359,17 @@ public class AppController {
 
             if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
                 log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
-                initiateOtpFlow(request, cookie, ipAddress, response, model);
+                initiateOtpFlow(request, cookies, ipAddress, response, model);
                 return VERIFICATION_VIEW;
             }
 
-            final String responseUrl = authoriseUser(cookie, httpRequest);
+            final String responseUrl = authoriseUser(cookies, httpRequest);
             final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
 
             if (loginSuccess) {
                 log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
-                response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
+                List<String> secureCookies = makeCookiesSecure(cookies);
+                secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                 return "redirect:" + responseUrl;
             } else {
                 log.info("/login: There is a problem while logging in  user - {}", obfuscateEmailAddress(request.getUsername()));
@@ -379,9 +390,9 @@ public class AppController {
         return LOGIN_VIEW;
     }
 
-    private String authoriseUser(String cookie, HttpServletRequest httpRequest) {
+    private String authoriseUser(List<String> cookies, HttpServletRequest httpRequest) {
         String responseUrl = null;
-        if (cookie != null) {
+        if (cookies != null) {
             Map<String, String> params = new HashMap<>();
             httpRequest.getParameterMap().forEach((key, values) -> {
                     if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
@@ -391,19 +402,20 @@ public class AppController {
             params.putIfAbsent(RESPONSE_TYPE, "code");
             params.putIfAbsent(SCOPE, "openid profile roles");
 
-            responseUrl = spiService.authorize(params, cookie);
+            responseUrl = spiService.authorize(params, cookies);
         }
         return responseUrl;
     }
 
     private void initiateOtpFlow(AuthorizeRequest request,
-                                   String idamSessionCookie,
+                                   List<String> cookies,
                                    String ipAddress,
                                    HttpServletResponse response,
                                    Model model) {
-        final String authIdCookie = spiService.initiateOtpeAuthentication(idamSessionCookie, ipAddress);
+        final List<String> responseCookies = spiService.initiateOtpeAuthentication(cookies, ipAddress);
         log.info("/login: Successful initiate OTP request - {}", obfuscateEmailAddress(request.getUsername()));
-        response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(authIdCookie));
+        List<String> secureCookies = makeCookiesSecure(responseCookies);
+        secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
 
         model.addAttribute("authorizeCommand", request);
     }
@@ -424,12 +436,9 @@ public class AppController {
 
         final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
 
-        final String authIdCookieName = configurationProperties.getStrategic().getOtp().getOtpSessionIdCookie();
-        final String authIdCookie = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
-            .filter(c -> authIdCookieName.equals(c.getName())) // find Idam.AuthId
-            .findAny() // get
+        final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
-            .orElse(null); // get
+            .collect(Collectors.toList());
 
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
@@ -439,14 +448,15 @@ public class AppController {
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
 
         try {
-            final String cookie = spiService.submitOtpeAuthentication(authIdCookie, ipAddress, request.getCode());
+            final List<String> responseCookies = spiService.submitOtpeAuthentication(cookies, ipAddress, request.getCode());
             log.info("/verification: Successful OTP submission request - {}", obfuscateEmailAddress(request.getUsername()));
 
-            final String responseUrl = authoriseUser(cookie, httpRequest);
+            final String responseUrl = authoriseUser(responseCookies, httpRequest);
             final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
             if (loginSuccess) {
                 log.info("/verification: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
-                response.addHeader(HttpHeaders.SET_COOKIE, makeCookieSecure(cookie));
+                List<String> secureCookies = makeCookiesSecure(responseCookies);
+                secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                 return new ModelAndView("redirect:" + responseUrl);
             } else {
                 log.info("/verification: There is a problem while logging in user - {}", obfuscateEmailAddress(request.getUsername()));
@@ -483,19 +493,25 @@ public class AppController {
         }
     }
 
-    private String makeCookieSecure(String cookie) {
-        return makeCookieSecure(cookie, useSecureCookie);
+    private List<String> makeCookiesSecure(List<String> cookies) {
+        return makeCookiesSecure(cookies, useSecureCookie);
     }
 
     /**
      * @should return a secure cookie if useSecureCookie is true
      * @should return a non-secure cookie if useSecureCookie is false
      */
-    protected String makeCookieSecure(String cookie, boolean withSecureCookie) {
-        if (withSecureCookie) {
-            return cookie + "; Path=/; Secure; HttpOnly";
-        }
-        return cookie + "; Path=/; HttpOnly";
+    protected List<String> makeCookiesSecure(List<String> cookies, boolean withSecureCookie) {
+        return cookies.stream()
+            .map(cookie -> {
+                if (!cookie.contains("HttpOnly")) {
+                    if (withSecureCookie) {
+                        return cookie + "; Path=/; Secure; HttpOnly";
+                    }
+                    return cookie + "; Path=/; HttpOnly";
+                }
+                return cookie;
+            }).collect(Collectors.toList());
     }
 
     private ErrorResponse getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {

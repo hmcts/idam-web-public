@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.idam.api.external.model.EvaluatePoliciesResponseInner
 import uk.gov.hmcts.reform.idam.api.external.model.Subject;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -85,7 +86,7 @@ public class PolicyServiceTest {
 
     /**
      * @verifies return ALLOW when no actions are returned
-     * @see PolicyService#evaluatePoliciesForUser(String, String, String)
+     * @see PolicyService#evaluatePoliciesForUser(String, List, String)
      */
     @Test
     public void evaluatePoliciesForUser_shouldReturnALLOWWhenNoActionsAreReturned() throws Exception {
@@ -93,7 +94,7 @@ public class PolicyServiceTest {
             .willReturn(ok(mockResponse(new ActionMap())));
 
         final PolicyService.EvaluatePoliciesAction result = service
-            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+            .evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
 
         assertThat(result, is(PolicyService.EvaluatePoliciesAction.ALLOW));
 
@@ -107,7 +108,7 @@ public class PolicyServiceTest {
 
     /**
      * @verifies return ALLOW when all actions return true
-     * @see PolicyService#evaluatePoliciesForUser(String, String, String)
+     * @see PolicyService#evaluatePoliciesForUser(String, List, String)
      */
     @Test
     public void evaluatePoliciesForUser_shouldReturnALLOWWhenAllActionsReturnTrue() throws Exception {
@@ -115,7 +116,7 @@ public class PolicyServiceTest {
             .willReturn(ok(mockResponse(new ActionMap())));
 
         final PolicyService.EvaluatePoliciesAction result = service
-            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+            .evaluatePoliciesForUser("someUri", singletonList("Idam.Session=someToken"), "someIpAddress");
 
         assertThat(result, is(PolicyService.EvaluatePoliciesAction.ALLOW));
 
@@ -129,7 +130,7 @@ public class PolicyServiceTest {
 
     /**
      * @verifies return BLOCK when any action returns false and attribute mfaRequired is not true
-     * @see PolicyService#evaluatePoliciesForUser(String, String, String)
+     * @see PolicyService#evaluatePoliciesForUser(String, List, String)
      */
     @Test
     public void evaluatePoliciesForUser_shouldReturnBLOCKWhenAnyActionReturnsFalseAndAttributeMfaRequiredIsNotTrue() throws Exception {
@@ -140,7 +141,7 @@ public class PolicyServiceTest {
             .willReturn(ok(mockResponse(actionMap)));
 
         final PolicyService.EvaluatePoliciesAction result = service
-            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+            .evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
 
         assertThat(result, is(PolicyService.EvaluatePoliciesAction.BLOCK));
 
@@ -154,7 +155,7 @@ public class PolicyServiceTest {
 
     /**
      * @verifies return MFA_REQUIRED when any action returns false and attribute mfaRequired is true
-     * @see PolicyService#evaluatePoliciesForUser(String, String, String)
+     * @see PolicyService#evaluatePoliciesForUser(String, List, String)
      */
     @Test
     public void evaluatePoliciesForUser_shouldReturnMFA_REQUIREDWhenAnyActionReturnsFalseAndAttributeMfaRequiredIsTrue() throws Exception {
@@ -173,7 +174,7 @@ public class PolicyServiceTest {
             .willReturn(ok(mockResponse));
 
         final PolicyService.EvaluatePoliciesAction result = service
-            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+            .evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
 
         assertThat(result, is(PolicyService.EvaluatePoliciesAction.MFA_REQUIRED));
 
@@ -187,18 +188,18 @@ public class PolicyServiceTest {
 
     /**
      * @verifies throw exception when response is not successful
-     * @see PolicyService#evaluatePoliciesForUser(String, String, String)
+     * @see PolicyService#evaluatePoliciesForUser(String, List, String)
      */
     @Test(expected = HttpClientErrorException.class)
     public void evaluatePoliciesForUser_shouldThrowExceptionWhenResponseIsNotSuccessful() throws Exception {
         given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
             .willReturn(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
-        service.evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+        service.evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
     }
 
     /**
      * @verifies return ALLOW when actions is null
-     * @see PolicyService#evaluatePoliciesForUser(String, String, String)
+     * @see PolicyService#evaluatePoliciesForUser(String, List, String)
      */
     @Test
     public void evaluatePoliciesForUser_shouldReturnALLOWWhenActionsIsNull() throws Exception {
@@ -206,7 +207,7 @@ public class PolicyServiceTest {
             .willReturn(ok(mockResponse(null)));
 
         final PolicyService.EvaluatePoliciesAction result = service
-            .evaluatePoliciesForUser("someUri", "Idam.Session=someToken", "someIpAddress");
+            .evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
 
         assertThat(result, is(PolicyService.EvaluatePoliciesAction.ALLOW));
 
