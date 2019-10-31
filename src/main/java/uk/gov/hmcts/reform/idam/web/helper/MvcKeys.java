@@ -24,6 +24,7 @@ public class MvcKeys {
     public static final String STATE = "state";
     public static final String SCOPE = "scope";
     public static final String USERNAME = "username";
+    public static final String CODE = "code";
     public static final String INVALID_PIN = "invalidPin";
     public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
 

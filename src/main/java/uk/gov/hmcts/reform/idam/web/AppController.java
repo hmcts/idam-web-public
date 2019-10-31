@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
+import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -59,6 +60,7 @@ import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CODE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
@@ -428,24 +430,35 @@ public class AppController {
      * @should return login view when authorize fails
      */
     @PostMapping("/verification")
-    public ModelAndView verification(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
+    public ModelAndView verification(@ModelAttribute("authorizeCommand") @Validated VerificationRequest request,
                                BindingResult bindingResult,
                                Model model,
                                HttpServletRequest httpRequest,
                                HttpServletResponse response) {
+
+        model.addAttribute(USERNAME, request.getUsername());
+        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
+        model.addAttribute(STATE, request.getState());
+        model.addAttribute(CLIENT_ID, request.getClient_id());
+        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SCOPE, request.getScope());
+        model.addAttribute(CODE, request.getCode());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
+
+        final boolean validationErrors = bindingResult.hasErrors();
+        if (validationErrors) {
+            if (StringUtils.isEmpty(request.getCode())) {
+                model.addAttribute("isCodeEmpty", true);
+            }
+            model.addAttribute(HAS_ERRORS, true);
+            return new ModelAndView(VERIFICATION_VIEW, model.asMap());
+        }
 
         final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
 
         final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
             .collect(Collectors.toList());
-
-        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
-        model.addAttribute(STATE, request.getState());
-        model.addAttribute(CLIENT_ID, request.getClient_id());
-        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-        model.addAttribute(SCOPE, request.getScope());
-        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
 
         try {
             final List<String> responseCookies = spiService.submitOtpeAuthentication(cookies, ipAddress, request.getCode());
