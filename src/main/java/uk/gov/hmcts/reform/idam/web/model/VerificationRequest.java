@@ -12,6 +12,8 @@ public class VerificationRequest {
     @NotEmpty
     private String username;
 
+    private String password;
+
     private String redirect_uri;
 
     private String state;

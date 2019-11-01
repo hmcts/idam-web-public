@@ -28,4 +28,6 @@ public class AuthorizeRequest {
     private boolean selfRegistrationEnabled;
 
     private String code;
+
+    private boolean hasOtpCheckFailed;
 }
