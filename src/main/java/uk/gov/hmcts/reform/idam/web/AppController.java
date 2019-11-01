@@ -277,9 +277,10 @@ public class AppController {
 
     /**
      * @should put correct data in model and return login view
-     * @should set self-registration to false if disabled for the service
-     * @should set self-registration to false if the clientId is invalid
+     * @should set self registration to false if disabled for the service
+     * @should set self registration to false if the clientId is invalid
      * @should return error page view if OAuth2 details are missing
+     * @should return hasOtpCheckCodeFailed on redirects and reject "Verification code failed"
      */
     @GetMapping("/login")
     public String loginView(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
@@ -428,6 +429,10 @@ public class AppController {
         model.addAttribute("authorizeCommand", request);
     }
 
+    /**
+     * @should return error page view if OAuth2 details are missing
+     * @should populate authorizeCommand
+     */
     @GetMapping("/verification")
     public String verificationView(@ModelAttribute("authorizeCommand") VerificationRequest request,
                             BindingResult bindingResult, Model model) {
@@ -442,7 +447,7 @@ public class AppController {
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
+        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
         model.addAttribute(SCOPE, request.getScope());
 
         model.addAttribute("authorizeCommand", request);
