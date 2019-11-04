@@ -299,7 +299,7 @@ class IdamHelper extends Helper {
                 ]
             }
         };
-        return fetch(`${TestData.IDAM_API}/policies`, {
+        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
             agent: agent,
             method: 'POST',
             body: JSON.stringify(data),
@@ -310,7 +310,7 @@ class IdamHelper extends Helper {
     }
 
     deletePolicy(name, api_auth_token) {
-        return fetch(`${TestData.IDAM_API}/policies/${name}`, {
+        return fetch(`${TestData.IDAM_API}/api/v1/policies/${name}`, {
             agent: agent,
             method: 'DELETE',
             headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
