@@ -29,6 +29,7 @@ public class TestConstants {
     public static final String API_LOGIN_UPLIFT_ENDPOINT = "/login/uplift";
     public static final String ACTIVATE_USER_ENDPOINT = "/users/activate";
     public static final String LOGIN_ENDPOINT = "/login";
+    public static final String VERIFICATION_ENDPOINT = "/verification";
     public static final String EXPIRED_TOKEN_ENDPOINT = "/expiredtoken";
     public static final String LOGIN_PIN_ENDPOINT = "/login/pin";
     public static final String LOGOUT_ENDPOINT = "/logout";

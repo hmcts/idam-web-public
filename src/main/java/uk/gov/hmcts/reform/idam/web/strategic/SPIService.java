@@ -1,14 +1,8 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -28,31 +22,32 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
-import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_PROTO;
 
 @Slf4j
 @Service
@@ -175,6 +170,65 @@ public class SPIService {
 
         if (response.getStatusCode() == HttpStatus.FOUND) {
             return response.getHeaders().getLocation().toString();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @should return a set-cookie header to set Idam.AuthId if successful
+     * @should return null if no cookie is found
+     */
+    public List<String> initiateOtpeAuthentication(final List<String> cookies, final String ipAddress) {
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, ipAddress);
+        if (cookies != null) {
+            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookies, ";"));
+        }
+
+        final String endpoint = String.format("%s/%s",
+            configurationProperties.getStrategic().getService().getUrl(),
+            configurationProperties.getStrategic().getEndpoint().getAuthorize());
+
+        ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
+            new HttpEntity<>(form, headers), Void.class);
+
+        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
+            return new ArrayList<>(response.getHeaders().get(HttpHeaders.SET_COOKIE));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @should return a set-cookie header to set Idam.Session if successful
+     * @should return null if no cookie is found
+     */
+    public List<String> submitOtpeAuthentication(final List<String> cookies, final String ipAddress, final String otp) {
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        form.add("otp", otp);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, ipAddress);
+        if (cookies != null) {
+            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookies, ";"));
+        }
+
+        final String endpoint = String.format("%s/%s",
+            configurationProperties.getStrategic().getService().getUrl(),
+            configurationProperties.getStrategic().getEndpoint().getAuthorize());
+
+        ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
+            new HttpEntity<>(form, headers), Void.class);
+
+        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
+            return new ArrayList<>(response.getHeaders().get(HttpHeaders.SET_COOKIE));
         } else {
             return null;
         }

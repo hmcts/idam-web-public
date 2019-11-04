@@ -79,6 +79,8 @@ strategic:
     evaluatePolicies: api/v1/policies/evaluate
   policies:
     applicationName: HmctsPolicySet
+  otp:
+    otpSessionIdCookie: Idam.AuthId
 
 validation:
   password:

@@ -13,6 +13,7 @@ public class MvcKeys {
     public static final String HAS_ERRORS = "hasErrors";
     public static final String HAS_LOGIN_FAILED = "hasLoginFailed";
     public static final String HAS_POLICY_CHECK_FAILED = "hasPolicyCheckFailed";
+    public static final String HAS_OTP_CHECK_FAILED = "hasOtpCheckFailed";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
     public static final String JWT = "jwt";
@@ -35,6 +36,7 @@ public class MvcKeys {
     public static final String FORGOTPASSWORDSUCCESS_VIEW = "forgotpasswordsuccess";
     public static final String INDEX_VIEW = "index";
     public static final String LOGIN_VIEW = "login";
+    public static final String VERIFICATION_VIEW = "verification";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
     public static final String UPLIFT_LOGIN_VIEW = "upliftLogin";
     public static final String RESETPASSWORD_VIEW = "resetpassword";

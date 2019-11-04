@@ -11,6 +11,7 @@ public class StrategicConfigurationProperties {
     private ServiceConfigurationProperties service;
     private EndpointConfigurationProperties endpoint;
     private Policies policies;
+    private Otp otp;
 
     @Data
     public static class ServiceConfigurationProperties {
@@ -44,5 +45,10 @@ public class StrategicConfigurationProperties {
     @Data
     public static class Policies {
         private String applicationName;
+    }
+
+    @Data
+    public static class Otp {
+        private String otpSessionIdCookie;
     }
 }
