@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -1932,5 +1933,36 @@ public class AppControllerTest {
             .andExpect(model().attribute(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(model().attribute(SELF_REGISTRATION_ENABLED, Boolean.TRUE))
             .andExpect(view().name(VERIFICATION_VIEW));
+    }
+
+    /**
+     * @verifies submit otp authentication using authId cookie only to avoid session bugs
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldSubmitOtpAuthenticationUsingAuthIdCookieOnlyToAvoidSessionBugs() throws Exception {
+        given(spiService.submitOtpeAuthentication(any(), any(), any()))
+            .willReturn(singletonList("Idam.Session=idamSessionCookie"));
+
+        given(spiService.authorize(any(), any()))
+            .willReturn(REDIRECT_URI);
+
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .cookie(new Cookie("Idam.Session", "sessionId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "12345"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl(REDIRECT_URI));
+
+        verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
+            eq(USER_IP_ADDRESS),
+            eq("12345"));
     }
 }
