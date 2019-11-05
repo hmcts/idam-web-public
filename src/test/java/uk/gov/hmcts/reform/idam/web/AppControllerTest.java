@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.idam.web;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -42,6 +41,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
@@ -1936,11 +1936,11 @@ public class AppControllerTest {
     }
 
     /**
-     * @verifies submit otp authentication using authId cookie only to avoid session bugs
+     * @verifies submit otp authentication filtering out Idam.Session cookie to avoid session bugs
      * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
-    public void verification_shouldSubmitOtpAuthenticationUsingAuthIdCookieOnlyToAvoidSessionBugs() throws Exception {
+    public void verification_shouldSubmitOtpAuthenticationFilteringOutIdamSessionCookieToAvoidSessionBugs() throws Exception {
         given(spiService.submitOtpeAuthentication(any(), any(), any()))
             .willReturn(singletonList("Idam.Session=idamSessionCookie"));
 
@@ -1950,6 +1950,7 @@ public class AppControllerTest {
         mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
             .cookie(new Cookie("Idam.AuthId", "authId"))
             .cookie(new Cookie("Idam.Session", "sessionId"))
+            .cookie(new Cookie("Idam.Affinity", "affinityId"))
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(REDIRECT_URI, REDIRECT_URI)
@@ -1961,7 +1962,7 @@ public class AppControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
-        verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
+        verify(spiService).submitOtpeAuthentication(eq(asList("Idam.AuthId=authId", "Idam.Affinity=affinityId")),
             eq(USER_IP_ADDRESS),
             eq("12345"));
     }

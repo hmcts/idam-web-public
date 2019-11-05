@@ -457,7 +457,7 @@ public class AppController {
 
     /**
      * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user
-     * @should submit otp authentication using authId cookie only to avoid session bugs
+     * @should submit otp authentication filtering out Idam.Session cookie to avoid session bugs
      * @should return verification view for INCORRECT_OTP 401 response
      * @should return login view for non INCORRECT_OTP 401 response
      * @should return login view for 403 response
@@ -490,9 +490,9 @@ public class AppController {
 
         final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
 
-        final String otpSessCookieName = configurationProperties.getStrategic().getOtp().getOtpSessionIdCookie();
+        final String idamSessionCookie = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
         final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
-            .filter(c -> otpSessCookieName.equals(c.getName()))
+            .filter(c -> !idamSessionCookie.equals(c.getName()))
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
             .collect(Collectors.toList());
 
