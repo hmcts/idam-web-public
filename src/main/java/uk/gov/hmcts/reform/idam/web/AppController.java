@@ -32,11 +32,11 @@ import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
-import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
+import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -59,6 +59,7 @@ import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CODE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
@@ -72,6 +73,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_POLICY_CHECK_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INDEX_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
@@ -125,7 +127,7 @@ public class AppController {
     @GetMapping("/")
     public String indexView(final Map<String, Object> model) {
 
-        return MvcKeys.INDEX_VIEW;
+        return INDEX_VIEW;
     }
 
     /**
@@ -275,9 +277,10 @@ public class AppController {
 
     /**
      * @should put correct data in model and return login view
-     * @should set self-registration to false if disabled for the service
-     * @should set self-registration to false if the clientId is invalid
+     * @should set self registration to false if disabled for the service
+     * @should set self registration to false if the clientId is invalid
      * @should return error page view if OAuth2 details are missing
+     * @should return hasOtpCheckCodeFailed on redirects and reject "Verification code failed"
      */
     @GetMapping("/login")
     public String loginView(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
@@ -294,6 +297,11 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
         model.addAttribute(SCOPE, request.getScope());
+        model.addAttribute(HAS_OTP_CHECK_FAILED, request.isHasOtpCheckFailed());
+        if (request.isHasOtpCheckFailed()) {
+            // redirecting from otp check
+            bindingResult.reject("Verification code failed");
+        }
 
         return LOGIN_VIEW;
     }
@@ -307,11 +315,12 @@ public class AppController {
      * @should put in model the correct error variable in case policy check returns BLOCK
      * @should initiate OTP flow when policy check returns MFA_REQUIRED
      * @should return forbidden if csrf token is invalid
+     * @return
      */
     @PostMapping("/login")
-    public String login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
-                        BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
-                        HttpServletResponse response) {
+    public ModelAndView login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
+                              BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
+                              HttpServletResponse response) {
         model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(PASSWORD, request.getPassword());
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
@@ -330,7 +339,7 @@ public class AppController {
                 model.addAttribute("isPasswordEmpty", true);
             }
             model.addAttribute(HAS_ERRORS, true);
-            return LOGIN_VIEW;
+            return new ModelAndView(LOGIN_VIEW, model.asMap());
         }
 
         try {
@@ -344,7 +353,7 @@ public class AppController {
                 log.info("/login: Authenticate returned no cookies for user - {}", obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
-                return LOGIN_VIEW;
+                return new ModelAndView(LOGIN_VIEW, model.asMap());
             }
 
             final String redirectUri = request.getRedirect_uri();
@@ -354,13 +363,13 @@ public class AppController {
                 log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
                 bindingResult.reject("Policy check failure");
-                return LOGIN_VIEW;
+                return new ModelAndView(LOGIN_VIEW, model.asMap());
             }
 
             if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
                 log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
                 initiateOtpFlow(request, cookies, ipAddress, response, model);
-                return VERIFICATION_VIEW;
+                return new ModelAndView("redirect:" + VERIFICATION_VIEW, model.asMap());
             }
 
             final String responseUrl = authoriseUser(cookies, httpRequest);
@@ -370,12 +379,12 @@ public class AppController {
                 log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
                 List<String> secureCookies = makeCookiesSecure(cookies);
                 secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
-                return "redirect:" + responseUrl;
+                return new ModelAndView("redirect:" + responseUrl);
             } else {
                 log.info("/login: There is a problem while logging in  user - {}", obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
-                return LOGIN_VIEW;
+                return new ModelAndView(LOGIN_VIEW, model.asMap());
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
@@ -387,7 +396,7 @@ public class AppController {
             }
         }
 
-        return LOGIN_VIEW;
+        return new ModelAndView(LOGIN_VIEW, model.asMap());
     }
 
     private String authoriseUser(List<String> cookies, HttpServletRequest httpRequest) {
@@ -421,6 +430,32 @@ public class AppController {
     }
 
     /**
+     * @should return error page view if OAuth2 details are missing
+     * @should populate authorizeCommand
+     */
+    @GetMapping("/verification")
+    public String verificationView(@ModelAttribute("authorizeCommand") VerificationRequest request,
+                            BindingResult bindingResult, Model model) {
+        if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
+            model.addAttribute(ERROR_MSG, "error.page.access.denied");
+            model.addAttribute(ERROR_SUB_MSG, "public.error.page.access.denied.text");
+            return ERRORPAGE_VIEW;
+        }
+
+        model.addAttribute(USERNAME, request.getUsername());
+        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
+        model.addAttribute(STATE, request.getState());
+        model.addAttribute(CLIENT_ID, request.getClient_id());
+        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
+        model.addAttribute(SCOPE, request.getScope());
+
+        model.addAttribute("authorizeCommand", request);
+
+        return VERIFICATION_VIEW;
+    }
+
+    /**
      * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user
      * @should return verification view for INCORRECT_OTP 401 response
      * @should return login view for non INCORRECT_OTP 401 response
@@ -428,24 +463,35 @@ public class AppController {
      * @should return login view when authorize fails
      */
     @PostMapping("/verification")
-    public ModelAndView verification(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
+    public ModelAndView verification(@ModelAttribute("authorizeCommand") @Validated VerificationRequest request,
                                BindingResult bindingResult,
                                Model model,
                                HttpServletRequest httpRequest,
                                HttpServletResponse response) {
+
+        model.addAttribute(USERNAME, request.getUsername());
+        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
+        model.addAttribute(STATE, request.getState());
+        model.addAttribute(CLIENT_ID, request.getClient_id());
+        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SCOPE, request.getScope());
+        model.addAttribute(CODE, request.getCode());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
+
+        final boolean validationErrors = bindingResult.hasErrors();
+        if (validationErrors) {
+            if (StringUtils.isEmpty(request.getCode())) {
+                model.addAttribute("isCodeEmpty", true);
+            }
+            model.addAttribute(HAS_ERRORS, true);
+            return new ModelAndView(VERIFICATION_VIEW, model.asMap());
+        }
 
         final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
 
         final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
             .collect(Collectors.toList());
-
-        model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
-        model.addAttribute(STATE, request.getState());
-        model.addAttribute(CLIENT_ID, request.getClient_id());
-        model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-        model.addAttribute(SCOPE, request.getScope());
-        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
 
         try {
             final List<String> responseCookies = spiService.submitOtpeAuthentication(cookies, ipAddress, request.getCode());
@@ -460,9 +506,7 @@ public class AppController {
                 return new ModelAndView("redirect:" + responseUrl);
             } else {
                 log.info("/verification: There is a problem while logging in user - {}", obfuscateEmailAddress(request.getUsername()));
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
-                return new ModelAndView("redirect:/login", model.asMap());
+                return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("/verification: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
@@ -482,15 +526,21 @@ public class AppController {
                     return new ModelAndView(VERIFICATION_VIEW, model.asMap());
                 }
 
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
-                return new ModelAndView("redirect:/login", model.asMap());
+                return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
             }
 
-            model.addAttribute(HAS_LOGIN_FAILED, true);
-            bindingResult.reject("Login failure");
-            return new ModelAndView("redirect:/login", model.asMap());
+            return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
         }
+    }
+
+    private ModelAndView redirectToLoginOnFailedOtpVerification(VerificationRequest request,
+                                                                BindingResult bindingResult,
+                                                                Model model) {
+        model.addAttribute("hasOtpCheckFailed", true);
+        bindingResult.reject("Login failure");
+        model.addAttribute("authorizeCommand", request);
+        model.addAttribute(USERNAME, null);
+        return new ModelAndView("redirect:" + LOGIN_VIEW, model.asMap());
     }
 
     private List<String> makeCookiesSecure(List<String> cookies) {

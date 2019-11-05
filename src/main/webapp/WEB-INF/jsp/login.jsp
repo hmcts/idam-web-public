@@ -89,6 +89,19 @@
                                 <spring:message code="public.login.error.failed.title"/>
                             </h2>
                         </c:when>
+                        <c:when test="${hasOtpCheckFailed}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'User verification code check has failed');
+                            </script>
+                            <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
+                                <spring:message code="public.login.error.verificationcheck.title"/>
+                            </h2>
+                            <div class="text">
+                                <p>
+                                    <spring:message code="public.login.error.verificationcheck.instruction"/>
+                                </p>
+                            </div>
+                        </c:when>
                         <c:otherwise>
                             <script>
                                 sendEvent('Authorization', 'Error', 'User login has failed');

@@ -1,18 +1,17 @@
 package uk.gov.hmcts.reform.idam.web.model;
 
-import javax.validation.constraints.NotEmpty;
-
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+
 @Setter
 @Getter
-public class AuthorizeRequest {
+public class VerificationRequest {
 
     @NotEmpty
     private String username;
 
-    @NotEmpty
     private String password;
 
     private String redirect_uri;
@@ -27,7 +26,6 @@ public class AuthorizeRequest {
 
     private boolean selfRegistrationEnabled;
 
+    @NotEmpty
     private String code;
-
-    private boolean hasOtpCheckFailed;
 }

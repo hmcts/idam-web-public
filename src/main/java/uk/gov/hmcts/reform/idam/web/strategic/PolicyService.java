@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.idam.api.external.model.EvaluatePoliciesResponseInner
 import uk.gov.hmcts.reform.idam.api.external.model.Subject;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -158,7 +159,7 @@ public class PolicyService {
             return null;
         }
         final String[] splitArray = StringUtils.split(ipAddress, ",");
-        return asList(splitArray).stream()
+        return Arrays.stream(splitArray)
             .map(String::trim)
             .map(s -> {
                 final boolean isIpv4 = StringUtils.countMatches(s, ":") < 2;
