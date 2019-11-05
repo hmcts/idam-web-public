@@ -47,8 +47,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -483,13 +485,17 @@ public class AppController {
 
         final boolean validationErrors = bindingResult.hasErrors();
         if (validationErrors) {
-            final List<FieldError> codeErrors = bindingResult.getFieldErrors("code");
-            if (codeErrors.contains(NotEmpty.class.getSimpleName())) {
+            final List<FieldError> codeErrors = ofNullable(bindingResult.getFieldErrors("code"))
+                .orElse(Collections.emptyList());
+            final List<String> errorCode = codeErrors.stream()
+                .map(FieldError::getCode)
+                .collect(Collectors.toList());
+            if (errorCode.contains(NotEmpty.class.getSimpleName())) {
                 model.addAttribute("isCodeEmpty", true);
-            } else if (codeErrors.contains(Length.class.getSimpleName())) {
-                model.addAttribute("isCodeLengthInvalid", true);
-            } else if (codeErrors.contains(javax.validation.constraints.Pattern.class.getSimpleName())) {
+            } else if (errorCode.contains(Pattern.class.getSimpleName())) {
                 model.addAttribute("isCodePatternInvalid", true);
+            } else if (errorCode.contains(Length.class.getSimpleName())) {
+                model.addAttribute("isCodeLengthInvalid", true);
             }
             model.addAttribute(HAS_ERRORS, true);
             return new ModelAndView(VERIFICATION_VIEW, model.asMap());

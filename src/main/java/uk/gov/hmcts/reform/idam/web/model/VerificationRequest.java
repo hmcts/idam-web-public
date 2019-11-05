@@ -28,10 +28,13 @@ public class VerificationRequest {
 
     private boolean selfRegistrationEnabled;
 
+    @NotEmpty
+    @Pattern(regexp = "\\d+")
+    @Length(min = 8, max = 8)
     private String code;
 
-    @NotEmpty @Length(min = 6, max = 6) @Pattern(regexp = "\\d+")
-    public String getCode() {
-        return code != null ? code.trim() : null;
+    public void setCode(String code) {
+        this.code = code != null ? code.trim() : null;
     }
+
 }
