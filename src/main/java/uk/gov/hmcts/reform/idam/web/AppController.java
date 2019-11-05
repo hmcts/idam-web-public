@@ -507,7 +507,6 @@ public class AppController {
         final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
 
         final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
-            .filter(c -> !"Idam.Session".equals(c.getName()))
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
             .collect(Collectors.toList());
 
