@@ -44,7 +44,19 @@
                                     <script>
                                         sendEvent('Authorization', 'Error', 'One time password is empty');
                                     </script>
-                                    <li><a href="#code"><form:errors path="code"/></a></li>
+                                    <li><a href="#code">empty</a></li>
+                                </c:if>
+                                <c:if test="${isCodeLengthInvalid}">
+                                    <script>
+                                        sendEvent('Authorization', 'Error', 'One time password has invalid length');
+                                    </script>
+                                    <li><a href="#code">length</a></li>
+                                </c:if>
+                                <c:if test="${isCodePatternInvalid}">
+                                    <script>
+                                        sendEvent('Authorization', 'Error', 'One time password has invalid pattern');
+                                    </script>
+                                    <li><a href="#code">pattern</a></li>
                                 </c:if>
                                 <c:if test="${hasLoginFailed}">
                                     <li><a href="#code"><spring:message code="public.login.error.verification.failed.code"/></a></li>

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -44,6 +46,7 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -480,8 +483,13 @@ public class AppController {
 
         final boolean validationErrors = bindingResult.hasErrors();
         if (validationErrors) {
-            if (StringUtils.isEmpty(request.getCode())) {
+            final List<FieldError> codeErrors = bindingResult.getFieldErrors("code");
+            if (codeErrors.contains(NotEmpty.class.getSimpleName())) {
                 model.addAttribute("isCodeEmpty", true);
+            } else if (codeErrors.contains(Length.class.getSimpleName())) {
+                model.addAttribute("isCodeLengthInvalid", true);
+            } else if (codeErrors.contains(javax.validation.constraints.Pattern.class.getSimpleName())) {
+                model.addAttribute("isCodePatternInvalid", true);
             }
             model.addAttribute(HAS_ERRORS, true);
             return new ModelAndView(VERIFICATION_VIEW, model.asMap());
@@ -490,6 +498,7 @@ public class AppController {
         final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
 
         final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
+            .filter(c -> !"Idam.Session".equals(c.getName()))
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
             .collect(Collectors.toList());
 
