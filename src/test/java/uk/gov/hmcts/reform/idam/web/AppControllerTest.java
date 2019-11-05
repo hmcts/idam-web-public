@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -1718,13 +1719,13 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
-            .param(CODE_PARAMETER, "12345"))
+            .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
-            eq("12345"));
+            eq("12345678"));
 
         ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
         verify(spiService).authorize(paramsCaptor.capture(), eq(singletonList("Idam.Session=idamSessionCookie")));
@@ -1736,7 +1737,7 @@ public class AppControllerTest {
         assertThat(actualParams, hasEntry(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
         assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
         assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
-        assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345"));
+        assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345678"));
     }
 
     /**
@@ -1760,14 +1761,14 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
-            .param(CODE_PARAMETER, "12345"))
+            .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is2xxSuccessful())
             .andExpect(view().name(VERIFICATION_VIEW))
             .andExpect(model().attribute(MvcKeys.HAS_OTP_CHECK_FAILED, true));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
-            eq("12345"));
+            eq("12345678"));
     }
 
     /**
@@ -1788,13 +1789,13 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
-            .param(CODE_PARAMETER, "12345"))
+            .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrlPattern("login*"));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
-            eq("12345"));
+            eq("12345678"));
     }
 
     /**
@@ -1815,13 +1816,13 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
-            .param(CODE_PARAMETER, "12345"))
+            .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrlPattern("login*"));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
-            eq("12345"));
+            eq("12345678"));
     }
 
     /**
@@ -1845,13 +1846,13 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
-            .param(CODE_PARAMETER, "12345"))
+            .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrlPattern("login*"));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
-            eq("12345"));
+            eq("12345678"));
 
         ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
         verify(spiService).authorize(paramsCaptor.capture(), eq(singletonList("Idam.Session=idamSessionCookie")));
@@ -1863,7 +1864,7 @@ public class AppControllerTest {
         assertThat(actualParams, hasEntry(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
         assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
         assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
-        assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345"));
+        assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345678"));
     }
 
     /**
@@ -1932,5 +1933,80 @@ public class AppControllerTest {
             .andExpect(model().attribute(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(model().attribute(SELF_REGISTRATION_ENABLED, Boolean.TRUE))
             .andExpect(view().name(VERIFICATION_VIEW));
+    }
+
+    /**
+     * @verifies validate code field is not empty
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldValidateCodeFieldIsNotEmpty() throws Exception {
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, ""))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(VERIFICATION_VIEW))
+            .andExpect(model().attribute("isCodeEmpty", true));
+
+        verify(spiService, never()).submitOtpeAuthentication(any(),
+            any(),
+            any());
+    }
+
+    /**
+     * @verifies validate code field is digits
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldValidateCodeFieldIsDigits() throws Exception {
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "a"))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(VERIFICATION_VIEW))
+            .andExpect(model().attribute("isCodePatternInvalid", true));
+
+        verify(spiService, never()).submitOtpeAuthentication(any(),
+            any(),
+            any());
+    }
+
+    /**
+     * @verifies validate code field is 8 digits
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldValidateCodeFieldIs8Digits() throws Exception {
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "123"))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(VERIFICATION_VIEW))
+            .andExpect(model().attribute("isCodeLengthInvalid", true));
+
+        verify(spiService, never()).submitOtpeAuthentication(any(),
+            any(),
+            any());
     }
 }

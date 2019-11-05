@@ -466,6 +466,9 @@ public class AppController {
      * @should return login view for non INCORRECT_OTP 401 response
      * @should return login view for 403 response
      * @should return login view when authorize fails
+     * @should validate code field is not empty
+     * @should validate code field is digits
+     * @should validate code field is 8 digits
      */
     @PostMapping("/verification")
     public ModelAndView verification(@ModelAttribute("authorizeCommand") @Validated VerificationRequest request,
