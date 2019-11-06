@@ -58,6 +58,8 @@ public class PolicyServiceTest {
             .willReturn("idamApi");
         given(configurationProperties.getStrategic().getEndpoint().getEvaluatePolicies())
             .willReturn("evaluatePolicies");
+        given(configurationProperties.getStrategic().getSession().getIdamSessionCookie())
+            .willReturn("Idam.Session");
     }
 
     EvaluatePoliciesResponse mockResponse(final ActionMap actionMap) {
