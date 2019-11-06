@@ -37,7 +37,8 @@
         <h2 class="heading-medium">Probate</h2>
         <ul class="list">
             <li>Phone: 0300 303 0648 </li>
-            <li>Monday to Friday, 9am to 5pm</li>
+            <li>Monday to Friday, 8am to 8pm</li>
+            <li>Saturday, 8am to 2pm</li>
             <li> <a href="https://www.gov.uk/call-charges">Find out about call charges</a> </li>
 
         </ul>
