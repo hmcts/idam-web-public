@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -44,8 +46,11 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -461,6 +466,9 @@ public class AppController {
      * @should return login view for non INCORRECT_OTP 401 response
      * @should return login view for 403 response
      * @should return login view when authorize fails
+     * @should validate code field is not empty
+     * @should validate code field is digits
+     * @should validate code field is 8 digits
      */
     @PostMapping("/verification")
     public ModelAndView verification(@ModelAttribute("authorizeCommand") @Validated VerificationRequest request,
@@ -480,8 +488,17 @@ public class AppController {
 
         final boolean validationErrors = bindingResult.hasErrors();
         if (validationErrors) {
-            if (StringUtils.isEmpty(request.getCode())) {
+            final List<FieldError> codeErrors = ofNullable(bindingResult.getFieldErrors("code"))
+                .orElse(Collections.emptyList());
+            final List<String> errorCode = codeErrors.stream()
+                .map(FieldError::getCode)
+                .collect(Collectors.toList());
+            if (errorCode.contains(NotEmpty.class.getSimpleName())) {
                 model.addAttribute("isCodeEmpty", true);
+            } else if (errorCode.contains(Pattern.class.getSimpleName())) {
+                model.addAttribute("isCodePatternInvalid", true);
+            } else if (errorCode.contains(Length.class.getSimpleName())) {
+                model.addAttribute("isCodeLengthInvalid", true);
             }
             model.addAttribute(HAS_ERRORS, true);
             return new ModelAndView(VERIFICATION_VIEW, model.asMap());
