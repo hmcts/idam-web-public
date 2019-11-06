@@ -465,6 +465,7 @@ public class AppController {
      * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user
      * @should submit otp authentication filtering out Idam.Session cookie to avoid session bugs
      * @should return verification view for INCORRECT_OTP 401 response
+     * @should return login view for TOO_MANY_ATTEMPTS_OTP 401 response
      * @should return verification view for expired OTP session 401 response
      * @should return login view for 403 response
      * @should return login view when authorize fails
@@ -546,6 +547,12 @@ public class AppController {
                     return new ModelAndView(VERIFICATION_VIEW, model.asMap());
                 }
 
+                // if 3x failed
+                if (ErrorResponse.CodeEnum.TOO_MANY_ATTEMPTS_OTP.equals(error.getCode())) {
+                    return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
+                }
+
+                // if expired
                 bindingResult.reject("Expired OTP");
                 model.addAttribute(HAS_OTP_SESSION_EXPIRED, true);
                 return new ModelAndView(VERIFICATION_VIEW, model.asMap());
