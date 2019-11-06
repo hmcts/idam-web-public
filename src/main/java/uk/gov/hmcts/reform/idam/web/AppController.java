@@ -77,6 +77,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_SESSION_EXPIRED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_POLICY_CHECK_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INDEX_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
@@ -464,7 +465,7 @@ public class AppController {
      * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user
      * @should submit otp authentication filtering out Idam.Session cookie to avoid session bugs
      * @should return verification view for INCORRECT_OTP 401 response
-     * @should return login view for non INCORRECT_OTP 401 response
+     * @should return verification view for expired OTP session 401 response
      * @should return login view for 403 response
      * @should return login view when authorize fails
      * @should validate code field is not empty
@@ -501,7 +502,6 @@ public class AppController {
             } else if (errorCode.contains(Length.class.getSimpleName())) {
                 model.addAttribute("isCodeLengthInvalid", true);
             }
-            model.addAttribute(HAS_ERRORS, true);
             return new ModelAndView(VERIFICATION_VIEW, model.asMap());
         }
 
@@ -546,7 +546,9 @@ public class AppController {
                     return new ModelAndView(VERIFICATION_VIEW, model.asMap());
                 }
 
-                return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
+                bindingResult.reject("Expired OTP");
+                model.addAttribute(HAS_OTP_SESSION_EXPIRED, true);
+                return new ModelAndView(VERIFICATION_VIEW, model.asMap());
             }
 
             return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
