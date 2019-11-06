@@ -46,7 +46,6 @@ public class PolicyService {
 
     public static final String ADVICE_KEY_MFA_REQUIRED = "mfaRequired";
     public static final String ADVICE_KEY_MFA_REQUIRED_STRING_VALUE = "true";
-    public static final String OPENAM_SSO_COOKIE_NAME = "Idam.Session";
 
     // Matches and captures ipv6 with port: 1fff:0:a88:85a3::ac1f
     // [1fff:0:a88:85a3::ac1f]:8001
@@ -73,8 +72,9 @@ public class PolicyService {
     public EvaluatePoliciesAction evaluatePoliciesForUser(final String uri, final List<String> cookies, final String ipAddress) {
         final String applicationName = configurationProperties.getStrategic().getPolicies().getApplicationName();
 
+        final String idamSessionCookie = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
         String sessionCookie = cookies.stream().
-            filter(cookie -> cookie.contains(OPENAM_SSO_COOKIE_NAME)).findFirst()
+            filter(cookie -> cookie.contains(idamSessionCookie)).findFirst()
             .orElseThrow(() -> new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "No valid authentication token found."));
 
         final String userSsoToken = StringUtils.substringAfter(sessionCookie, "=");
