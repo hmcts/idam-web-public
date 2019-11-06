@@ -58,6 +58,12 @@
                                 </script>
                                 <li><a href="#code"><spring:message code="public.login.error.verification.field.code.length"/></a></li>
                             </c:when>
+                            <c:when test="${hasOtpSessionExpired}">
+                                <script>
+                                    sendEvent('Authorization', 'Error', 'One time password has expired');
+                                </script>
+                                <li><a href="#code"><spring:message code="public.login.error.verification.field.code.expired"/></a></li>
+                            </c:when>
                             <c:otherwise>
                                 <script>
                                     sendEvent('Authorization', 'Error', 'One time password is incorrect');
@@ -89,6 +95,9 @@
                                 </c:when>
                                 <c:when test="${isCodeLengthInvalid}">
                                     <spring:message code="public.login.error.verification.field.code.length"/>
+                                </c:when>
+                                <c:when test="${hasOtpSessionExpired}">
+                                    <spring:message code="public.login.error.verification.field.code.expired"/>
                                 </c:when>
                                 <c:otherwise>
                                     <spring:message code="public.login.error.verification.field.code.failed"/>

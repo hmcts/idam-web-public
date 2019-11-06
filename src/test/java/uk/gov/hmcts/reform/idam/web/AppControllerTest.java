@@ -1772,11 +1772,11 @@ public class AppControllerTest {
     }
 
     /**
-     * @verifies return login view for non INCORRECT_OTP 401 response
+     * @verifies return verification view for expired OTP session 401 response
      * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
-    public void verification_shouldReturnLoginViewForNonINCORRECT_OTP401Response() throws Exception {
+    public void verification_shouldReturnVerificationViewForExpiredOTPSession401Response() throws Exception {
         given(spiService.submitOtpeAuthentication(any(), any(), any()))
             .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 
@@ -1790,8 +1790,8 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CODE_PARAMETER, "12345678"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrlPattern("login*"));
+            .andExpect(view().name(VERIFICATION_VIEW))
+            .andExpect(model().attribute(MvcKeys.HAS_OTP_SESSION_EXPIRED, true));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
