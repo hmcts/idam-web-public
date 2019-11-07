@@ -309,6 +309,57 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
+    createPolicyForMfaTest(name, roleName, api_auth_token) {
+        const data = {
+            "name": name,
+            "applicationName": "HmctsPolicySet",
+            "description": "Require MFA for test user",
+            "active": true,
+            "actionValues": {
+                "GET": false,
+                "POST": false,
+                "DELETE": false,
+                "PATCH": false,
+                "PUT": false,
+                "OPTIONS": false,
+                "HEAD": false
+            },
+            "resourceTypeUuid": "HmctsUrlResourceType",
+            "resources": [
+                "*://*",
+                "*://*:*/*",
+                "*://*:*/*?*",
+                "*://*?*"
+            ],
+            "resourceAttributes": [{
+                "type": "Static",
+                "propertyName": "mfaRequired",
+                "propertyValues": ["true"]
+            }],
+            "subject": {
+                "type": "Identity",
+                "subjectValues": [
+                    `id=${roleName},ou=group,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
+                ]
+            },
+            "condition": {
+                "type": "NOT",
+                "condition": {
+                    "type": "AuthLevel",
+                    "authLevel": 1
+                }
+            }
+        };
+        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        })
+            .then(res => res.json())
+            .catch(err => err);
+    }
+
     deletePolicy(name, api_auth_token) {
         return fetch(`${TestData.IDAM_API}/api/v1/policies/${name}`, {
             agent: agent,
