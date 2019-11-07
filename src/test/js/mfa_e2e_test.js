@@ -90,28 +90,28 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     // other than digits
     I.fillField('code', '663h8w7g');
     I.click('Submit');
-    I.wait(2);
+    I.wait(3);
     I.see('Enter numbers only');
     // not 8 digit otp
     I.fillField('code', `1${otpCode}`);
     I.click('Submit');
-    I.wait(2);
+    I.wait(3);
     I.see('Enter a valid verification code');
     // invalid otp
     I.fillField('code', '12345678');
     I.click('Submit');
-    I.wait(2);
+    I.wait(3);
     I.see('Verification code incorrect, try again');
     // invalid otp
     I.fillField('code', '74646474');
     I.click('Submit');
-    I.wait(2);
+    I.wait(3);
     I.see('Verification code incorrect, try again');
 
     // invalid otp
     I.fillField('code', '94837292');
     I.click('Submit');
-    I.wait(2);
+    I.wait(5);
     // after 3 incorrect attempts redirect user back to the sign in page
     I.seeInCurrentUrl(`${TestData.WEB_PUBLIC_URL}/login`);
     I.see('Verification code check failed');
