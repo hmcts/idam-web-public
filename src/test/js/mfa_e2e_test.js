@@ -86,7 +86,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.fillField('code', '');
     I.click('Submit');
     I.wait(5);
-    I.see('Enter a verification code');
+    I.waitForText('Enter a verification code', 5, '.error-message');
     // other than digits
     I.fillField('code', '663h8w7g');
     I.click('Submit');
@@ -113,14 +113,14 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.click('Submit');
     I.wait(5);
     // after 3 incorrect attempts redirect user back to the sign in page
-    I.seeInCurrentUrl(`${TestData.WEB_PUBLIC_URL}/login`);
+    I.waitInUrl('/login', 5);
     I.see('Verification code check failed');
     I.see('Your verification code check has failed, please retry');
     I.fillField('#username', adminUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.wait(10);
-    I.seeInCurrentUrl("verification");
+    I.seeInCurrentUrl('verification');
     I.waitForText('Verification required', 2, 'h1');
 
     const otpCodeLatest = await I.extractOtpFromEmail(adminUserEmail);
@@ -129,7 +129,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.fillField('code', otpCode);
     I.click('Submit');
     I.wait(5);
-    I.see('Verification code incorrect, try again');
+    I.waitForText('Verification code incorrect, try again', 5, '.error-message');
     I.fillField('code', otpCodeLatest);
     I.interceptRequestsAfterSignin();
     I.click('Submit');
