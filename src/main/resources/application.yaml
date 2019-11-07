@@ -76,9 +76,11 @@ strategic:
     details: details
     services: services
     health: health
-    evaluatePolicies: policies/evaluate
+    evaluatePolicies: api/v1/policies/evaluate
   policies:
     applicationName: HmctsPolicySet
+  session:
+    idamSessionCookie: Idam.Session
 
 validation:
   password:

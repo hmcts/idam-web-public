@@ -309,57 +309,6 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createPolicyForMfaTest(name, roleName, api_auth_token) {
-        const data = {
-            "name": name,
-            "applicationName": "HmctsPolicySet",
-            "description": "Require MFA for test user",
-            "active": true,
-            "actionValues": {
-                "GET": false,
-                "POST": false,
-                "DELETE": false,
-                "PATCH": false,
-                "PUT": false,
-                "OPTIONS": false,
-                "HEAD": false
-            },
-            "resourceTypeUuid": "HmctsUrlResourceType",
-            "resources": [
-                "*://*",
-                "*://*:*/*",
-                "*://*:*/*?*",
-                "*://*?*"
-            ],
-            "resourceAttributes" : [ {
-                "type" : "Static",
-                "propertyName" : "mfaRequired",
-                "propertyValues" : [ "true" ]
-            } ],
-            "subject": {
-                "type": "Identity",
-                "subjectValues": [
-                    `id=${roleName},ou=group,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
-                ]
-            },
-            "condition": {
-                "type": "NOT",
-                "condition": {
-                    "type": "AuthLevel",
-                    "authLevel": 1
-                }
-            }
-        };
-        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
-        })
-            .then(res => res.json())
-            .catch(err => err);
-    }
-
     deletePolicy(name, api_auth_token) {
         return fetch(`${TestData.IDAM_API}/api/v1/policies/${name}`, {
             agent: agent,
@@ -427,17 +376,6 @@ class IdamHelper extends Helper {
         }
     }
 
-    async extractOtpFromEmail(searchEmail) {
-        const emailResponse = await this.getEmail(searchEmail);
-        if(emailResponse) {
-            const regex = "[0-9]{8}";
-            const url = emailResponse.body.match(regex);
-            if (url[0]) {
-                return url[0];
-            }
-        }
-    }
-
     async getCurrentUrl() {
         const helper = this.helpers['Puppeteer'];
         console.log("Page is " + helper.page.url());
@@ -448,7 +386,7 @@ class IdamHelper extends Helper {
         const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
         helper.page.on('request', request => {
-            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0 || request.url().indexOf('/activate') > 0 || request.url().indexOf('/verification') > 0) {
+            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0 || request.url().indexOf('/activate') > 0) {
                 request.continue();
             } else {
                 request.respond({

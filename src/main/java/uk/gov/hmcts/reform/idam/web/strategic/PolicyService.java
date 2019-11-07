@@ -21,14 +21,14 @@ import uk.gov.hmcts.reform.idam.api.external.model.Subject;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 
@@ -36,9 +36,16 @@ import static java.util.Optional.ofNullable;
 @Service
 public class PolicyService {
 
+    public enum EvaluatePoliciesAction {
+        ALLOW,
+        BLOCK,
+        MFA_REQUIRED,
+    }
+
     public static final String ERROR_POLICY_CHECK_EXCEPTION = "Policy check exception.";
 
-    public static final String OPENAM_SSO_COOKIE_NAME = "Idam.Session";
+    public static final String ADVICE_KEY_MFA_REQUIRED = "mfaRequired";
+    public static final String ADVICE_KEY_MFA_REQUIRED_STRING_VALUE = "true";
 
     // Matches and captures ipv6 with port: 1fff:0:a88:85a3::ac1f
     // [1fff:0:a88:85a3::ac1f]:8001
@@ -55,17 +62,19 @@ public class PolicyService {
     }
 
     /**
-     * @should return true when all actions return true
-     * @should return false when any action returns false
+     * @should return ALLOW when all actions return true
+     * @should return ALLOW when no actions are returned
+     * @should return ALLOW when actions is null
+     * @should return MFA_REQUIRED when any action returns false and attribute mfaRequired is true
+     * @should return BLOCK when any action returns false and attribute mfaRequired is not true
      * @should throw exception when response is not successful
-     * @should return true when no actions are returned
-     * @should return true when actions is null
      */
-    public boolean evaluatePoliciesForUser(final String uri, final List<String> cookies, final String ipAddress) {
+    public EvaluatePoliciesAction evaluatePoliciesForUser(final String uri, final List<String> cookies, final String ipAddress) {
         final String applicationName = configurationProperties.getStrategic().getPolicies().getApplicationName();
 
+        final String idamSessionCookie = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
         String sessionCookie = cookies.stream().
-            filter(cookie -> cookie.contains(OPENAM_SSO_COOKIE_NAME)).findFirst()
+            filter(cookie -> cookie.contains(idamSessionCookie)).findFirst()
             .orElseThrow(() -> new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "No valid authentication token found."));
 
         final String userSsoToken = StringUtils.substringAfter(sessionCookie, "=");
@@ -82,7 +91,7 @@ public class PolicyService {
             throw new HttpClientErrorException(response.getStatusCode(), ERROR_POLICY_CHECK_EXCEPTION);
         }
 
-        final boolean result = checkNoActionsBlockingUser(response);
+        final EvaluatePoliciesAction result = checkNoActionsBlockingUser(response);
         return result;
     }
 
@@ -107,7 +116,10 @@ public class PolicyService {
         return response;
     }
 
-    private boolean checkNoActionsBlockingUser(ResponseEntity<EvaluatePoliciesResponse> response) {
+    private EvaluatePoliciesAction checkNoActionsBlockingUser(ResponseEntity<EvaluatePoliciesResponse> response) {
+
+        EvaluatePoliciesAction action = EvaluatePoliciesAction.ALLOW;
+
         final EvaluatePoliciesResponse result = ofNullable(response.getBody())
             .orElse(new EvaluatePoliciesResponse());
         for (EvaluatePoliciesResponseInner resultItem : result) {
@@ -115,10 +127,20 @@ public class PolicyService {
             final boolean block = actions.values().stream()
                 .anyMatch(Boolean.FALSE::equals);
             if (block) {
-                return false;
+                final boolean hasAttributes = resultItem.getAttributes() != null && resultItem.getAttributes() instanceof Map;
+                final boolean mfaRequiredAttributeIsTrue = hasAttributes && asList(ADVICE_KEY_MFA_REQUIRED_STRING_VALUE)
+                    .equals(((Map) resultItem.getAttributes()).get(ADVICE_KEY_MFA_REQUIRED));
+
+                // if mfaRequired we downgrade action to mfa_required but still need to check for other possible
+                // actions blocking the user even with mfa
+                if (mfaRequiredAttributeIsTrue) {
+                    action = EvaluatePoliciesAction.MFA_REQUIRED;
+                } else {
+                    return EvaluatePoliciesAction.BLOCK;
+                }
             }
         }
-        return true;
+        return action;
     }
 
     /**
@@ -137,7 +159,7 @@ public class PolicyService {
             return null;
         }
         final String[] splitArray = StringUtils.split(ipAddress, ",");
-        return Arrays.asList(splitArray).stream()
+        return Arrays.stream(splitArray)
             .map(String::trim)
             .map(s -> {
                 final boolean isIpv4 = StringUtils.countMatches(s, ":") < 2;
