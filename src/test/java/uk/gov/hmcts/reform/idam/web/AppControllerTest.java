@@ -1772,13 +1772,19 @@ public class AppControllerTest {
     }
 
     /**
-     * @verifies return login view for non INCORRECT_OTP 401 response
+     * @verifies return login view for TOO_MANY_ATTEMPTS_OTP 401 response
      * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
-    public void verification_shouldReturnLoginViewForNonINCORRECT_OTP401Response() throws Exception {
+    public void verification_shouldReturnLoginViewForTOO_MANY_ATTEMPTS_OTP401Response() throws Exception {
         given(spiService.submitOtpeAuthentication(any(), any(), any()))
-            .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
+            .willReturn(singletonList("Idam.Session=idamSessionCookie"));
+
+        given(spiService.submitOtpeAuthentication(any(), any(), any()))
+            .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+                "statusText",
+                "{\"code\":\"TOO_MANY_ATTEMPTS_OTP\"}".getBytes(StandardCharsets.UTF_8),
+                StandardCharsets.UTF_8));
 
         mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
             .cookie(new Cookie("Idam.AuthId", "authId"))
@@ -1792,6 +1798,35 @@ public class AppControllerTest {
             .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrlPattern("login*"));
+
+        verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
+            eq(USER_IP_ADDRESS),
+            eq("12345678"));
+
+        verify(spiService, never()).authorize(any(), any());
+    }
+
+    /**
+     * @verifies return verification view for expired OTP session 401 response
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldReturnVerificationViewForExpiredOTPSession401Response() throws Exception {
+        given(spiService.submitOtpeAuthentication(any(), any(), any()))
+            .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
+
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "12345678"))
+            .andExpect(view().name(VERIFICATION_VIEW))
+            .andExpect(model().attribute(MvcKeys.HAS_OTP_SESSION_EXPIRED, true));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
