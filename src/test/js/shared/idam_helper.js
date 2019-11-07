@@ -427,6 +427,17 @@ class IdamHelper extends Helper {
         }
     }
 
+    async extractOtpFromEmail(searchEmail) {
+        const emailResponse = await this.getEmail(searchEmail);
+        if(emailResponse) {
+            const regex = "[0-9]{8}";
+            const url = emailResponse.body.match(regex);
+            if (url[0]) {
+                return url[0];
+            }
+        }
+    }
+
     async getCurrentUrl() {
         const helper = this.helpers['Puppeteer'];
         console.log("Page is " + helper.page.url());
