@@ -111,7 +111,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     // invalid otp
     I.fillField('code', '94837292');
     I.click('Submit');
-    I.wait(5);
+    I.wait(10);
     // after 3 incorrect attempts redirect user back to the sign in page
     I.waitInUrl('/login', 5);
     I.see('Verification code check failed');
