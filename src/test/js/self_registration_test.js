@@ -10,6 +10,7 @@ let randomUserFirstName;
 let randomUserLastName;
 let userFirstNames = [];
 let serviceNames = [];
+let specialCharacterPassword;
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
@@ -20,6 +21,7 @@ BeforeSuite(async (I) => {
     serviceNames.push(serviceName);
     await I.createUserWithRoles(citizenEmail, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
+    specialCharacterPassword = 'New%%%”””234';
 });
 
 AfterSuite(async (I) => {
@@ -112,15 +114,18 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 20, 'h1');
+    I.wait(30);
+    I.waitForText('Account created', 40, 'h1');
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
     I.seeInCurrentUrl("state=selfreg");
+    I.wait(30);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', email);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(30);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -167,6 +172,44 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
+
+Scenario('@functional @selfregister I can self register with special repeated characters in password', async (I) => {
+
+    const email = 'test_citizen.' + randomData.getRandomEmailAddress();
+    const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
+
+    I.amOnPage(selfRegUrl);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+    I.see('Create an account');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', email);
+    I.click("Continue");
+    I.waitForText('Check your email', 20, 'h1');
+    const userActivationUrl = await I.extractUrl(email);
+    I.amOnPage(userActivationUrl);
+    I.waitForText('Create a password', 20, 'h1');
+    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.fillField('#password1', specialCharacterPassword);
+    I.fillField('#password2', specialCharacterPassword);
+    I.click('Continue');
+    I.waitForText('Account created', 20, 'h1');
+    I.wait(10);
+    I.see('You can now sign in to your account.');
+    I.amOnPage(loginPage);
+    I.seeInCurrentUrl("state=selfreg");
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', email);
+    I.fillField('#password', specialCharacterPassword);
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.wait(10);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
