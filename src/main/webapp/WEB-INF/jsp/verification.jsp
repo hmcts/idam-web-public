@@ -62,7 +62,10 @@
                                 <script>
                                     sendEvent('Authorization', 'Error', 'One time password has expired');
                                 </script>
-                                <li><a href="#code"><spring:message code="public.login.error.verification.field.code.expired"/></a></li>
+                                <c:set var="loginUrl">
+                                    <spring:url value="/login?${pageContext.request.queryString}" />
+                                </c:set>
+                                <li><a href="${loginUrl}"><spring:message code="public.login.error.verification.field.code.expired"/></a></li>
                             </c:when>
                             <c:otherwise>
                                 <script>
