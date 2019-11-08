@@ -1961,13 +1961,11 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(model().attribute(USERNAME, USERNAME_PARAMETER))
             .andExpect(model().attribute(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE))
             .andExpect(model().attribute(STATE_PARAMETER, STATE))
             .andExpect(model().attribute(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(model().attribute(REDIRECT_URI, REDIRECT_URI))
             .andExpect(model().attribute(SCOPE_PARAMETER, CUSTOM_SCOPE))
-            .andExpect(model().attribute(SELF_REGISTRATION_ENABLED, Boolean.TRUE))
             .andExpect(view().name(VERIFICATION_VIEW));
     }
 
