@@ -21,7 +21,7 @@ BeforeSuite(async (I) => {
     serviceNames.push(serviceName);
     await I.createUserWithRoles(citizenEmail, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
-    specialCharacterPassword = 'New%%%”””234';
+    specialCharacterPassword = 'New%%%&&&234';
 });
 
 AfterSuite(async (I) => {
