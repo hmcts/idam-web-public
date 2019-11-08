@@ -68,6 +68,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
@@ -2075,5 +2076,42 @@ public class AppControllerTest {
         verify(spiService).submitOtpeAuthentication(eq(asList("Idam.AuthId=authId", "Idam.Affinity=affinityId")),
             eq(USER_IP_ADDRESS),
             eq("12345678"));
+    }
+
+    /**
+     * @verifies not forward username password params on OTP
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void login_shouldNotForwardUsernamePasswordParamsOnOTP() throws Exception {
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS)))
+            .willReturn(singletonList(AUTHENTICATE_SESSION_COOKE));
+        given(spiService.initiateOtpeAuthentication(any(), any()))
+            .willReturn(singletonList("Idam.AuthId=authIdCookie"));
+        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
+            .willReturn(PolicyService.EvaluatePoliciesAction.MFA_REQUIRED);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.SET_COOKIE, "Idam.AuthId=authIdCookie; Path=/; Secure; HttpOnly"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrlPattern("verification*"))
+            .andExpect(model().attributeDoesNotExist(USERNAME))
+            .andExpect(model().attributeDoesNotExist(PASSWORD))
+            .andExpect(model().attributeDoesNotExist(MvcKeys.SELF_REGISTRATION_ENABLED))
+            .andExpect(model().attribute(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
+
+        verify(spiService, never()).authorize(any(), eq(singletonList(AUTHENTICATE_SESSION_COOKE)));
+
+        verify(policyService).evaluatePoliciesForUser(eq(REDIRECT_URI), eq(singletonList(AUTHENTICATE_SESSION_COOKE)), eq(USER_IP_ADDRESS));
+
+        verify(spiService).initiateOtpeAuthentication(eq(singletonList(AUTHENTICATE_SESSION_COOKE)), eq(USER_IP_ADDRESS));
     }
 }
