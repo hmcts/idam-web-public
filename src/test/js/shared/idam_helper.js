@@ -268,7 +268,7 @@ class IdamHelper extends Helper {
     createPolicyToBlockUser(name, userEmail, api_auth_token) {
         const data = {
             "name": name,
-            "applicationName": "HmctsPolicySet",
+            "applicationName": "TestHmctsPolicySet",
             "description": "Blocks specific user",
             "active": true,
             "actionValues": {
@@ -312,7 +312,7 @@ class IdamHelper extends Helper {
     createPolicyForMfaTest(name, roleName, api_auth_token) {
         const data = {
             "name": name,
-            "applicationName": "HmctsPolicySet",
+            "applicationName": "TestHmctsPolicySet",
             "description": "Require MFA for test user",
             "active": true,
             "actionValues": {
@@ -347,6 +347,60 @@ class IdamHelper extends Helper {
                 "condition": {
                     "type": "AuthLevel",
                     "authLevel": 1
+                }
+            }
+        };
+        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        })
+            .then(res => res.json())
+            .catch(err => err);
+    }
+
+    createPolicyForMfaBlockTest(name, roleName, api_auth_token) {
+        const data = {
+            "name": name,
+            "applicationName": "TestHmctsPolicySet",
+            "description": "Require MFA for test user",
+            "active": true,
+            "actionValues": {
+                "GET": false,
+                "POST": false,
+                "DELETE": false,
+                "PATCH": false,
+                "PUT": false,
+                "OPTIONS": false,
+                "HEAD": false
+            },
+            "resourceTypeUuid": "HmctsUrlResourceType",
+            "resources": [
+                "*://*",
+                "*://*:*/*",
+                "*://*:*/*?*",
+                "*://*?*"
+            ],
+            "resourceAttributes": [{
+                "type": "Static",
+                "propertyName": "blocked",
+                "propertyValues": ["true"]
+            }],
+            "subject": {
+                "type": "Identity",
+                "subjectValues": [
+                    `id=${roleName},ou=group,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
+                ]
+            },
+            "condition": {
+                "type": "NOT",
+                "condition": {
+                    "type": "IPv4",
+                    "startIp": "0.0.0.1",
+                    "endIp": "0.0.0.10",
+                    "ipRange": [],
+                    "dnsName": []
                 }
             }
         };
