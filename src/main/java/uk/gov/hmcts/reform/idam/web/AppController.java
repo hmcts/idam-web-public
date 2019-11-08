@@ -321,6 +321,7 @@ public class AppController {
      * @should put in model the correct error variable in case policy check returns BLOCK
      * @should initiate OTP flow when policy check returns MFA_REQUIRED
      * @should return forbidden if csrf token is invalid
+     * @should not forward username password params on OTP
      * @return
      */
     @PostMapping("/login")
@@ -374,8 +375,14 @@ public class AppController {
 
             if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
                 log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
-                initiateOtpFlow(request, cookies, ipAddress, response, model);
-                return new ModelAndView("redirect:" + VERIFICATION_VIEW, model.asMap());
+                initiateOtpFlow(request, cookies, ipAddress, response);
+
+                Map<String, Object> authorizeParams = model.asMap();
+                authorizeParams.remove(USERNAME);
+                authorizeParams.remove(PASSWORD);
+                authorizeParams.remove(SELF_REGISTRATION_ENABLED);
+
+                return new ModelAndView("redirect:" + VERIFICATION_VIEW, authorizeParams);
             }
 
             final String responseUrl = authoriseUser(cookies, httpRequest);
@@ -425,14 +432,11 @@ public class AppController {
     private void initiateOtpFlow(AuthorizeRequest request,
                                    List<String> cookies,
                                    String ipAddress,
-                                   HttpServletResponse response,
-                                   Model model) {
+                                   HttpServletResponse response) {
         final List<String> responseCookies = spiService.initiateOtpeAuthentication(cookies, ipAddress);
         log.info("/login: Successful initiate OTP request - {}", obfuscateEmailAddress(request.getUsername()));
         List<String> secureCookies = makeCookiesSecure(responseCookies);
         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
-
-        model.addAttribute("authorizeCommand", request);
     }
 
     /**
@@ -448,12 +452,10 @@ public class AppController {
             return ERRORPAGE_VIEW;
         }
 
-        model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
         model.addAttribute(SCOPE, request.getScope());
 
         model.addAttribute("authorizeCommand", request);
@@ -480,14 +482,12 @@ public class AppController {
                                HttpServletRequest httpRequest,
                                HttpServletResponse response) {
 
-        model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(CODE, request.getCode());
-        model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
 
         final boolean validationErrors = bindingResult.hasErrors();
         if (validationErrors) {
@@ -516,21 +516,21 @@ public class AppController {
 
         try {
             final List<String> responseCookies = spiService.submitOtpeAuthentication(cookies, ipAddress, request.getCode());
-            log.info("/verification: Successful OTP submission request - {}", obfuscateEmailAddress(request.getUsername()));
+            log.info("/verification: Successful OTP submission request");
 
             final String responseUrl = authoriseUser(responseCookies, httpRequest);
             final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
             if (loginSuccess) {
-                log.info("/verification: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
+                log.info("/verification: Successful login");
                 List<String> secureCookies = makeCookiesSecure(responseCookies);
                 secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                 return new ModelAndView("redirect:" + responseUrl);
             } else {
-                log.info("/verification: There is a problem while logging in user - {}", obfuscateEmailAddress(request.getUsername()));
+                log.info("/verification: There is a problem while logging in user");
                 return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
-            log.info("/verification: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
+            log.info("/verification: Login failed for user");
             if (HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
 
                 ErrorResponse error = new ErrorResponse();

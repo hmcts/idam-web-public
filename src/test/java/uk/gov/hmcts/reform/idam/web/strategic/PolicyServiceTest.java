@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -251,4 +252,38 @@ public class PolicyServiceTest {
         assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
     }
 
+    /**
+     * @verifies return BLOCK when any action returns false and attribute mfaRequired is true but there are other attributes
+     * @see PolicyService#evaluatePoliciesForUser(String, List, String)
+     */
+    @Test
+    public void evaluatePoliciesForUser_shouldReturnBLOCKWhenAnyActionReturnsFalseAndAttributeMfaRequiredIsTrueButThereAreOtherAttributes() throws Exception {
+        final ActionMap actionMap = new ActionMap();
+        actionMap.put("someKey", Boolean.TRUE);
+        actionMap.put("anotherKey", Boolean.FALSE);
+
+        final EvaluatePoliciesResponseInner mockResponseInner = new EvaluatePoliciesResponseInner()
+            .actions(actionMap)
+            .attributes(ImmutableMap.of(
+                "mfaRequired", asList("true"),
+                    "block", asList("true")));
+
+        final EvaluatePoliciesResponse mockResponse = new EvaluatePoliciesResponse();
+        mockResponse.add(mockResponseInner);
+
+        given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
+            .willReturn(ok(mockResponse));
+
+        final PolicyService.EvaluatePoliciesAction result = service
+            .evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "someIpAddress");
+
+        assertThat(result, is(PolicyService.EvaluatePoliciesAction.BLOCK));
+
+        verify(restTemplate).exchange(
+            eq("idamApi/evaluatePolicies"),
+            eq(HttpMethod.POST),
+            eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
+                expectedHeaders("someToken", "someIpAddress"))),
+            eq(EvaluatePoliciesResponse.class));
+    }
 }
