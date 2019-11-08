@@ -99,7 +99,6 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
-
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
@@ -114,18 +113,16 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.wait(30);
     I.waitForText('Account created', 40, 'h1');
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
     I.seeInCurrentUrl("state=selfreg");
-    I.wait(30);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', email);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.wait(30);
+    I.wait(10);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
