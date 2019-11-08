@@ -14,12 +14,6 @@
                    novalidate=""
                    _lpchecked="1">
 
-            <form:input id="response_type" name="response_type" path="response_type" type="hidden" value="${response_type}" />
-            <form:input id="state" name="state" path="state" type="hidden" value="${state}" />
-            <form:input id="client_id" name="client_id" path="client_id" type="hidden" value="${client_id}" />
-            <form:input id="redirect_uri" name="redirect_uri" path="redirect_uri" type="hidden" value="${redirect_uri}" />
-            <form:input id="scope" name="scope" path="scope" type="hidden" value="${scope}" />
-
             <spring:hasBindErrors name="authorizeCommand">
                 <c:set var="hasBindError" value="true" />
                 <script>
