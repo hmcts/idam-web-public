@@ -22,7 +22,7 @@ BeforeSuite(async (I) => {
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
     plusCitizenEmail = 'plus.' + "extra+" + randomData.getRandomEmailAddress();
-    specialCharacterPassword = 'New&&&$$$%%%<><>234';
+    specialCharacterPassword = 'New&&&$$$%%%<>234';
 
     const token = await I.getAuthToken();
     let response;
