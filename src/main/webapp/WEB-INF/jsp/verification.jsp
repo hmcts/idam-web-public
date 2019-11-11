@@ -8,15 +8,11 @@
 
 <t:wrapper titleKey="public.verification.subheading.verification.required">
     <article class="content__body">
-        <form:form action="/verification" class="form" modelAttribute="authorizeCommand">
-
-            <form:input id="username" name="username" path="username" type="hidden" value="" />
-            <form:input id="response_type" name="response_type" path="response_type" type="hidden" value="" />
-            <form:input id="state" name="state" path="state" type="hidden" value="" />
-            <form:input id="client_id" name="client_id" path="client_id" type="hidden" value="" />
-            <form:input id="redirect_uri" name="redirect_uri" path="redirect_uri" type="hidden" value="" />
-            <form:input id="scope" name="scope" path="scope" type="hidden" value="" />
-            <form:input id="selfRegistrationEnabled" name="selfRegistrationEnabled" path="selfRegistrationEnabled" type="hidden" value="" />
+        <form:form name="verificationForm"
+                   class="form"
+                   modelAttribute="authorizeCommand"
+                   novalidate=""
+                   _lpchecked="1">
 
             <spring:hasBindErrors name="authorizeCommand">
                 <c:set var="hasBindError" value="true" />
@@ -72,9 +68,13 @@
                             <script>
                                 sendEvent('Authorization', 'Error', 'One time password has expired');
                             </script>
-                            <c:set var="loginUrl">
-                                <spring:url value="/login?${pageContext.request.queryString}" />
-                            </c:set>
+                            <c:url value="/login" var="loginUrl">
+                                <c:param name="redirect_uri" value="${redirect_uri}"/>
+                                <c:param name="client_id" value="${client_id}"/>
+                                <c:param name="state" value="${state}"/>
+                                <c:param name="scope" value="${scope}"/>
+                                <c:param name="response_type" value="${response_type}"/>
+                            </c:url>
                             <div class="text">
                                 <p>
                                     <spring:message
@@ -119,9 +119,13 @@
                                     <spring:message code="public.login.error.verification.field.code.length"/>
                                 </c:when>
                                 <c:when test="${hasOtpSessionExpired}">
-                                    <c:set var="loginUrl">
-                                        <spring:url value="/login?${pageContext.request.queryString}" />
-                                    </c:set>
+                                    <c:url value="/login" var="loginUrl">
+                                        <c:param name="redirect_uri" value="${redirect_uri}"/>
+                                        <c:param name="client_id" value="${client_id}"/>
+                                        <c:param name="state" value="${state}"/>
+                                        <c:param name="scope" value="${scope}"/>
+                                        <c:param name="response_type" value="${response_type}"/>
+                                    </c:url>
                                     <spring:message code="public.login.error.verification.field.code.expired" htmlEscape="false" arguments="${loginUrl}"/>
                                 </c:when>
                                 <c:otherwise>
