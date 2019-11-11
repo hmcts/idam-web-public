@@ -38,6 +38,7 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.click("Continue");
 
     I.waitForText('Information is missing or invalid', 20, 'h2');
+    I.wait(5);
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
@@ -99,6 +100,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
+
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
@@ -113,7 +115,8 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 40, 'h1');
+    I.waitForText('Account created', 20, 'h1');
+    I.wait(5);
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
     I.seeInCurrentUrl("state=selfreg");
@@ -161,6 +164,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
+    I.wait(5);
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
     I.seeInCurrentUrl("state=selfreg");
@@ -175,7 +179,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.resetRequestInterception();
 });
 
-Scenario('@functional @selfregister I can self register with special repeated characters in password', async (I) => {
+Scenario('@functional @selfregister I can self register with repeated special characters in password', async (I) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
