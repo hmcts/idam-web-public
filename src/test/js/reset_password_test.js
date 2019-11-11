@@ -11,6 +11,7 @@ let plusCitizenEmail;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
+let specialCharacterPassword;
 
 const serviceName = randomData.getRandomServiceName();
 const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
@@ -21,6 +22,7 @@ BeforeSuite(async (I) => {
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
     plusCitizenEmail = 'plus.' + "extra+" + randomData.getRandomEmailAddress();
+    specialCharacterPassword = 'New&&&$$$%%%<>234';
 
     const token = await I.getAuthToken();
     let response;
@@ -145,3 +147,34 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.see("This password is used often and is not secure. Create a more secure password");
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @resetpass As a citizen user I can reset my password with repeated special characters', async (I) => {
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password', 20, 'h1');
+    I.wait(10);
+    I.fillField('#email', citizenEmail);
+    I.click('Submit');
+    I.waitForText('Check your email', 20, 'h1');
+    const resetPasswordUrl = await I.extractUrl(citizenEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a new password', 20, 'h1');
+    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.fillField('#password1', specialCharacterPassword);
+    I.fillField('#password2', specialCharacterPassword);
+    I.click('Continue');
+    I.wait(10);
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.')
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', citizenEmail);
+    I.fillField('#password', specialCharacterPassword);
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
