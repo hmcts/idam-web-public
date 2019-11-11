@@ -110,7 +110,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.resetRequestInterception();
 });
 
-Scenario('@functional @resetpass Validation displayed when I try to reset my password with a blacklisted/invalid password', async (I) => {
+Scenario('@functional @resetpass Validation displayed when I try to reset my password with a blacklisted/personal info/invalid password', async (I) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -126,20 +126,26 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.fillField('password1', 'Passw0rd');
     I.fillField('password2', 'Passw0rd');
     I.click('Continue');
+    I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.see("This password is used often and is not secure. Create a more secure password");
+    I.see("Your password is too easy to guess");
+    I.fillField('password1', `${randomUserFirstName}6mKjmC`);
+    I.fillField('password2', `${randomUserFirstName}6mKjmC`);
+    I.click('Continue');
+    I.wait(2);
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.see("Do not include your name or email in your password");
     I.fillField('password1', 'passwordidamtest');
     I.fillField('password2', 'passwordidamtest');
     I.click('Continue');
     I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.see('Your password did not have all of the required characters.');
-    I.see('Enter a password that includes at least 8 characters, a capital letter, a lowercase letter and a number.');
+    I.see('Your password didn\'t have all the required characters');
     I.fillField('password1', 'Lincoln1');
     I.fillField('password2', 'Lincoln1');
     I.click('Continue');
     I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.see("This password is used often and is not secure. Create a more secure password");
+    I.see("Your password is too easy to guess");
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
