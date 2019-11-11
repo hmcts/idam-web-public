@@ -66,7 +66,8 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
     I.waitForText('Your password has been changed', 20, 'h1');
-    I.see('You can now sign in with your new password.')
+    I.wait(5);
+    I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', citizenEmail);
@@ -97,6 +98,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
     I.waitForText('Your password has been changed', 20, 'h1');
+    I.wait(5);
     I.see('You can now sign in with your new password.')
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
