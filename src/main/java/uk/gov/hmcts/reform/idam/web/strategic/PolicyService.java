@@ -67,6 +67,7 @@ public class PolicyService {
      * @should return ALLOW when actions is null
      * @should return MFA_REQUIRED when any action returns false and attribute mfaRequired is true
      * @should return BLOCK when any action returns false and attribute mfaRequired is not true
+     * @should return BLOCK when any action returns false and attribute mfaRequired is true but there are other attributes
      * @should throw exception when response is not successful
      */
     public EvaluatePoliciesAction evaluatePoliciesForUser(final String uri, final List<String> cookies, final String ipAddress) {
@@ -130,10 +131,12 @@ public class PolicyService {
                 final boolean hasAttributes = resultItem.getAttributes() != null && resultItem.getAttributes() instanceof Map;
                 final boolean mfaRequiredAttributeIsTrue = hasAttributes && asList(ADVICE_KEY_MFA_REQUIRED_STRING_VALUE)
                     .equals(((Map) resultItem.getAttributes()).get(ADVICE_KEY_MFA_REQUIRED));
+                final boolean hasOnlyMfaRequiredAttribute = mfaRequiredAttributeIsTrue
+                    && ((Map) resultItem.getAttributes()).size() == 1;
 
                 // if mfaRequired we downgrade action to mfa_required but still need to check for other possible
                 // actions blocking the user even with mfa
-                if (mfaRequiredAttributeIsTrue) {
+                if (mfaRequiredAttributeIsTrue && hasOnlyMfaRequiredAttribute) {
                     action = EvaluatePoliciesAction.MFA_REQUIRED;
                 } else {
                     return EvaluatePoliciesAction.BLOCK;
