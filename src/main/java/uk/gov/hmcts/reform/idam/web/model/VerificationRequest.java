@@ -11,11 +11,6 @@ import javax.validation.constraints.Pattern;
 @Getter
 public class VerificationRequest {
 
-    @NotEmpty
-    private String username;
-
-    private String password;
-
     private String redirect_uri;
 
     private String state;
@@ -25,8 +20,6 @@ public class VerificationRequest {
     private String client_id;
 
     private String scope;
-
-    private boolean selfRegistrationEnabled;
 
     @NotEmpty
     @Pattern(regexp = "\\d+")

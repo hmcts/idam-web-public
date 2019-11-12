@@ -8,15 +8,11 @@
 
 <t:wrapper titleKey="public.verification.subheading.verification.required">
     <article class="content__body">
-        <form:form action="/verification" class="form" modelAttribute="authorizeCommand">
-
-            <form:input id="username" name="username" path="username" type="hidden" value="" />
-            <form:input id="response_type" name="response_type" path="response_type" type="hidden" value="" />
-            <form:input id="state" name="state" path="state" type="hidden" value="" />
-            <form:input id="client_id" name="client_id" path="client_id" type="hidden" value="" />
-            <form:input id="redirect_uri" name="redirect_uri" path="redirect_uri" type="hidden" value="" />
-            <form:input id="scope" name="scope" path="scope" type="hidden" value="" />
-            <form:input id="selfRegistrationEnabled" name="selfRegistrationEnabled" path="selfRegistrationEnabled" type="hidden" value="" />
+        <form:form name="verificationForm"
+                   class="form"
+                   modelAttribute="authorizeCommand"
+                   novalidate=""
+                   _lpchecked="1">
 
             <spring:hasBindErrors name="authorizeCommand">
                 <c:set var="hasBindError" value="true" />
@@ -32,46 +28,72 @@
                             <c:when test="${hasOtpCheckFailed}">
                                 <spring:message code="public.login.error.verification.failed.title"/>
                             </c:when>
+                            <c:when test="${hasOtpSessionExpired}">
+                                <spring:message code="public.login.error.verification.expired.title"/>
+                            </c:when>
                             <c:otherwise>
                                 <spring:message code="public.login.error.other.title"/>
                             </c:otherwise>
                         </c:choose>
                     </h2>
-                    <p><spring:message code="public.common.error.please.fix.following"/></p>
-                    <ul class="error-summary-list">
-                        <c:choose>
-                            <c:when test="${isCodeEmpty}">
-                                <script>
-                                    sendEvent('Authorization', 'Error', 'One time password is empty');
-                                </script>
+                    <c:choose>
+                        <c:when test="${isCodeEmpty}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'One time password is empty');
+                            </script>
+                            <p><spring:message code="public.common.error.please.fix.following"/></p>
+                            <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.field.code.empty"/></a></li>
-                            </c:when>
-                            <c:when test="${isCodePatternInvalid}">
-                                <script>
-                                    sendEvent('Authorization', 'Error', 'One time password has invalid pattern');
-                                </script>
+                            </ul>
+                        </c:when>
+                        <c:when test="${isCodePatternInvalid}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'One time password has invalid pattern');
+                            </script>
+                            <p><spring:message code="public.common.error.please.fix.following"/></p>
+                            <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.field.code.pattern"/></a></li>
-                            </c:when>
-                            <c:when test="${isCodeLengthInvalid}">
-                                <script>
-                                    sendEvent('Authorization', 'Error', 'One time password has invalid length');
-                                </script>
+                            </ul>
+                        </c:when>
+                        <c:when test="${isCodeLengthInvalid}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'One time password has invalid length');
+                            </script>
+                            <p><spring:message code="public.common.error.please.fix.following"/></p>
+                            <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.field.code.length"/></a></li>
-                            </c:when>
-                            <c:when test="${hasOtpSessionExpired}">
-                                <script>
-                                    sendEvent('Authorization', 'Error', 'One time password has expired');
-                                </script>
-                                <li><a href="#code"><spring:message code="public.login.error.verification.field.code.expired"/></a></li>
-                            </c:when>
-                            <c:otherwise>
-                                <script>
-                                    sendEvent('Authorization', 'Error', 'One time password is incorrect');
-                                </script>
+                            </ul>
+                        </c:when>
+                        <c:when test="${hasOtpSessionExpired}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'One time password has expired');
+                            </script>
+                            <c:url value="/login" var="loginUrl">
+                                <c:param name="redirect_uri" value="${redirect_uri}"/>
+                                <c:param name="client_id" value="${client_id}"/>
+                                <c:param name="state" value="${state}"/>
+                                <c:param name="scope" value="${scope}"/>
+                                <c:param name="response_type" value="${response_type}"/>
+                            </c:url>
+                            <div class="text">
+                                <p>
+                                    <spring:message
+                                        code="public.login.error.verification.field.code.expired"
+                                        arguments="${loginUrl}"
+                                        htmlEscape="false"/>
+                                </p>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <script>
+                                sendEvent('Authorization', 'Error', 'One time password is incorrect');
+                            </script>
+                            <p><spring:message code="public.common.error.please.fix.following"/></p>
+                            <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.field.code.failed"/></a></li>
-                            </c:otherwise>
-                        </c:choose>
-                    </ul>
+                            </ul>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </spring:hasBindErrors>
 
@@ -97,7 +119,14 @@
                                     <spring:message code="public.login.error.verification.field.code.length"/>
                                 </c:when>
                                 <c:when test="${hasOtpSessionExpired}">
-                                    <spring:message code="public.login.error.verification.field.code.expired"/>
+                                    <c:url value="/login" var="loginUrl">
+                                        <c:param name="redirect_uri" value="${redirect_uri}"/>
+                                        <c:param name="client_id" value="${client_id}"/>
+                                        <c:param name="state" value="${state}"/>
+                                        <c:param name="scope" value="${scope}"/>
+                                        <c:param name="response_type" value="${response_type}"/>
+                                    </c:url>
+                                    <spring:message code="public.login.error.verification.field.code.expired" htmlEscape="false" arguments="${loginUrl}"/>
                                 </c:when>
                                 <c:otherwise>
                                     <spring:message code="public.login.error.verification.field.code.failed"/>
