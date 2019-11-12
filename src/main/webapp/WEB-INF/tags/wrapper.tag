@@ -121,10 +121,15 @@
             <p>
                 <strong class="phase-tag"><spring:message code="public.template.header.phase.tag" /></strong>
                 <span>
+                    <c:set var="smartSurveyUrl">
+                        <spring:url value="https://www.smartsurvey.co.uk/s/IDAMSurvey/">
+                            <spring:param name="pageurl" value="${pageContext.request.requestURL}${empty pageContext.request.queryString ? '' : '?'}${pageContext.request.queryString}" />
+                        </spring:url>
+                    </c:set>
                     <spring:message
                         htmlEscape="false"
                         code="public.template.header.phase.description"
-                        arguments="https://www.smartsurvey.co.uk/s/IDAMSurvey/"
+                        arguments="${smartSurveyUrl}"
                     />
                 </span>
             </p>
