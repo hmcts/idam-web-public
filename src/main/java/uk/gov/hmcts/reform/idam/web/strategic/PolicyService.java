@@ -69,6 +69,7 @@ public class PolicyService {
      * @should return BLOCK when any action returns false and attribute mfaRequired is not true
      * @should return BLOCK when any action returns false and attribute mfaRequired is true but there are other attributes
      * @should throw exception when response is not successful
+     * @should filter out internal ips from request
      */
     public EvaluatePoliciesAction evaluatePoliciesForUser(final String uri, final List<String> cookies, final String ipAddress) {
         final String applicationName = configurationProperties.getStrategic().getPolicies().getApplicationName();
@@ -80,11 +81,15 @@ public class PolicyService {
 
         final String userSsoToken = StringUtils.substringAfter(sessionCookie, "=");
 
+
+        final List<String> requestIps = sanitiseIpsFromRequest(ipAddress);
+        final Pattern privateIpsFilterPattern = configurationProperties.getStrategic().getPolicies().getPrivateIpsFilterPattern();
+        final List<String> selectedIp = selectClientIp(requestIps, privateIpsFilterPattern);
         final EvaluatePoliciesRequest request = new EvaluatePoliciesRequest()
             .resources(singletonList(uri))
             .application(applicationName)
             .subject(new Subject().ssoToken(userSsoToken))
-            .environment(ImmutableMap.of("requestIp", sanitiseIpsFromRequest(ipAddress)));
+            .environment(ImmutableMap.of("requestIp", selectedIp));
 
         final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookies, userSsoToken, request, ipAddress);
 
@@ -177,6 +182,47 @@ public class PolicyService {
                 }
                 return s;
             })
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Selects the client ip from the list of ips
+     *
+     * This method was created to workaround a bug in FR
+     * where FR selects a random IP from the list to validate against the policy
+     *
+     * Our idea is to filter out our proxy IPs and select the first IP from the list
+     * According to the spec, X-FORWARDED-FOR should have the client IP as the first IP on the list
+     * To be extra safe we will also filter out our private IPs (10.x.x.x) from the list
+     *
+     * Filter: matching "10.x.x.x": "\Q10\E\.\d+\.\d+\.\d+"
+     * ["7.7.7.7"] => ["7.7.7.7"]
+     * ["10.0.0.0","7.7.7.7"] => ["7.7.7.7"]
+     * ["10.0.0.0","2001:db8:85a3:8d3:1319:8a2e:370:7348"] => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
+     * ["2001:db8:85a3:8d3:1319:8a2e:370:7348","7.7.7.7"] => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
+     * null => null
+     *
+     * Filter: null
+     * ["10.0.0.0","7.7.7.7"] => ["10.0.0.0"]
+     *
+     * @should filter private IPs and return first IP from the remaining list
+     */
+    protected List<String> selectClientIp(List<String> requestIps, Pattern filterPattern) {
+        if (requestIps == null) {
+            return null;
+        }
+
+        if (requestIps.isEmpty()) {
+            return requestIps;
+        }
+
+        if (filterPattern == null) {
+            return requestIps.subList(0, 1);
+        }
+
+        return requestIps.stream()
+            .filter(s -> !filterPattern.matcher(s).find())
+            .limit(1)
             .collect(Collectors.toList());
     }
 

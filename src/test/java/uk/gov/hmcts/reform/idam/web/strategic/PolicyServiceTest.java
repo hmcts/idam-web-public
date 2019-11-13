@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -53,6 +53,8 @@ public class PolicyServiceTest {
 
     @Before
     public void setupProps() {
+        given(configurationProperties.getStrategic().getPolicies().getPrivateIpsFilterPattern())
+            .willReturn(Pattern.compile("\\Q10\\E\\.\\d+\\.\\d+\\.\\d+"));
         given(configurationProperties.getStrategic().getPolicies().getApplicationName())
             .willReturn("applicationName");
         given(configurationProperties.getStrategic().getService().getUrl())
@@ -223,6 +225,28 @@ public class PolicyServiceTest {
     }
 
     /**
+     * @verifies filter out internal ips from request
+     * @see PolicyService#evaluatePoliciesForUser(String, List, String)
+     */
+    @Test
+    public void evaluatePoliciesForUser_shouldFilterOutInternalIpsFromRequest() throws Exception {
+        given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
+            .willReturn(ok(mockResponse(null)));
+
+        final PolicyService.EvaluatePoliciesAction result = service
+            .evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "10.1.1.1,someIpAddress");
+
+        assertThat(result, is(PolicyService.EvaluatePoliciesAction.ALLOW));
+
+        verify(restTemplate).exchange(
+            eq("idamApi/evaluatePolicies"),
+            eq(HttpMethod.POST),
+            eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
+                expectedHeaders("someToken", "10.1.1.1,someIpAddress"))),
+            eq(EvaluatePoliciesResponse.class));
+    }
+
+    /**
      * @verifies break multiple ips and remove port
      * @see PolicyService#sanitiseIpsFromRequest(String)
      */
@@ -285,5 +309,57 @@ public class PolicyServiceTest {
             eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
                 expectedHeaders("someToken", "someIpAddress"))),
             eq(EvaluatePoliciesResponse.class));
+    }
+
+    /**
+     * @verifies filter private IPs and return first IP from the remaining list
+     * @see PolicyService#selectClientIp(List, Pattern)
+     */
+    @Test
+    public void selectClientIp_shouldFilterPrivateIPsAndReturnFirstIPFromTheRemainingList() throws Exception {
+        Pattern pattern = null;
+        assertNull(service.selectClientIp(null, pattern));
+        assertThat(service.selectClientIp(asList("7.7.7.7"), pattern),
+            is(asList("7.7.7.7")));
+        assertThat(service.selectClientIp(asList("7.7.7.7", "10.1.1.1"), pattern),
+            is(asList("7.7.7.7")));
+        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.selectClientIp(asList("10.1.1.1", "7.7.7.7", "2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+            is(asList("10.1.1.1")));
+        assertThat(service.selectClientIp(asList("10.1.1.1", "2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+            is(asList("10.1.1.1")));
+
+        pattern = Pattern.compile("\\Q10\\E\\.\\d+\\.\\d+\\.\\d+");
+        assertNull(service.selectClientIp(null, pattern));
+        assertThat(service.selectClientIp(asList("7.7.7.7"), pattern),
+            is(asList("7.7.7.7")));
+        assertThat(service.selectClientIp(asList("7.7.7.7", "10.1.1.1"), pattern),
+            is(asList("7.7.7.7")));
+        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.selectClientIp(asList("10.1.1.1", "7.7.7.7", "2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+            is(asList("7.7.7.7")));
+        assertThat(service.selectClientIp(asList("10.1.1.1", "2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+
+        pattern = Pattern.compile("\\Q7\\E\\.\\d+\\.\\d+\\.\\d+");
+        assertNull(service.selectClientIp(null, pattern));
+        assertThat(service.selectClientIp(asList("7.7.7.7"), pattern),
+            is(Collections.emptyList()));
+        assertThat(service.selectClientIp(asList("7.7.7.7", "10.1.1.1"), pattern),
+            is(asList("10.1.1.1")));
+        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.selectClientIp(asList("10.1.1.1", "7.7.7.7", "2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+            is(asList("10.1.1.1")));
+        assertThat(service.selectClientIp(asList("10.1.1.1", "2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+            is(asList("10.1.1.1")));
     }
 }
