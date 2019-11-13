@@ -131,20 +131,20 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.fillField('password2', 'Passw0rd');
     I.click('Continue');
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.see("This password is used often and is not secure. Create a more secure password");
+    I.wait(2);
+    I.see("Your password is too easy to guess");
     I.fillField('password1', 'passwordidamtest');
     I.fillField('password2', 'passwordidamtest');
     I.click('Continue');
     I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.see('Your password did not have all of the required characters.');
-    I.see('Enter a password that includes at least 8 characters, a capital letter, a lowercase letter and a number.');
+    I.see('Your password didn\'t have all the required characters');
     I.fillField('password1', 'Lincoln1');
     I.fillField('password2', 'Lincoln1');
     I.click('Continue');
     I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.see("This password is used often and is not secure. Create a more secure password");
+    I.see("Your password is too easy to guess");
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
