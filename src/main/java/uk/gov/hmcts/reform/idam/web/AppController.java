@@ -746,6 +746,7 @@ public class AppController {
      * @should put in model redirect uri if service returns http 200 and redirect uri is present in response then return reset password success view
      * @should put in model the correct error code if HttpClientErrorException with http 412 is thrown by service then return reset password view.
      * @should put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password is blacklisted then return reset password view.
+     * @should put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password contains personal info then return reset password view.
      * @should put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password is previously used then return reset password view.
      * @should not put redirect uri in model if service returns http 200 and redirect uri is not present in response then return reset password success view
      * @should redirect to expired token if HttpClientErrorException with http 404 is thrown by service.
@@ -770,10 +771,12 @@ public class AppController {
         } catch (HttpClientErrorException e) {
             log.error("Error resetting password: {}", e.getResponseBodyAsString(), e);
             if (e.getStatusCode() == HttpStatus.PRECONDITION_FAILED) {
-                ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.password.details", "", model);
+                ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.invalid.password", "", model);
             } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED)) {
-                    ErrorHelper.showError("Error", "public.common.error.blacklisted.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+                    ErrorHelper.showError("Error", "public.common.error.blacklisted.password", "public.common.error.blacklisted.password", "public.common.error.enter.password", model);
+                } else if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)) {
+                    ErrorHelper.showError("Error", "public.common.error.containspersonalinfo.password", "public.common.error.containspersonalinfo.password", "public.common.error.enter.password", model);
                 } else if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.ACCOUNT_LOCKED)) {
                     ErrorHelper.showError("Error", "public.common.error.previously.used.password", "public.common.error.password.details", "public.common.error.enter.password", model);
                 }

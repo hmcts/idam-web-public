@@ -31,7 +31,7 @@ allprojects  {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.9.0'
+  def idamBomVersion = '1.9.1'
   ext['tomcat.version'] = '9.0.22'
 
   dependencyManagement {

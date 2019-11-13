@@ -88,6 +88,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.DO_RESET_PASSWORD_
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_BLACKLISTED_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CAPITAL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CONTAINS_PERSONAL_INFO_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_ENTER_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_INVALID_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_ONE;
@@ -127,6 +128,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGOUT_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_CONTAINS_PERSONAL_INFO;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_RESET_ENDPOINT;
@@ -993,7 +995,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attribute(ERROR_TITLE, ERROR_CAPITAL))
             .andExpect(model().attribute(ERROR_MESSAGE, ERROR_INVALID_PASSWORD))
-            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_PASSWORD_DETAILS))
+            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_INVALID_PASSWORD))
             .andExpect(model().attribute(ERROR_LABEL_TWO, BLANK))
             .andExpect(view().name(RESETPASSWORD_VIEW_NAME));
 
@@ -1021,7 +1023,38 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attribute(ERROR_TITLE, ERROR_CAPITAL))
             .andExpect(model().attribute(ERROR_MESSAGE, ERROR_BLACKLISTED_PASSWORD))
-            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_PASSWORD_DETAILS))
+            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_BLACKLISTED_PASSWORD))
+            .andExpect(model().attribute(ERROR_LABEL_TWO, ERROR_ENTER_PASSWORD))
+            .andExpect(view().name(RESETPASSWORD_VIEW_NAME));
+
+        verify(spiService).resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE));
+    }
+
+    /**
+     * @verifies put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password contains then return reset password view.
+     * @see AppController#resetPassword(String, String, String, String, String, Map)
+     */
+    @Test
+    public void resetPassword_shouldPutInModelTheCorrectErrorCodeIfHttpClientErrorExceptionWithHttp400IsThrownByServiceAndPasswordContainsThenReturnResetPasswordView() throws Exception {
+        given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class)))
+            .willReturn(true);
+        given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE)))
+            .willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.name(), PASSWORD_CONTAINS_PERSONAL_INFO.getBytes(), null));
+        given(validationService.isErrorInResponse(eq(PASSWORD_CONTAINS_PERSONAL_INFO), eq(ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)))
+            .willReturn(true);
+
+
+        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
+            .param(ACTION_PARAMETER, UNUSED)
+            .param(PASSWORD_ONE, PASSWORD_ONE)
+            .param(PASSWORD_TWO, PASSWORD_TWO)
+            .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
+            .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attribute(ERROR_TITLE, ERROR_CAPITAL))
+            .andExpect(model().attribute(ERROR_MESSAGE, ERROR_CONTAINS_PERSONAL_INFO_PASSWORD))
+            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_CONTAINS_PERSONAL_INFO_PASSWORD))
             .andExpect(model().attribute(ERROR_LABEL_TWO, ERROR_ENTER_PASSWORD))
             .andExpect(view().name(RESETPASSWORD_VIEW_NAME));
 
