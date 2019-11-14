@@ -6,4 +6,4 @@ asp_rg_override = "idam-idam-preview"
 
 capacity = 1
 
-strategic_policies_privateIpsFilterPattern = ""
+vnet_private_ip_pattern = "10.97\\.\\d+\\.\\d+"
