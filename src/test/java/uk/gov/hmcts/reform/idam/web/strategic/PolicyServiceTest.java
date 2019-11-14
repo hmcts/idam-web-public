@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -53,6 +53,8 @@ public class PolicyServiceTest {
 
     @Before
     public void setupProps() {
+        given(configurationProperties.getStrategic().getPolicies().getPrivateIpsFilterPattern())
+            .willReturn(Pattern.compile("\\Q10\\E\\.\\d+\\.\\d+\\.\\d+"));
         given(configurationProperties.getStrategic().getPolicies().getApplicationName())
             .willReturn("applicationName");
         given(configurationProperties.getStrategic().getService().getUrl())
@@ -223,33 +225,25 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies break multiple ips and remove port
-     * @see PolicyService#sanitiseIpsFromRequest(String)
+     * @verifies filter out internal ips from request
+     * @see PolicyService#evaluatePoliciesForUser(String, List, String)
      */
     @Test
-    public void sanitiseIpsFromRequest_shouldBreakMultipleIpsAndRemovePort() throws Exception {
-        List<String> actual;
+    public void evaluatePoliciesForUser_shouldFilterOutInternalIpsFromRequest() throws Exception {
+        given(restTemplate.exchange(anyString(), any(), any(), same(EvaluatePoliciesResponse.class)))
+            .willReturn(ok(mockResponse(null)));
 
-        actual = service.sanitiseIpsFromRequest(null);
-        assertNull(actual);
+        final PolicyService.EvaluatePoliciesAction result = service
+            .evaluatePoliciesForUser("someUri", Collections.singletonList(IDAM_SESSION_COOKIE_NAME + "=someToken"), "10.1.1.1,someIpAddress");
 
-        actual = service.sanitiseIpsFromRequest("1.1.1.1");
-        assertThat(actual, is(singletonList("1.1.1.1")));
+        assertThat(result, is(PolicyService.EvaluatePoliciesAction.ALLOW));
 
-        actual = service.sanitiseIpsFromRequest("1.1.1.1:9999");
-        assertThat(actual, is(singletonList("1.1.1.1")));
-
-        actual = service.sanitiseIpsFromRequest("1.1.1.1:1111, 2.2.2.2:2222, 3.3.3.3:3333");
-        assertThat(actual, is(asList("1.1.1.1", "2.2.2.2", "3.3.3.3")));
-
-        actual = service.sanitiseIpsFromRequest("2001:db8:85a3:8d3:1319:8a2e:370:7348, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
-        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-
-        actual = service.sanitiseIpsFromRequest("[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
-        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-
-        actual = service.sanitiseIpsFromRequest("[2001:db8:85a3:8d3:1319:8a2e:370:7348], 2001:db8:85a3:8d3:1319:8a2e:370:7348");
-        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        verify(restTemplate).exchange(
+            eq("idamApi/evaluatePolicies"),
+            eq(HttpMethod.POST),
+            eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
+                expectedHeaders("someToken", "10.1.1.1,someIpAddress"))),
+            eq(EvaluatePoliciesResponse.class));
     }
 
     /**
@@ -285,5 +279,76 @@ public class PolicyServiceTest {
             eq(new HttpEntity<>(expectedRequest("someUri", "applicationName", "someToken", "someIpAddress"),
                 expectedHeaders("someToken", "someIpAddress"))),
             eq(EvaluatePoliciesResponse.class));
+    }
+
+    /**
+     * @verifies break multiple ips and remove port
+     * @see PolicyService#sanitiseIpsFromRequestExcludingInternalIps(Pattern, String)
+     */
+    @Test
+    public void sanitiseIpsFromRequestExcludingInternalIps_shouldBreakMultipleIpsAndRemovePort() throws Exception {
+        final Pattern p = null;
+        List<String> actual;
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, null);
+        assertNull(actual);
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "1.1.1.1");
+        assertThat(actual, is(singletonList("1.1.1.1")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "1.1.1.1:9999");
+        assertThat(actual, is(singletonList("1.1.1.1")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "1.1.1.1:1111, 2.2.2.2:2222, 3.3.3.3:3333");
+        assertThat(actual, is(asList("1.1.1.1")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "[2001:db8:85a3:8d3:1319:8a2e:370:7348], 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+    }
+
+    /**
+     * @verifies filter out internal IPs
+     * @see PolicyService#sanitiseIpsFromRequestExcludingInternalIps(Pattern, String)
+     */
+    @Test
+    public void sanitiseIpsFromRequestExcludingInternalIps_shouldFilterOutInternalIPs() throws Exception {
+        Pattern p = Pattern.compile("10\\.\\d+\\.\\d+\\.\\d+");
+
+        assertNull(service.sanitiseIpsFromRequestExcludingInternalIps(p, null));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7"),
+            is(asList("7.7.7.7")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7, 10.1.1.1"),
+            is(asList("7.7.7.7")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348"),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "10.1.1.1, 7.7.7.7, 2001:db8:85a3:8d3:1319:8a2e:370:7348"),
+            is(asList("7.7.7.7")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "10.1.1.1, 2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "110.1.1.1, 2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
+            is(asList("110.1.1.1")));
+
+        p = Pattern.compile("7\\.\\d+\\.\\d+\\.\\d+");
+        assertNull(service.sanitiseIpsFromRequestExcludingInternalIps(p, null));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7"),
+            is(Collections.emptyList()));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7, 10.1.1.1"),
+            is(asList("10.1.1.1")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348"),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
+            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "10.1.1.1, 7.7.7.7, 2001:db8:85a3:8d3:1319:8a2e:370:7348"),
+            is(asList("10.1.1.1")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "10.1.1.1, 2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
+            is(asList("10.1.1.1")));
     }
 }
