@@ -78,3 +78,8 @@ variable vault_name_override {
   description = "Vault Name"
   default = ""
 }
+
+variable "strategic_policies_privateIpsFilterPattern" {
+  description = "Private IPs Filter Pattern for Policies Evaluation"
+  default     = "10\\.\\d+\\.\\d+\\.\\d+"
+}
