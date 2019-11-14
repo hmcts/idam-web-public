@@ -313,12 +313,12 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies filter outinternal IPs
+     * @verifies filter out internal IPs
      * @see PolicyService#sanitiseIpsFromRequestExcludingInternalIps(Pattern, String)
      */
     @Test
-    public void sanitiseIpsFromRequestExcludingInternalIps_shouldFilterOutinternalIPs() throws Exception {
-        Pattern p = Pattern.compile("\\Q10\\E\\.\\d+\\.\\d+\\.\\d+");
+    public void sanitiseIpsFromRequestExcludingInternalIps_shouldFilterOutInternalIPs() throws Exception {
+        Pattern p = Pattern.compile("10\\.\\d+\\.\\d+\\.\\d+");
 
         assertNull(service.sanitiseIpsFromRequestExcludingInternalIps(p, null));
         assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7"),
@@ -333,8 +333,10 @@ public class PolicyServiceTest {
             is(asList("7.7.7.7")));
         assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "10.1.1.1, 2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
             is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "110.1.1.1, 2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
+            is(asList("110.1.1.1")));
 
-        p = Pattern.compile("\\Q7\\E\\.\\d+\\.\\d+\\.\\d+");
+        p = Pattern.compile("7\\.\\d+\\.\\d+\\.\\d+");
         assertNull(service.sanitiseIpsFromRequestExcludingInternalIps(p, null));
         assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7"),
             is(Collections.emptyList()));
