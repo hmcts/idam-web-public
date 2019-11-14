@@ -4,6 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
 
+import java.util.regex.Pattern;
+
 @ConfigurationProperties(prefix = "strategic")
 @Data
 public class StrategicConfigurationProperties {
@@ -45,6 +47,7 @@ public class StrategicConfigurationProperties {
     @Data
     public static class Policies {
         private String applicationName;
+        private Pattern privateIpsFilterPattern;
     }
 
     @Data
