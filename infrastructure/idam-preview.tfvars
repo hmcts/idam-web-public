@@ -5,3 +5,5 @@ asp_name_override = "idam-idam-preview"
 asp_rg_override = "idam-idam-preview"
 
 capacity = 1
+
+strategic_policies_privateIpsFilterPattern = ""

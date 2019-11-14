@@ -61,5 +61,7 @@ module "idam-web-public" {
     STRATEGIC_SERVICE_URL         = "${local.idam_api_url}"
 
     GA_TRACKING_ID                = "${var.ga_tracking_id}"
+
+    STRATEGIC_POLICIES_PRIVATEIPSFILTERPATTERN = "${var.strategic_policies_privateIpsFilterPattern}"
   }
 }
