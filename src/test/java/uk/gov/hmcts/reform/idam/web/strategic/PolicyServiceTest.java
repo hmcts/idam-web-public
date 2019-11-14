@@ -247,36 +247,6 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies break multiple ips and remove port
-     * @see PolicyService#sanitiseIpsFromRequest(String)
-     */
-    @Test
-    public void sanitiseIpsFromRequest_shouldBreakMultipleIpsAndRemovePort() throws Exception {
-        List<String> actual;
-
-        actual = service.sanitiseIpsFromRequest(null);
-        assertNull(actual);
-
-        actual = service.sanitiseIpsFromRequest("1.1.1.1");
-        assertThat(actual, is(singletonList("1.1.1.1")));
-
-        actual = service.sanitiseIpsFromRequest("1.1.1.1:9999");
-        assertThat(actual, is(singletonList("1.1.1.1")));
-
-        actual = service.sanitiseIpsFromRequest("1.1.1.1:1111, 2.2.2.2:2222, 3.3.3.3:3333");
-        assertThat(actual, is(asList("1.1.1.1", "2.2.2.2", "3.3.3.3")));
-
-        actual = service.sanitiseIpsFromRequest("2001:db8:85a3:8d3:1319:8a2e:370:7348, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
-        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-
-        actual = service.sanitiseIpsFromRequest("[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
-        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-
-        actual = service.sanitiseIpsFromRequest("[2001:db8:85a3:8d3:1319:8a2e:370:7348], 2001:db8:85a3:8d3:1319:8a2e:370:7348");
-        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-    }
-
-    /**
      * @verifies return BLOCK when any action returns false and attribute mfaRequired is true but there are other attributes
      * @see PolicyService#evaluatePoliciesForUser(String, List, String)
      */
@@ -312,54 +282,71 @@ public class PolicyServiceTest {
     }
 
     /**
-     * @verifies filter private IPs and return first IP from the remaining list
-     * @see PolicyService#selectClientIp(List, Pattern)
+     * @verifies break multiple ips and remove port
+     * @see PolicyService#sanitiseIpsFromRequestExcludingInternalIps(Pattern, String)
      */
     @Test
-    public void selectClientIp_shouldFilterPrivateIPsAndReturnFirstIPFromTheRemainingList() throws Exception {
-        Pattern pattern = null;
-        assertNull(service.selectClientIp(null, pattern));
-        assertThat(service.selectClientIp(asList("7.7.7.7"), pattern),
-            is(asList("7.7.7.7")));
-        assertThat(service.selectClientIp(asList("7.7.7.7", "10.1.1.1"), pattern),
-            is(asList("7.7.7.7")));
-        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
-            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
-            is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-        assertThat(service.selectClientIp(asList("10.1.1.1", "7.7.7.7", "2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
-            is(asList("10.1.1.1")));
-        assertThat(service.selectClientIp(asList("10.1.1.1", "2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
-            is(asList("10.1.1.1")));
+    public void sanitiseIpsFromRequestExcludingInternalIps_shouldBreakMultipleIpsAndRemovePort() throws Exception {
+        final Pattern p = null;
+        List<String> actual;
 
-        pattern = Pattern.compile("\\Q10\\E\\.\\d+\\.\\d+\\.\\d+");
-        assertNull(service.selectClientIp(null, pattern));
-        assertThat(service.selectClientIp(asList("7.7.7.7"), pattern),
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, null);
+        assertNull(actual);
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "1.1.1.1");
+        assertThat(actual, is(singletonList("1.1.1.1")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "1.1.1.1:9999");
+        assertThat(actual, is(singletonList("1.1.1.1")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "1.1.1.1:1111, 2.2.2.2:2222, 3.3.3.3:3333");
+        assertThat(actual, is(asList("1.1.1.1")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+
+        actual = service.sanitiseIpsFromRequestExcludingInternalIps(p, "[2001:db8:85a3:8d3:1319:8a2e:370:7348], 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+        assertThat(actual, is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
+    }
+
+    /**
+     * @verifies filter outinternal IPs
+     * @see PolicyService#sanitiseIpsFromRequestExcludingInternalIps(Pattern, String)
+     */
+    @Test
+    public void sanitiseIpsFromRequestExcludingInternalIps_shouldFilterOutinternalIPs() throws Exception {
+        Pattern p = Pattern.compile("\\Q10\\E\\.\\d+\\.\\d+\\.\\d+");
+
+        assertNull(service.sanitiseIpsFromRequestExcludingInternalIps(p, null));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7"),
             is(asList("7.7.7.7")));
-        assertThat(service.selectClientIp(asList("7.7.7.7", "10.1.1.1"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7, 10.1.1.1"),
             is(asList("7.7.7.7")));
-        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348"),
             is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
             is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-        assertThat(service.selectClientIp(asList("10.1.1.1", "7.7.7.7", "2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "10.1.1.1, 7.7.7.7, 2001:db8:85a3:8d3:1319:8a2e:370:7348"),
             is(asList("7.7.7.7")));
-        assertThat(service.selectClientIp(asList("10.1.1.1", "2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "10.1.1.1, 2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
             is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
 
-        pattern = Pattern.compile("\\Q7\\E\\.\\d+\\.\\d+\\.\\d+");
-        assertNull(service.selectClientIp(null, pattern));
-        assertThat(service.selectClientIp(asList("7.7.7.7"), pattern),
+        p = Pattern.compile("\\Q7\\E\\.\\d+\\.\\d+\\.\\d+");
+        assertNull(service.sanitiseIpsFromRequestExcludingInternalIps(p, null));
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7"),
             is(Collections.emptyList()));
-        assertThat(service.selectClientIp(asList("7.7.7.7", "10.1.1.1"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "7.7.7.7, 10.1.1.1"),
             is(asList("10.1.1.1")));
-        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348"),
             is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-        assertThat(service.selectClientIp(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
             is(asList("2001:db8:85a3:8d3:1319:8a2e:370:7348")));
-        assertThat(service.selectClientIp(asList("10.1.1.1", "7.7.7.7", "2001:db8:85a3:8d3:1319:8a2e:370:7348"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "10.1.1.1, 7.7.7.7, 2001:db8:85a3:8d3:1319:8a2e:370:7348"),
             is(asList("10.1.1.1")));
-        assertThat(service.selectClientIp(asList("10.1.1.1", "2001:db8:85a3:8d3:1319:8a2e:370:7348", "7.7.7.7"), pattern),
+        assertThat(service.sanitiseIpsFromRequestExcludingInternalIps(p, "10.1.1.1, 2001:db8:85a3:8d3:1319:8a2e:370:7348, 7.7.7.7"),
             is(asList("10.1.1.1")));
     }
 }
