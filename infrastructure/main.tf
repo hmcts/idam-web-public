@@ -62,6 +62,6 @@ module "idam-web-public" {
 
     GA_TRACKING_ID                = "${var.ga_tracking_id}"
 
-    STRATEGIC_POLICIES_PRIVATEIPSFILTERPATTERN = "${var.strategic_policies_privateIpsFilterPattern}"
+    STRATEGIC_POLICIES_PRIVATEIPSFILTERPATTERN = "${var.vnet_private_ip_pattern}"
   }
 }

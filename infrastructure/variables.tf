@@ -79,7 +79,7 @@ variable vault_name_override {
   default = ""
 }
 
-variable "strategic_policies_privateIpsFilterPattern" {
-  description = "Private IPs Filter Pattern for Policies Evaluation"
+variable "vnet_private_ip_pattern" {
+  description = "Private VNet IP Filter Pattern for Policies Evaluation"
   default     = "10\\.\\d+\\.\\d+\\.\\d+"
 }
