@@ -128,7 +128,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGOUT_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_CONTAINS_PERSONAL_INFO;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_RESET_ENDPOINT;
@@ -1039,8 +1039,8 @@ public class AppControllerTest {
         given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class)))
             .willReturn(true);
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE)))
-            .willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.name(), PASSWORD_CONTAINS_PERSONAL_INFO.getBytes(), null));
-        given(validationService.isErrorInResponse(eq(PASSWORD_CONTAINS_PERSONAL_INFO), eq(ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)))
+            .willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.name(), PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE.getBytes(), null));
+        given(validationService.isErrorInResponse(eq(PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE), eq(ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)))
             .willReturn(true);
 
 
