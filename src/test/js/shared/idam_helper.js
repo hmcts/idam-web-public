@@ -288,14 +288,9 @@ class IdamHelper extends Helper {
                 "*://*?*"
             ],
             "subject": {
-                "type": "AND",
-                "subjects": [
-                    {
-                        "type": "Identity",
-                        "subjectValues": [
-                            `id=${userEmail},ou=user,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
-                        ]
-                    }
+                "type": "Identity",
+                "subjectValues": [
+                    `id=${userEmail},ou=user,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
                 ]
             }
         };
