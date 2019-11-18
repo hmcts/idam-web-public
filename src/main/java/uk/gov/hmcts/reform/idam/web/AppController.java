@@ -435,8 +435,15 @@ public class AppController {
                                    HttpServletResponse response) {
         final List<String> responseCookies = spiService.initiateOtpeAuthentication(cookies, ipAddress);
         log.info("/login: Successful initiate OTP request - {}", obfuscateEmailAddress(request.getUsername()));
+
         List<String> secureCookies = makeCookiesSecure(responseCookies);
         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
+
+        final String affinityCookieName = configurationProperties.getStrategic().getSession().getAffinityCookie();
+        cookies.stream().
+            filter(cookie -> cookie.contains(affinityCookieName))
+            .findFirst()
+            .ifPresent(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie.split(";")[0]));
     }
 
     /**

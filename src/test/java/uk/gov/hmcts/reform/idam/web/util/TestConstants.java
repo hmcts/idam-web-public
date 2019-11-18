@@ -101,6 +101,7 @@ public class TestConstants {
 
     //Parameters
     public static final String IDAM_SESSION_COOKIE_NAME = "Idam.Session";
+    public static final String ARR_COOKIE_NAME = "ARRAffinity";
     public static final String ACTION_PARAMETER = "action";
     public static final String TOKEN_PARAMETER = "token";
     public static final String CODE_PARAMETER = "code";
@@ -166,6 +167,7 @@ public class TestConstants {
     public static final String CUSTOM_SCOPE = "manage-roles";
     public static final String INSECURE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT";
     public static final String AUTHENTICATE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT; Path=/; Secure; HttpOnly";
+    public static final String AFFINITY_COOKIE = ARR_COOKIE_NAME + "=COOKIE_AFFINITY_IS_A_FAT_TIME";
 
     //Responses
     public static final String PASSWORD_BLACKLISTED_RESPONSE = "{\"code\":\"PASSWORD_BLACKLISTED\"}";
