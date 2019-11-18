@@ -81,7 +81,6 @@ public class PolicyService {
 
         final String userSsoToken = StringUtils.substringAfter(sessionCookie, "=");
 
-
         final Pattern privateIpsFilterPattern = configurationProperties.getStrategic().getPolicies().getPrivateIpsFilterPattern();
         final List<String> requestIp = sanitiseIpsFromRequestExcludingInternalIps(privateIpsFilterPattern, ipAddress);
         final EvaluatePoliciesRequest request = new EvaluatePoliciesRequest()
