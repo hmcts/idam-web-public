@@ -374,15 +374,7 @@ public class AppController {
             }
 
             if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
-                log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
-                initiateOtpFlow(request, cookies, ipAddress, response);
-
-                Map<String, Object> authorizeParams = model.asMap();
-                authorizeParams.remove(USERNAME);
-                authorizeParams.remove(PASSWORD);
-                authorizeParams.remove(SELF_REGISTRATION_ENABLED);
-
-                return new ModelAndView("redirect:" + VERIFICATION_VIEW, authorizeParams);
+                return initiateOtpFlow(request, cookies, ipAddress, response, model);
             }
 
             final String responseUrl = authoriseUser(cookies, httpRequest);
@@ -429,14 +421,25 @@ public class AppController {
         return responseUrl;
     }
 
-    private void initiateOtpFlow(AuthorizeRequest request,
-                                   List<String> cookies,
-                                   String ipAddress,
-                                   HttpServletResponse response) {
+    private ModelAndView initiateOtpFlow(AuthorizeRequest request,
+                                 List<String> cookies,
+                                 String ipAddress,
+                                 HttpServletResponse response, Model model) {
+        log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
+
         final List<String> responseCookies = spiService.initiateOtpeAuthentication(cookies, ipAddress);
+
         log.info("/login: Successful initiate OTP request - {}", obfuscateEmailAddress(request.getUsername()));
+
         List<String> secureCookies = makeCookiesSecure(responseCookies);
         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
+
+        Map<String, Object> authorizeParams = model.asMap();
+        authorizeParams.remove(USERNAME);
+        authorizeParams.remove(PASSWORD);
+        authorizeParams.remove(SELF_REGISTRATION_ENABLED);
+
+        return new ModelAndView("redirect:/" + VERIFICATION_VIEW, authorizeParams);
     }
 
     /**
@@ -569,7 +572,7 @@ public class AppController {
         bindingResult.reject("Login failure");
         model.addAttribute("authorizeCommand", request);
         model.addAttribute(USERNAME, null);
-        return new ModelAndView("redirect:" + LOGIN_VIEW, model.asMap());
+        return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
     }
 
     private List<String> makeCookiesSecure(List<String> cookies) {
