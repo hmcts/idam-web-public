@@ -78,3 +78,8 @@ variable vault_name_override {
   description = "Vault Name"
   default = ""
 }
+
+variable "vnet_private_ip_pattern" {
+  description = "Private VNet IP Filter Pattern for Policies Evaluation"
+  default     = "10\\.\\d+\\.\\d+\\.\\d+"
+}
