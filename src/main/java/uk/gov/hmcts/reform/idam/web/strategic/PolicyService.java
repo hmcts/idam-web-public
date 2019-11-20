@@ -90,7 +90,7 @@ public class PolicyService {
             .subject(new Subject().ssoToken(userSsoToken))
             .environment(ImmutableMap.of("requestIp", requestIp));
 
-        final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookies, userSsoToken, request, ipAddress);
+        final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookies, request, ipAddress);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new HttpClientErrorException(response.getStatusCode(), ERROR_POLICY_CHECK_EXCEPTION);
@@ -101,14 +101,12 @@ public class PolicyService {
     }
 
     private ResponseEntity<EvaluatePoliciesResponse> doEvaluatePolicies(final List<String> cookies,
-                                                                        final String userSsoToken,
                                                                         final EvaluatePoliciesRequest request,
                                                                         final String ipAddress) {
         final HttpHeaders headers = new HttpHeaders();
         headers.add(X_FORWARDED_FOR, ipAddress);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.put(HttpHeaders.COOKIE, cookies);
-        headers.setBearerAuth(userSsoToken);
 
         final HttpEntity<EvaluatePoliciesRequest> httpEntity = new HttpEntity<>(request, headers);
         final String url = String.format("%s/%s",
