@@ -85,7 +85,6 @@ public class PolicyServiceTest {
         headers.put("X-Forwarded-For", singletonList(ipAddress));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.put(HttpHeaders.COOKIE, singletonList(String.format("%s=%s", IDAM_SESSION_COOKIE_NAME, token)));
-        headers.setBearerAuth(token);
         return headers;
     }
 
