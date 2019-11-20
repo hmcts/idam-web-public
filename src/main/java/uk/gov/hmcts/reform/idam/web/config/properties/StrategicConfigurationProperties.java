@@ -53,5 +53,6 @@ public class StrategicConfigurationProperties {
     @Data
     public static class Session {
         private String idamSessionCookie;
+        private String affinityCookie;
     }
 }
