@@ -434,6 +434,12 @@ public class AppController {
         List<String> secureCookies = makeCookiesSecure(responseCookies);
         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
 
+        final String affinityCookieName = configurationProperties.getStrategic().getSession().getAffinityCookie();
+        cookies.stream().
+            filter(cookie -> cookie.contains(affinityCookieName))
+            .findFirst()
+            .ifPresent(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie.split(";")[0]));
+
         Map<String, Object> authorizeParams = model.asMap();
         authorizeParams.remove(USERNAME);
         authorizeParams.remove(PASSWORD);

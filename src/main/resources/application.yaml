@@ -82,6 +82,7 @@ strategic:
     privateIpsFilterPattern: "10\\.\\d+\\.\\d+\\.\\d+"
   session:
     idamSessionCookie: Idam.Session
+    affinityCookie: ARRAffinity
 
 validation:
   password:
