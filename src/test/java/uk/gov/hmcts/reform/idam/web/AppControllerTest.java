@@ -1596,7 +1596,7 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.SET_COOKIE, "Idam.AuthId=authIdCookie; Path=/; Secure; HttpOnly"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrlPattern("verification*"));
+            .andExpect(redirectedUrlPattern("/verification*"));
 
         verify(spiService, never()).authorize(any(), eq(singletonList(AUTHENTICATE_SESSION_COOKE)));
 
@@ -1704,7 +1704,7 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrlPattern("login*"));
+            .andExpect(redirectedUrlPattern("/login*"));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
@@ -1760,7 +1760,7 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrlPattern("login*"));
+            .andExpect(redirectedUrlPattern("/login*"));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
@@ -1790,7 +1790,7 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrlPattern("login*"));
+            .andExpect(redirectedUrlPattern("/login*"));
 
         verify(spiService).submitOtpeAuthentication(eq(singletonList("Idam.AuthId=authId")),
             eq(USER_IP_ADDRESS),
@@ -2006,7 +2006,7 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.SET_COOKIE, "Idam.AuthId=authIdCookie; Path=/; Secure; HttpOnly"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrlPattern("verification*"))
+            .andExpect(redirectedUrlPattern("/verification*"))
             .andExpect(model().attributeDoesNotExist(USERNAME))
             .andExpect(model().attributeDoesNotExist(PASSWORD))
             .andExpect(model().attributeDoesNotExist(MvcKeys.SELF_REGISTRATION_ENABLED))
