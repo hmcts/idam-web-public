@@ -266,14 +266,33 @@ public class UserController {
 
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED)) {
-                    ErrorHelper.showError("Error", "public.common.error.blacklisted.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+                    ErrorHelper.showError("Error",
+                        "public.common.error.blacklisted.password",
+                        "public.common.error.blacklisted.password",
+                        "public.common.error.enter.password",
+                        model);
                     return "useractivation";
                 }
+
+                if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)) {
+                    ErrorHelper.showError("Error",
+                        "public.common.error.containspersonalinfo.password",
+                        "public.common.error.containspersonalinfo.password",
+                        "public.common.error.enter.password",
+                        model);
+                    return "useractivation";
+                }
+
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.TOKEN_INVALID)) {
                     return "expiredtoken";
                 }
             }
-            ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+
+            ErrorHelper.showError("Error",
+                "public.common.error.invalid.password",
+                "public.common.error.invalid.password",
+                "public.common.error.enter.password",
+                model);
         }
 
         return "useractivation";
