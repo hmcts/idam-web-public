@@ -320,7 +320,7 @@ public class SPIService {
     /**
      * @should call api with the correct data
      */
-    public ResponseEntity<String> validateResetPasswordToken(final String token, final String code) throws IOException {
+    public ResponseEntity<Object> validateResetPasswordToken(final String token, final String code) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("token", token); //NOSONAR
@@ -329,7 +329,7 @@ public class SPIService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getValidateResetPasswordToken(), HttpMethod.POST, entity,
-            String.class);
+            Object.class);
     }
 
     /**

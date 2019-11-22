@@ -124,6 +124,9 @@ public class AppController {
     @Autowired
     private ConfigurationProperties configurationProperties;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
 
@@ -254,8 +257,8 @@ public class AppController {
      * @should redirect to passwordReset view
      */
     @GetMapping(value = "/passwordReset")
-    public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
-        return this.passwordReset(token, code);
+    public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code, Model model) {
+        return this.passwordReset(token, code, model);
     }
 
     /**
@@ -263,15 +266,40 @@ public class AppController {
      * @should redirect to token expired page if token is invalid
      */
     @PostMapping(value = "/passwordReset")
-    public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
-        String nextPage = RESETPASSWORD_VIEW;
+    public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code, Model model) {
+        String nextPage = EXPIRED_PASSWORD_RESET_LINK_VIEW;
         try {
             spiService.validateResetPasswordToken(token, code);
-        } catch (Exception e) {
-            nextPage = EXPIRED_PASSWORD_RESET_LINK_VIEW;
+            nextPage = RESETPASSWORD_VIEW;
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().value() == 404)
+            {
+                model.addAttribute("forgotPasswordLink", buildUrlFromTheBody(e.getResponseBodyAsString()));
+            }
+        } catch (IOException e) {
+
         }
         return nextPage;
     }
+
+    private String buildUrlFromTheBody(String responseBodyAsString) {
+        final String baselink = "/reset/forgotpassword";
+        try {
+            uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest request = mapper.readValue(
+                responseBodyAsString, uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest.class);
+            return baselink + "?redirectUri=" + nullToEmpty(request.getRedirectUri()) +
+                "&clientId=" + nullToEmpty(request.getClientId()) +
+                "&state=" + nullToEmpty(request.getState()) +
+                "&scope=" + nullToEmpty(request.getScope());
+        } catch (IOException ex) {
+            return baselink;
+        }
+    }
+
+    private String nullToEmpty(Object obj) {
+        return obj == null ? "" : obj.toString();
+    }
+
 
     /**
      * @should put in model correct data and return forgot password view
