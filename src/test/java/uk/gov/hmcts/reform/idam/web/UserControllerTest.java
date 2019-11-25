@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_BLACKLISTED_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CAPITAL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CONTAINS_PERSONAL_INFO_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_ENTER_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_INVALID_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_ONE;
@@ -59,6 +60,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_COMMAND;
@@ -309,7 +311,28 @@ public class UserControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attribute(ERROR_TITLE, ERROR_CAPITAL))
             .andExpect(model().attribute(ERROR_MESSAGE, ERROR_BLACKLISTED_PASSWORD))
-            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_PASSWORD_DETAILS))
+            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_BLACKLISTED_PASSWORD))
+            .andExpect(model().attribute(ERROR_LABEL_TWO, ERROR_ENTER_PASSWORD))
+            .andExpect(view().name(USER_ACTIVATION_VIEW_NAME));
+    }
+
+    /**
+     * @verifies return useractivation view and password contains personal info error in model if HttpClientErrorException occurs and http status is 400 and password contains personal info
+     * @see UserController#activateUser(String, String, String, String, Map)
+     */
+    @Test
+    public void activateUser_shouldReturnUseractivationViewAndPasswordContainsPersonalInfoErrorInModelIfHttpClientErrorExceptionOccursAndHttpStatusIs400AndPasswordContainsPersonalInfo() throws Exception {
+        given(validationService.validateResetPasswordRequest(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
+        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}")))
+            .willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE.getBytes(), null));
+        given(validationService.isErrorInResponse(eq(PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE), eq(ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)))
+            .willReturn(true);
+        mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attribute(ERROR_TITLE, ERROR_CAPITAL))
+            .andExpect(model().attribute(ERROR_MESSAGE, ERROR_CONTAINS_PERSONAL_INFO_PASSWORD))
+            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_CONTAINS_PERSONAL_INFO_PASSWORD))
             .andExpect(model().attribute(ERROR_LABEL_TWO, ERROR_ENTER_PASSWORD))
             .andExpect(view().name(USER_ACTIVATION_VIEW_NAME));
     }
@@ -342,7 +365,7 @@ public class UserControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attribute(ERROR_TITLE, ERROR_CAPITAL))
             .andExpect(model().attribute(ERROR_MESSAGE, ERROR_INVALID_PASSWORD))
-            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_PASSWORD_DETAILS))
+            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_INVALID_PASSWORD))
             .andExpect(model().attribute(ERROR_LABEL_TWO, ERROR_ENTER_PASSWORD))
             .andExpect(view().name(USER_ACTIVATION_VIEW_NAME));
     }

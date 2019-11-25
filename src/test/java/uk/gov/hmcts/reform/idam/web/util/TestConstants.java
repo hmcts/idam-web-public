@@ -172,7 +172,7 @@ public class TestConstants {
 
     //Responses
     public static final String PASSWORD_BLACKLISTED_RESPONSE = "{\"code\":\"PASSWORD_BLACKLISTED\"}";
-    public static final String PASSWORD_CONTAINS_PERSONAL_INFO = "{\"code\":\"PASSWORD_CONTAINS_PERSONAL_INFO\"}";
+    public static final String PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE = "{\"code\":\"PASSWORD_CONTAINS_PERSONAL_INFO\"}";
     public static final String TOKEN_INVALID_RESPONSE = "{\"code\":\"TOKEN_INVALID\"}";
     public static final String RESET_PASSWORD_RESPONSE = "{\"" + REDIRECTURI + "\":\"" + REDIRECTURI + "\"}";
     public static final String HAS_LOGIN_FAILED_RESPONSE = "{\"code\":\"HAS_LOGIN_FAILED\"}";
