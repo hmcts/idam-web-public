@@ -69,6 +69,7 @@ public class PolicyService {
      * @should return BLOCK when any action returns false and attribute mfaRequired is not true
      * @should return BLOCK when any action returns false and attribute mfaRequired is true but there are other attributes
      * @should throw exception when response is not successful
+     * @should filter out internal ips from request
      */
     public EvaluatePoliciesAction evaluatePoliciesForUser(final String uri, final List<String> cookies, final String ipAddress) {
         final String applicationName = configurationProperties.getStrategic().getPolicies().getApplicationName();
@@ -80,13 +81,15 @@ public class PolicyService {
 
         final String userSsoToken = StringUtils.substringAfter(sessionCookie, "=");
 
+        final Pattern privateIpsFilterPattern = configurationProperties.getStrategic().getPolicies().getPrivateIpsFilterPattern();
+        final List<String> requestIp = sanitiseIpsFromRequestExcludingInternalIps(privateIpsFilterPattern, ipAddress);
         final EvaluatePoliciesRequest request = new EvaluatePoliciesRequest()
             .resources(singletonList(uri))
             .application(applicationName)
             .subject(new Subject().ssoToken(userSsoToken))
-            .environment(ImmutableMap.of("requestIp", sanitiseIpsFromRequest(ipAddress)));
+            .environment(ImmutableMap.of("requestIp", requestIp));
 
-        final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookies, userSsoToken, request, ipAddress);
+        final ResponseEntity<EvaluatePoliciesResponse> response = doEvaluatePolicies(cookies, request, ipAddress);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new HttpClientErrorException(response.getStatusCode(), ERROR_POLICY_CHECK_EXCEPTION);
@@ -97,14 +100,12 @@ public class PolicyService {
     }
 
     private ResponseEntity<EvaluatePoliciesResponse> doEvaluatePolicies(final List<String> cookies,
-                                                                        final String userSsoToken,
                                                                         final EvaluatePoliciesRequest request,
                                                                         final String ipAddress) {
         final HttpHeaders headers = new HttpHeaders();
         headers.add(X_FORWARDED_FOR, ipAddress);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.put(HttpHeaders.COOKIE, cookies);
-        headers.setBearerAuth(userSsoToken);
 
         final HttpEntity<EvaluatePoliciesRequest> httpEntity = new HttpEntity<>(request, headers);
         final String url = String.format("%s/%s",
@@ -147,7 +148,8 @@ public class PolicyService {
     }
 
     /**
-     * Sanitise and returns request ips in a list of strings
+     * Sanitise and returns first request ip in a list
+     *
      * Examples:
      * "1.1.1.1" => ["1.1.1.1"]
      * "51.140.12.192:59286" => ["51.140.12.192"]
@@ -155,9 +157,23 @@ public class PolicyService {
      * "2001:db8:85a3:8d3:1319:8a2e:370:7348" => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
      * "[2001:db8:85a3:8d3:1319:8a2e:370:7348]:1234" => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
      *
+     * Internal IPs Filter: "10.\d+\.\d+\.\d+"
+     * ["7.7.7.7"] => ["7.7.7.7"]
+     * ["10.0.0.0","7.7.7.7"] => ["7.7.7.7"]
+     * ["10.0.0.0","2001:db8:85a3:8d3:1319:8a2e:370:7348"] => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
+     * ["2001:db8:85a3:8d3:1319:8a2e:370:7348","7.7.7.7"] => ["2001:db8:85a3:8d3:1319:8a2e:370:7348"]
+     *
+     * This filter was created to workaround a bug in FR
+     * where FR selects a random IP from the list to validate against the policy
+     *
+     * Our idea is to filter out our proxy IPs and select the first IP from the list
+     * According to the spec, X-FORWARDED-FOR should have the client IP as the first IP on the list
+     * To be extra safe we will also filter out our private IPs (10.x.x.x) from the list
+     *
      * @should break multiple ips and remove port
+     * @should filter out internal IPs
      */
-    protected List<String> sanitiseIpsFromRequest(String ipAddress) {
+    protected List<String> sanitiseIpsFromRequestExcludingInternalIps(Pattern internalIpsPattern, String ipAddress) {
         if (ipAddress == null) {
             return null;
         }
@@ -177,6 +193,8 @@ public class PolicyService {
                 }
                 return s;
             })
+            .filter(s -> ofNullable(internalIpsPattern).map(p -> !p.matcher(s).matches()).orElse(true))
+            .limit(1)
             .collect(Collectors.toList());
     }
 
