@@ -114,7 +114,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.resetRequestInterception();
 });
 
-Scenario('@functional @resetpass Validation displayed when I try to reset my password with a blacklisted/invalid password', async (I) => {
+Scenario('@functional @resetpass @passwordvalidation Validation displayed when I try to reset my password with a blacklisted/invalid password', async (I) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -133,6 +133,18 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
     I.wait(2);
     I.see("Your password is too easy to guess");
+    I.fillField('password1', `${randomUserFirstName}Other6mKjmC`);
+    I.fillField('password2', `${randomUserFirstName}Other6mKjmC`);
+    I.click('Continue');
+    I.wait(2);
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.see("Do not include your name or email in your password");
+    I.fillField('password1', `${otherCitizenEmail}3ksTys`);
+    I.fillField('password2', `${otherCitizenEmail}3ksTys`);
+    I.click('Continue');
+    I.wait(2);
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.see("Do not include your name or email in your password");
     I.fillField('password1', 'passwordidamtest');
     I.fillField('password2', 'passwordidamtest');
     I.click('Continue');
@@ -159,6 +171,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.waitForText('Check your email', 20, 'h1');
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
+    I.wait(5);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', specialCharacterPassword);

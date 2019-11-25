@@ -216,3 +216,52 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.dontSee('error=');
     I.resetRequestInterception();
 });
+
+Scenario('@functional @selfregister @passwordvalidation Validation displayed when I try to create my password with a blacklisted/invalid password', async (I) => {
+
+    const email = 'test_citizen2.' + randomData.getRandomEmailAddress();
+
+    I.amOnPage(selfRegUrl);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+    I.see('Create an account');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', email);
+    I.click("Continue");
+    I.waitForText('Check your email', 20, 'h1');
+    const userActivationUrl = await I.extractUrl(email);
+    I.amOnPage(userActivationUrl);
+    I.waitForText('Create a password', 20, 'h1');
+    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.fillField('password1', 'Passw0rd');
+    I.fillField('password2', 'Passw0rd');
+    I.click('Continue');
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.wait(2);
+    I.see("Your password is too easy to guess");
+    I.fillField('password1', `${randomUserFirstName}Other6mKjmC`);
+    I.fillField('password2', `${randomUserFirstName}Other6mKjmC`);
+    I.click('Continue');
+    I.wait(2);
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.see("Do not include your name or email in your password");
+    I.fillField('password1', `${email}3ksTys`);
+    I.fillField('password2', `${email}3ksTys`);
+    I.click('Continue');
+    I.wait(2);
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.see("Do not include your name or email in your password");
+    I.fillField('password1', 'passwordidamtest');
+    I.fillField('password2', 'passwordidamtest');
+    I.click('Continue');
+    I.wait(2);
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.see('Your password didn\'t have all the required characters');
+    I.fillField('password1', 'Lincoln1');
+    I.fillField('password2', 'Lincoln1');
+    I.click('Continue');
+    I.wait(2);
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.see("Your password is too easy to guess");
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
