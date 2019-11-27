@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -280,17 +281,20 @@ public class AppController {
     }
 
     private String buildUrlFromTheBody(String responseBodyAsString) {
-        final String baselink = "/reset/forgotpassword";
         try {
             uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails request = mapper.readValue(
                 responseBodyAsString, uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails.class);
-            return baselink + "?redirectUri=" + nullToEmpty(request.getRedirectUri()) +
-                "&clientId=" + nullToEmpty(request.getClientId()) +
-                "&state=" + nullToEmpty(request.getState()) +
-                "&scope=" + nullToEmpty(request.getScope());
+            if (Strings.isNotEmpty(request.getRedirectUri())) {
+                return "/reset/forgotpassword?redirectUri=" + request.getRedirectUri() +
+                    "&clientId=" + nullToEmpty(request.getClientId()) +
+                    "&state=" + nullToEmpty(request.getState()) +
+                    "&scope=" + nullToEmpty(request.getScope());
+            }
         } catch (IOException ex) {
-            return baselink;
+            log.error("Failed to read returned ForgotPasswordDetails", ex);
+
         }
+        return "";
     }
 
     private String nullToEmpty(Object obj) {
