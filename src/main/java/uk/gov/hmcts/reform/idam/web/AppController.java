@@ -268,26 +268,22 @@ public class AppController {
      */
     @PostMapping(value = "/passwordReset")
     public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code, Model model) {
-        String nextPage = EXPIRED_PASSWORD_RESET_LINK_VIEW;
         try {
             spiService.validateResetPasswordToken(token, code);
-            nextPage = RESETPASSWORD_VIEW;
+            return RESETPASSWORD_VIEW;
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode().value() == 404)
-            {
+            if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
                 model.addAttribute("forgotPasswordLink", buildUrlFromTheBody(e.getResponseBodyAsString()));
             }
-        } catch (IOException e) {
-            //return expired password reset link view
         }
-        return nextPage;
+        return EXPIRED_PASSWORD_RESET_LINK_VIEW;
     }
 
     private String buildUrlFromTheBody(String responseBodyAsString) {
         final String baselink = "/reset/forgotpassword";
         try {
-            uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest request = mapper.readValue(
-                responseBodyAsString, uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest.class);
+            uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails request = mapper.readValue(
+                responseBodyAsString, uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails.class);
             return baselink + "?redirectUri=" + nullToEmpty(request.getRedirectUri()) +
                 "&clientId=" + nullToEmpty(request.getClientId()) +
                 "&state=" + nullToEmpty(request.getState()) +
@@ -298,7 +294,7 @@ public class AppController {
     }
 
     private String nullToEmpty(Object obj) {
-        return obj == null ? "" : obj.toString();
+        return Objects.toString(obj, "");
     }
 
 

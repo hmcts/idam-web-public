@@ -22,7 +22,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
-import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
@@ -843,7 +843,7 @@ public class AppControllerTest {
      */
     @Test
     public void passwordReset_shouldRedirectToTokenExpiredPageIfTokenIsExpired() throws Exception {
-        byte[] body = new ObjectMapper().writeValueAsBytes(new ForgotPasswordRequest().redirectUri("1234"));
+        byte[] body = new ObjectMapper().writeValueAsBytes(new ForgotPasswordDetails().redirectUri("1234"));
         given(spiService.validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE))
             .willThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "", null, body, StandardCharsets.UTF_8));
 

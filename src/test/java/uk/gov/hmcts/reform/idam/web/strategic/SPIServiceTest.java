@@ -24,7 +24,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
-import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
@@ -286,10 +286,10 @@ public class SPIServiceTest {
         spiService.forgetPassword(USER_EMAIL, SERVICE_OAUTH2_REDIRECT_URI, CLIENT_ID);
         Thread.sleep(1000); // hack to get around CompletableFuture.supplyAsync()
 
-        ArgumentCaptor<HttpEntity<ForgotPasswordRequest>> captor = ArgumentCaptor.forClass(HttpEntity.class);
+        ArgumentCaptor<HttpEntity<ForgotPasswordDetails>> captor = ArgumentCaptor.forClass(HttpEntity.class);
         verify(restTemplate).exchange(eq(FORGOT_PASSWORD_URI), eq(HttpMethod.POST), captor.capture(), eq(String.class));
 
-        HttpEntity<ForgotPasswordRequest> actualRequest = captor.getValue();
+        HttpEntity<ForgotPasswordDetails> actualRequest = captor.getValue();
 
         assertEquals(USER_EMAIL, actualRequest.getBody().getEmail());
         assertEquals(SERVICE_OAUTH2_REDIRECT_URI, actualRequest.getBody().getRedirectUri());
@@ -477,11 +477,11 @@ public class SPIServiceTest {
     @Test
     public void validateResetPasswordToken_shouldCallApiWithTheCorrectData() throws Exception {
         given(configurationProperties.getStrategic().getEndpoint().getValidateResetPasswordToken()).willReturn(VALIDATE_RESET_PASSWORD_ENDPOINT);
-        given(restTemplate.exchange(eq(API_URL + SLASH + VALIDATE_RESET_PASSWORD_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class))).willReturn(ResponseEntity.ok().build());
+        given(restTemplate.exchange(eq(API_URL + SLASH + VALIDATE_RESET_PASSWORD_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.ok().build());
 
         spiService.validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE);
 
-        verify(restTemplate).exchange(eq(API_URL + SLASH + VALIDATE_RESET_PASSWORD_ENDPOINT), eq(HttpMethod.POST), captor.capture(), eq(Object.class));
+        verify(restTemplate).exchange(eq(API_URL + SLASH + VALIDATE_RESET_PASSWORD_ENDPOINT), eq(HttpMethod.POST), captor.capture(), eq(String.class));
 
         HttpEntity<Void> entity = (HttpEntity<Void>) captor.getValue();
 
