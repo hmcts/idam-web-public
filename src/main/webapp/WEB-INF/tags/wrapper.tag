@@ -121,9 +121,12 @@
             <p>
                 <strong class="phase-tag"><spring:message code="public.template.header.phase.tag" /></strong>
                 <span>
+                    <c:set var="smartSurveyParam">
+                        ${pageContext.request.scheme}://${pageContext.request.serverName}${requestScope['javax.servlet.forward.request_uri']}${empty param.client_id ? '' : '?client_id='}${param.client_id}
+                    </c:set>
                     <c:set var="smartSurveyUrl">
                         <spring:url value="https://www.smartsurvey.co.uk/s/IDAMSurvey/">
-                            <spring:param name="pageurl" value="${pageContext.request.requestURL}${empty pageContext.request.queryString ? '' : '?'}${pageContext.request.queryString}" />
+                            <spring:param name="pageurl" value="${smartSurveyParam}" />
                         </spring:url>
                     </c:set>
                     <spring:message
