@@ -9,9 +9,6 @@
 <t:wrapper titleKey="public.uplift.user.title">
     <article class="content__body">
         <c:set var="hasError" value="${error != null}" />
-        <c:set var="isFirstNameEmpty" value="${param['firstName'] == ''}" />
-        <c:set var="isLastNameEmpty" value="${param['lastName'] == ''}" />
-        <c:set var="isUsernameEmpty" value="${param['username'] == ''}" />
 
         <spring:hasBindErrors name="registerUserCommand">
             <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
@@ -20,21 +17,48 @@
                 </h2>
                 <p>${errorMessage}</p>
                 <ul class="error-summary-list">
-                    <c:forEach var="error" items="${errors.fieldErrors}">
+                    <c:if test="${not empty errors.getFieldError('firstName')}">
                         <li>
-                            <a href="#${error.field}">
-                                <c:if test="${error.field != 'username' or (error.field == 'username' && !isUsernameEmpty)}">
-                                    <script>
-                                        sendEvent('Uplift Registration', 'Error', 'An error occurred for uplift registration');
-                                    </script>
-                                    <spring:message message="${error}" />
-                                </c:if>
-                                <c:if test="${error.field == 'username' && isUsernameEmpty}">
-                                    <spring:message code="public.common.error.enter.username" />
-                                </c:if>
+                            <a href="#${errors.getFieldError('firstName').field}">
+                                <c:choose>
+                                    <c:when test="${empty errors.getFieldError('firstName').rejectedValue}">
+                                        <spring:message code="public.common.error.empty.first.name" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <spring:message code="public.common.error.invalid.first.name"/>
+                                    </c:otherwise>
+                                </c:choose>
                             </a>
                         </li>
-                    </c:forEach>
+                    </c:if>
+                    <c:if test="${not empty errors.getFieldError('lastName')}">
+                        <li>
+                            <a href="#${errors.getFieldError('lastName').field}">
+                                <c:choose>
+                                    <c:when test="${empty errors.getFieldError('lastName').rejectedValue}">
+                                        <spring:message code="public.common.error.empty.last.name" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <spring:message code="public.common.error.invalid.last.name"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </a>
+                        </li>
+                    </c:if>
+                    <c:if test="${not empty errors.getFieldError('username')}">
+                        <li>
+                            <a href="#${errors.getFieldError('username').field}">
+                                <c:choose>
+                                    <c:when test="${empty errors.getFieldError('username').rejectedValue}">
+                                        <spring:message code="public.common.error.enter.username" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <spring:message code="public.common.error.invalid.username"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </a>
+                        </li>
+                    </c:if>
                 </ul>
             </div>
         </spring:hasBindErrors>
@@ -51,51 +75,81 @@
 
                     <h2 class="heading-medium"><spring:message code="public.uplift.user.body" /></h2>
 
-                    <div class="form-group ${isFirstNameEmpty? 'form-group-error' : ''}">
-                        <label for="firstName">
-                            <span class="form-label-bold"><spring:message code="public.uplift.user.first.name.label" /></span>
-                            <c:if test="${isFirstNameEmpty}">
-                                <script>
-                                    sendEvent('Uplift Registration', 'Error', 'First name is empty');
-                                </script>
-                                <span class="error-message"><spring:message code="public.common.error.empty.first.name" /></span>
-                            </c:if>
-                        </label>
-                        <input class="form-control form-control-3-4 ${isFirstNameEmpty? 'form-control-error' : ''}" type="text" id="firstName" name="firstName" value="${fn:escapeXml(param['firstName'])}" autocomplete="off">
-                    </div>
+                    <spring:bind path="firstName">
+                        <div class="form-group ${status.error ? 'form-group-error' : ''}">
+                            <label for="firstName">
+                                <span class="form-label-bold"><spring:message code="public.self.register.first.name.label"/></span>
+                                <c:if test="${status.error}">
+                                        <span class="error-message">
+                                            <ul>
+                                                <c:forEach var="error" items="${status.errorCodes}">
+                                                    <li><spring:message code="${error}${'.selfRegisterCommand.firstName'}"></spring:message></li>
+                                                    <script>
+                                                        sendEvent('Uplift Registration', 'Error', 'First name error code: ${status.errorCode}');
+                                                    </script>
+                                                </c:forEach>
+                                            </ul>
+                                        </span>
+                                </c:if>
+                            </label>
+                            <form:input
+                                path="firstName"
+                                class="form-control form-control-3-4 ${status.error ? 'form-control-error' : ''}"
+                                id="firstName"
+                                value="${firstName}"
+                                autocomplete="off"/>
+                        </div>
+                    </spring:bind>
 
-                    <div class="form-group ${isLastNameEmpty? 'form-group-error' : ''}">
-                        <label for="lastName">
-                            <span class="form-label-bold"><spring:message code="public.uplift.user.last.name.label" /></span>
-                            <c:if test="${isLastNameEmpty}">
-                                <script>
-                                    sendEvent('Uplift Registration', 'Error', 'Last name is empty');
-                                </script>
-                                <span class="error-message"><spring:message code="public.common.error.empty.last.name" /></span>
-                            </c:if>
-                        </label>
-                        <input class="form-control form-control-3-4 ${isLastNameEmpty? 'form-control-error' : ''}" type="text" id="lastName" name="lastName" value="${fn:escapeXml(param['lastName'])}" autocomplete="off">
-                    </div>
+                    <spring:bind path="lastName">
+                        <div class="form-group ${status.error ? 'form-group-error' : ''}">
+                            <label for="lastName">
+                                <span class="form-label-bold"><spring:message code="public.self.register.last.name.label"/></span>
+                                <c:if test="${status.error}">
+                                        <span class="error-message">
+                                            <ul>
+                                                <c:forEach var="error" items="${status.errorCodes}">
+                                                    <li><spring:message code="${error}${'.selfRegisterCommand.lastName'}"></spring:message></li>
+                                                    <script>
+                                                        sendEvent('Uplift Registration', 'Error', 'Last name error code: ${status.errorCode}');
+                                                    </script>
+                                                </c:forEach>
+                                            </ul>
+                                        </span>
+                                </c:if>
+                            </label>
+                            <form:input
+                                path="lastName"
+                                class="form-control form-control-3-4 ${status.error ? 'form-control-error' : ''}"
+                                id="lastName"
+                                value="${lastName}"
+                                autocomplete="off"/>
+                        </div>
+                    </spring:bind>
 
                     <spring:bind path="username">
-                        <div class="form-group ${status.error? 'form-group-error' : ''}">
-
+                        <div class="form-group ${status.error ? 'form-group-error' : ''}">
                             <label for="username">
-                                <span class="form-label-bold"><spring:message code="public.uplift.user.email.address.label" /></span>
-                                <c:if test="${isUsernameEmpty}">
+                                <span class="form-label-bold"><spring:message code="public.common.email.address.label"/></span>
+                                <c:if test="${status.error && not empty status.value}">
+                                    <script>
+                                        sendEvent('Uplift Registration', 'Error', 'Invalid email address');
+                                    </script>
+                                    <span class="error-message"><spring:message code="public.common.error.invalid.email"/></span>
+                                </c:if>
+                                <c:if test="${status.error && empty status.value}">
                                     <script>
                                         sendEvent('Uplift Registration', 'Error', 'Email address is empty');
                                     </script>
-                                    <span class="error-message"><spring:message code="public.common.error.empty.email" /></span>
-                                </c:if>
-                                <c:if test="${!isUsernameEmpty && status.error}">
-                                    <script>
-                                        sendEvent('Uplift Registration', 'Error', 'Email address is invalid');
-                                    </script>
-                                    <span class="error-message"><spring:message code="public.common.error.invalid.email" /></span>
+                                    <span class="error-message"><spring:message code="public.common.error.empty.email"/></span>
                                 </c:if>
                             </label>
-                            <input class="form-control form-control-3-4 ${status.error? 'form-control-error' : ''}" type="email" id="username" name="username" value="${fn:escapeXml(param['username'])}" autocomplete="off">
+                            <form:input
+                                path="username"
+                                class="form-control form-control-3-4 ${status.error ? 'form-control-error' : ''}"
+                                id="username"
+                                value="${username}"
+                                autocomplete="off"/>
                         </div>
                     </spring:bind>
 

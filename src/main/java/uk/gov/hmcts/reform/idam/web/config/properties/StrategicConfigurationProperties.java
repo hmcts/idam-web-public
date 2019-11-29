@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
 
+import java.util.regex.Pattern;
 
 @ConfigurationProperties(prefix = "strategic")
 @Data
@@ -11,12 +12,13 @@ public class StrategicConfigurationProperties {
 
     private ServiceConfigurationProperties service;
     private EndpointConfigurationProperties endpoint;
-
+    private Policies policies;
+    private Session session;
 
     @Data
     public static class ServiceConfigurationProperties {
-
         private String url;
+        private String oidcprefix;
     }
 
     @Data
@@ -39,5 +41,18 @@ public class StrategicConfigurationProperties {
         private String details;
         private String services;
         private String health;
+        private String evaluatePolicies;
+    }
+
+    @Data
+    public static class Policies {
+        private String applicationName;
+        private Pattern privateIpsFilterPattern;
+    }
+
+    @Data
+    public static class Session {
+        private String idamSessionCookie;
+        private String affinityCookie;
     }
 }

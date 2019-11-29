@@ -1,5 +1,26 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
+import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
+import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
+
+import java.util.Map;
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,8 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ALREADY_ACTIVATED_KEY;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BASE64_ENC_FORM_DATA;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
@@ -31,7 +52,8 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_PASSWORD_DET
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_TITLE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_TOKEN_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_ACTIVATION_TOKEN_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORM_DATA;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
@@ -66,28 +88,6 @@ import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getActivationResult;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterPostRequest;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getService;
 
-import java.util.Map;
-import java.util.Optional;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
-import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
-import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
-import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
-import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
-
 @RunWith(SpringRunner.class)
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
@@ -108,6 +108,26 @@ public class UserControllerTest {
      */
     @Test
     public void userActivation_shouldReturnExpiredtokenViewAndHaveRedirect_uriAttributeInModelIfTokenExpired() throws Exception {
+        ActivationResult activationResult = getActivationResult("", GOOGLE_WEB_ADDRESS, CLIENT_ID_PARAMETER);
+        given(spiService.validateActivationToken(ArgumentMatchers.any())).willReturn(ResponseEntity.ok(activationResult));
+
+        mockMvc.perform(get(VALIDATE_TOKEN_ENDPOINT)
+            .param(TOKEN_PARAMETER, USER_ACTIVATION_TOKEN)
+            .param(CODE_PARAMETER, USER_ACTIVATION_CODE))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(REDIRECT_URI, "/users/selfRegister?redirect_uri=" + GOOGLE_WEB_ADDRESS +
+                "&client_id=" + CLIENT_ID_PARAMETER))
+            .andExpect(view().name(EXPIRED_ACTIVATION_TOKEN_VIEW_NAME));
+
+    }
+
+    /**
+     * @verifies return useractivation view and no redirect_uri attribute in model if the token is valid
+     * @see UserController#userActivation(String, String, java.util.Map)
+     */
+    @Test
+    public void userActivation_shouldReturnUseractivationViewAndNoRedirect_uriAttributeInModelIfTheTokenIsValid() throws Exception {
         given(spiService.validateActivationToken(ArgumentMatchers.any())).willReturn(new ResponseEntity<>(HttpStatus.OK));
 
         mockMvc.perform(get(VALIDATE_TOKEN_ENDPOINT)
@@ -117,24 +137,6 @@ public class UserControllerTest {
             .andExpect(status().isOk())
             .andExpect(model().attribute(REDIRECT_URI, nullValue()))
             .andExpect(view().name(USER_ACTIVATION_VIEW_NAME));
-    }
-
-    /**
-     * @verifies return useractivation view and no redirect_uri attribute in model if the token is valid
-     * @see UserController#userActivation(String, String, java.util.Map)
-     */
-    @Test
-    public void userActivation_shouldReturnUseractivationViewAndNoRedirect_uriAttributeInModelIfTheTokenIsValid() throws Exception {
-        ActivationResult activationResult = getActivationResult("", GOOGLE_WEB_ADDRESS);
-        given(spiService.validateActivationToken(ArgumentMatchers.any())).willReturn(ResponseEntity.ok(activationResult));
-
-        mockMvc.perform(get(VALIDATE_TOKEN_ENDPOINT)
-            .param(TOKEN_PARAMETER, USER_ACTIVATION_TOKEN)
-            .param(CODE_PARAMETER, USER_ACTIVATION_CODE))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(model().attribute(REDIRECT_URI, GOOGLE_WEB_ADDRESS))
-            .andExpect(view().name(EXPIRED_TOKEN_VIEW_NAME));
     }
 
     /**
@@ -179,7 +181,7 @@ public class UserControllerTest {
      */
     @Test
     public void selfRegisterUser_shouldReturnSelfRegisterViewIfRequestMandatoryFieldsValidationFails() throws Exception {
-        mockMvc.perform(getSelfRegisterPostRequest(USER_EMAIL, USER_FIRST_NAME, null))
+        mockMvc.perform(getSelfRegisterPostRequest(USER_EMAIL, USER_FIRST_NAME, ""))
             .andExpect(status().isOk())
             .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
     }
@@ -374,7 +376,7 @@ public class UserControllerTest {
 
     /**
      * @verifies call spi service with correct parameter then return selfRegister view and  have redirect_uri, selfRegisterCommand, client_id attributes in model if self registration is allowed for service
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldCallSpiServiceWithCorrectParameterThenReturnSelfRegisterViewAndHaveRedirect_uriSelfRegisterCommandClient_idAttributesInModelIfSelfRegistrationIsAllowedForService() throws Exception {
@@ -397,7 +399,7 @@ public class UserControllerTest {
 
     /**
      * @verifies return 404 view if clientId or redirectUri are missing
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldReturn404ViewIfClientIdOrRedirectUriAreMissing() throws Exception {
@@ -410,7 +412,7 @@ public class UserControllerTest {
 
     /**
      * @verifies return generic error with generic error message if an exception is thrown
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldReturnGenericErrorWithGenericErrorMessageIfAnExceptionIsThrown() throws Exception {
@@ -427,7 +429,7 @@ public class UserControllerTest {
 
     /**
      * @verifies return 404 view if service is empty
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldReturn404ViewIfServiceIsEmpty() throws Exception {
@@ -443,7 +445,7 @@ public class UserControllerTest {
 
     /**
      * @verifies return 404 view if self registration is not allowed
-     * @see UserController#selfRegister(String, String, String, org.springframework.ui.Model)
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
      */
     @Test
     public void selfRegister_shouldReturn404ViewIfSelfRegistrationIsNotAllowed() throws Exception {
@@ -455,5 +457,37 @@ public class UserControllerTest {
             .param(STATE_PARAMETER, STATE))
             .andExpect(status().isOk())
             .andExpect(view().name(NOT_FOUND_VIEW));
+    }
+
+    /**
+     * @verifies populate the model with the users details if called with a valid form_data param
+     * @see UserController#selfRegister(String, String, String, String, String, org.springframework.ui.Model)
+     */
+    @Test
+    public void selfRegister_shouldPopulateTheModelWithTheUsersDetailsIfCalledWithAValidForm_dataParam() throws Exception {
+        given(spiService.getServiceByClientId(eq(SERVICE_CLIENT_ID)))
+            .willReturn(Optional.of(getService(SERVICE_LABEL, SERVICE_CLIENT_ID, true)));
+
+        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
+            .param(FORM_DATA, BASE64_ENC_FORM_DATA)
+            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
+            .param(CLIENT_ID_PARAMETER, SERVICE_CLIENT_ID)
+            .param(STATE_PARAMETER, STATE))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute("firstName", "John"))
+            .andExpect(model().attribute("lastName", "Doe"))
+            .andExpect(model().attribute("email", "john.doe@email.com"))
+            .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
+
+        mockMvc.perform(get(SELF_REGISTER_ENDPOINT)
+            .param(FORM_DATA, "1234567890")
+            .param(REDIRECT_URI, GOOGLE_WEB_ADDRESS)
+            .param(CLIENT_ID_PARAMETER, SERVICE_CLIENT_ID)
+            .param(STATE_PARAMETER, STATE))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute("firstName", nullValue()))
+            .andExpect(model().attribute("lastName", nullValue()))
+            .andExpect(model().attribute("email", nullValue()))
+            .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
     }
 }

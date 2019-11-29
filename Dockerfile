@@ -16,6 +16,6 @@ ADD --chown=hmcts:hmcts build/libs/idam-web-public.war \
                         lib/AI-Agent.xml \
                         lib/applicationinsights-agent-2.4.0.jar /opt/app/
 
-CMD ["idam-web-public.war"]
+CMD ["-Dspring.profiles.active=docker,local", "idam-web-public.war"]
 
 EXPOSE 8080/tcp

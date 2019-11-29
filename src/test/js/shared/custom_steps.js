@@ -1,10 +1,10 @@
-var TestData = require('../config/test_data');
+const TestData = require('../config/test_data');
 
 module.exports = function() {
   return actor({
 
     lockAccount: function (email, serviceName) {
-        var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=https://idam.testservice.gov.uk&client_id=' + serviceName + '&state=';
+        const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
 
         // First
         this.amOnPage(loginPage + 'attemptone');

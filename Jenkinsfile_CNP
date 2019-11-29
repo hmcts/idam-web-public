@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@SIDM_increase_FuncTest_timout")
 
 def type = "java"
 
@@ -14,9 +14,10 @@ env.DEMO_ENVIRONMENT_NAME = 'idam-demo'
 env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
 env.PERFTEST_ENVIRONMENT_NAME = 'idam-perftest'
 env.ITHC_ENVIRONMENT_NAME = 'idam-ithc'
+env.NO_SKIP_IMG_BUILD = 'true'
 
 def secrets = [
-    'idam-idam-${env}': [
+    'idam-${env}': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY')
@@ -27,15 +28,71 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     [$class     : 'AzureKeyVaultSecret',
      secretType : 'Secret',
      name       : secretName,
-     version    : '',
+     version    : '',   
      envVariable: envVar
     ]
 }
 
 withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
+    enableDockerBuild()
     enableSlackNotifications('#idam_tech')
+    installCharts()
 
+    // AKS Callbacks
+    before('akschartsinstall') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'preview'
+        println """\
+                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
+    }
+    
+    before('smoketest-aks:idam-preview') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
+        env.NONPROD_ENVIRONMENT_NAME = 'preview'
+        env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
+        println """\
+                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+    }
+
+    before('functionalTest-aks:idam-preview') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'preview'
+        env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
+        println """\
+                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+    }
+
+    after('akschartsinstall') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+        println """\
+                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
+    }
+    
+    after('smoketest-aks:idam-preview') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+        println """\
+                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
+    }
+
+    after('functionalTest-aks:idam-preview') {
+        env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+        env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+        println """\
+                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
+    }
+    // End AKS Callbacks
+    
     after('test') {
         publishHTML target: [
             allowMissing         : true,

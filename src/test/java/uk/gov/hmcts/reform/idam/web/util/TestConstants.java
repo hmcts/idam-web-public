@@ -29,6 +29,7 @@ public class TestConstants {
     public static final String API_LOGIN_UPLIFT_ENDPOINT = "/login/uplift";
     public static final String ACTIVATE_USER_ENDPOINT = "/users/activate";
     public static final String LOGIN_ENDPOINT = "/login";
+    public static final String VERIFICATION_ENDPOINT = "/verification";
     public static final String EXPIRED_TOKEN_ENDPOINT = "/expiredtoken";
     public static final String LOGIN_PIN_ENDPOINT = "/login/pin";
     public static final String LOGOUT_ENDPOINT = "/logout";
@@ -48,6 +49,7 @@ public class TestConstants {
     //uris
     public static final String GOOGLE_WEB_ADDRESS = "https://www.google.com";
     public static final String REDIRECT_URI = "redirect_uri";
+    public static final String FORM_DATA = "form_data";
     public static final String SERVICE_OAUTH2_REDIRECT_URI = "https://cmc.reform.hmcts.net/start";
     public static final String API_URL = "http://api.reform.hmcts.net";
     public static final String SELF_REGISTRATION_URL = String.format("%s/%s?jwt=%s", API_URL, USERS_SELF_ENDPOINT, JWT);
@@ -58,7 +60,8 @@ public class TestConstants {
     //Views
     public static final String USERS_VIEW_NAME = "users";
     public static final String SELF_REGISTER_VIEW_NAME = "selfRegister";
-    public static final String EXPIRED_TOKEN_VIEW_NAME = "expiredtoken";
+    public static final String EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME = "expiredPasswordResetLink";
+    public static final String EXPIRED_ACTIVATION_TOKEN_VIEW_NAME = "expiredActivationLink";
     public static final String USER_ACTIVATION_VIEW_NAME = "useractivation";
     public static final String USER_ACTIVATED_VIEW_NAME = "useractivated";
     public static final String ERROR_VIEW_NAME = "errorpage";
@@ -88,6 +91,7 @@ public class TestConstants {
     public static final String PASSWORD_ONE = "password1";
     public static final String PASSWORD_TWO = "password2";
     public static final String USER_NAME = "userName";
+    public static final String BASE64_ENC_FORM_DATA = "ewogICJmaXJzdE5hbWUiOiAiSm9obiIsCiAgImxhc3ROYW1lIjogIkRvZSIsCiAgImVtYWlsIjogImpvaG4uZG9lQGVtYWlsLmNvbSIKfQ==";
 
 
     //Service
@@ -96,6 +100,8 @@ public class TestConstants {
 
 
     //Parameters
+    public static final String IDAM_SESSION_COOKIE_NAME = "Idam.Session";
+    public static final String ARR_COOKIE_NAME = "ARRAffinity";
     public static final String ACTION_PARAMETER = "action";
     public static final String TOKEN_PARAMETER = "token";
     public static final String CODE_PARAMETER = "code";
@@ -159,7 +165,9 @@ public class TestConstants {
     public static final String CLIENT_ID = "clientId";
     public static final String REDIRECTURI = "redirectUri";
     public static final String CUSTOM_SCOPE = "manage-roles";
-    public static final String AUTHENTICATE_SESSION_COOKE = "Idam.Session=A_TASTY_TREAT; Path=/; Secure; HttpOnly";
+    public static final String INSECURE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT";
+    public static final String AUTHENTICATE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT; Path=/; Secure; HttpOnly";
+    public static final String AFFINITY_COOKIE = ARR_COOKIE_NAME + "=COOKIE_AFFINITY_IS_A_FAT_TIME";
 
     //Responses
     public static final String PASSWORD_BLACKLISTED_RESPONSE = "{\"code\":\"PASSWORD_BLACKLISTED\"}";

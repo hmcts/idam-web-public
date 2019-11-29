@@ -26,4 +26,8 @@ public class AuthorizeRequest {
     private String scope;
 
     private boolean selfRegistrationEnabled;
+
+    private String code;
+
+    private boolean hasOtpCheckFailed;
 }

@@ -1,5 +1,5 @@
 let Helper = codecept_helper;
-var TestData = require('../config/test_data');
+const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
 
 let agentToUse;
@@ -7,6 +7,8 @@ if (process.env.PROXY_SERVER) {
     console.log('using proxy agent: ' + process.env.PROXY_SERVER);
     const HttpsProxyAgent = require('https-proxy-agent');
     agentToUse = new HttpsProxyAgent(process.env.PROXY_SERVER);
+} else if (process.env.LOCAL_TEST_SERVER) {
+    // default agent
 } else {
     console.log('using real agent');
     const Https = require('https');
@@ -29,7 +31,7 @@ const URLSearchParams = require('url').URLSearchParams;
 class IdamHelper extends Helper {
 
     async createServiceData(serviceName) {
-        let token = await this.getAuthToken();
+        const token = await this.getAuthToken();
         this.createService(serviceName, '', token);
     }
 
@@ -52,8 +54,13 @@ class IdamHelper extends Helper {
         return Buffer.from(email_address + ":" + password).toString('base64')
     }
 
+    getBase64FromJsonObject(jsonObject) {
+        console.log("BASE64-ENCODED " + Buffer.from(jsonObject).toString('base64'))
+        return Buffer.from(jsonObject).toString('base64')
+    }
+
     getAuthorizeCode(serviceName, serviceRedirect, oauth2Scope, base64) {
-        var searchParams = new URLSearchParams();
+        let searchParams = new URLSearchParams();
         searchParams.set('response_type', 'code');
         searchParams.set('client_id', serviceName);
         searchParams.set('redirect_uri', serviceRedirect);
@@ -84,12 +91,12 @@ class IdamHelper extends Helper {
                 label: serviceName,
                 description: serviceName,
                 oauth2ClientId: serviceName,
-                oauth2ClientSecret: 'autotestingservice',
-                oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+                oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+                oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
                 oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
-                activationRedirectUrl: "https://idam.testservice.gov.uk",
+                activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
                 selfRegistrationAllowed: true
             };
         } else {
@@ -97,13 +104,13 @@ class IdamHelper extends Helper {
                 label: serviceName,
                 description: serviceName,
                 oauth2ClientId: serviceName,
-                oauth2ClientSecret: 'autotestingservice',
-                oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+                oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+                oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
                 oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 allowedRoles: [roleId, 'auto-admin_role'],
-                activationRedirectUrl: "https://idam.testservice.gov.uk",
+                activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
                 selfRegistrationAllowed: true
             };
         }
@@ -127,13 +134,13 @@ class IdamHelper extends Helper {
             label: serviceName,
             description: serviceName,
             oauth2ClientId: serviceName,
-            oauth2ClientSecret: 'autotestingservice',
-            oauth2RedirectUris: ['https://idam.testservice.gov.uk'],
+            oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+            oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
             oauth2Scope: scope,
             onboardingEndpoint: '/autotest',
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
-            activationRedirectUrl: "https://idam.testservice.gov.uk",
+            activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
             selfRegistrationAllowed: true
         };
         return fetch(`${TestData.IDAM_API}/services`, {
@@ -214,16 +221,12 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    generateRandomText() {
-        return Math.random().toString(36).substr(2, 5);
-    }
-
     createUser(email, forename, role, serviceRole) {
         console.log('Creating user with email: ', email);
         const data = {
             email: email,
             forename: forename,
-            password: 'Passw0rdIDAM',
+            password: TestData.PASSWORD,
             roles: [{code: role}, {code: serviceRole}],
             surname: 'User',
             userGroup: {code: 'xxx_private_beta'},
@@ -241,14 +244,11 @@ class IdamHelper extends Helper {
     }
 
     createUserWithRoles(email, forename, userRoles) {
-        var codeUserRoles = [];
-        for (var i = 0; i < userRoles.length; i++) {
-            codeUserRoles.push({'code': userRoles[i]});
-        }
+        const codeUserRoles = userRoles.map(role => ({'code': role}));
         const data = {
             email: email,
             forename: forename,
-            password: 'Passw0rdIDAM',
+            password: TestData.PASSWORD,
             roles: codeUserRoles,
             surname: 'User',
             userGroup: {code: 'xxx_private_beta'}
@@ -265,10 +265,169 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
+    createPolicyToBlockUser(name, userEmail, api_auth_token) {
+        const data = {
+            "name": name,
+            "applicationName": "TestHmctsPolicySet",
+            "description": "Blocks specific user",
+            "active": true,
+            "actionValues": {
+                "GET": false,
+                "POST": false,
+                "DELETE": false,
+                "PATCH": false,
+                "PUT": false,
+                "OPTIONS": false,
+                "HEAD": false
+            },
+            "resourceTypeUuid": "HmctsUrlResourceType",
+            "resources": [
+                "*://*",
+                "*://*:*/*",
+                "*://*:*/*?*",
+                "*://*?*"
+            ],
+            "subject": {
+                "type": "AND",
+                "subjects": [
+                    {
+                        "type": "Identity",
+                        "subjectValues": [
+                            `id=${userEmail},ou=user,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
+                        ]
+                    }
+                ]
+            }
+        };
+        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        })
+            .then(res => res.json())
+            .catch(err => err);
+    }
+
+    createPolicyForMfaTest(name, roleName, api_auth_token) {
+        const data = {
+            "name": name,
+            "applicationName": "TestHmctsPolicySet",
+            "description": "Require MFA for test user",
+            "active": true,
+            "actionValues": {
+                "GET": false,
+                "POST": false,
+                "DELETE": false,
+                "PATCH": false,
+                "PUT": false,
+                "OPTIONS": false,
+                "HEAD": false
+            },
+            "resourceTypeUuid": "HmctsUrlResourceType",
+            "resources": [
+                "*://*",
+                "*://*:*/*",
+                "*://*:*/*?*",
+                "*://*?*"
+            ],
+            "resourceAttributes": [{
+                "type": "Static",
+                "propertyName": "mfaRequired",
+                "propertyValues": ["true"]
+            }],
+            "subject": {
+                "type": "Identity",
+                "subjectValues": [
+                    `id=${roleName},ou=group,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
+                ]
+            },
+            "condition": {
+                "type": "NOT",
+                "condition": {
+                    "type": "AuthLevel",
+                    "authLevel": 1
+                }
+            }
+        };
+        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        })
+            .then(res => res.json())
+            .catch(err => err);
+    }
+
+    createPolicyForMfaBlockTest(name, roleName, api_auth_token) {
+        const data = {
+            "name": name,
+            "applicationName": "TestHmctsPolicySet",
+            "description": "Require MFA for test user",
+            "active": true,
+            "actionValues": {
+                "GET": false,
+                "POST": false,
+                "DELETE": false,
+                "PATCH": false,
+                "PUT": false,
+                "OPTIONS": false,
+                "HEAD": false
+            },
+            "resourceTypeUuid": "HmctsUrlResourceType",
+            "resources": [
+                "*://*",
+                "*://*:*/*",
+                "*://*:*/*?*",
+                "*://*?*"
+            ],
+            "resourceAttributes": [{
+                "type": "Static",
+                "propertyName": "blocked",
+                "propertyValues": ["true"]
+            }],
+            "subject": {
+                "type": "Identity",
+                "subjectValues": [
+                    `id=${roleName},ou=group,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
+                ]
+            },
+            "condition": {
+                "type": "NOT",
+                "condition": {
+                    "type": "IPv4",
+                    "startIp": "0.0.0.1",
+                    "endIp": "0.0.0.10",
+                    "ipRange": [],
+                    "dnsName": []
+                }
+            }
+        };
+        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        })
+            .then(res => res.json())
+            .catch(err => err);
+    }
+
+    deletePolicy(name, api_auth_token) {
+        return fetch(`${TestData.IDAM_API}/api/v1/policies/${name}`, {
+            agent: agent,
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        })
+            .then(res => res.json())
+            .catch(err => err);
+    }
+
     getEmail(searchEmail) {
         return (
             notifyClient
-                .getNotifications("email", "sending")
+                .getNotifications("email", null)
                 .then(response => {
                     console.log("Searching " + response.body.notifications.length + " emails(s) from sending queue");
                     return this.searchForEmailInResults(response.body.notifications, searchEmail);
@@ -297,12 +456,12 @@ class IdamHelper extends Helper {
     }
 
     async extractUrl(searchEmail) {
-        let emailResponse = await this.getEmail(searchEmail);
+        const emailResponse = await this.getEmail(searchEmail);
         return this.extractUrlFromBody(emailResponse);
     }
 
     searchForEmailInResults(notifications, searchEmail) {
-        var result = notifications.find(currentItem => {
+        const result = notifications.find(currentItem => {
             // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
             if (currentItem.email_address === searchEmail) {
                 return true;
@@ -314,10 +473,21 @@ class IdamHelper extends Helper {
 
     extractUrlFromBody(emailResponse) {
         if (emailResponse) {
-            var regex = "(https.+)"
-            var url = emailResponse.body.match(regex);
+            const regex = "(https.+)"
+            const url = emailResponse.body.match(regex);
             if (url[0]) {
                 return url[0].replace(/https:\/\/idam-web-public\..+?\.platform\.hmcts\.net/i, TestData.WEB_PUBLIC_URL);
+            }
+        }
+    }
+
+    async extractOtpFromEmail(searchEmail) {
+        const emailResponse = await this.getEmail(searchEmail);
+        if(emailResponse) {
+            const regex = "[0-9]{8}";
+            const url = emailResponse.body.match(regex);
+            if (url[0]) {
+                return url[0];
             }
         }
     }
@@ -332,7 +502,7 @@ class IdamHelper extends Helper {
         const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
         helper.page.on('request', request => {
-            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0 || request.url().indexOf('/activate') > 0) {
+            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0 || request.url().indexOf('/activate') > 0 || request.url().indexOf('/verification') > 0) {
                 request.continue();
             } else {
                 request.respond({
@@ -377,8 +547,8 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json', 'pin': pin},
             redirect: 'manual',
         }).then(response => {
-            var location = response.headers.get('location');
-            var code = location.match('(?<=code=)(.*)(?=&scope)');
+            const location = response.headers.get('location');
+            const code = location.match('(?<=code=)(.*)(?=&scope)');
             return code[0];
         })
             .catch(err => {
@@ -389,7 +559,7 @@ class IdamHelper extends Helper {
     }
 
     getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
-        var searchParams = new URLSearchParams();
+        let searchParams = new URLSearchParams();
         searchParams.set('code', code);
         searchParams.set('redirect_uri', serviceRedirect);
         searchParams.set('grant_type', 'authorization_code')
@@ -465,8 +635,8 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
         }).then((response) => {
             if (response.status != 200) {
-                console.log('Error creating user', response.status);
-                console.log(JSON.stringify(data))
+                console.log('Error registering user', response.status);
+                console.log(JSON.stringify(data));
                 throw new Error()
             }
         });
@@ -523,7 +693,7 @@ class IdamHelper extends Helper {
     }
 
     async getUserByEmail(userEmail) {
-        let authToken = await this.getAuthToken();
+        const authToken = await this.getAuthToken();
         return fetch(`${TestData.IDAM_API}/users?email=${userEmail}`, {
             agent: agent,
             method: 'GET',
@@ -535,6 +705,17 @@ class IdamHelper extends Helper {
             .catch(err => {
                 console.log(err);
             });
+    }
+
+    deleteAllTestData(testDataPrefix = '', userNames = [], roleNames = [], serviceNames = [], async = false) {
+        return fetch(`${TestData.IDAM_API}/testing-support/test-data?async=${async}&userNames=${userNames.join(',')}&roleNames=${roleNames.join(',')}&testDataPrefix=${testDataPrefix}&serviceNames=${serviceNames.join(',')}`, {
+            agent: agent,
+            method: 'DELETE'
+        }).then(response => {
+            return response.json();
+        }).catch(err => {
+            console.log(err);
+        });
     }
 }
 
