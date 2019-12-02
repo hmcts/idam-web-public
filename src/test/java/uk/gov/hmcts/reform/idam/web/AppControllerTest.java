@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -21,6 +22,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
@@ -801,7 +803,7 @@ public class AppControllerTest {
 
     /**
      * @verifies redirect to reset password page if token is valid
-     * @see AppController#passwordReset(String, String)
+     * @see AppController#passwordReset(String, String, Model)
      */
     @Test public void passwordReset_shouldRedirectToResetPasswordPageIfTokenIsValid() throws Exception {
 
@@ -819,7 +821,7 @@ public class AppControllerTest {
 
     /**
      * @verifies redirect to token expired page if token is invalid
-     * @see AppController#passwordReset(String, String)
+     * @see AppController#passwordReset(String, String, Model)
      */
     @Test public void passwordReset_shouldRedirectToTokenExpiredPageIfTokenIsInvalid() throws Exception {
 
@@ -831,6 +833,28 @@ public class AppControllerTest {
             .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
             .andExpect(status().isOk())
             .andExpect(view().name(EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME));
+
+        verify(spiService).validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE);
+    }
+
+    /**
+     * @verifies redirect to token expired page if token is expired
+     * @see AppController#passwordReset(String, String, Model)
+     */
+    @Test
+    public void passwordReset_shouldRedirectToTokenExpiredPageIfTokenIsExpired() throws Exception {
+        byte[] body = new ObjectMapper().writeValueAsBytes(new ForgotPasswordDetails().redirectUri("1234"));
+        given(spiService.validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE))
+            .willThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "", null, body, StandardCharsets.UTF_8));
+
+        mockMvc.perform(post(PASSWORD_RESET_ENDPOINT).with(csrf())
+            .param(ACTION_PARAMETER, UNUSED)
+            .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
+            .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
+            .andExpect(status().isOk())
+            .andExpect(view().name(EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME))
+            .andExpect(model().attribute("forgotPasswordLink",
+                "/reset/forgotpassword?redirectUri=1234&clientId=&state=&scope="));
 
         verify(spiService).validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE);
     }
