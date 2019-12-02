@@ -14,7 +14,7 @@ ENV SERVER_PORT=8080
 
 ADD --chown=hmcts:hmcts build/libs/idam-web-public.war \
                         lib/AI-Agent.xml \
-                        lib/applicationinsights-agent-2.4.0.jar /opt/app/
+                        lib/applicationinsights-agent-2.5.1.jar /opt/app/
 
 CMD ["-Dspring.profiles.active=docker,local", "idam-web-public.war"]
 
