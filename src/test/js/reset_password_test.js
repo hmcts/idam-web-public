@@ -169,9 +169,9 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
+    I.wait(10);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
-    I.wait(5);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', specialCharacterPassword);
