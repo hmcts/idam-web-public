@@ -10,7 +10,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -110,7 +108,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
 
 @Slf4j
 @Controller
-public class AppController implements ErrorController {
+public class AppController {
 
     @Autowired
     private SPIService spiService;
@@ -916,20 +914,8 @@ public class AppController implements ErrorController {
      */
     @GetMapping(path = "/auth-error")
     public String authorizeError(final Map<String, Object> model) {
-        return genericError(model);
-    }
-
-    @GetMapping(path = "/generic-error")
-    public String genericError(final Map<String, Object> model) {
         model.put(ERROR_MSG, GENERIC_ERROR_KEY);
         model.put(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
         return ERRORPAGE_VIEW;
     }
-
-    @RequestMapping("/error")
-    @Override
-    public String getErrorPath() {
-        return "redirect:/generic-error";
-    }
-
 }
