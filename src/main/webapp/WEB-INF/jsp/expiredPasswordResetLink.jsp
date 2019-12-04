@@ -16,14 +16,16 @@
             <spring:message code="public.user.password.reset.expired.text"/>
         </p>
         <p>
+            <spring:message code="public.user.password.reset.expired.link.text.1"/>
             <c:choose>
                 <c:when test="${empty forgotPasswordLink}">
-                    <spring:message code="public.user.password.reset.expired.link.caption"/>
+                    <spring:message code="public.user.password.reset.expired.link.text.2"/>
                 </c:when>
                 <c:otherwise>
-                    <a href="${forgotPasswordLink}"><spring:message code="public.user.password.reset.expired.link.caption"/></a>
+                    <a href="${forgotPasswordLink}"><spring:message code="public.user.password.reset.expired.link.text.2"/> </a>
                 </c:otherwise>
             </c:choose>
+            <spring:message code="public.user.password.reset.expired.link.text.3"/>
         </p>
     </article>
     <script>
