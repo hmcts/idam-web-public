@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -180,38 +181,21 @@ public class SPIService {
      * @should return null if no cookie is found
      */
     public List<String> initiateOtpeAuthentication(final List<String> cookies, final String ipAddress) {
-        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
-        form.add("service", "otpe");
-
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(X_FORWARDED_FOR, ipAddress);
-        if (cookies != null) {
-            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookies, ";"));
-        }
-
-        final String endpoint = String.format("%s/%s",
-            configurationProperties.getStrategic().getService().getUrl(),
-            configurationProperties.getStrategic().getEndpoint().getAuthorize());
-
-        ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
-            new HttpEntity<>(form, headers), Void.class);
-
-        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
-            return new ArrayList<>(response.getHeaders().get(HttpHeaders.SET_COOKIE));
-        } else {
-            return null;
-        }
+        return submitOtpeAuthentication(cookies, ipAddress, null);
     }
 
     /**
      * @should return a set-cookie header to set Idam.Session if successful
      * @should return null if no cookie is found
      */
-    public List<String> submitOtpeAuthentication(final List<String> cookies, final String ipAddress, final String otp) {
+    public List<String> submitOtpeAuthentication(final List<String> cookies, final String ipAddress,
+                                                 @Nullable final String otp) {
         final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
         form.add("service", "otpe");
-        form.add("otp", otp);
+
+        if (otp != null) {
+            form.add("otp", otp);
+        }
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
