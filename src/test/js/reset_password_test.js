@@ -191,3 +191,17 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.dontSee('error=');
     I.resetRequestInterception();
 });
+
+Scenario('@functional @resetpass As a citizen user I cannot reset my password more than 5 times in 60 minutes', async (I) => {
+    for (i = 0; i < 6; i++) {
+        I.amOnPage(loginPage);
+        I.waitForText('Sign in or create an account', 20, 'h1');
+        I.click('Forgotten password?');
+        I.waitForText('Reset your password', 20, 'h1');
+        I.fillField('#email', citizenEmail);
+        I.click('Submit');
+        I.waitForText('Check your email', 20, 'h1');
+    }
+    //const resetPasswordUrl = await I.extractUrl(citizenEmail);
+    //compare the number of emails
+});
