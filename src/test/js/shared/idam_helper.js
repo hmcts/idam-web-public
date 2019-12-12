@@ -460,6 +460,19 @@ class IdamHelper extends Helper {
         return this.extractUrlFromBody(emailResponse);
     }
 
+    async verifyAmountOfEmails(searchEmail, expectedNumberOfEmails) {
+        return (
+            notifyClient
+                .getNotifications("email", null)
+                .then(response => {
+                    const actual = response.body.notifications.length;
+                    if (actual != expectedNumberOfEmails) {
+                        throw new Error('Wrong amount of emails found. Expected: ' + expectedNumberOfEmails
+                            + " Found: " actual);
+                    }
+                });
+    }
+
     searchForEmailInResults(notifications, searchEmail) {
         const result = notifications.find(currentItem => {
             // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
