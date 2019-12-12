@@ -468,9 +468,9 @@ class IdamHelper extends Helper {
                     const actual = response.body.notifications.length;
                     if (actual != expectedNumberOfEmails) {
                         throw new Error('Wrong amount of emails found. Expected: ' + expectedNumberOfEmails
-                            + " Found: " actual);
+                            + " Found: " + actual);
                     }
-                });
+                }));
     }
 
     searchForEmailInResults(notifications, searchEmail) {
