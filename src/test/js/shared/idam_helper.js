@@ -465,7 +465,11 @@ class IdamHelper extends Helper {
             notifyClient
                 .getNotifications("email", null)
                 .then(response => {
-                    const actual = response.body.notifications.length;
+                    console.log("Searching " + response.body.notifications.length + " emails(s) from sending queue");
+                    return this.searchForEmailInResults(response.body.notifications, searchEmail);
+                })
+                .then(response => {
+                    const actual = response.length;
                     if (actual != expectedNumberOfEmails) {
                         throw new Error('Wrong amount of emails found. Expected: ' + expectedNumberOfEmails
                             + " Found: " + actual);
