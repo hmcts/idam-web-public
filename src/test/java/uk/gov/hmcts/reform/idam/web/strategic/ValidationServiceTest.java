@@ -168,7 +168,12 @@ public class ValidationServiceTest {
      */
     @Test
     public void validatePassword_shouldReturnFalseIfThePasswordContainsIllegalCharacters() throws Exception {
-        String aPassword = "abcabc12345£";
+        final String basePassword = "abcabC12345";
+        String aPassword = '\u001f' + basePassword;
+        assertFalse(validationService.validatePassword(aPassword, aPassword, new HashMap<>()));
+        aPassword = '\t' + basePassword;
+        assertTrue(validationService.validatePassword(aPassword, aPassword, new HashMap<>()));
+        aPassword = '\u007f' + basePassword;
         assertFalse(validationService.validatePassword(aPassword, aPassword, new HashMap<>()));
     }
 }
