@@ -20,8 +20,15 @@ exports.config = {
         },
         idam_helper: {
             "require": "./src/test/js/shared/idam_helper.js"
-        }
-    },
+        },
+        ResembleHelper: {
+             require: 'codeceptjs-resemblehelper',
+             path: './functional-output/screenshot/',
+             baseFolder: './functional-output/base',
+             diffFolder: './functional-output/diff/'
+            },
+            },
+
     "include": {
       "I": "./src/test/js/shared/custom_steps.js"
     },
