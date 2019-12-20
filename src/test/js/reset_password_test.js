@@ -167,7 +167,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.waitForText('Reset your password', 20, 'h1');
     I.waitForText('Reset your password', 20, 'h1');
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true})
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
     I.wait(10);
     I.fillField('#email', citizenEmail);
     I.click('Submit');
@@ -176,7 +176,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Reset your password', 20, 'h1');
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true})
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', specialCharacterPassword);
@@ -186,7 +186,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.waitForText('Your password has been changed', 20, 'h1');
     I.waitForText('Reset your password', 20, 'h1');
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true})
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
     I.see('You can now sign in with your new password.')
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');

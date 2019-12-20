@@ -66,13 +66,13 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h1');
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true})
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.wait(10);
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true})
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required', 10, 'h1');
 
