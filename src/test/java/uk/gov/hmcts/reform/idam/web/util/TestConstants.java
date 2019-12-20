@@ -101,6 +101,7 @@ public class TestConstants {
 
     //Parameters
     public static final String IDAM_SESSION_COOKIE_NAME = "Idam.Session";
+    public static final String ARR_COOKIE_NAME = "ARRAffinity";
     public static final String ACTION_PARAMETER = "action";
     public static final String TOKEN_PARAMETER = "token";
     public static final String CODE_PARAMETER = "code";
@@ -130,6 +131,7 @@ public class TestConstants {
     public static final String GENERIC_ERROR_KEY = "public.error.page.generic.error";
     public static final String ALREADY_ACTIVATED_KEY = "public.error.page.already.activated.description";
     public static final String ERROR_BLACKLISTED_PASSWORD = "public.common.error.blacklisted.password";
+    public static final String ERROR_CONTAINS_PERSONAL_INFO_PASSWORD = "public.common.error.containspersonalinfo.password";
     public static final String ERROR_INVALID_PASSWORD = "public.common.error.invalid.password";
     public static final String ERROR_PREVIOUSLY_USED_PASSWORD = "public.common.error.previously.used.password";
     public static final String ERROR = "error";
@@ -166,9 +168,11 @@ public class TestConstants {
     public static final String CUSTOM_SCOPE = "manage-roles";
     public static final String INSECURE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT";
     public static final String AUTHENTICATE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT; Path=/; Secure; HttpOnly";
+    public static final String AFFINITY_COOKIE = ARR_COOKIE_NAME + "=COOKIE_AFFINITY_IS_A_FAT_TIME";
 
     //Responses
     public static final String PASSWORD_BLACKLISTED_RESPONSE = "{\"code\":\"PASSWORD_BLACKLISTED\"}";
+    public static final String PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE = "{\"code\":\"PASSWORD_CONTAINS_PERSONAL_INFO\"}";
     public static final String TOKEN_INVALID_RESPONSE = "{\"code\":\"TOKEN_INVALID\"}";
     public static final String RESET_PASSWORD_RESPONSE = "{\"" + REDIRECTURI + "\":\"" + REDIRECTURI + "\"}";
     public static final String HAS_LOGIN_FAILED_RESPONSE = "{\"code\":\"HAS_LOGIN_FAILED\"}";

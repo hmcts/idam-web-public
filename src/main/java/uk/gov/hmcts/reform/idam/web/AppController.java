@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -123,6 +124,9 @@ public class AppController {
 
     @Autowired
     private ConfigurationProperties configurationProperties;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
@@ -254,24 +258,49 @@ public class AppController {
      * @should redirect to passwordReset view
      */
     @GetMapping(value = "/passwordReset")
-    public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
-        return this.passwordReset(token, code);
+    public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code, Model model) {
+        return this.passwordReset(token, code, model);
     }
 
     /**
      * @should redirect to reset password page if token is valid
      * @should redirect to token expired page if token is invalid
+     * @should redirect to token expired page if token is expired
      */
     @PostMapping(value = "/passwordReset")
-    public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
-        String nextPage = RESETPASSWORD_VIEW;
+    public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code, Model model) {
         try {
             spiService.validateResetPasswordToken(token, code);
-        } catch (Exception e) {
-            nextPage = EXPIRED_PASSWORD_RESET_LINK_VIEW;
+            return RESETPASSWORD_VIEW;
+        } catch (HttpClientErrorException e) {
+            if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+                model.addAttribute("forgotPasswordLink", buildUrlFromTheBody(e.getResponseBodyAsString()));
+            }
         }
-        return nextPage;
+        return EXPIRED_PASSWORD_RESET_LINK_VIEW;
     }
+
+    private String buildUrlFromTheBody(String responseBodyAsString) {
+        try {
+            uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails request = mapper.readValue(
+                responseBodyAsString, uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails.class);
+            if (Strings.isNotEmpty(request.getRedirectUri())) {
+                return "/reset/forgotpassword?redirectUri=" + request.getRedirectUri() +
+                    "&clientId=" + nullToEmpty(request.getClientId()) +
+                    "&state=" + nullToEmpty(request.getState()) +
+                    "&scope=" + nullToEmpty(request.getScope());
+            }
+        } catch (IOException ex) {
+            log.error("Failed to read returned ForgotPasswordDetails", ex);
+
+        }
+        return "";
+    }
+
+    private String nullToEmpty(Object obj) {
+        return Objects.toString(obj, "");
+    }
+
 
     /**
      * @should put in model correct data and return forgot password view
@@ -374,15 +403,7 @@ public class AppController {
             }
 
             if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
-                log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
-                initiateOtpFlow(request, cookies, ipAddress, response);
-
-                Map<String, Object> authorizeParams = model.asMap();
-                authorizeParams.remove(USERNAME);
-                authorizeParams.remove(PASSWORD);
-                authorizeParams.remove(SELF_REGISTRATION_ENABLED);
-
-                return new ModelAndView("redirect:" + VERIFICATION_VIEW, authorizeParams);
+                return initiateOtpFlow(request, cookies, ipAddress, response, model);
             }
 
             final String responseUrl = authoriseUser(cookies, httpRequest);
@@ -429,14 +450,31 @@ public class AppController {
         return responseUrl;
     }
 
-    private void initiateOtpFlow(AuthorizeRequest request,
-                                   List<String> cookies,
-                                   String ipAddress,
-                                   HttpServletResponse response) {
+    private ModelAndView initiateOtpFlow(AuthorizeRequest request,
+                                 List<String> cookies,
+                                 String ipAddress,
+                                 HttpServletResponse response, Model model) {
+        log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
+
         final List<String> responseCookies = spiService.initiateOtpeAuthentication(cookies, ipAddress);
+
         log.info("/login: Successful initiate OTP request - {}", obfuscateEmailAddress(request.getUsername()));
+
         List<String> secureCookies = makeCookiesSecure(responseCookies);
         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
+
+        final String affinityCookieName = configurationProperties.getStrategic().getSession().getAffinityCookie();
+        cookies.stream().
+            filter(cookie -> cookie.contains(affinityCookieName))
+            .findFirst()
+            .ifPresent(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie.split(";")[0]));
+
+        Map<String, Object> authorizeParams = model.asMap();
+        authorizeParams.remove(USERNAME);
+        authorizeParams.remove(PASSWORD);
+        authorizeParams.remove(SELF_REGISTRATION_ENABLED);
+
+        return new ModelAndView("redirect:/" + VERIFICATION_VIEW, authorizeParams);
     }
 
     /**
@@ -569,7 +607,7 @@ public class AppController {
         bindingResult.reject("Login failure");
         model.addAttribute("authorizeCommand", request);
         model.addAttribute(USERNAME, null);
-        return new ModelAndView("redirect:" + LOGIN_VIEW, model.asMap());
+        return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
     }
 
     private List<String> makeCookiesSecure(List<String> cookies) {
@@ -746,6 +784,7 @@ public class AppController {
      * @should put in model redirect uri if service returns http 200 and redirect uri is present in response then return reset password success view
      * @should put in model the correct error code if HttpClientErrorException with http 412 is thrown by service then return reset password view.
      * @should put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password is blacklisted then return reset password view.
+     * @should put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password contains personal info then return reset password view.
      * @should put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password is previously used then return reset password view.
      * @should not put redirect uri in model if service returns http 200 and redirect uri is not present in response then return reset password success view
      * @should redirect to expired token if HttpClientErrorException with http 404 is thrown by service.
@@ -770,10 +809,12 @@ public class AppController {
         } catch (HttpClientErrorException e) {
             log.error("Error resetting password: {}", e.getResponseBodyAsString(), e);
             if (e.getStatusCode() == HttpStatus.PRECONDITION_FAILED) {
-                ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.password.details", "", model);
+                ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.invalid.password", "", model);
             } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED)) {
-                    ErrorHelper.showError("Error", "public.common.error.blacklisted.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+                    ErrorHelper.showError("Error", "public.common.error.blacklisted.password", "public.common.error.blacklisted.password", "public.common.error.enter.password", model);
+                } else if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)) {
+                    ErrorHelper.showError("Error", "public.common.error.containspersonalinfo.password", "public.common.error.containspersonalinfo.password", "public.common.error.enter.password", model);
                 } else if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.ACCOUNT_LOCKED)) {
                     ErrorHelper.showError("Error", "public.common.error.previously.used.password", "public.common.error.password.details", "public.common.error.enter.password", model);
                 }

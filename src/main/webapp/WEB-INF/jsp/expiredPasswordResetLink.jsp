@@ -15,6 +15,18 @@
         <p class="lede">
             <spring:message code="public.user.password.reset.expired.text"/>
         </p>
+        <p>
+            <spring:message code="public.user.password.reset.expired.link.text.start"/>
+            <c:choose>
+                <c:when test="${empty forgotPasswordLink}">
+                    <spring:message code="public.user.password.reset.expired.link.label"/>
+                </c:when>
+                <c:otherwise>
+                    <a href="${forgotPasswordLink}"><spring:message code="public.user.password.reset.expired.link.label"/> </a>
+                </c:otherwise>
+            </c:choose>
+            <spring:message code="public.user.password.reset.expired.link.text.end"/>
+        </p>
     </article>
     <script>
         sendEvent('Expired Token', 'Expired', 'Password Reset token has expired');
