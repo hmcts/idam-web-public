@@ -268,7 +268,7 @@ class IdamHelper extends Helper {
     createPolicyToBlockUser(name, userEmail, api_auth_token) {
         const data = {
             "name": name,
-            "applicationName": "TestHmctsPolicySet",
+            "applicationName": "HmctsPolicySet",
             "description": "Blocks specific user",
             "active": true,
             "actionValues": {
@@ -312,7 +312,7 @@ class IdamHelper extends Helper {
     createPolicyForMfaTest(name, roleName, api_auth_token) {
         const data = {
             "name": name,
-            "applicationName": "TestHmctsPolicySet",
+            "applicationName": "HmctsPolicySet",
             "description": "Require MFA for test user",
             "active": true,
             "actionValues": {
@@ -363,7 +363,7 @@ class IdamHelper extends Helper {
     createPolicyForMfaBlockTest(name, roleName, api_auth_token) {
         const data = {
             "name": name,
-            "applicationName": "TestHmctsPolicySet",
+            "applicationName": "HmctsPolicySet",
             "description": "Require MFA for test user",
             "active": true,
             "actionValues": {
