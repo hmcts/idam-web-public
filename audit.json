@@ -111,5 +111,10 @@
   "10035_Strict-Transport-Security Header Not Set_https://idam-web-public.aat.platform.hmcts.net/_GET": "ignore",
   "10011_Cookie Without Secure Flag_https://idam-web-public.aat.platform.hmcts.net/_GET": "ignore",
   "10011_Cookie Without Secure Flag_https://idam-web-public.aat.platform.hmcts.net/robots.txt_GET": "ignore",
-  "10036_Server Leaks Version Information via \"Server\" HTTP Response Header Field_https://idam-web-public.aat.platform.hmcts.net/_GET": "ignore"
+  "10036_Server Leaks Version Information via \"Server\" HTTP Response Header Field_https://idam-web-public.aat.platform.hmcts.net/_GET": "ignore",
+  "10104_User Agent Fuzzer_https://idam-web-public.aat.platform.hmcts.net/assets/stylesheets_GET": "ignore",
+  "10104_User Agent Fuzzer_https://idam-web-public.aat.platform.hmcts.net/assets/stylesheets_GET": "ignore",
+  "10104_User Agent Fuzzer_https://idam-web-public.aat.platform.hmcts.net/assets/stylesheets_GET": "ignore",
+  "10104_User Agent Fuzzer_https://idam-web-public.aat.platform.hmcts.net/assets/stylesheets_GET": "ignore",
+  "40029_Trace.axd Information Leak_https://idam-web-public.aat.platform.hmcts.net/assets/trace.axd_GET":"ignore"
 }
