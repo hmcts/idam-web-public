@@ -249,7 +249,7 @@ public class UserController {
         model.put("token", token);
         model.put("code", code);
         try {
-            if (validationService.validateResetPasswordRequest(password1, password2, model)) {
+            if (validationService.validatePassword(password1, password2, model)) {
                 String activation = "{\"token\":\"" + token + "\",\"code\":\"" + code + "\",\"password\":\"" + password1 + "\"}";
                 ResponseEntity<String> response = spiService.activateUser(activation);
                 String redirectUri = getRedirectUri(response.getBody());
