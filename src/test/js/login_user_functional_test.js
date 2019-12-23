@@ -50,8 +50,6 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
     I.see('code=');
     I.dontSee('error=');
 
