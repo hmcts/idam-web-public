@@ -26,7 +26,7 @@ exports.config = {
              path: './functional-output/screenshot/',
              baseFolder: './functional-output/base',
              diffFolder: './functional-output/diff/'
-            }
+            },
             },
 
     "include": {
