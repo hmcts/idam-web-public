@@ -1,26 +1,24 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.web.util.TestConstants;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 
 /**
  * @author Ivano
@@ -41,12 +39,12 @@ public class ValidationServiceTest {
 
     /**
      * @verifies return false if the passwords is null or empty
-     * @see ValidationService#validateResetPasswordRequest(String, String, java.util.Map)
+     * @see ValidationService#validatePassword(String, String, java.util.Map)
      */
-    @Test public void validateResetPasswordRequest_shouldReturnFalseIfThePasswordsIsNullOrEmpty() throws Exception {
+    @Test public void validatePassword_shouldReturnFalseIfThePasswordsIsNullOrEmpty() throws Exception {
 
         Map<String, Object> model = new HashMap<>();
-        assertFalse(validationService.validateResetPasswordRequest(null, TestConstants.USER_PASSWORD, model));
+        assertFalse(validationService.validatePassword(null, TestConstants.USER_PASSWORD, model));
 
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
@@ -56,7 +54,7 @@ public class ValidationServiceTest {
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.PASSWORD_TWO), Matchers.is(TestConstants.USER_PASSWORD)));
 
         model = new HashMap<>();
-        assertFalse(validationService.validateResetPasswordRequest(TestConstants.USER_PASSWORD, "", model));
+        assertFalse(validationService.validatePassword(TestConstants.USER_PASSWORD, "", model));
 
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
@@ -70,13 +68,13 @@ public class ValidationServiceTest {
 
     /**
      * @verifies return false if the passwords don't match
-     * @see ValidationService#validateResetPasswordRequest(String, String, java.util.Map)
+     * @see ValidationService#validatePassword(String, String, java.util.Map)
      */
-    @Test public void validateResetPasswordRequest_shouldReturnFalseIfThePasswordsDontMatch() throws Exception {
+    @Test public void validatePassword_shouldReturnFalseIfThePasswordsDontMatch() throws Exception {
 
         Map<String, Object> model = new HashMap<>();
 
-        assertFalse(validationService.validateResetPasswordRequest(TestConstants.PASSWORD_ONE, TestConstants.PASSWORD_TWO, model));
+        assertFalse(validationService.validatePassword(TestConstants.PASSWORD_ONE, TestConstants.PASSWORD_TWO, model));
 
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
@@ -88,13 +86,13 @@ public class ValidationServiceTest {
 
     /**
      * @verifies return false if the password does not comply with the length requirement
-     * @see ValidationService#validateResetPasswordRequest(String, String, java.util.Map)
+     * @see ValidationService#validatePassword(String, String, java.util.Map)
      */
-    @Test public void validateResetPasswordRequest_shouldReturnFalseIfThePasswordDoesNotComplyWithTheLengthRequirement() throws Exception {
+    @Test public void validatePassword_shouldReturnFalseIfThePasswordDoesNotComplyWithTheLengthRequirement() throws Exception {
 
         Map<String, Object> model = new HashMap<>();
 
-        assertFalse(validationService.validateResetPasswordRequest(TestConstants.SHORT_PASSWORD, TestConstants.SHORT_PASSWORD, model));
+        assertFalse(validationService.validatePassword(TestConstants.SHORT_PASSWORD, TestConstants.SHORT_PASSWORD, model));
 
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
@@ -105,7 +103,7 @@ public class ValidationServiceTest {
 
         model = new HashMap<>();
 
-        assertFalse(validationService.validateResetPasswordRequest(TestConstants.LONG_PASSWORD, TestConstants.LONG_PASSWORD, model));
+        assertFalse(validationService.validatePassword(TestConstants.LONG_PASSWORD, TestConstants.LONG_PASSWORD, model));
 
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
@@ -118,13 +116,13 @@ public class ValidationServiceTest {
 
     /**
      * @verifies return false if both passwords are null or empty
-     * @see ValidationService#validateResetPasswordRequest(String, String, Map)
+     * @see ValidationService#validatePassword(String, String, Map)
      */
     @Test
-    public void validateResetPasswordRequest_shouldReturnFalseIfBothPasswordsAreNullOrEmpty() throws Exception {
+    public void validatePassword_shouldReturnFalseIfBothPasswordsAreNullOrEmpty() throws Exception {
         Map<String, Object> model = new HashMap<>();
 
-        assertFalse(validationService.validateResetPasswordRequest(null, null, model));
+        assertFalse(validationService.validatePassword(null, null, model));
 
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
         assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
@@ -135,11 +133,11 @@ public class ValidationServiceTest {
 
     /**
      * @verifies return true if both passwords are present and comply with the length requirement and are equal
-     * @see ValidationService#validateResetPasswordRequest(String, String, Map)
+     * @see ValidationService#validatePassword(String, String, Map)
      */
     @Test
-    public void validateResetPasswordRequest_shouldReturnTrueIfBothPasswordsArePresentAndComplyWithTheLengthRequirementAndAreEqual() throws Exception {
-        assertTrue(validationService.validateResetPasswordRequest(TestConstants.USER_PASSWORD, TestConstants.USER_PASSWORD, new HashMap<>()));
+    public void validatePassword_shouldReturnTrueIfBothPasswordsArePresentAndComplyWithTheLengthRequirementAndAreEqual() throws Exception {
+        assertTrue(validationService.validatePassword(TestConstants.USER_PASSWORD, TestConstants.USER_PASSWORD, new HashMap<>()));
     }
 
     /**
@@ -162,5 +160,20 @@ public class ValidationServiceTest {
         given(mapper.readValue(eq(TestConstants.PASSWORD_BLACKLISTED_RESPONSE), eq(ErrorResponse.class))).willReturn(new ErrorResponse().code(ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED));
 
         assertTrue(validationService.isErrorInResponse(TestConstants.PASSWORD_BLACKLISTED_RESPONSE, ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED));
+    }
+
+    /**
+     * @verifies return false if the password contains illegal characters
+     * @see ValidationService#validatePassword(String, String, Map)
+     */
+    @Test
+    public void validatePassword_shouldReturnFalseIfThePasswordContainsIllegalCharacters() throws Exception {
+        final String basePassword = "abcabC12345";
+        String aPassword = '\u001f' + basePassword;
+        assertFalse(validationService.validatePassword(aPassword, aPassword, new HashMap<>()));
+        aPassword = '\t' + basePassword;
+        assertTrue(validationService.validatePassword(aPassword, aPassword, new HashMap<>()));
+        aPassword = '\u007f' + basePassword;
+        assertFalse(validationService.validatePassword(aPassword, aPassword, new HashMap<>()));
     }
 }

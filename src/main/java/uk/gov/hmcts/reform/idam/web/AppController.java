@@ -793,7 +793,7 @@ public class AppController {
     @PostMapping(value = "/doResetPassword")
     public String resetPassword(final String action, final String password1, final String password2, final String token, final String code, final Map<String, Object> model) throws IOException {
         try {
-            if (validationService.validateResetPasswordRequest(password1, password2, model)) {
+            if (validationService.validatePassword(password1, password2, model)) {
                 ResponseEntity<String> resetPasswordEntity = spiService.resetPassword(password1, token, code);
 
                 if (resetPasswordEntity.getStatusCode() == HttpStatus.OK) {
