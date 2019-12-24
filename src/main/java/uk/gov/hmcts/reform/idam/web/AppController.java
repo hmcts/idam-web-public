@@ -422,7 +422,7 @@ public class AppController {
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
-            if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
+            if (HttpStatus.FORBIDDEN == he.getStatusCode() || HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
                 getLoginFailureReason(he, model, bindingResult);
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
