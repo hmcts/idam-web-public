@@ -351,7 +351,6 @@ public class AppController {
      * @should initiate OTP flow when policy check returns MFA_REQUIRED
      * @should return forbidden if csrf token is invalid
      * @should not forward username password params on OTP
-     * @return
      */
     @PostMapping("/login")
     public ModelAndView login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
