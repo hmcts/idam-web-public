@@ -1356,6 +1356,21 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, HttpStatus.UNAUTHORIZED.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(model().attribute(IS_ACCOUNT_SUSPENDED, true))
+            .andExpect(status().isOk())
+
+            .andExpect(view().name(LOGIN_VIEW));
     }
 
     /**
