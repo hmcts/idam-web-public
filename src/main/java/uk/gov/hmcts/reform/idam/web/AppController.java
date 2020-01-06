@@ -421,8 +421,11 @@ public class AppController {
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
-            if (HttpStatus.FORBIDDEN == he.getStatusCode() || HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
+            if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
                 getLoginFailureReason(he, model, bindingResult);
+            } else if (HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
+                model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
+                bindingResult.reject("Account suspended");
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
