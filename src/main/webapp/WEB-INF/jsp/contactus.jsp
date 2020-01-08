@@ -44,6 +44,7 @@
 
         <h2 class="heading-medium">Appeal a benefit decision (England and Wales)</h2>
         <ul class="list">
+            <li>Email: Contactsscs@justice.gov.uk</li>
             <li>Phone: 0300 123 1142 </li>
             <li>Monday to Friday, 8am to 8pm</li>
             <li>Saturday, 8am to 2pm</li>
@@ -52,6 +53,7 @@
 
         <h2 class="heading-medium">Appeal a benefit decision (Scotland)</h2>
         <ul class="list">
+            <li>Email: SSCSA-Glasgow@justice.gov.uk</li>
             <li>Phone: 0300 790 6234 </li>
             <li>Monday to Friday, 8am to 8pm</li>
             <li>Saturday, 8am to 2pm</li>
