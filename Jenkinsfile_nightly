@@ -47,6 +47,19 @@ withNightlyPipeline(type, product, component) {
 
     after('fullFunctionalTest') {
 
+        sh "./gradlew smoke"
+
+        archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E smoke tests result"
+        ]
+
         sh "./gradlew functional"
 
         archiveArtifacts '**/build/test-results/**/*'
