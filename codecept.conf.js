@@ -14,13 +14,20 @@ exports.config = {
             waitForAction: 100,
             getPageTimeout: 90000,
             chrome: {
-                //args: ["--proxy-server=" + process.env.PROXY_SERVER],
+                args: ["--proxy-server=" + process.env.PROXY_SERVER],
                 ignoreHTTPSErrors: true
             }
         },
         idam_helper: {
             "require": "./src/test/js/shared/idam_helper.js"
-        }
+        },
+        ResembleHelper: {
+                     require: 'codeceptjs-resemblehelper',
+                     path: './functional-output/screenshot/',
+                     baseFolder: './functional-output/base',
+                     diffFolder: './functional-output/diff/'
+                    },
+
     },
     "include": {
       "I": "./src/test/js/shared/custom_steps.js"
