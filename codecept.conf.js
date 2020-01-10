@@ -14,7 +14,7 @@ exports.config = {
             waitForAction: 100,
             getPageTimeout: 90000,
             chrome: {
-                args: ["--proxy-server=" + process.env.PROXY_SERVER],
+                //args: ["--proxy-server=" + process.env.PROXY_SERVER],
                 ignoreHTTPSErrors: true
             }
         },
