@@ -55,7 +55,7 @@ Scenario('@functional @policy As a citizen with policies blocking me from login 
     I.click('Sign in');
     I.wait(10);
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: false});
     I.waitForText('Policies check failed', 10, 'h2');
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

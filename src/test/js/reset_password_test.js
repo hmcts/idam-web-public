@@ -169,21 +169,21 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: false});
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: false});
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);
     I.click('Continue');
     I.wait(10);
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: true});
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: false});
     I.waitForText('Your password has been changed', 20, 'h1');
     I.see('You can now sign in with your new password.')
     I.amOnPage(loginPage);
