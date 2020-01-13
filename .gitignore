@@ -1,6 +1,5 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
-functional-output/
 
 ### STS ###
 .apt_generated
