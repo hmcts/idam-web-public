@@ -2,8 +2,9 @@ const TestData = require('./src/test/js/config/test_data')
 
 exports.config = {
     name: 'idam-web-public',
-    tests: './src/test/js/**/*_test.js',
+    tests: './src/test/js/**/policy_check_functional_test.js',
     output: './output',
+    fullPageScreenshots: true,
     timeout: 180000,
     bootstrap: false,
     helpers: {
