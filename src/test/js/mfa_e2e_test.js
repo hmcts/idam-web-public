@@ -71,7 +71,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     I.wait(10);
     I.seeInCurrentUrl("/verification");
     I.saveScreenshot(await I.grabTextFrom({ css: 'h1' }) + '.png');
-    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 5, prepareBaseImage: false});
+    I.seeVisualDiff(await I.grabTextFrom({ css: 'h1' }) + '.png', {tolerance: 6, prepareBaseImage: false});
     I.waitForText('Verification required', 10, 'h1');
 
     const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
