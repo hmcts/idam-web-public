@@ -41,7 +41,7 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional Register User Dynamically', async (I) => {
+Scenario('@functional @dynamicuserregistration Register User Dynamically', async (I) => {
     I.wait(10);
 
     let url = await I.extractUrl(userEmail);

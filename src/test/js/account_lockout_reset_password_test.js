@@ -46,7 +46,8 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
-    I.amOnPage(resetPasswordUrl);
+    const activationParams = resetPasswordUrl.match(/passwordReset\?(.*)/)[1];
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/passwordReset?${activationParams}`);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', 'Passw0rd1234');

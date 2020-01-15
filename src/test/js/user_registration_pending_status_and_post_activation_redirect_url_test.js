@@ -51,7 +51,7 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional user registration pending status and post activation redirect url test', async (I) => {
+Scenario('@functional @userregistrationpending user registration pending status and post activation redirect url test', async (I) => {
     I.wait(10);
 
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
