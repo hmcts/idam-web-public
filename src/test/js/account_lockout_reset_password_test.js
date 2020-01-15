@@ -10,14 +10,6 @@ let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
 
-const box = {
-    left: 100,
-    top: 200,
-    right: 200,
-    bottom: 700
-};
-
-
 BeforeSuite(async (I) => {
     const randomUserFirstName = randomData.getRandomUserName();
     const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
@@ -54,8 +46,6 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.waitForText('Reset your password', 20, 'h1');
     I.fillField('#email', citizenEmail);
     I.click('Submit');
-    I.saveScreenshot( 'check-email.png');
-    I.seeVisualDiff('check-email.png', {tolerance: 6, prepareBaseImage: false, ignoredBox: box});
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
