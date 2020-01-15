@@ -61,8 +61,6 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.see('You can now sign in with your new password.')
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
     I.click('Sign in to your account');
-    I.saveScreenshot('signto-your-account.png');
-    I.seeVisualDiff('signto-your-account.png', {tolerance: 6, prepareBaseImage: false});
     I.waitInUrl('/login', 180);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', citizenEmail);
