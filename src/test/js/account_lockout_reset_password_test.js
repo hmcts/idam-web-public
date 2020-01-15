@@ -41,12 +41,12 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.lockAccount(citizenEmail, serviceName);
     I.click('reset your password');
     I.saveScreenshot('reset-password.png');
-    I.seeVisualDiff('reset-password.png', {tolerance: 6, prepareBaseImage: true});
+    I.seeVisualDiff('reset-password.png', {tolerance: 6, prepareBaseImage: false});
     I.waitForText('Reset your password', 20, 'h1');
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.saveScreenshot( 'check-email.png');
-    I.seeVisualDiff('check-email.png', {tolerance: 6, prepareBaseImage: true});
+    I.seeVisualDiff('check-email.png', {tolerance: 6, prepareBaseImage: false});
     I.waitForText('Check your email', 20, 'h1');
     I.wait(10);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
@@ -57,13 +57,13 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
     I.saveScreenshot('password-changed.png');
-    I.seeVisualDiff('password-changed.png', {tolerance: 6, prepareBaseImage: true});
+    I.seeVisualDiff('password-changed.png', {tolerance: 6, prepareBaseImage: false});
     I.waitForText('Your password has been changed', 20, 'h1');
     I.see('You can now sign in with your new password.')
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
     I.click('Sign in to your account');
     I.saveScreenshot('signto-your-account.png');
-    I.seeVisualDiff('signto-your-account.png', {tolerance: 6, prepareBaseImage: true});
+    I.seeVisualDiff('signto-your-account.png', {tolerance: 6, prepareBaseImage: false});
     I.waitInUrl('/login', 180);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', citizenEmail);
