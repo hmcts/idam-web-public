@@ -50,6 +50,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.click('reset your password');
     I.saveScreenshot('reset-password.png');
     I.seeVisualDiff('reset-password.png', {tolerance: 6, prepareBaseImage: false});
+    I.wait(5);
     I.waitForText('Reset your password', 20, 'h1');
     I.fillField('#email', citizenEmail);
     I.click('Submit');
