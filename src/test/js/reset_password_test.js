@@ -83,6 +83,38 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
 });
 // NOTE: Retrying this scenario is problematic.
 
+Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset my password with diff case email address', async (I) => {
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password', 20, 'h1');
+    I.wait(5);
+    I.fillField('#email', citizenEmail.toUpperCase());
+    I.click('Submit');
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(10);
+    const resetPasswordUrl = await I.extractUrl(citizenEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a new password', 20, 'h1');
+    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.fillField('#password1', 'Passw0rd1234');
+    I.fillField('#password2', 'Passw0rd1234');
+    I.click('Continue');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.wait(5);
+    I.see('You can now sign in with your new password.');
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', citizenEmail);
+    I.fillField('#password', 'Passw0rd1234');
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
+
 Scenario('@functional @resetpass As a citizen user with a plus email I can reset my password', async (I) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
