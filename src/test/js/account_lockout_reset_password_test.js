@@ -53,7 +53,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
     I.waitForText('Your password has been changed', 20, 'h1');
-    I.see('You can now sign in with your new password.')
+    I.see('You can now sign in with your new password.');
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
     I.click('Sign in to your account');
     I.waitInUrl('/login', 180);
