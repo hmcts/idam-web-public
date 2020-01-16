@@ -13,7 +13,6 @@ exports.config = {
             waitForTimeout: 60000,
             waitForAction: 2000,
             getPageTimeout: 20000,
-            waitForNavigation: ['load', 'domcontentloaded', 'networkidle0', 'networkidle2'],
             chrome: {
                 //args: ["--proxy-server=" + process.env.PROXY_SERVER],
                 ignoreHTTPSErrors: true
