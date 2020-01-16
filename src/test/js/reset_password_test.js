@@ -56,6 +56,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
     I.waitForText('Reset your password', 20, 'h1');
+    I.wait(2);
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
@@ -88,6 +89,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
     I.waitForText('Reset your password', 20, 'h1');
+    I.wait(2);
     I.fillField('#email', plusCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
@@ -119,6 +121,7 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
     I.waitForText('Reset your password', 20, 'h1');
+    I.wait(2);
     I.fillField('#email', otherCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
@@ -165,10 +168,11 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
     I.waitForText('Reset your password', 20, 'h1');
-    I.wait(10);
+    I.wait(2);
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
+    I.wait(2);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.wait(5);
