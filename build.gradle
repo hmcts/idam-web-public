@@ -171,7 +171,6 @@ def listFiles(String pattern) {
 sonarqube {
   properties {
     property "sonar.projectName", "SIDAM-WEB-PUBLIC"
-    property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
     property "sonar.exclusions", "**/uk/gov/hmcts/reform/idam/web/config/properties/*.java," +
             "**/uk/gov/hmcts/reform/idam/web/model/*.java," +
             "**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys.java," +
@@ -180,6 +179,7 @@ sonarqube {
     property "sonar.host.url", "https://sonar.reform.hmcts.net/"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
   }
 }
 
@@ -207,21 +207,6 @@ jacocoTestReport {
     xml.enabled = true
     html.enabled = true
     html.destination = file("${buildDir}/reports/jacoco")
-  }
-
-  additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
-  sourceDirectories = files(sourceSets.main.allSource.srcDirs)
-  classDirectories = files(sourceSets.main.output)
-  println 'class directories: ' + classDirectories.asPath
-  afterEvaluate {
-    classDirectories = files(classDirectories.files.collect {
-      fileTree(dir: it,
-        exclude: ['**/uk/gov/hmcts/reform/idam/web/config/properties/*',
-                  '**/uk/gov/hmcts/reform/idam/web/model/*',
-                  '**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys**',
-                  '**/uk/gov/hmcts/reform/idam/web/Application**',
-                  '**/*Exception**'])
-    })
   }
 }
 
