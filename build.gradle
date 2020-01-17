@@ -128,6 +128,14 @@ allprojects  {
     description = 'Executes functional tests against a running instance'
   }
 
+//  task crossBrowserTests(type: Test) {
+//    include '**/*runUITestsSauceLabs.sh'
+//    testLogging.showStandardStreams = true
+//
+//    systemProperties = System.properties
+//    systemProperties['user.dir'] = workingDir
+//  }
+
   task yarnInstall(type: Exec) {
     workingDir '.'
     commandLine 'yarn', 'install'
@@ -156,6 +164,16 @@ allprojects  {
   task pa11y(type: Exec, dependsOn: 'pa11yInstall') {
     workingDir '.'
     commandLine './node_modules/.bin/pa11y', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
+  }
+
+  task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
+    group = 'Delivery pipeline'
+    description = 'Executes non-destructive smoke tests against a running instance'
+  }
+
+  task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
+    workingDir '.'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'runSauceLabsTests.sh','--steps', '--grep', '@functional', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 }
 
