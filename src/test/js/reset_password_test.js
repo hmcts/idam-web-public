@@ -21,7 +21,7 @@ BeforeSuite(async (I) => {
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
-    plusCitizenEmail = 'plus.' + 'extra+' + randomData.getRandomEmailAddress();
+    plusCitizenEmail = `plus.extra+${randomData.getRandomEmailAddress()}`;
     specialCharacterPassword = 'New&&&$$$%%%<>234';
 
     const token = await I.getAuthToken();
