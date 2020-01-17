@@ -44,7 +44,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(10);
+    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');

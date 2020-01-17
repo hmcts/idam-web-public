@@ -68,10 +68,9 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(10);
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required', 10, 'h1');
-
+    I.wait(5);
     const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
@@ -105,7 +104,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.click('Sign in');
     I.waitInUrl("/verification", 20);
     I.waitForText('Verification required', 2, 'h1');
-    I.wait(10);
+    I.wait(5);
     const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
 
     // empty field
@@ -139,7 +138,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.seeInCurrentUrl('verification');
+    I.waitInUrl('/verification', 20);
     I.waitForText('Verification required', 2, 'h1');
 
     const otpCodeLatest = await I.extractOtpFromEmail(mfaUserEmail);

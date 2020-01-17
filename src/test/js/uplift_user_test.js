@@ -91,7 +91,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.scrollPageToBottom();
     I.click('Continue');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(10);
+    I.wait(5);
     let url = await I.extractUrl(citizenEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);

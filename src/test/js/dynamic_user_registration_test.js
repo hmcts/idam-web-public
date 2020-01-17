@@ -42,7 +42,7 @@ AfterSuite(async (I) => {
 });
 
 Scenario('@functional Register User Dynamically', async (I) => {
-    I.wait(10);
+    I.wait(5);
 
     let url = await I.extractUrl(userEmail);
     if (url) {
