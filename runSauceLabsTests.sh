@@ -1,5 +1,5 @@
 #!/bin/bash
- supportedBrowsers=`sed '/\/\//d' ./supportedBrowsers.js | sed '/: {/!d' | sed "s/[\'\:\{ ]//g"`
+ supportedBrowsers=`sed '/\/\//d' ./src/test/js/config/supportedBrowsers.js | sed '/: {/!d' | sed "s/[\'\:\{ ]//g"`
 browsersArray=(${supportedBrowsers//$'\n'/ })
 
 outputDirectory="${E2E_CROSSBROWSER_OUTPUT_DIR:-functional-output/crossbrowser/reports}"
