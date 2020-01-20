@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
@@ -801,7 +804,7 @@ public class AppControllerTest {
 
     /**
      * @verifies redirect to reset password page if token is valid
-     * @see AppController#passwordReset(String, String)
+     * @see AppController#passwordReset(String, String, Model)
      */
     @Test public void passwordReset_shouldRedirectToResetPasswordPageIfTokenIsValid() throws Exception {
 
@@ -819,7 +822,7 @@ public class AppControllerTest {
 
     /**
      * @verifies redirect to token expired page if token is invalid
-     * @see AppController#passwordReset(String, String)
+     * @see AppController#passwordReset(String, String, Model)
      */
     @Test public void passwordReset_shouldRedirectToTokenExpiredPageIfTokenIsInvalid() throws Exception {
 
@@ -836,12 +839,34 @@ public class AppControllerTest {
     }
 
     /**
+     * @verifies redirect to token expired page if token is expired
+     * @see AppController#passwordReset(String, String, Model)
+     */
+    @Test
+    public void passwordReset_shouldRedirectToTokenExpiredPageIfTokenIsExpired() throws Exception {
+        byte[] body = new ObjectMapper().writeValueAsBytes(new ForgotPasswordDetails().redirectUri("1234"));
+        given(spiService.validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE))
+            .willThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "", null, body, StandardCharsets.UTF_8));
+
+        mockMvc.perform(post(PASSWORD_RESET_ENDPOINT).with(csrf())
+            .param(ACTION_PARAMETER, UNUSED)
+            .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
+            .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
+            .andExpect(status().isOk())
+            .andExpect(view().name(EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME))
+            .andExpect(model().attribute("forgotPasswordLink",
+                "/reset/forgotpassword?redirectUri=1234&clientId=&state=&scope="));
+
+        verify(spiService).validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE);
+    }
+
+    /**
      * @verifies put in model redirect uri if service returns http 200 and redirect uri is present in response then return reset password success view
      * @see AppController#resetPassword(String, String, String, String, String, Map)
      */
     @Test
     public void resetPassword_shouldPutInModelRedirectUriIfServiceReturnsHttp200AndRedirectUriIsPresentInResponseThenReturnResetPasswordSuccessView() throws Exception {
-        given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
+        given(validationService.validatePassword(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willReturn(ResponseEntity.ok(RESET_PASSWORD_RESPONSE));
 
         mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
@@ -863,7 +888,7 @@ public class AppControllerTest {
      */
     @Test
     public void resetPassword_shouldNotPutRedirectUriInModeIfServiceReturnsHttp200AndRedirectUriIsNotPresentInResponseThenReturnResetPasswordSuccessView() throws Exception {
-        given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
+        given(validationService.validatePassword(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willReturn(ResponseEntity.ok("{}"));
 
         mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
@@ -885,7 +910,7 @@ public class AppControllerTest {
      */
     @Test
     public void resetPassword_shouldPutInModelTheCorrectErrorCodeIfHttpClientErrorExceptionWithHttp412IsThrownByServiceThenReturnResetPasswordView() throws Exception {
-        given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
+        given(validationService.validatePassword(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willThrow(new HttpClientErrorException(HttpStatus.PRECONDITION_FAILED));
 
 
@@ -899,7 +924,7 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attribute(ERROR_TITLE, ERROR_CAPITAL))
             .andExpect(model().attribute(ERROR_MESSAGE, ERROR_INVALID_PASSWORD))
-            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_PASSWORD_DETAILS))
+            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_INVALID_PASSWORD))
             .andExpect(model().attribute(ERROR_LABEL_TWO, BLANK))
             .andExpect(view().name(RESETPASSWORD_VIEW_NAME));
 
@@ -912,7 +937,7 @@ public class AppControllerTest {
      */
     @Test
     public void resetPassword_shouldPutInModelTheCorrectErrorCodeIfHttpClientErrorExceptionWithHttp400IsThrownByServiceAndPasswordIsBlacklistedThenReturnResetPasswordView() throws Exception {
-        given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
+        given(validationService.validatePassword(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.name(), PASSWORD_BLACKLISTED_RESPONSE.getBytes(), null));
         given(validationService.isErrorInResponse(eq(PASSWORD_BLACKLISTED_RESPONSE), eq(ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED))).willReturn(true);
 
@@ -927,7 +952,38 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attribute(ERROR_TITLE, ERROR_CAPITAL))
             .andExpect(model().attribute(ERROR_MESSAGE, ERROR_BLACKLISTED_PASSWORD))
-            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_PASSWORD_DETAILS))
+            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_BLACKLISTED_PASSWORD))
+            .andExpect(model().attribute(ERROR_LABEL_TWO, ERROR_ENTER_PASSWORD))
+            .andExpect(view().name(RESETPASSWORD_VIEW_NAME));
+
+        verify(spiService).resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE));
+    }
+
+    /**
+     * @verifies put in model the correct error code if HttpClientErrorException with http 400 is thrown by service and password contains then return reset password view.
+     * @see AppController#resetPassword(String, String, String, String, String, Map)
+     */
+    @Test
+    public void resetPassword_shouldPutInModelTheCorrectErrorCodeIfHttpClientErrorExceptionWithHttp400IsThrownByServiceAndPasswordContainsThenReturnResetPasswordView() throws Exception {
+        given(validationService.validatePassword(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class)))
+            .willReturn(true);
+        given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE)))
+            .willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.name(), PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE.getBytes(), null));
+        given(validationService.isErrorInResponse(eq(PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE), eq(ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)))
+            .willReturn(true);
+
+
+        mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
+            .param(ACTION_PARAMETER, UNUSED)
+            .param(PASSWORD_ONE, PASSWORD_ONE)
+            .param(PASSWORD_TWO, PASSWORD_TWO)
+            .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
+            .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attribute(ERROR_TITLE, ERROR_CAPITAL))
+            .andExpect(model().attribute(ERROR_MESSAGE, ERROR_CONTAINS_PERSONAL_INFO_PASSWORD))
+            .andExpect(model().attribute(ERROR_LABEL_ONE, ERROR_CONTAINS_PERSONAL_INFO_PASSWORD))
             .andExpect(model().attribute(ERROR_LABEL_TWO, ERROR_ENTER_PASSWORD))
             .andExpect(view().name(RESETPASSWORD_VIEW_NAME));
 
@@ -940,7 +996,7 @@ public class AppControllerTest {
      */
     @Test
     public void resetPassword_shouldPutInModelTheCorrectErrorCodeIfHttpClientErrorExceptionWithHttp400IsThrownByServiceAndPasswordIsPreviouslyUsedThenReturnResetPasswordView() throws Exception {
-        given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
+        given(validationService.validatePassword(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
         given(validationService.isErrorInResponse(eq(ERR_LOCKED_FAILED_RESPONSE), eq(ErrorResponse.CodeEnum.ACCOUNT_LOCKED))).willReturn(true);
 
@@ -968,7 +1024,7 @@ public class AppControllerTest {
      */
     @Test
     public void resetPassword_shouldRedirectToExpiredTokenIfHttpClientErrorExceptionWithHttp404IsThrownByService() throws Exception {
-        given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
+        given(validationService.validatePassword(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(true);
         given(spiService.resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
 
@@ -990,7 +1046,7 @@ public class AppControllerTest {
      */
     @Test
     public void resetPassword_shouldReturnResetPasswordViewIfRequestValidationFails() throws Exception {
-        given(validationService.validateResetPasswordRequest(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(false);
+        given(validationService.validatePassword(eq(PASSWORD_ONE), eq(PASSWORD_TWO), any(Map.class))).willReturn(false);
 
         mockMvc.perform(post(DO_RESET_PASSWORD_ENDPOINT).with(csrf())
             .param(ACTION_PARAMETER, UNUSED)
@@ -1301,6 +1357,21 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, HttpStatus.UNAUTHORIZED.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(model().attribute(IS_ACCOUNT_SUSPENDED, true))
+            .andExpect(status().isOk())
+
+            .andExpect(view().name(LOGIN_VIEW));
     }
 
     /**
@@ -1407,7 +1478,7 @@ public class AppControllerTest {
      */
     @Test
     public void loginWithPin_shouldPutInModelTheCorrectErrorDetailAndReturnLoginWithPinViewIfAGenericExceptionOccurs() throws Exception {
-        given(spiService.loginWithPin(eq(LOGIN_PIN_CODE), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(Exception.class);
+        given(spiService.loginWithPin(eq(LOGIN_PIN_CODE), eq(REDIRECT_URI), eq(STATE), eq(CLIENT_ID))).willThrow(RuntimeException.class);
 
         mockMvc.perform(post(LOGIN_WITH_PIN_ENDPOINT).with(csrf())
             .param(PIN_PARAMETER, LOGIN_PIN_CODE)

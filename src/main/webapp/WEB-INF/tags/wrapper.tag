@@ -121,10 +121,18 @@
             <p>
                 <strong class="phase-tag"><spring:message code="public.template.header.phase.tag" /></strong>
                 <span>
+                    <c:set var="smartSurveyParam">
+                        ${pageContext.request.scheme}://${pageContext.request.serverName}${requestScope['javax.servlet.forward.request_uri']}${empty param.client_id ? '' : '?client_id='}${param.client_id}
+                    </c:set>
+                    <c:set var="smartSurveyUrl">
+                        <spring:url value="https://www.smartsurvey.co.uk/s/IDAMSurvey/">
+                            <spring:param name="pageurl" value="${smartSurveyParam}" />
+                        </spring:url>
+                    </c:set>
                     <spring:message
                         htmlEscape="false"
                         code="public.template.header.phase.description"
-                        arguments="https://www.smartsurvey.co.uk/s/IDAMSurvey/"
+                        arguments="${smartSurveyUrl}"
                     />
                 </span>
             </p>
@@ -132,24 +140,6 @@
     </div>
 
     <jsp:doBody/>
-
-    <details role="group" class="divider">
-        <summary class="font-xsmall" role="button" aria-controls="details-content-0" aria-expanded="false">
-            <span class="summary"><spring:message code="public.template.feedback.summary" /></span>
-        </summary>
-        <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
-            <p class="text bold-small"><spring:message code="public.template.feedback.heading" /></p>
-            <p class="text">
-                <a aria-label="<spring:message code="public.template.feedback.link.label" />"
-                   href="http://www.smartsurvey.co.uk/s/2T7C6/" target="_blank">
-                    <spring:message code="public.template.feedback.link.text" />
-                </a>
-            </p>
-            <p class="text">
-                <spring:message code="public.template.feedback.link.label" />
-            </p>
-        </div>
-    </details>
 </main>
 
 <footer class="group js-footer" id="footer" role="contentinfo">

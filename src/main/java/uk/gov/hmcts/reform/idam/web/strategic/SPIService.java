@@ -28,7 +28,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
-import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
@@ -290,8 +290,8 @@ public class SPIService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<ForgotPasswordRequest> entity = new HttpEntity<>(
-            new ForgotPasswordRequest()
+        HttpEntity<ForgotPasswordDetails> entity = new HttpEntity<>(
+            new ForgotPasswordDetails()
                 .email(email)
                 .redirectUri(redirectUri)
                 .clientId(clientId),
@@ -304,7 +304,7 @@ public class SPIService {
     /**
      * @should call api with the correct data
      */
-    public ResponseEntity<String> validateResetPasswordToken(final String token, final String code) throws IOException {
+    public ResponseEntity<String> validateResetPasswordToken(final String token, final String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("token", token); //NOSONAR
