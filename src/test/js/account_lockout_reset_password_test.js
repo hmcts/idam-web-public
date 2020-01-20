@@ -44,7 +44,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(10);
+    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -53,7 +53,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
     I.waitForText('Your password has been changed', 20, 'h1');
-    I.see('You can now sign in with your new password.')
+    I.see('You can now sign in with your new password.');
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
     I.click('Sign in to your account');
     I.waitInUrl('/login', 180);
