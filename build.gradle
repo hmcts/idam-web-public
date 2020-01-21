@@ -173,7 +173,8 @@ allprojects  {
 
   task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js','--steps', '--grep', '@functional', '--verbose', '--debug', '--reporter', 'mochawesome'
+    //commndLine 'test-crossbrowser-e2e'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js','--steps', '--grep', '@crossbroswer', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 }
 

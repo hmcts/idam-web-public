@@ -41,7 +41,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withNightlyPipeline(type, product, component) {
 
-    after('DependencyCheckNightly') {
+
         env.TEST_URL = params.URL_TO_TEST
 
         env.IDAMAPI = params.API_URL_TO_TEST
@@ -67,7 +67,7 @@ withNightlyPipeline(type, product, component) {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
 
         }
-    }
+
 }
  
 

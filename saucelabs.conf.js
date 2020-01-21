@@ -1,15 +1,15 @@
 
 const supportedBrowsers = require('./src/test/js/config/supportedBrowsers.js');
-//const conf = require('config');
+const browser = process.env.SAUCE_BROWSER || 'chrome';
+const tunnelName = process.env.TUNNEL_IDENTIFIER || 'reformtunnel';
 
 const waitForTimeout = 60000;
 const smartWait = 45000;
-const browser = process.env.SAUCE_BROWSER || 'chrome';
-const tunnelName = process.env.TUNNEL_IDENTIFIER || 'reformtunnel';
 
 const getBrowserConfig = browserGroup => {
   const browserConfig = [];
   for (const candidateBrowser in supportedBrowsers[browserGroup]) {
+
     if (candidateBrowser) {
       const desiredCapability = supportedBrowsers[browserGroup][candidateBrowser];
       desiredCapability.tunnelIdentifier = tunnelName;
@@ -26,7 +26,7 @@ const getBrowserConfig = browserGroup => {
 };
 
 const setupConfig = {
-  tests: './src/test/js/*_.js',
+  tests: './src/test/js/*_test.js',
   output: `${process.cwd()}/functional-output`,
   helpers: {
     WebDriverIO: {
@@ -43,10 +43,8 @@ const setupConfig = {
       desiredCapabilities: {}
     },
     SauceLabsReportingHelper: { require: './src/test/js/shared/sauceLabsReportingHelper.js' },
-
-    IdamHelper: { require: './src/test/js/shared/idam_helper.js' },
-
-  },
+    IdamHelper: { require: './src/test/js/shared/idam_helper.js' }
+   },
   include: { I: './src/test/js/shared/custom_steps.js' },
   mocha: {
     reporterOptions: {
@@ -72,7 +70,7 @@ const setupConfig = {
       browsers: getBrowserConfig('safari')
     }
   },
-  name: 'RFE Frontend Tests'
+  name: 'Idam web public Tests'
 };
 
 exports.config = setupConfig;

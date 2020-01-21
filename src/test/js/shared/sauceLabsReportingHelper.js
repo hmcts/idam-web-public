@@ -3,14 +3,13 @@
 const event = require('codeceptjs').event;
 const container = require('codeceptjs').container;
 const exec = require('child_process').exec;
-const config = require('config');
 
-const sauceUsername = process.env.SAUCE_USERNAME || config.saucelabs.username;
-const sauceKey = process.env.SAUCE_ACCESS_KEY || config.saucelabs.key;
+const sauceUsername = process.env.SAUCE_USERNAME;
+const sauceKey = process.env.SAUCE_ACCESS_KEY;
 
 
 function updateSauceLabsResult(result, sessionId) {
-  console.log('SauceOnDemandSessionID=' + sessionId + ' job-name=div-respondent-frontend');
+  console.log('SauceOnDemandSessionID=' + sessionId + ' job-name=idam-web-public-Uitests');
   // eslint-disable-next-line max-len
   return 'curl -X PUT -s -d \'{"passed": ' + result + '}\' -u ' + sauceUsername + ':' + sauceKey + ' https://eu-central-1.saucelabs.com/rest/v1/' + sauceUsername + '/jobs/' + sessionId;
 }
