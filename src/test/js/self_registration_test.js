@@ -34,34 +34,27 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
     I.see('Create an account');
-
     I.click("Continue");
-
     I.waitForText('Information is missing or invalid', 20, 'h2');
-    I.wait(5);
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('firstName', 'Lucy');
     I.click('Continue');
-    I.wait(5);
     I.dontSee('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('lastName', 'Lu');
     I.click('Continue');
-    I.wait(5);
     I.dontSee('You have not entered your first name');
     I.dontSee('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('email', '111');
     I.click('Continue');
-    I.wait(5);
     I.see('Your email address is invalid');
     I.fillField('firstName', 'L');
     I.fillField('lastName', '@@');
     I.click('Continue');
-    I.wait(5);
     I.see('Your first name is invalid');
     I.see('First name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Your last name is invalid');
@@ -86,7 +79,7 @@ Scenario('@functional @selfregister Account already created', async (I) => {
 
     I.waitForText('Check your email', 20, 'h1');
 
-    I.wait(10);
+    I.wait(5);
     const emailResponse = await I.getEmail(citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
@@ -107,7 +100,7 @@ Scenario('@functional @crossbroswer @selfregister I can self register', async (I
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(10);
+    I.wait(5);
     const userActivationUrl = await I.extractUrl(email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
@@ -116,7 +109,6 @@ Scenario('@functional @crossbroswer @selfregister I can self register', async (I
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
-    I.wait(5);
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
     I.seeInCurrentUrl("state=selfreg");
@@ -125,7 +117,6 @@ Scenario('@functional @crossbroswer @selfregister I can self register', async (I
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.wait(10);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -155,7 +146,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
 
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(10);
+    I.wait(5);
     const userActivationUrl = await I.extractUrl(randomUserEmailAddress);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
@@ -164,7 +155,6 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
-    I.wait(5);
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
     I.seeInCurrentUrl("state=selfreg");
@@ -201,7 +191,6 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.fillField('#password2', specialCharacterPassword);
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
-    I.wait(10);
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
     I.seeInCurrentUrl("state=selfreg");
@@ -210,7 +199,6 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.fillField('#password', specialCharacterPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.wait(10);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -238,30 +226,25 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
     I.fillField('password2', 'Passw0rd');
     I.click('Continue');
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.wait(2);
     I.see("Your password is too easy to guess");
     I.fillField('password1', `${randomUserFirstName}Other6mKjmC`);
     I.fillField('password2', `${randomUserFirstName}Other6mKjmC`);
     I.click('Continue');
-    I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
     I.see("Do not include your name or email in your password");
     I.fillField('password1', `${email}3ksTys`);
     I.fillField('password2', `${email}3ksTys`);
     I.click('Continue');
-    I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
     I.see("Do not include your name or email in your password");
     I.fillField('password1', 'passwordidamtest');
     I.fillField('password2', 'passwordidamtest');
     I.click('Continue');
-    I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
     I.see('Your password didn\'t have all the required characters');
     I.fillField('password1', 'Lincoln1');
     I.fillField('password2', 'Lincoln1');
     I.click('Continue');
-    I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
     I.see("Your password is too easy to guess");
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

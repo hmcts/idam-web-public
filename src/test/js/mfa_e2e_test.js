@@ -68,10 +68,9 @@ Scenario('@functional @crossbroswer @mfaLogin I am able to login with MFA', asyn
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(10);
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required', 10, 'h1');
-
+    I.wait(5);
     const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
@@ -92,7 +91,6 @@ Scenario('@functional @mfaLogin I am not able to login with MFA for the block po
     I.fillField('#username', blockUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(10);
     I.waitForText('Policies check failed', 10, 'h2');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -104,51 +102,43 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(10);
-    I.seeInCurrentUrl("/verification");
+    I.waitInUrl("/verification", 20);
     I.waitForText('Verification required', 2, 'h1');
-
+    I.wait(5);
     const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
 
     // empty field
     I.fillField('code', '');
     I.click('Submit');
-    I.wait(5);
     I.waitForText('Enter a verification code', 5, '.error-message');
     // other than digits
     I.fillField('code', '663h8w7g');
     I.click('Submit');
-    I.wait(3);
     I.see('Enter numbers only');
     // not 8 digit otp
     I.fillField('code', `1${otpCode}`);
     I.click('Submit');
-    I.wait(3);
     I.see('Enter a valid verification code');
     // invalid otp
     I.fillField('code', '12345678');
     I.click('Submit');
-    I.wait(3);
     I.see('Verification code incorrect, try again');
     // invalid otp
     I.fillField('code', '74646474');
     I.click('Submit');
-    I.wait(3);
     I.see('Verification code incorrect, try again');
 
     // invalid otp
     I.fillField('code', '94837292');
     I.click('Submit');
-    I.wait(5);
     // after 3 incorrect attempts redirect user back to the sign in page
-    I.waitInUrl("/login", 20);
+    I.seeInCurrentUrl("/login");
     I.see('Verification code check failed');
     I.see('Your verification code check has failed, please retry');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(10);
-    I.seeInCurrentUrl('verification');
+    I.waitInUrl('/verification', 20);
     I.waitForText('Verification required', 2, 'h1');
 
     const otpCodeLatest = await I.extractOtpFromEmail(mfaUserEmail);
@@ -156,7 +146,6 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     // previously generated otp should be invalidated
     I.fillField('code', otpCode);
     I.click('Submit');
-    I.wait(5);
     I.waitForText('Verification code incorrect, try again', 5, '.error-message');
     I.fillField('code', otpCodeLatest);
     I.interceptRequestsAfterSignin();

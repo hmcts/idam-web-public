@@ -52,37 +52,31 @@ Scenario('@functional @upliftvalid User Validation errors', (I) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in', 30, 'h1');
     I.click("Continue");
-    I.wait(2);
     I.waitForText('Information is missing or invalid', 20, 'h2');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('firstName', 'Lucy');
     I.click('Continue');
-    I.wait(2);
     I.dontSee('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('lastName', 'Lu');
     I.click('Continue');
-    I.wait(2);
     I.dontSee('You have not entered your first name');
     I.dontSee('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('email', '111');
     I.click('Continue');
-    I.wait(2);
     I.see('Your email address is invalid');
     I.fillField('firstName', 'L');
     I.fillField('lastName', '@@');
     I.click('Continue');
-    I.wait(2);
     I.see('Your first name is invalid');
     I.see('First name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Your last name is invalid');
     I.see('Last name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.click('Sign in to your account.');
-    I.wait(2);
     I.seeInCurrentUrl(`redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}`);
     I.seeInCurrentUrl('client_id=' + serviceName);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -97,7 +91,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.scrollPageToBottom();
     I.click('Continue');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(10);
+    I.wait(5);
     let url = await I.extractUrl(citizenEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
@@ -108,7 +102,6 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 60, 'h1');
-    I.wait(2);
     I.see('You can now sign in to your account.');
 });
 
@@ -120,7 +113,6 @@ Scenario('@functional @crossbroswer @upliftLogin uplift a user via login journey
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Sign in to your account.', 30);
     I.click('Sign in to your account.');
-    I.wait(2);
     I.seeInCurrentUrl(`register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}`);
     I.fillField('#username', existingCitizenEmail);
     I.fillField('#password', TestData.PASSWORD);
