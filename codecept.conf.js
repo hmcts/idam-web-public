@@ -9,11 +9,11 @@ exports.config = {
     bootstrap: false,
     helpers: {
         Puppeteer: {
-            //show: true,
+            // show: true,
             url: TestData.WEB_PUBLIC_URL,
             waitForTimeout: 60000,
-            waitForAction: 100,
-            getPageTimeout: 90000,
+            waitForAction: 2000,
+            getPageTimeout: 20000,
             chrome: {
                 //args: ["--proxy-server=" + process.env.PROXY_SERVER],
                 ignoreHTTPSErrors: true
