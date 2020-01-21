@@ -52,9 +52,6 @@ withNightlyPipeline(type, product, component) {
 
         env.SAUCE_USERNAME = params.SAUCE_USERNAME
 
-
-
-
         loadVaultSecrets(secrets)
 
         enableCrossBrowserTest()
@@ -69,7 +66,6 @@ withNightlyPipeline(type, product, component) {
         }
 
 }
- 
 
 //       env.TEST_URL = params.URL_TO_TEST
 //        enableSecurityScan()
