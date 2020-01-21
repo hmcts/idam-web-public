@@ -46,11 +46,13 @@ withNightlyPipeline(type, product, component) {
 
         env.IDAMAPI = params.API_URL_TO_TEST
 
+        env.TUNNEL_IDENTIFIER = params.REFORM_TUNNEL
+
         env.SAUCE_ACCESS_KEY = params.SAUCE_KEY
 
         env.SAUCE_USERNAME = params.SAUCE_USERNAME
 
-        env.TUNNEL_IDENTIFIER = params.REFORM_TUNNEL
+
 
 
         loadVaultSecrets(secrets)
@@ -60,16 +62,9 @@ withNightlyPipeline(type, product, component) {
         after('crossBrowserTest') {
             sh "./gradlew functionalSauce"
 
-            archiveArtifacts '**/build/test-results/**/*'
+            //archiveArtifacts '**/build/test-results/**/*'
 
-            publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "output",
-                reportFiles          : "idam-web-public-e2e-result.html",
-                reportName           : "IDAM Web Public E2E functional tests result"
-            ]
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
 
         }
     }
