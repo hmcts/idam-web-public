@@ -1,5 +1,5 @@
 const supportedBrowsers = require('./src/test/js/config/supportedBrowsers.js');
-const browser = process.env.SAUCELABS_BROWSER || "ie9_win7";
+const browser = process.env.SAUCELABS_BROWSER || "chrome";
 const tunnelName = process.env.TUNNEL_IDENTIFIER || 'reformtunnel';
 const setupConfig = {
     'tests': "./src/test/js/*.js",
@@ -7,21 +7,25 @@ const setupConfig = {
     'timeout': 60000,
     "helpers": {
         "WebDriverIO": {
-            "url": process.env.TEST_URL,
-            "browser": supportedBrowsers[browser].browserName,
-            "cssSelectorsEnabled": "true",
-            "ignore-certificate-errors": "true",
-            "host": "ondemand.saucelabs.com",
-            "port": 80,
-            "user": process.env.SAUCE_USERNAME,
-            "key": process.env.SAUCE_ACCESS_KEY,
-            "desiredCapabilities" : getDesiredCapabilities(),
-            "waitforTimeout": 60000,
-            "timeouts": {
-                "script": 60000,
-                "page load": 60000
-            }
-        },
+                    "url": process.env.TEST_URL,
+                    "browser": "chrome",
+                    "cssSelectorsEnabled": "true",
+                    "ignore-certificate-errors": "true",
+                    "host": "ondemand.eu-central-1.saucelabs.com",
+                    "port": 80,
+                    "region": "eu",
+
+                    "services": ["sauce"],
+                    "sauceConnect": true,
+                    "user": process.env.SAUCE_USERNAME,
+                    "key": process.env.SAUCE_ACCESS_KEY,
+                    "desiredCapabilities" : getDesiredCapabilities(),
+                    "waitforTimeout": 60000,
+                    "timeouts": {
+                      "script": 60000,
+                      "page load": 60000
+                     }
+                },
         "idam_helper": {
             'require': './src/test/js/shared/idam_helper.js'
         },
