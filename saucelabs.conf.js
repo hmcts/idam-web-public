@@ -9,9 +9,9 @@ const smartWait = 45000;
 const getBrowserConfig = browserGroup => {
   const browserConfig = [];
   for (const candidateBrowser in supportedBrowsers[browserGroup]) {
-
     if (candidateBrowser) {
       const desiredCapability = supportedBrowsers[browserGroup][candidateBrowser];
+      desiredCapability.acceptSslCerts = true;
       desiredCapability.tunnelIdentifier = tunnelName;
       desiredCapability.tags = ['idam-web-punlic'];
       browserConfig.push({
@@ -31,16 +31,19 @@ const setupConfig = {
   helpers: {
     WebDriverIO: {
       url: process.env.TEST_URL,
-      browser,
+      browser : 'chrome',
       waitForTimeout,
       smartWait,
       cssSelectorsEnabled: 'true',
       host: 'ondemand.eu-central-1.saucelabs.com',
       port: 80,
       region: 'eu',
-      user: process.env.SAUCE_USERNAME ,
+      sauceConnect: true,
+      services: ['sauce'],
+      //acceptInsecureCerts : true,
+      user: process.env.SAUCE_USERNAME,
       key: process.env.SAUCE_ACCESS_KEY,
-      desiredCapabilities: {}
+      desiredCapabilities: { }
     },
     SauceLabsReportingHelper: { require: './src/test/js/shared/sauceLabsReportingHelper.js' },
     IdamHelper: { require: './src/test/js/shared/idam_helper.js' }
@@ -70,7 +73,8 @@ const setupConfig = {
       browsers: getBrowserConfig('safari')
     }
   },
-  name: 'Idam web public Tests'
+  name: 'Idam web public'
 };
 
 exports.config = setupConfig;
+
