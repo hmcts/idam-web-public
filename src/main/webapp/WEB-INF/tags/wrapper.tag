@@ -53,6 +53,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon-180x180.png">
     <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/apple-touch-icon-167x167.png">
     <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/images/apple-touch-icon-120x120.png">
     <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
 
     <meta name="theme-color" content="#0b0c0c"/>
@@ -60,10 +61,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:image" content="/assets/images/opengraph-image.png">
 
-    <script
-      src="https://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"></script>
+    <script src="/assets/javascripts/jquery-3.4.1.min.js"></script>
 </head>
 <body>
 <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
@@ -123,10 +121,18 @@
             <p>
                 <strong class="phase-tag"><spring:message code="public.template.header.phase.tag" /></strong>
                 <span>
+                    <c:set var="smartSurveyParam">
+                        ${pageContext.request.scheme}://${pageContext.request.serverName}${requestScope['javax.servlet.forward.request_uri']}${empty param.client_id ? '' : '?client_id='}${param.client_id}
+                    </c:set>
+                    <c:set var="smartSurveyUrl">
+                        <spring:url value="https://www.smartsurvey.co.uk/s/IDAMSurvey/">
+                            <spring:param name="pageurl" value="${smartSurveyParam}" />
+                        </spring:url>
+                    </c:set>
                     <spring:message
                         htmlEscape="false"
                         code="public.template.header.phase.description"
-                        arguments="http://www.smartsurvey.co.uk/s/58DYD/"
+                        arguments="${smartSurveyUrl}"
                     />
                 </span>
             </p>
@@ -134,24 +140,6 @@
     </div>
 
     <jsp:doBody/>
-
-    <details role="group" class="divider">
-        <summary class="font-xsmall" role="button" aria-controls="details-content-0" aria-expanded="false">
-            <span class="summary"><spring:message code="public.template.feedback.summary" /></span>
-        </summary>
-        <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
-            <p class="text bold-small"><spring:message code="public.template.feedback.heading" /></p>
-            <p class="text">
-                <a aria-label="<spring:message code="public.template.feedback.link.label" />"
-                   href="http://www.smartsurvey.co.uk/s/2T7C6/" target="_blank">
-                    <spring:message code="public.template.feedback.link.text" />
-                </a>
-            </p>
-            <p class="text">
-                <spring:message code="public.template.feedback.link.label" />
-            </p>
-        </div>
-    </details>
 </main>
 
 <footer class="group js-footer" id="footer" role="contentinfo">

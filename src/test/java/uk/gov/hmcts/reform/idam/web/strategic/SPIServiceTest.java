@@ -1,9 +1,51 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
+import com.google.common.collect.ImmutableMap;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
+import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
+import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
+import uk.gov.hmcts.reform.idam.api.internal.model.Service;
+import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
+import uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
+import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
+import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static com.google.common.net.HttpHeaders.X_FORWARDED_FOR;
+import static java.util.Collections.singletonList;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -12,20 +54,23 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTIVATE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTIVATE_USER_REQUEST;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.API_LOGIN_UPLIFT_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.API_URL;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHENTICATE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZATION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CUSTOM_SCOPE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.DETAILS_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_SPI_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_URI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HEALTH_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.API_LOGIN_UPLIFT_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.OAUTH2_AUTHORIZE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
@@ -36,6 +81,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_COD
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_TOKEN;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_URI;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SCOPE_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_RESPONSE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_URL;
@@ -54,51 +100,16 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_CO
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_TOKEN;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_IP_ADDRESS;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_RESET_PASSWORD_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_API_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HEALTH_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getFoundResponseEntity;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterRequest;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getService;
-
-import java.util.Optional;
-
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-
-import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.model.ArrayOfServices;
-import uk.gov.hmcts.reform.idam.api.model.ForgotPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.ResetPasswordRequest;
-import uk.gov.hmcts.reform.idam.api.model.SelfRegisterRequest;
-import uk.gov.hmcts.reform.idam.api.model.Service;
-import uk.gov.hmcts.reform.idam.api.model.User;
-import uk.gov.hmcts.reform.idam.api.model.ValidateRequest;
-import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
-import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class SPIServiceTest {
@@ -118,6 +129,7 @@ public class SPIServiceTest {
     @Before
     public void setUp() {
         given(configurationProperties.getStrategic().getService().getUrl()).willReturn(API_URL);
+        given(configurationProperties.getStrategic().getEndpoint().getAuthorize()).willReturn(AUTHENTICATE_ENDPOINT);
         given(configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser()).willReturn(USERS_SELF_ENDPOINT);
         given(configurationProperties.getStrategic().getEndpoint().getResetPassword()).willReturn(RESET_PASSWORD_ENDPOINT);
         given(configurationProperties.getStrategic().getEndpoint().getForgotPassword()).willReturn(FORGOT_PASSWORD_SPI_ENDPOINT);
@@ -127,20 +139,12 @@ public class SPIServiceTest {
 
     /**
      * @verifies call correct endpoint to register user
-     * @see SPIService#registerUser(String, String, String, String, String, String)
+     * @see SPIService#registerUser(RegisterUserRequest)
      */
     @Test
     public void registerUser_shouldCallCorrectEndpointToRegisterUser() throws Exception {
-        // given
-
         // when
-        spiService.registerUser(
-            USER_FIRST_NAME,
-            USER_LAST_NAME,
-            USER_EMAIL,
-            JWT,
-            SERVICE_OAUTH2_REDIRECT_URI,
-            SERVICE_OAUTH2_CLIENT_ID);
+        spiService.registerUser(aRegisterUserRequest());
 
         // then
         verify(restTemplate).exchange(eq(SELF_REGISTRATION_URL), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
@@ -148,24 +152,12 @@ public class SPIServiceTest {
 
     /**
      * @verifies register user with correct details
-     * @see SPIService#registerUser(String, String, String, String, String, String)
+     * @see SPIService#registerUser(RegisterUserRequest)
      */
     @Test
     public void registerUser_shouldRegisterUserWithCorrectDetails() throws Exception {
-        // given
-        uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest selfRegisterRequest = new uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest();
-        selfRegisterRequest.setEmail(USER_EMAIL);
-        selfRegisterRequest.setFirstName(USER_FIRST_NAME);
-        selfRegisterRequest.setLastName(USER_LAST_NAME);
-
         // when
-        spiService.registerUser(
-            USER_FIRST_NAME,
-            USER_LAST_NAME,
-            USER_EMAIL,
-            JWT,
-            SERVICE_OAUTH2_REDIRECT_URI,
-            SERVICE_OAUTH2_CLIENT_ID);
+        spiService.registerUser(aRegisterUserRequest());
 
         // then
         ArgumentCaptor<HttpEntity<SelfRegisterRequest>> captor = ArgumentCaptor.forClass(HttpEntity.class);
@@ -182,7 +174,7 @@ public class SPIServiceTest {
 
     /**
      * @verifies return what API call returns
-     * @see SPIService#registerUser(String, String, String, String, String, String)
+     * @see SPIService#registerUser(RegisterUserRequest)
      */
     @Test
     public void registerUser_shouldReturnWhatAPICallReturns() throws Exception {
@@ -193,13 +185,7 @@ public class SPIServiceTest {
             .willReturn(expectedResponse);
 
         // when
-        ResponseEntity<String> actualResponse = spiService.registerUser(
-            USER_FIRST_NAME,
-            USER_LAST_NAME,
-            USER_EMAIL,
-            JWT,
-            SERVICE_OAUTH2_REDIRECT_URI,
-            SERVICE_OAUTH2_CLIENT_ID);
+        ResponseEntity<String> actualResponse = spiService.registerUser(aRegisterUserRequest());
 
         // then
         assertThat(actualResponse, is(expectedResponse));
@@ -300,10 +286,10 @@ public class SPIServiceTest {
         spiService.forgetPassword(USER_EMAIL, SERVICE_OAUTH2_REDIRECT_URI, CLIENT_ID);
         Thread.sleep(1000); // hack to get around CompletableFuture.supplyAsync()
 
-        ArgumentCaptor<HttpEntity<ForgotPasswordRequest>> captor = ArgumentCaptor.forClass(HttpEntity.class);
+        ArgumentCaptor<HttpEntity<ForgotPasswordDetails>> captor = ArgumentCaptor.forClass(HttpEntity.class);
         verify(restTemplate).exchange(eq(FORGOT_PASSWORD_URI), eq(HttpMethod.POST), captor.capture(), eq(String.class));
 
-        HttpEntity<ForgotPasswordRequest> actualRequest = captor.getValue();
+        HttpEntity<ForgotPasswordDetails> actualRequest = captor.getValue();
 
         assertEquals(USER_EMAIL, actualRequest.getBody().getEmail());
         assertEquals(SERVICE_OAUTH2_REDIRECT_URI, actualRequest.getBody().getRedirectUri());
@@ -343,14 +329,14 @@ public class SPIServiceTest {
 
     /**
      * @verifies return api location in header in api response if response code is 302
-     * @see SPIService#uplift(String, String, String, String, String, String)
+     * @see SPIService#uplift(String, String, String, String, String, String, String)
      */
     @Test
     public void uplift_shouldReturnApiLocationInHeaderInApiResponseIfResponseCodeIs302() throws Exception {
 
         given(restTemplate.exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
 
-        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE, MISSING);
 
         assertThat(result, equalTo(GOOGLE_WEB_ADDRESS));
 
@@ -358,13 +344,13 @@ public class SPIServiceTest {
 
     /**
      * @verifies call api with the correct data and return api response body if response code is 200
-     * @see SPIService#uplift(String, String, String, String, String, String)
+     * @see SPIService#uplift(String, String, String, String, String, String, String)
      */
     @Test
     public void uplift_shouldCallApiWithTheCorrectDataAndReturnApiResponseBodyIfResponseCodeIs200() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.ok(GOOGLE_WEB_ADDRESS));
 
-        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE, MISSING);
 
         assertThat(result, equalTo(GOOGLE_WEB_ADDRESS));
 
@@ -385,13 +371,13 @@ public class SPIServiceTest {
 
     /**
      * @verifies return null if api response code is not 200 nor 302
-     * @see SPIService#uplift(String, String, String, String, String, String)
+     * @see SPIService#uplift(String, String, String, String, String, String, String)
      */
     @Test
     public void uplift_shouldReturnNullIfApiResponseCodeIsNot200Nor302() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + API_LOGIN_UPLIFT_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.status(HttpStatus.NOT_MODIFIED).build());
 
-        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE);
+        String result = spiService.uplift(USER_EMAIL, PASSWORD_ONE, JWT, REDIRECT_URI, CLIENT_ID, STATE, MISSING);
 
         assertThat(result, is(nullValue()));
 
@@ -400,13 +386,19 @@ public class SPIServiceTest {
 
     /**
      * @verifies call api with the correct data and return location in header in api response if response code is 302
-     * @see SPIService#authorize(String, String, String, String, String)
+     * @see SPIService#authorize(Map, List)
      */
     @Test
     public void authorize_shouldCallApiWithTheCorrectDataAndReturnLocationInHeaderInApiResponseIfResponseCodeIs302() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
 
-        String result = spiService.authorize(USER_EMAIL, PASSWORD_ONE, REDIRECTURI, STATE, CLIENT_ID);
+        String result = spiService.authorize(ImmutableMap.<String,String>builder()
+            .put(USERNAME_PARAMETER, USER_EMAIL)
+            .put(PASSWORD_PARAMETER, PASSWORD_ONE)
+            .put(REDIRECT_URI, REDIRECTURI)
+            .put(STATE_PARAMETER, STATE)
+            .put(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .put(SCOPE_PARAMETER, CUSTOM_SCOPE).build(), null);
 
         assertThat(result, equalTo(GOOGLE_WEB_ADDRESS));
 
@@ -424,18 +416,22 @@ public class SPIServiceTest {
         assertThat(form.getFirst(STATE_PARAMETER), equalTo(STATE));
         assertThat(form.getFirst(CLIENT_ID_PARAMETER), equalTo(CLIENT_ID));
 
-
     }
 
     /**
      * @verifies return null if api response code is not 302
-     * @see SPIService#authorize(String, String, String, String, String)
+     * @see SPIService#authorize(Map, List)
      */
     @Test
     public void authorize_shouldReturnNullIfApiResponseCodeIsNot302() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.ok().build());
 
-        String result = spiService.authorize(USER_EMAIL, PASSWORD_ONE, REDIRECTURI, STATE, CLIENT_ID);
+        String result = spiService.authorize(ImmutableMap.<String,String>builder()
+            .put(USERNAME_PARAMETER, USER_EMAIL)
+            .put(PASSWORD_PARAMETER, PASSWORD_ONE)
+            .put(REDIRECT_URI, REDIRECTURI)
+            .put(STATE_PARAMETER, STATE)
+            .put(CLIENT_ID_PARAMETER, CLIENT_ID).build(), null);
 
         assertThat(result, is(nullValue()));
 
@@ -443,15 +439,19 @@ public class SPIServiceTest {
     }
 
     /**
-     * @verifies not send state parameter in form if it is not send as parameter in the service
-     * @see SPIService#authorize(String, String, String, String, String)
+     * @verifies not send state and scope parameters in form if they are not send as parameter in the service
+     * @see SPIService#authorize(Map, List)
      */
     @Test
-    public void authorize_shouldNotSendStateParameterInFormIfItIsNotSendAsParameterInTheService() throws Exception {
+    public void authorize_shouldNotSendStateAndScopeParametersInFormIfTheyAreNotSendAsParameterInTheService() throws Exception {
 
         given(restTemplate.exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
 
-        spiService.authorize(USER_EMAIL, PASSWORD_ONE, REDIRECTURI, MISSING, CLIENT_ID);
+        spiService.authorize(ImmutableMap.<String,String>builder()
+            .put(USERNAME_PARAMETER, USER_EMAIL)
+            .put(PASSWORD_PARAMETER, PASSWORD_ONE)
+            .put(REDIRECT_URI, REDIRECTURI)
+            .put(CLIENT_ID_PARAMETER, CLIENT_ID).build(), null);
 
         verify(restTemplate).exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), captor.capture(), eq(String.class));
 
@@ -465,6 +465,7 @@ public class SPIServiceTest {
         assertThat(form.getFirst(PASSWORD_PARAMETER), equalTo(PASSWORD_ONE));
         assertThat(form.getFirst(REDIRECT_URI), equalTo(REDIRECTURI));
         assertThat(form.getFirst(STATE_PARAMETER), is(nullValue()));
+        assertThat(form.getFirst(SCOPE_PARAMETER), is(nullValue()));
         assertThat(form.getFirst(CLIENT_ID_PARAMETER), equalTo(CLIENT_ID));
 
     }
@@ -567,26 +568,11 @@ public class SPIServiceTest {
     }
 
     /**
-     * @verifies return optional empty if api response is null
-     * @see SPIService#getDetails(String)
-     */
-    @Test
-    public void getDetails_shouldReturnOptionalEmptyIfApiResponseIsNull() throws Exception {
-        given(configurationProperties.getStrategic().getEndpoint().getDetails()).willReturn(DETAILS_ENDPOINT);
-        given(restTemplate.exchange(eq(API_URL + SLASH + DETAILS_ENDPOINT), eq(HttpMethod.GET), any(HttpEntity.class), eq(User.class))).willReturn(null);
-
-        Optional<User> response = spiService.getDetails(AUTHORIZATION_TOKEN);
-
-        assertThat(response, equalTo(Optional.empty()));
-    }
-
-
-    /**
      * @verifies call api with the correct data and return the service if api response is not empty and http status code is 200
      * @see SPIService#getServiceByClientId(String)
      */
     @Test
-    public void getServiceByClientId_shouldCallApiWithTheCorrectDataAndReturnTheServiceIfApiResponseIsNotEmptyAndHttpStatusCodeIs200() throws Exception {
+    public void getServiceByClientId_shouldCallApiWithTheCorrectDataAndReturnTheServiceIfApiResponseIsNotEmptyAndHttpStatusCodeIs200() {
         Service service = getService(SERVICE_LABEL, SERVICE_CLIENT_ID, true);
 
         ArrayOfServices services = new ArrayOfServices();
@@ -603,13 +589,12 @@ public class SPIServiceTest {
 
     }
 
-
     /**
      * @verifies return Optional empty if api returns an http status different from 200
      * @see SPIService#getServiceByClientId(String)
      */
     @Test
-    public void getServiceByClientId_shouldReturnOptionalEmptyIfApiReturnsAnHttpStatusDifferentFrom200() throws Exception {
+    public void getServiceByClientId_shouldReturnOptionalEmptyIfApiReturnsAnHttpStatusDifferentFrom200() {
 
         given(configurationProperties.getStrategic().getEndpoint().getServices()).willReturn(SERVICES_ENDPOINT);
         given(restTemplate.exchange(eq(API_URL + SLASH + SERVICES_ENDPOINT + "?clientId=" + SERVICE_CLIENT_ID), eq(HttpMethod.GET), any(HttpEntity.class), eq(ArrayOfServices.class))).willReturn(ResponseEntity.badRequest().build());
@@ -639,12 +624,157 @@ public class SPIServiceTest {
      * @see SPIService#healthCheck()
      */
     @Test
-    public void healthCheck_shouldCallApiHealthCheck() throws Exception {
+    public void healthCheck_shouldCallApiHealthCheck() {
         given(configurationProperties.getStrategic().getEndpoint().getHealth()).willReturn(HEALTH_ENDPOINT);
         given(restTemplate.getForEntity(API_URL + SLASH + HEALTH_ENDPOINT, HealthCheckStatus.class)).willReturn(ResponseEntity.ok(new HealthCheckStatus("UP")));
 
         ResponseEntity<HealthCheckStatus> response = spiService.healthCheck();
 
         assertThat(response.getBody().getStatus(), equalTo("UP"));
+    }
+
+    private RegisterUserRequest aRegisterUserRequest() {
+        RegisterUserRequest registerUserRequest = new RegisterUserRequest();
+        registerUserRequest.setClient_id(SERVICE_OAUTH2_CLIENT_ID);
+        registerUserRequest.setRedirect_uri(SERVICE_OAUTH2_REDIRECT_URI);
+        registerUserRequest.setFirstName(USER_FIRST_NAME);
+        registerUserRequest.setLastName(USER_LAST_NAME);
+        registerUserRequest.setJwt(JWT);
+        registerUserRequest.setUsername(USER_EMAIL);
+        registerUserRequest.setState(STATE);
+        return registerUserRequest;
+    }
+
+    /**
+     * @verifies return null if no cookie is found
+     * @see SPIService#authenticate(String, String, String)
+     */
+    @Test
+    public void authenticate_shouldReturnNullIfNoCookieIsFound() {
+        String cookie = "Idam.Session=1234567890";
+        given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie).build());
+        List<String> result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
+        assertTrue(result.contains(cookie));
+    }
+
+    /**
+     * @verifies return a set-cookie header
+     * @see SPIService#authenticate(String, String, String)
+     */
+    @Test
+    public void authenticate_shouldReturnASetcookieHeader() {
+        given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().build());
+        List<String> result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
+        assertNull(result);
+    }
+
+    /**
+     * @verifies return a set-cookie header to set Idam.AuthId if successful
+     * @see SPIService#initiateOtpeAuthentication(List, String)
+     */
+    @Test
+    public void initiateOtpeAuthentication_shouldReturnASetcookieHeaderToSetIdamAuthIdIfSuccessful() throws Exception {
+        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
+        given(restTemplate.exchange(eq(endpoint),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, "Idam.AuthId=authId").build());
+
+        List<String> result = spiService
+            .initiateOtpeAuthentication(singletonList("Idam.Session=idamSession"), "6.6.6.6");
+        assertThat(result, is(singletonList("Idam.AuthId=authId")));
+
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, "6.6.6.6");
+        headers.add(HttpHeaders.COOKIE, "Idam.Session=idamSession");
+
+        verify(restTemplate)
+            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
+    }
+
+    /**
+     * @verifies return null if no cookie is found
+     * @see SPIService#initiateOtpeAuthentication(List, String)
+     */
+    @Test
+    public void initiateOtpeAuthentication_shouldReturnNullIfNoCookieIsFound() throws Exception {
+        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
+        given(restTemplate.exchange(eq(endpoint),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().build());
+
+        List<String> result = spiService
+            .initiateOtpeAuthentication(singletonList("Idam.Session=idamSession"), "6.6.6.6");
+        Assert.assertNull(result);
+
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, "6.6.6.6");
+        headers.add(HttpHeaders.COOKIE, "Idam.Session=idamSession");
+
+        verify(restTemplate)
+            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
+    }
+
+    /**
+     * @verifies return a set-cookie header to set Idam.Session if successful
+     * @see SPIService#submitOtpeAuthentication(List, String, String)
+     */
+    @Test
+    public void submitOtpeAuthentication_shouldReturnASetcookieHeaderToSetIdamSessionIfSuccessful() throws Exception {
+        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
+        given(restTemplate.exchange(eq(endpoint),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, "Idam.Session=idamSession").build());
+
+        List<String> result = spiService
+            .submitOtpeAuthentication(singletonList("Idam.AuthId=authId"), "6.6.6.6", "123456");
+        assertThat(result, is(singletonList("Idam.Session=idamSession")));
+
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        form.add("otp", "123456");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, "6.6.6.6");
+        headers.add(HttpHeaders.COOKIE, "Idam.AuthId=authId");
+
+        verify(restTemplate)
+            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
+    }
+
+    /**
+     * @verifies return null if no cookie is found
+     * @see SPIService#submitOtpeAuthentication(List, String, String)
+     */
+    @Test
+    public void submitOtpeAuthentication_shouldReturnNullIfNoCookieIsFound() throws Exception {
+        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
+        given(restTemplate.exchange(eq(endpoint),
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().build());
+
+        List<String> result = spiService
+            .submitOtpeAuthentication(singletonList("Idam.AuthId=authId"), "6.6.6.6", "123456");
+        Assert.assertNull(result);
+
+        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+        form.add("service", "otpe");
+        form.add("otp", "123456");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add(X_FORWARDED_FOR, "6.6.6.6");
+        headers.add(HttpHeaders.COOKIE, "Idam.AuthId=authId");
+
+        verify(restTemplate)
+            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
     }
 }

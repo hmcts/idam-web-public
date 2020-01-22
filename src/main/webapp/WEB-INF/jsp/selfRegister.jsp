@@ -10,7 +10,7 @@
     <article class="content__body">
         <form:form name="selfRegisterForm" class="form form-section"
                    method="post" _lpchecked="1"
-                   action="/users/selfRegister" commandName="selfRegisterCommand" novalidate="">
+                   action="/users/selfRegister" modelAttribute="selfRegisterCommand" novalidate="">
             <spring:hasBindErrors name="selfRegisterCommand">
                 <div class="error-summary" role="group"
                      aria-labelledby="validation-error-summary-heading" tabindex="-1">
@@ -21,20 +21,48 @@
                         <spring:message code="public.common.error.please.fix.following"/>
                     </p>
                     <ul class="error-summary-list">
-                        <c:forEach var="error" items="${errors.fieldErrors}">
+                        <c:if test="${not empty errors.getFieldError('firstName')}">
                             <li>
-                                <a href="#${error.field}">
+                                <a href="#${errors.getFieldError('firstName').field}">
                                     <c:choose>
-                                        <c:when test="${error.field == 'email' && empty error.rejectedValue}">
-                                            <spring:message code="public.common.error.enter.username" />
+                                        <c:when test="${empty errors.getFieldError('firstName').rejectedValue}">
+                                            <spring:message code="public.common.error.empty.first.name" />
                                         </c:when>
                                         <c:otherwise>
-                                            <spring:message message="${error}"/>
+                                            <spring:message code="public.common.error.invalid.first.name"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </a>
                             </li>
-                        </c:forEach>
+                        </c:if>
+                        <c:if test="${not empty errors.getFieldError('lastName')}">
+                            <li>
+                                <a href="#${errors.getFieldError('lastName').field}">
+                                    <c:choose>
+                                        <c:when test="${empty errors.getFieldError('lastName').rejectedValue}">
+                                            <spring:message code="public.common.error.empty.last.name" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <spring:message code="public.common.error.invalid.last.name"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </a>
+                            </li>
+                        </c:if>
+                        <c:if test="${not empty errors.getFieldError('email')}">
+                            <li>
+                                <a href="#${errors.getFieldError('email').field}">
+                                    <c:choose>
+                                        <c:when test="${empty errors.getFieldError('email').rejectedValue}">
+                                            <spring:message code="public.common.error.enter.username" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <spring:message code="public.common.error.invalid.username"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </a>
+                            </li>
+                        </c:if>
                     </ul>
                 </div>
             </spring:hasBindErrors>
@@ -49,10 +77,16 @@
                                 <label for="firstName">
                                     <span class="form-label-bold"><spring:message code="public.self.register.first.name.label"/></span>
                                     <c:if test="${status.error}">
-                                        <script>
-                                            sendEvent('Self Register', 'Error', 'First name is empty');
-                                        </script>
-                                        <span class="error-message"><spring:message code="public.common.error.empty.first.name"/></span>
+                                        <span class="error-message">
+                                            <ul>
+                                                <c:forEach var="error" items="${status.errorCodes}">
+                                                    <li><spring:message code="${error}${'.selfRegisterCommand.firstName'}"></spring:message></li>
+                                                    <script>
+                                                        sendEvent('Self Register', 'Error', 'First name error code: ${status.errorCode}');
+                                                    </script>
+                                                </c:forEach>
+                                            </ul>
+                                        </span>
                                     </c:if>
                                 </label>
                                 <form:input
@@ -69,10 +103,16 @@
                                 <label for="lastName">
                                     <span class="form-label-bold"><spring:message code="public.self.register.last.name.label"/></span>
                                     <c:if test="${status.error}">
-                                        <script>
-                                            sendEvent('Self Register', 'Error', 'Last name is empty');
-                                        </script>
-                                        <span class="error-message"><spring:message code="public.common.error.empty.last.name" /></span>
+                                        <span class="error-message">
+                                            <ul>
+                                                <c:forEach var="error" items="${status.errorCodes}">
+                                                    <li><spring:message code="${error}${'.selfRegisterCommand.lastName'}"></spring:message></li>
+                                                    <script>
+                                                        sendEvent('Self Register', 'Error', 'Last name error code: ${status.errorCode}');
+                                                    </script>
+                                                </c:forEach>
+                                            </ul>
+                                        </span>
                                     </c:if>
                                 </label>
                                 <form:input
@@ -127,6 +167,7 @@
                             <c:param name="redirect_uri" value="${redirectUri}" />
                             <c:param name="client_id" value="${clientId}" />
                             <c:param name="state" value="${state}" />
+                            <c:param name="scope" value="${scope}" />
                         </c:url>
                         <a href="${loginUrl}"><spring:message code="public.register.sign.in" /></a>
                     </p>

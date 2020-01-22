@@ -37,6 +37,102 @@ To run all checks (including unit tests) please execute the following command:
 $ ./gradlew check
 ```
 
+## Docker 
+
+Required tools for macOS
+
+- docker (homebrew cask)
+
+### Build
+
+```bash
+docker build -t hmcts/idam-web-public:<tag> .
+```
+
+### Run Interactively 
+
+```bash
+# Running a temporary container?
+docker run --rm -it -e STRATEGIC_SERVICE_URL=http://<local-idam-api-hostname> --entrypoint /bin/sh hmcts/idam-web-public:<tag>
+# Is the container already running?
+docker exec -it <hmcts/idam-web-public:<tag> /bin/sh
+```
+
+### Run as Daemon 
+
+See the webapps docker-compose.yml file.
+Docker compose expects the image to tag to be `local`.
+
+```bash
+docker-compose up
+```
+
+### Docker Compose Notes
+
+Expected error: Access denied. ForgeRock connection is not yet implemented. Please use the following URI to obtain the the security code page.
+
+`http://localhost:18002/login/pin?client_id=tstsrv456&redirect_uri=http://localhost:8084/ui/login`
+
+### AKS Troubleshooting Mode
+
+Use the `/configprops` & `/env` endpoints to learn more about the target configuration. To bypass sanitisation, use either of the implemtations below.
+
+```yaml
+# application.yaml
+management:
+  security:
+    enabled: false
+  endpoint:
+    configprops:
+      keys-to-sanitize:
+        - nothing
+    env:
+     keys-to-sanitize:
+        - nothing
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health,info,configprops,env
+    ...
+
+# values.yaml
+  ...
+  environment:
+    MANAGEMENT_ENDPOINT_CONFIGPROPS_KEYS-TO-SANITIZE_0: nothing
+    MANAGEMENT_ENDPOINT_ENV_KEYS-TO-SANITIZE_0: nothing
+    MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,configprops,env
+  ...
+
+# K8s manifest
+        - name: MANAGEMENT_ENDPOINT_CONFIGPROPS_KEYS-TO-SANITIZE_0
+          value: nothing
+        - name: MANAGEMENT_ENDPOINT_ENV_KEYS-TO-SANITIZE_0
+          value: nothing
+        - name: MANAMANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+          value: health,info,configprops,env
+```
+
+
+### Pipeline Overrides
+
+You can add similar callbacks to the below to override the environment values and set testing variables.
+
+```groovy
+withPipeline(type, product, component) {
+  ...
+  before('smoketest-aks:idam-preview') {
+    env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
+    env.NONPROD_ENVIRONMENT_NAME = 'aat'
+    env.PUBLIC_URL = 'https://idam-web-public-pr-207.service.core-compute-preview.internal'
+    println """Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+               Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+               Using PUBLIC_URL: ${env.PUBLIC_URL}""".stripIndent()
+  }
+  ...
+}
+```
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.

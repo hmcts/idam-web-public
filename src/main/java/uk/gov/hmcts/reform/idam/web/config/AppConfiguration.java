@@ -71,9 +71,11 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .csrf().csrfTokenRepository(new CookieCsrfTokenRepository()).and()
+            .csrf().ignoringAntMatchers("/o/**")
+            .csrfTokenRepository(new CookieCsrfTokenRepository()).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
+            .antMatchers("/o/**").permitAll()
             .antMatchers("/resources/**").permitAll()
             .antMatchers("/assets/**").permitAll()
             .antMatchers("/users/register").permitAll()

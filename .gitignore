@@ -1,5 +1,6 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
+functional-output/
 
 ### STS ###
 .apt_generated
@@ -30,3 +31,13 @@ out
 output/
 
 **/application-local.yaml
+
+### VS Code ###
+bin
+
+### Terraform ###
+.terraform
+
+### Helm ###
+**/charts/*.tgz
+charts/*/requirements.lock

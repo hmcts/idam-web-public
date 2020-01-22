@@ -18,10 +18,7 @@
 <t:wrapper titleKey="public.login.subheading.sign.in">
     <article class="content__body">
         <form:form name="loginForm"
-                   method="post"
                    class="form"
-                   action="/authorize"
-                   commandName="authorizeCommand"
                    modelAttribute="authorizeCommand"
                    novalidate=""
                    _lpchecked="1">
@@ -30,6 +27,7 @@
                 <c:param name="redirectUri" value="${redirect_uri}"/>
                 <c:param name="clientId" value="${client_id}"/>
                 <c:param name="state" value="${state}"/>
+                <c:param name="scope" value="${scope}"/>
             </c:url>
 
             <spring:hasBindErrors name="authorizeCommand">
@@ -70,6 +68,19 @@
                                 </p>
                             </div>
                         </c:when>
+                        <c:when test="${hasPolicyCheckFailed}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'User policy check has failed');
+                            </script>
+                            <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
+                                <spring:message code="public.login.error.policycheck.title"/>
+                            </h2>
+                            <div class="text">
+                                <p>
+                                    <spring:message code="public.login.error.policycheck.instruction"/>
+                                </p>
+                            </div>
+                        </c:when>
                         <c:when test="${hasLoginFailed}">
                             <script>
                                 sendEvent('Authorization', 'Error', 'User login has failed');
@@ -77,6 +88,19 @@
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.failed.title"/>
                             </h2>
+                        </c:when>
+                        <c:when test="${hasOtpCheckFailed}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'User verification code check has failed');
+                            </script>
+                            <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
+                                <spring:message code="public.login.error.verificationcheck.title"/>
+                            </h2>
+                            <div class="text">
+                                <p>
+                                    <spring:message code="public.login.error.verificationcheck.instruction"/>
+                                </p>
+                            </div>
                         </c:when>
                         <c:otherwise>
                             <script>
@@ -165,11 +189,6 @@
 
                 <input class="button" type="submit" name="save"
                        value="<spring:message code="public.login.form.submit" />">
-
-                <form:input path="redirect_uri" type="hidden" id="redirect_uri" name="redirect_uri"/>
-                <form:input path="client_id" type="hidden" id="client_id" name="client_id"/>
-                <form:input path="state" type="hidden" id="state" name="state"/>
-                <form:input path="response_type" type="hidden" id="response_type" name="response_type"/>
                 <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled" name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
             </div>
             <c:if test="${selfRegistrationEnabled}">
@@ -182,6 +201,7 @@
                             <c:param name="redirect_uri" value="${redirect_uri}"/>
                             <c:param name="client_id" value="${client_id}"/>
                             <c:param name="state" value="${state}"/>
+                            <c:param name="scope" value="${scope}"/>
                         </c:url>
                         <a href="${selfRegisterUrl}">
                             <spring:message code="public.common.create.account"/>

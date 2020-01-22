@@ -29,24 +29,27 @@ public class TestConstants {
     public static final String API_LOGIN_UPLIFT_ENDPOINT = "/login/uplift";
     public static final String ACTIVATE_USER_ENDPOINT = "/users/activate";
     public static final String LOGIN_ENDPOINT = "/login";
+    public static final String VERIFICATION_ENDPOINT = "/verification";
     public static final String EXPIRED_TOKEN_ENDPOINT = "/expiredtoken";
     public static final String LOGIN_PIN_ENDPOINT = "/login/pin";
     public static final String LOGOUT_ENDPOINT = "/logout";
-    public static final String AUTHORIZE_ENDPOINT = "/authorize";
     public static final String RESET_FORGOT_PASSWORD_ENDPOINT = "/reset/forgotpassword";
     public static final String LOGIN_WITH_PIN_ENDPOINT = "/loginWithPin";
     public static final String ACTIVATE_ENDPOINT = "/activate";
     public static final String OAUTH2_AUTHORIZE_ENDPOINT = "oauth2/authorize";
+    public static final String AUTHENTICATE_ENDPOINT = "authenticate";
     public static final String VALIDATE_RESET_PASSWORD_ENDPOINT = "validateResetPasswordToken";
     public static final String SELF_REGISTRATION_ENDPOINT = "users/selfregister";
     public static final String DETAILS_ENDPOINT = "details";
     public static final String SERVICES_ENDPOINT = "services";
     public static final String TACTICAL_ACTIVATE_ENDPOINT = "/activate";
+    public static final String TACTICAL_RESET_ENDPOINT = "/reset";
     public static final String HEALTH_ENDPOINT = "health";
 
     //uris
     public static final String GOOGLE_WEB_ADDRESS = "https://www.google.com";
     public static final String REDIRECT_URI = "redirect_uri";
+    public static final String FORM_DATA = "form_data";
     public static final String SERVICE_OAUTH2_REDIRECT_URI = "https://cmc.reform.hmcts.net/start";
     public static final String API_URL = "http://api.reform.hmcts.net";
     public static final String SELF_REGISTRATION_URL = String.format("%s/%s?jwt=%s", API_URL, USERS_SELF_ENDPOINT, JWT);
@@ -57,7 +60,8 @@ public class TestConstants {
     //Views
     public static final String USERS_VIEW_NAME = "users";
     public static final String SELF_REGISTER_VIEW_NAME = "selfRegister";
-    public static final String EXPIRED_TOKEN_VIEW_NAME = "expiredtoken";
+    public static final String EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME = "expiredPasswordResetLink";
+    public static final String EXPIRED_ACTIVATION_TOKEN_VIEW_NAME = "expiredActivationLink";
     public static final String USER_ACTIVATION_VIEW_NAME = "useractivation";
     public static final String USER_ACTIVATED_VIEW_NAME = "useractivated";
     public static final String ERROR_VIEW_NAME = "errorpage";
@@ -81,11 +85,13 @@ public class TestConstants {
     public static final String USER_FIRST_NAME = "Jimmy";
     public static final String USER_LAST_NAME = "GREGORY";
     public static final String USER_PASSWORD = "Passw0rd";
+    public static final String USER_IP_ADDRESS = "192.168.0.1";
     public static final String LONG_PASSWORD = "Looooooooooooooooooooooooodp49v83tun29340bt89vgnj0cucvh5b0t78yvn078fu4nb087vhn0834ynb0v75yb0nv785yngb0745n0v45yb784yntv307450bty74n0dp49v83tun29340bt89vgnj0cucvh5b0t78yvn078fu4nb087vhn0834ynb0v75yb0nv785yngb0745n0v45yb784yntv307450bty74n0dp49v83tun29340bt89vgnj0cucvh5b0t78yvn078fu4nb087vhn0834ynb0v75yb0nv785yngb0745n0v45yb784yntv307450bty74n0ng";
     public static final String SHORT_PASSWORD = "Short";
     public static final String PASSWORD_ONE = "password1";
     public static final String PASSWORD_TWO = "password2";
     public static final String USER_NAME = "userName";
+    public static final String BASE64_ENC_FORM_DATA = "ewogICJmaXJzdE5hbWUiOiAiSm9obiIsCiAgImxhc3ROYW1lIjogIkRvZSIsCiAgImVtYWlsIjogImpvaG4uZG9lQGVtYWlsLmNvbSIKfQ==";
 
 
     //Service
@@ -94,6 +100,8 @@ public class TestConstants {
 
 
     //Parameters
+    public static final String IDAM_SESSION_COOKIE_NAME = "Idam.Session";
+    public static final String ARR_COOKIE_NAME = "ARRAffinity";
     public static final String ACTION_PARAMETER = "action";
     public static final String TOKEN_PARAMETER = "token";
     public static final String CODE_PARAMETER = "code";
@@ -102,6 +110,7 @@ public class TestConstants {
     public static final String USER_EMAIL_PARAMETER = "email";
     public static final String JWT_PARAMETER = "jwt";
     public static final String STATE_PARAMETER = "state";
+    public static final String SCOPE_PARAMETER = "scope";
     public static final String CLIENT_ID_PARAMETER = "client_id";
     public static final String CLIENTID_PARAMETER = "clientId";
     public static final String USERNAME_PARAMETER = "username";
@@ -122,6 +131,7 @@ public class TestConstants {
     public static final String GENERIC_ERROR_KEY = "public.error.page.generic.error";
     public static final String ALREADY_ACTIVATED_KEY = "public.error.page.already.activated.description";
     public static final String ERROR_BLACKLISTED_PASSWORD = "public.common.error.blacklisted.password";
+    public static final String ERROR_CONTAINS_PERSONAL_INFO_PASSWORD = "public.common.error.containspersonalinfo.password";
     public static final String ERROR_INVALID_PASSWORD = "public.common.error.invalid.password";
     public static final String ERROR_PREVIOUSLY_USED_PASSWORD = "public.common.error.previously.used.password";
     public static final String ERROR = "error";
@@ -155,10 +165,14 @@ public class TestConstants {
     public static final String STATE = "state test";
     public static final String CLIENT_ID = "clientId";
     public static final String REDIRECTURI = "redirectUri";
-
+    public static final String CUSTOM_SCOPE = "manage-roles";
+    public static final String INSECURE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT";
+    public static final String AUTHENTICATE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT; Path=/; Secure; HttpOnly";
+    public static final String AFFINITY_COOKIE = ARR_COOKIE_NAME + "=COOKIE_AFFINITY_IS_A_FAT_TIME";
 
     //Responses
     public static final String PASSWORD_BLACKLISTED_RESPONSE = "{\"code\":\"PASSWORD_BLACKLISTED\"}";
+    public static final String PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE = "{\"code\":\"PASSWORD_CONTAINS_PERSONAL_INFO\"}";
     public static final String TOKEN_INVALID_RESPONSE = "{\"code\":\"TOKEN_INVALID\"}";
     public static final String RESET_PASSWORD_RESPONSE = "{\"" + REDIRECTURI + "\":\"" + REDIRECTURI + "\"}";
     public static final String HAS_LOGIN_FAILED_RESPONSE = "{\"code\":\"HAS_LOGIN_FAILED\"}";

@@ -58,6 +58,105 @@
         <cve>CVE-2018-1258</cve>
     </suppress>
 
+    <!-- This CVE is Java serialization in Guava -->
+    <suppress>
+        <notes><![CDATA[
+   This suppresses false positives identified on Guava
+   ]]></notes>
+        <gav regex="true">^com.google.guava:guava:.*$</gav>
+        <cve>CVE-2018-10237</cve>
+    </suppress>
+
+    <!-- This CVE is about EventData in Slf4j -->
+    <suppress>
+        <notes><![CDATA[
+   This suppresses false positives identified on Slf4j
+   ]]></notes>
+        <gav regex="true">^^.*slf4j.*$$</gav>
+        <cve>CVE-2018-8088</cve>
+    </suppress>
+
+    <!-- Ignored as we don't do XML parsing. -->
+    <suppress>
+        <notes><![CDATA[
+   file name: javax.json-api-1.1.x.jar
+   ]]></notes>
+        <gav regex="true">^javax\.json:javax\.json-api:1\.1.*$</gav>
+        <cve>CVE-2018-1000840</cve>
+    </suppress>
+
+    <!-- Ignored. -->
+    <suppress>
+        <notes><![CDATA[
+   file name: pmd-java-5.6.1.jar
+   ]]></notes>
+        <gav regex="true">^net\.sourceforge\.pmd:pmd-java:.*$</gav>
+        <cve>CVE-2019-7722</cve>
+    </suppress>
+
+    <!-- Ignored. -->
+    <suppress>
+        <notes><![CDATA[
+   file name: pmd-core-5.6.1.jar
+   ]]></notes>
+        <gav regex="true">^net\.sourceforge\.pmd:pmd-core:.*$</gav>
+        <cve>CVE-2019-7722</cve>
+    </suppress>
+
+    <!-- Suppressing as it seems a false positive as per https://github.com/jeremylong/DependencyCheck/issues/1573 -->
+    <suppress>
+        <notes><![CDATA[Shadowed dependency from AppInsights]]></notes>
+        <gav regex="true">^io\.netty:netty-tcnative-boringssl-static:2\.0\.17\.Final$</gav>
+        <cve>CVE-2014-3488</cve>
+        <cve>CVE-2015-2156</cve>
+    </suppress>
+
+    <!-- https://github.com/jeremylong/DependencyCheck/issues/1573
+    false positive matching on name -->
+    <suppress>
+        <notes>suppress false positives matching just the netty name</notes>
+        <gav regex="true">^.*$</gav>
+        <cve>CVE-2014-3488</cve>
+        <cve>CVE-2016-4970</cve>
+        <cve>CVE-2015-2156</cve>
+    </suppress>
+
+    <!-- Ignored since we are not using Spring Framework 5.0.5 -->
+    <suppress>
+        <notes>suppress false positives - only relevant to spring.framework 5.0.5</notes>
+        <gav regex="true">^org\.springframework\.security:spring-security.*$</gav>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+
+    <!--
+    This vulnerability can only be explored if mysql connector is in the application classpath,
+    hence not relevant to us.
+    -->
+    <suppress>
+        <notes>suppress false positives - only relevant if mysql connector is in the classpath</notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind.*$</gav>
+        <cve>CVE-2019-12086</cve>
+    </suppress>
+
+    <!--
+    This vulnerability can only be explored if ehcache is in the application classpath,
+    hence not relevant to us.
+    -->
+    <suppress>
+        <notes>only relevant if ehcache is used</notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind.*$</gav>
+        <cve>CVE-2019-14379</cve>
+    </suppress>
+
+    <!--
+    This vulnerability can only be explored if default typing is enabled in ObjectMapper.
+    -->
+    <suppress>
+        <notes>only relevant if objectMapper.enableDefaultTyping</notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind.*$</gav>
+        <cve>CVE-2019-14439</cve>
+    </suppress>
+
     <suppress>
         <notes>suppress false positives - only relevant to tomcat &lt;= 8.4</notes>
         <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
@@ -93,5 +192,50 @@
         <cve>CVE-2014-0099</cve>
         <cve>CVE-2014-0119</cve>
         <cve>CVE-2016-5388</cve>
+    </suppress>
+
+    <!--
+    This should not apply to the project as this package is only used in testing.
+    -->
+    <suppress>
+        <notes> 
+        https://www.cvedetails.com/cve/CVE-2019-15052/
+        The HTTP client in the Build tool in Gradle before 5.6 sends authentication credentials originally destined for the configured host. If that host returns a 30x redirect, Gradle also sends those credentials to all subsequent hosts that the request redirects to. This is similar to CVE-2018-1000007.	
+        This should not apply to the project as this package is only used in testing.
+        </notes>
+        <gav regex="true">^info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:1\.3\.0$</gav>
+        <cve>CVE-2019-15052</cve>
+        <cve>CVE-2019-16370</cve>
+    </suppress>
+    
+    <!--
+    This vulnerability can only be exploited if polymorphic typing is enabled on the default
+    object mapper, hence not relevant to us.
+    -->
+    <suppress>
+        <notes>suppress false positives - This vulnerability can only be exploited if polymorphic typing
+            is enabled on the default object mapper, hence not relevant to us.</notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind.*$</gav>
+        <cve>CVE-2019-16335</cve>
+        <cve>CVE-2019-14540</cve>
+        <cve>CVE-2019-16942</cve>
+        <cve>CVE-2019-16943</cve>
+        <cve>CVE-2019-17267</cve>
+        <cve>CVE-2019-17531</cve>
+    </suppress>
+
+    <!--
+    ONLY UNTIL 2019-10-01. No invulnerable package currently
+    -->
+    <suppress>
+        <notes> 
+        https://www.cvedetails.com/cve/CVE-2019-12384/
+        FasterXML jackson-databind 2.x before 2.9.9.1 might allow attackers to have a variety of impacts by leveraging failure to block the logback-core class from polymorphic deserialization. Depending on the classpath content, remote code execution may be possible.
+        </notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:2\.9\.9.*$</gav>
+        <cve>CVE-2019-12384</cve>
+        <cve>CVE-2019-12814</cve>
+        <cve>CVE-2019-16942</cve>
+        <cve>CVE-2019-16943</cve>
     </suppress>
 </suppressions>

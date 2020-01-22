@@ -1,44 +1,28 @@
 package uk.gov.hmcts.reform.idam.web.util;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTIVATE_USER_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_TWO;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME_PARAMETER;
-
-import java.net.URL;
-import java.util.Arrays;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import uk.gov.hmcts.reform.idam.api.model.ActivationResult;
-import uk.gov.hmcts.reform.idam.api.model.Service;
-import uk.gov.hmcts.reform.idam.api.model.User;
+import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
+import uk.gov.hmcts.reform.idam.api.internal.model.Service;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
+
+import java.net.URL;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.*;
 
 public class TestHelper {
 
-
-    public static ActivationResult getActivationResult(String uuid, String redirectUri) {
+    public static ActivationResult getActivationResult(String uuid, String redirectUri, String clientId) {
         ActivationResult activationResult = new ActivationResult();
         activationResult.setUuid(uuid);
         activationResult.setRedirectUri(redirectUri);
+        activationResult.setClientId(clientId);
         return activationResult;
     }
 
@@ -59,17 +43,19 @@ public class TestHelper {
         return requestBuilder;
     }
 
+    /**
+     * With the removal of letter-holder, an "authorized" user is just.. anybody
+     * @return a User
+     */
     public static User anAuthorizedUser() {
-        User user = new User();
-        user.setRoles(Arrays.asList("letter-holder"));
-        return user;
+        return new User();
     }
 
     public static ResponseEntity getFoundResponseEntity(String url) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         headers.setLocation(new URL(url).toURI());
-        return new ResponseEntity<String>("", headers, HttpStatus.FOUND);
+        return new ResponseEntity<>("", headers, HttpStatus.FOUND);
     }
 
     public static SelfRegisterRequest getSelfRegisterRequest() {

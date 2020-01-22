@@ -1,45 +1,57 @@
-var TestData = require('./config/test_data');
+const TestData = require('./config/test_data');
+const randomData = require('./shared/random_data');
 
 Feature('I am able to reset my password');
 
 let adminEmail;
-let randomUserLastName;
+let randomUserFirstName;
 let citizenEmail;
+let otherCitizenEmail;
+let plusCitizenEmail;
+let userFirstNames = [];
+let roleNames = [];
+let serviceNames = [];
+let specialCharacterPassword;
 
-const serviceName = 'TEST_SERVICE_' + Date.now();
-const testMailSuffix = '@mailtest.gov.uk';
-const password = "Passw0rdIDAM"
-const serviceRedirectUri = "https://idam.testservice.gov.uk";
+const serviceName = randomData.getRandomServiceName();
+const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
 
 BeforeSuite(async (I) => {
-    randomUserLastName = await I.generateRandomText();
-    adminEmail = 'admin.' + randomUserLastName + testMailSuffix;
-    citizenEmail = 'citizen.' + randomUserLastName + testMailSuffix;
-    otherCitizenEmail = 'other.' + randomUserLastName + testMailSuffix;
+    randomUserFirstName = randomData.getRandomUserName();
+    adminEmail = 'admin.' + randomData.getRandomEmailAddress();
+    citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
+    otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
+    plusCitizenEmail = `plus.extra+${randomData.getRandomEmailAddress()}`;
+    specialCharacterPassword = 'New&&&$$$%%%<>234';
 
-    var token = await I.getAuthToken();
-    await I.createRole(serviceName + "_beta", 'beta description', '', token);
-    await I.createRole(serviceName + "_admin", 'admin description', serviceName + "_beta", token);
-    await I.createRole(serviceName + "_super", 'super description', serviceName + "_admin", token);
-    var serviceRoles = [serviceName + "_beta", serviceName + "_admin", serviceName + "_super"];
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", token);
-    await I.createUserWithRoles(adminEmail, 'Admin', [serviceName + "_admin", "IDAM_ADMIN_USER"]);
-    await I.createUserWithRoles(citizenEmail, 'Citizen', ["citizen"]);
-    await I.createUserWithRoles(otherCitizenEmail, 'Citizen', ["citizen"]);
+    const token = await I.getAuthToken();
+    let response;
+    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
+    const serviceBetaRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
+    const serviceAdminRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
+    const serviceSuperRole = response.name;
+    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
+    roleNames.push(serviceRoles);
+    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    serviceNames.push(serviceName);
+    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
+    userFirstNames.push(randomUserFirstName + 'Admin');
+    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Citizen');
+    await I.createUserWithRoles(otherCitizenEmail, randomUserFirstName + 'Other', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Other');
+    await I.createUserWithRoles(plusCitizenEmail, randomUserFirstName + 'Plus', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Plus');
 
 });
 
 AfterSuite(async (I) => {
-return Promise.all([
-     I.deleteService(serviceName),
-     I.deleteUser(adminEmail),
-     I.deleteUser(citizenEmail),
-     I.deleteUser(otherCitizenEmail)
-    ]);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @resetpass As a citizen user I can reset my password', async (I) => {
-    var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName + '&state=';
+Scenario('@functional @crossbrowser @resetpass As a citizen user I can reset my password', async (I) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -47,8 +59,8 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(2);
-    var resetPasswordUrl = await I.extractUrl(citizenEmail);
+    I.wait(5);
+    const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
@@ -56,24 +68,81 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
     I.waitForText('Your password has been changed', 20, 'h1');
-    I.see('You can now sign in with your new password.')
+    I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', citizenEmail);
     I.fillField('#password', 'Passw0rd1234');
-    //XB: I.interceptRequestsAfterSignin();
-    I.wait(2);
+    I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.wait(10);
-    I.seeInCurrentUrl('idam.testservice.gov.uk');
-    I.seeInCurrentUrl('code=');
-    I.dontSeeInCurrentUrl('error=');
-    //XB: I.resetRequestInterception();
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
 });
- // NOTE: Retrying this scenario is problematic.
+// NOTE: Retrying this scenario is problematic.
 
-Scenario('@functional @resetpass Validation displayed when I try to reset my password with a blacklisted/invalid password', async (I) => {
-    var loginPage = TestData.WEB_PUBLIC_URL + '/login?redirect_uri=' + serviceRedirectUri + '&client_id=' + serviceName + '&state=';
+Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset my password with diff case email address', async (I) => {
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password', 20, 'h1');
+    I.fillField('#email', citizenEmail.toUpperCase());
+    I.click('Submit');
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
+    const resetPasswordUrl = await I.extractUrl(citizenEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a new password', 20, 'h1');
+    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.fillField('#password1', 'Passw0rd1234');
+    I.fillField('#password2', 'Passw0rd1234');
+    I.click('Continue');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.');
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', citizenEmail);
+    I.fillField('#password', 'Passw0rd1234');
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
+
+Scenario('@functional @resetpass As a citizen user with a plus email I can reset my password', async (I) => {
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password', 20, 'h1');
+    I.fillField('#email', plusCitizenEmail);
+    I.click('Submit');
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
+    const resetPasswordUrl = await I.extractUrl(plusCitizenEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a new password', 20, 'h1');
+    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.fillField('#password1', 'Passw0rd1234');
+    I.fillField('#password2', 'Passw0rd1234');
+    I.click('Continue');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.');
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', plusCitizenEmail);
+    I.fillField('#password', 'Passw0rd1234');
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
+
+Scenario('@functional @resetpass @passwordvalidation Validation displayed when I try to reset my password with a blacklisted/invalid password', async (I) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -81,8 +150,8 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.fillField('#email', otherCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(2);
-    var resetPasswordUrl = await I.extractUrl(otherCitizenEmail);
+    I.wait(5);
+    const resetPasswordUrl = await I.extractUrl(otherCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
@@ -90,19 +159,56 @@ Scenario('@functional @resetpass Validation displayed when I try to reset my pas
     I.fillField('password2', 'Passw0rd');
     I.click('Continue');
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.see("This password is used often and is not secure. Create a more secure password");
+    I.see("Your password is too easy to guess");
+    I.fillField('password1', `${randomUserFirstName}Other6mKjmC`);
+    I.fillField('password2', `${randomUserFirstName}Other6mKjmC`);
+    I.click('Continue');
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.see("Do not include your name or email in your password");
+    I.fillField('password1', `${otherCitizenEmail}3ksTys`);
+    I.fillField('password2', `${otherCitizenEmail}3ksTys`);
+    I.click('Continue');
+    I.waitForText('There was a problem with the password you entered', 20, 'h2');
+    I.see("Do not include your name or email in your password");
     I.fillField('password1', 'passwordidamtest');
     I.fillField('password2', 'passwordidamtest');
     I.click('Continue');
-    I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.see('Your password did not have all of the required characters.');
-    I.see('Enter a password that includes at least 8 characters, a capital letter, a lowercase letter and a number.');
+    I.see('Your password didn\'t have all the required characters');
     I.fillField('password1', 'Lincoln1');
     I.fillField('password2', 'Lincoln1');
     I.click('Continue');
-    I.wait(2);
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
-    I.see("This password is used often and is not secure. Create a more secure password");
+    I.see("Your password is too easy to guess");
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @resetpass As a citizen user I can reset my password with repeated special characters', async (I) => {
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password', 20, 'h1');
+    I.fillField('#email', citizenEmail);
+    I.click('Submit');
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
+    const resetPasswordUrl = await I.extractUrl(citizenEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a new password', 20, 'h1');
+    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.fillField('#password1', specialCharacterPassword);
+    I.fillField('#password2', specialCharacterPassword);
+    I.click('Continue');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.');
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', citizenEmail);
+    I.fillField('#password', specialCharacterPassword);
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
