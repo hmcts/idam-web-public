@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@SIDM_increase_FuncTest_timout")
+@Library("Infrastructure@SIDM_increase_FuncTest_timout_test")
 
 def type = "java"
 
