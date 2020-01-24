@@ -25,6 +25,6 @@ module.exports = function() {
   // Setting test failure on SauceLabs
   event.dispatcher.on(event.test.failed, () => {
     const sessionId = container.helpers('WebDriverIO').browser.requestHandler.sessionID;
-    exec(updateSauceLabsResult('true', sessionId));
+    exec(updateSauceLabsResult('false', sessionId));
   });
 };

@@ -10,9 +10,9 @@ properties([
         string(name: 'SAUCE_KEY', defaultValue: '101a14e3-0458-4927-a968-129adbf18152', description: 'Sauce key'),
         string(name: 'SAUCE_USERNAME', defaultValue: 'sudhasane', description: 'Sauce User name'),
         string(name: 'REFORM_TUNNEL', defaultValue: 'reformtunnel', description: 'Tunnel identifier'),
-        string(name: 'USERNAME', defaultValue: 'idamOwner@HMCTS.NET', description: 'idam-owner'),
-        string(name: 'PASSWORD', defaultValue: 'Ref0rmIsFun', description: 'password'),
-        string(name: 'APIKEY', defaultValue: 'sidam_initial_testing_key-b7ab8862-25b4-41c9-8311-cb78815f7d2d-d9afb6d8-2f88-40c7-911d-ace72f3fc19b', description: 'apikey'),
+        //string(name: 'USERNAME', defaultValue: 'idamOwner@HMCTS.NET', description: 'idam-owner'),
+        //string(name: 'PASSWORD', defaultValue: 'Ref0rmIsFun', description: 'password'),
+        //string(name: 'APIKEY', defaultValue: 'sidam_initial_testing_key-b7ab8862-25b4-41c9-8311-cb78815f7d2d-d9afb6d8-2f88-40c7-911d-ace72f3fc19b', description: 'apikey'),
 
     ])
 ])
@@ -23,10 +23,10 @@ def type = "java"
 
 def product = "idam"
 
-def component = "web-admin"
+def component = "idam-web-public"
 
 def secrets = [
-    'idam-idam-preview': [
+    'idam-idam-aat':[
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY')
@@ -34,10 +34,10 @@ def secrets = [
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
-    [$class : 'AzureKeyVaultSecret',
+    [$class     : 'AzureKeyVaultSecret',
      secretType : 'Secret',
-     name : secretName,
-     version : '',
+     name       : secretName,
+     version    : '',
      envVariable: envVar
     ]
 }
@@ -55,13 +55,13 @@ withNightlyPipeline(type, product, component) {
 
         env.SAUCE_USERNAME = params.SAUCE_USERNAME
 
-        env.SMOKE_TEST_USER_USERNAME = params.USERNAME
+       // env.SMOKE_TEST_USER_USERNAME = params.USERNAME
 
-        env.SMOKE_TEST_USER_PASSWORD = params.PASSWORD
+        //env.SMOKE_TEST_USER_PASSWORD = params.PASSWORD
 
-        env.NOTIFY_API_KEY = env.APIKEY
+        //env.NOTIFY_API_KEY = env.APIKEY
 
-        //loadVaultSecrets(secrets)
+        loadVaultSecrets(secrets)
 
         enableCrossBrowserTest()
 
