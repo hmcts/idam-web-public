@@ -40,10 +40,11 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @crossbroswer @login As a citizen user I can login with spaces in uppercase email', async (I) => {
+Scenario('@functional @crossbroswers @login As a citizen user I can login with spaces in uppercase email', async (I) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
+    I.wait(20)
     I.waitForText('Sign in', 20, 'h1');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
     I.fillField('#password', TestData.PASSWORD);

@@ -72,7 +72,7 @@ withNightlyPipeline(type, product, component) {
 
             //archiveArtifacts '**/build/test-results/**/*'
 
-            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+           archiveArtifacts  'functional-output/**/*'
 
         }
 
