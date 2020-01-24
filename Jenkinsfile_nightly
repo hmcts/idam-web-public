@@ -68,7 +68,7 @@ withNightlyPipeline(type, product, component) {
         enableCrossBrowserTest()
 
         after('crossBrowserTest') {
-            sh "./gradlew codeceptFunctionalSauce"
+            sh "./gradlew functionalSauce"
 
             //archiveArtifacts '**/build/test-results/**/*'
 
