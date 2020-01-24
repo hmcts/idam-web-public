@@ -5,15 +5,11 @@ properties([
 
     parameters([
 
-        string(name: 'URL_TO_TEST', defaultValue: 'https://idam-web-public-idam-aat.service.core-compute-idam-aat.internal', description: 'The URL you want to run these tests against'),
-        string(name: 'API_URL_TO_TEST', defaultValue: 'https://idam-api-idam-aat.service.core-compute-idam-aat.internal', description: 'The API URL you want to run these tests against '),
+        string(name: 'URL_TO_TEST', defaultValue: 'https://idam-web-public-idam-preview.service.core-compute-idam-preview.internal', description: 'The URL you want to run these tests against'),
+        string(name: 'API_URL_TO_TEST', defaultValue: 'https://idam-api-idam-preview.service.core-compute-idam-preview.internal', description: 'The API URL you want to run these tests against '),
         string(name: 'SAUCE_KEY', defaultValue: '101a14e3-0458-4927-a968-129adbf18152', description: 'Sauce key'),
         string(name: 'SAUCE_USERNAME', defaultValue: 'sudhasane', description: 'Sauce User name'),
         string(name: 'REFORM_TUNNEL', defaultValue: 'reformtunnel', description: 'Tunnel identifier'),
-        //string(name: 'USERNAME', defaultValue: 'idamOwner@HMCTS.NET', description: 'idam-owner'),
-        //string(name: 'PASSWORD', defaultValue: 'Ref0rmIsFun', description: 'password'),
-        //string(name: 'APIKEY', defaultValue: 'sidam_initial_testing_key-b7ab8862-25b4-41c9-8311-cb78815f7d2d-d9afb6d8-2f88-40c7-911d-ace72f3fc19b', description: 'apikey'),
-
     ])
 ])
 
@@ -54,12 +50,6 @@ withNightlyPipeline(type, product, component) {
         env.SAUCE_ACCESS_KEY = params.SAUCE_KEY
 
         env.SAUCE_USERNAME = params.SAUCE_USERNAME
-
-       // env.SMOKE_TEST_USER_USERNAME = params.USERNAME
-
-        //env.SMOKE_TEST_USER_PASSWORD = params.PASSWORD
-
-        //env.NOTIFY_API_KEY = env.APIKEY
 
         loadVaultSecrets(secrets)
 
