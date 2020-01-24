@@ -55,8 +55,6 @@ withNightlyPipeline(type, product, component) {
 
         env.SAUCE_USERNAME = params.SAUCE_USERNAME
 
-        //env.PROXY_SERVER = params.PROXY
-
         env.SMOKE_TEST_USER_USERNAME = params.USERNAME
 
         env.SMOKE_TEST_USER_PASSWORD = params.PASSWORD
@@ -72,7 +70,7 @@ withNightlyPipeline(type, product, component) {
 
             //archiveArtifacts '**/build/test-results/**/*'
 
-           archiveArtifacts  'functional-output/**/*'
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
 
         }
 
