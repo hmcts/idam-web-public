@@ -22,7 +22,7 @@ def product = "idam"
 def component = "idam-web-public"
 
 def secrets = [
-    'idam-idam-aat':[
+    'idam-idam-preview':[
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY')
