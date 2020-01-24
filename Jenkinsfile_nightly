@@ -10,6 +10,7 @@ properties([
         string(name: 'SAUCE_KEY', defaultValue: '101a14e3-0458-4927-a968-129adbf18152', description: 'Sauce key'),
         string(name: 'SAUCE_USERNAME', defaultValue: 'sudhasane', description: 'Sauce User name'),
         string(name: 'REFORM_TUNNEL', defaultValue: 'reformtunnel', description: 'Tunnel identifier'),
+        string(name:'PROXY', defaultValue:'http://proxyout.reform.hmcts.net:8080', description: 'Proxy-server')
 
     ])
 ])
@@ -51,6 +52,8 @@ withNightlyPipeline(type, product, component) {
         env.SAUCE_ACCESS_KEY = params.SAUCE_KEY
 
         env.SAUCE_USERNAME = params.SAUCE_USERNAME
+
+        env.PROXY_SERVER = params.PROXY
 
         loadVaultSecrets(secrets)
 
