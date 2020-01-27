@@ -11,6 +11,9 @@ properties([
         string(name: 'SAUCE_KEY', defaultValue: '101a14e3-0458-4927-a968-129adbf18152', description: 'Sauce key'),
         string(name: 'SAUCE_USERNAME', defaultValue: 'sudhasane', description: 'Sauce User name'),
         string(name: 'REFORM_TUNNEL', defaultValue: 'reformtunnel', description: 'Tunnel identifier'),
+        string(name: 'USER_NAME', defaultValue: 'idamOwner@hmcts.net', description: 'Tunnel identifier'),
+        string(name: 'PASSWORD', defaultValue: 'Ref0rmIsfun', description: 'Tunnel identifier'),
+        string(name: 'APIKEY', defaultValue: 'sidam_initial_testing_key-b7ab8862-25b4-41c9-8311-cb78815f7d2d-d9afb6d8-2f88-40c7-911d-ace72f3fc19b', description: 'Tunnel identifier'),
 
 
 
@@ -57,18 +60,27 @@ withNightlyPipeline(type, product, component) {
 
         env.SAUCE_USERNAME = params.SAUCE_USERNAME
 
-        loadVaultSecrets(secrets)
+        env.SMOKE_TEST_USER_USERNAME = params.USER_NAME
+        env.SMOKE_TEST_USER_PASSWORD = params.PASSWORD
+        env.NOTIFY_API_KEY = params.APIKEY
+
+        //loadVaultSecrets(secrets)
 
         enableCrossBrowserTest()
 
         after('crossBrowserTest') {
 
-                 withSauceConnect("reform_tunnel") {
-                    sh "./gradlew functionalSauce"
+                try {
 
-                    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-                    steps.saucePublisher()
+                    withSauceConnect("reform_tunnel") {
+                        sh "./gradlew functionalSauce"
+                    }
                 }
+                    finally {
+                        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+                        steps.saucePublisher()
+                    }
+
             }
 
 
