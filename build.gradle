@@ -168,7 +168,6 @@ allprojects  {
 
   task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
     group = 'Delivery pipeline'
-    ignoreFailures = true
     description = 'Executes non-destructive happy path tests against a running instance'
   }
 
