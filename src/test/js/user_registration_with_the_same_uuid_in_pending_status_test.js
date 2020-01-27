@@ -58,8 +58,8 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @userregistrationuuid multiple users can be registered with same uuid but the previous user will be assigned with auto generated uuid upon activation', async (I) => {
-    I.wait(10);
+Scenario('@functional multiple users can be registered with same uuid but the previous user will be assigned with auto generated uuid upon activation', async (I) => {
+    I.wait(5);
 
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);

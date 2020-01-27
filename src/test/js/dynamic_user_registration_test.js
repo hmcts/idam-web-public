@@ -41,8 +41,8 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @dynamicuserregistration Register User Dynamically', async (I) => {
-    I.wait(10);
+Scenario('@functional Register User Dynamically', async (I) => {
+    I.wait(5);
 
     let url = await I.extractUrl(userEmail);
     if (url) {
@@ -53,7 +53,6 @@ Scenario('@functional @dynamicuserregistration Register User Dynamically', async
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 60, 'h1');
-    I.wait(2);
+    I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
 });

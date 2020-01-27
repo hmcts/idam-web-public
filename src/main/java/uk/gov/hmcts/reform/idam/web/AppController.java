@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -123,6 +124,9 @@ public class AppController {
 
     @Autowired
     private ConfigurationProperties configurationProperties;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
@@ -254,24 +258,49 @@ public class AppController {
      * @should redirect to passwordReset view
      */
     @GetMapping(value = "/passwordReset")
-    public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
-        return this.passwordReset(token, code);
+    public String getPasswordReset(@RequestParam("token") String token, @RequestParam("code") String code, Model model) {
+        return this.passwordReset(token, code, model);
     }
 
     /**
      * @should redirect to reset password page if token is valid
      * @should redirect to token expired page if token is invalid
+     * @should redirect to token expired page if token is expired
      */
     @PostMapping(value = "/passwordReset")
-    public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code) {
-        String nextPage = RESETPASSWORD_VIEW;
+    public String passwordReset(@RequestParam("token") String token, @RequestParam("code") String code, Model model) {
         try {
             spiService.validateResetPasswordToken(token, code);
-        } catch (Exception e) {
-            nextPage = EXPIRED_PASSWORD_RESET_LINK_VIEW;
+            return RESETPASSWORD_VIEW;
+        } catch (HttpClientErrorException e) {
+            if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+                model.addAttribute("forgotPasswordLink", buildUrlFromTheBody(e.getResponseBodyAsString()));
+            }
         }
-        return nextPage;
+        return EXPIRED_PASSWORD_RESET_LINK_VIEW;
     }
+
+    private String buildUrlFromTheBody(String responseBodyAsString) {
+        try {
+            uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails request = mapper.readValue(
+                responseBodyAsString, uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails.class);
+            if (Strings.isNotEmpty(request.getRedirectUri())) {
+                return "/reset/forgotpassword?redirectUri=" + request.getRedirectUri() +
+                    "&clientId=" + nullToEmpty(request.getClientId()) +
+                    "&state=" + nullToEmpty(request.getState()) +
+                    "&scope=" + nullToEmpty(request.getScope());
+            }
+        } catch (IOException ex) {
+            log.error("Failed to read returned ForgotPasswordDetails", ex);
+
+        }
+        return "";
+    }
+
+    private String nullToEmpty(Object obj) {
+        return Objects.toString(obj, "");
+    }
+
 
     /**
      * @should put in model correct data and return forgot password view
@@ -322,7 +351,6 @@ public class AppController {
      * @should initiate OTP flow when policy check returns MFA_REQUIRED
      * @should return forbidden if csrf token is invalid
      * @should not forward username password params on OTP
-     * @return
      */
     @PostMapping("/login")
     public ModelAndView login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
@@ -393,7 +421,7 @@ public class AppController {
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
-            if (HttpStatus.FORBIDDEN == he.getStatusCode()) {
+            if (HttpStatus.FORBIDDEN == he.getStatusCode() || HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
                 getLoginFailureReason(he, model, bindingResult);
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
@@ -764,7 +792,7 @@ public class AppController {
     @PostMapping(value = "/doResetPassword")
     public String resetPassword(final String action, final String password1, final String password2, final String token, final String code, final Map<String, Object> model) throws IOException {
         try {
-            if (validationService.validateResetPasswordRequest(password1, password2, model)) {
+            if (validationService.validatePassword(password1, password2, model)) {
                 ResponseEntity<String> resetPasswordEntity = spiService.resetPassword(password1, token, code);
 
                 if (resetPasswordEntity.getStatusCode() == HttpStatus.OK) {

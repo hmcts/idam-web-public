@@ -51,14 +51,13 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @userregistrationpending user registration pending status and post activation redirect url test', async (I) => {
-    I.wait(10);
+Scenario('@functional user registration pending status and post activation redirect url test', async (I) => {
+    I.wait(5);
 
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
-    I.wait(10);
     const url = await I.extractUrl(userEmail);
 
     I.amOnPage(url);
