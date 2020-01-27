@@ -51,7 +51,7 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @crossbroswer @resetpass As a citizen user I can reset my password', async (I) => {
+Scenario('@functional @crossbrowser @resetpass As a citizen user I can reset my password', async (I) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');

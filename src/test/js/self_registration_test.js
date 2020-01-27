@@ -85,7 +85,7 @@ Scenario('@functional @selfregister Account already created', async (I) => {
 
 });
 
-Scenario('@functional @crossbroswer @selfregister I can self register', async (I) => {
+Scenario('@functional @crossbrowser @selfregister I can self register', async (I) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
