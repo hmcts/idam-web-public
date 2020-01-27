@@ -70,16 +70,17 @@ withNightlyPipeline(type, product, component) {
 
         after('crossBrowserTest') {
 
-                try {
+
 
                     withSauceConnect("reform_tunnel") {
                         sh "./gradlew functionalSauce"
-                    }
-                }
-                    finally {
                         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-                        steps.saucePublisher()
                     }
+
+//                    finally {
+//                        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+//                        steps.saucePublisher()
+//                    }
 
             }
 
