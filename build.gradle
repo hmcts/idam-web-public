@@ -168,7 +168,8 @@ allprojects  {
 
   task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
     group = 'Delivery pipeline'
-    description = 'Executes non-destructive smoke tests against a running instance'
+    ignoreFailures = true
+    description = 'Executes non-destructive happy path tests against a running instance'
   }
 
   task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
