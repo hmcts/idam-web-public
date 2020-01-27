@@ -53,17 +53,16 @@ withNightlyPipeline(type, product, component) {
 
         loadVaultSecrets(secrets)
 
-
+        enableCrossBrowserTest()
 
         after('crossBrowserTest') {
 
+                steps.withSauceConnect("reform_tunnel") {
+                    sh "./gradlew functionalSauce"
+                    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+                }
+            }
 
-       steps.withSauceConnect("reform_tunnel") {
-           sh "./gradlew functionalSauce"
-            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-
-       }
-        }
 
 
 }
