@@ -62,7 +62,6 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.see('Sign in to your account.');
     I.click('Sign in to your account.');
     I.waitForText('Sign in', 20, 'h1');
-    I.wait(1);
     I.see('Sign in');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
