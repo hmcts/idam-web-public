@@ -49,10 +49,6 @@ withNightlyPipeline(type, product, component) {
     //sh "./gradlew --no-daemon --init-script init.gradle pitest"
 
 //        archiveArtifacts '**/build/reports/pitest/**/*'
-        withSonarQubeEnv("SonarQube") {
-
-            sh "./gradlew --info sonarqube"
-        }
 
 
     after('fullFunctionalTest') {
