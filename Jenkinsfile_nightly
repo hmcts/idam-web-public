@@ -37,6 +37,47 @@ withNightlyPipeline(type, product, component) {
     env.SAUCE_ACCESS_KEY = params.SAUCE_KEY
     env.SAUCE_USERNAME = params.SAUCE_USERNAME
     loadVaultSecrets(secrets)
+
+    enableSecurityScan()
+
+       sh "./gradlew --no-daemon --init-script init.gradle pitest"
+
+        archiveArtifacts '**/build/reports/pitest/**/*'
+        withSonarQubeEnv("SonarQube") {
+         sh "./gradlew --info sonarqube"
+        }
+
+    enableFullFunctionalTest(200)
+
+    after('fullFunctionalTest') {
+
+        sh "./gradlew smoke"
+
+        archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-admin-e2e-result.html",
+            reportName           : "IDAM Web Admin E2E smoke tests result"
+        ]
+
+        sh "./gradlew functional"
+
+        archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-admin-e2e-result.html",
+            reportName           : "IDAM Web Admin E2E functional tests result"
+        ]
+    }
+
     enableCrossBrowserTest()
 
     after('crossBrowserTest') {
@@ -53,8 +94,6 @@ withNightlyPipeline(type, product, component) {
                   }
 
             }
-
-
 
 }
 
