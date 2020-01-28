@@ -40,9 +40,9 @@ withNightlyPipeline(type, product, component) {
 
     enableSecurityScan()
 
-    enableMutationTest()
+    //enableMutationTest()
 
-    enableFullFunctionalTest(200)
+    enableFullFunctionalTest()
 
     enableCrossBrowserTest()
 
