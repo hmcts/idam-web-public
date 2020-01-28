@@ -22,7 +22,7 @@
     "webdriverio": "^4.13.2"
   },
   "scripts": {
-    "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c saucelabs.conf.js --steps --grep '@crossbrowsers' --reporter mochawesome",
+    "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c saucelabs.conf.js --steps --grep '@crossbrowser' --reporter mochawesome",
     "test:crossbrowser": "runSauceLabsTests.sh"
   }
 }
