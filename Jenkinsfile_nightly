@@ -40,14 +40,20 @@ withNightlyPipeline(type, product, component) {
 
     enableSecurityScan()
 
-       sh "./gradlew --no-daemon --init-script init.gradle pitest"
-
-        archiveArtifacts '**/build/reports/pitest/**/*'
-        withSonarQubeEnv("SonarQube") {
-         sh "./gradlew --info sonarqube"
-        }
+    enableMutationTest()
 
     enableFullFunctionalTest(200)
+
+    enableCrossBrowserTest()
+
+    //sh "./gradlew --no-daemon --init-script init.gradle pitest"
+
+//        archiveArtifacts '**/build/reports/pitest/**/*'
+        withSonarQubeEnv("SonarQube") {
+
+            sh "./gradlew --info sonarqube"
+        }
+
 
     after('fullFunctionalTest') {
 
@@ -77,8 +83,6 @@ withNightlyPipeline(type, product, component) {
             reportName           : "IDAM Web Admin E2E functional tests result"
         ]
     }
-
-    enableCrossBrowserTest()
 
     after('crossBrowserTest') {
 
