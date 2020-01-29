@@ -20,7 +20,8 @@
     "proxy-agent": "^3.0.1",
     "puppeteer": "^1.4.0",
     "webdriverio": "^4.13.2",
-    "node-fetch": "^2.5.0"
+    "node-fetch": "^2.5.0",
+    "wdio-sauce-service": "^0.4.4"
   },
   "scripts": {
     "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c saucelabs.conf.js --steps --grep '@crossbrowser' --reporter mochawesome",
