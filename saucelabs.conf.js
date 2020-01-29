@@ -40,6 +40,7 @@ const setupConfig = {
       region: 'eu',
       sauceConnect: true,
       services: ['sauce'],
+      //acceptInsecureCerts : true,
       user: process.env.SAUCE_USERNAME,
       key: process.env.SAUCE_ACCESS_KEY,
       desiredCapabilities: { }

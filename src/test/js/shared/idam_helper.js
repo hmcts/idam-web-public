@@ -493,13 +493,13 @@ class IdamHelper extends Helper {
     }
 
     async getCurrentUrl() {
-        const helper = this.helpers['Puppeteer'];
+        const helper = this.helpers['Puppeteer'] || this.helpers['WebDriverIO'];
         console.log("Page is " + helper.page.url());
         return helper.page.url();
     }
 
     interceptRequestsAfterSignin() {
-        const helper = this.helpers['Puppeteer'];
+        const helper = this.helpers['Puppeteer'] || this.helpers['WebDriverIO'];
         helper.page.setRequestInterception(true);
         helper.page.on('request', request => {
             if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0 || request.url().indexOf('/activate') > 0 || request.url().indexOf('/verification') > 0) {
@@ -515,7 +515,7 @@ class IdamHelper extends Helper {
     }
 
     resetRequestInterception() {
-        const helper = this.helpers['Puppeteer'];
+        const helper = this.helpers['Puppeteer'] || this.helpers['WebDriverIO'];
         helper.page.setRequestInterception(false);
     }
 
@@ -535,7 +535,7 @@ class IdamHelper extends Helper {
             })
             .catch(err => {
                 console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
+                let browser = this.helpers['Puppeteer'].browser || this.helpers['WebDriverIO'].browser;
                 browser.close();
             });
     }
@@ -553,7 +553,7 @@ class IdamHelper extends Helper {
         })
             .catch(err => {
                 console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
+                let browser = this.helpers['Puppeteer'].browser || this.helpers['WebDriverIO'].browser ;
                 browser.close();
             });
     }
@@ -580,7 +580,7 @@ class IdamHelper extends Helper {
             return json.access_token;
         }).catch(err => {
             console.log(err)
-            let browser = this.helpers['Puppeteer'].browser;
+            let browser = this.helpers['Puppeteer'].browser || this.helpers['WebDriverIO'].browser;
             browser.close();
         });
     }
