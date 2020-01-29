@@ -186,16 +186,6 @@ allprojects  {
     commandLine './node_modules/.bin/pa11y', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
   }
 
-  task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
-    group = 'Delivery pipeline'
-    description = 'Executes non-destructive happy path tests against a running instance'
-  }
-
-  task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
-    workingDir '.'
-    //commndLine 'test-crossbrowser-e2e'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--reporter', 'mochawesome'
-  }
 }
 
 project.tasks['sonarqube'].dependsOn test
