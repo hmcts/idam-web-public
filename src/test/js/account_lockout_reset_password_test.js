@@ -37,7 +37,7 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @crossbrowser @unlock My user account is unlocked when I reset my password - citizen', async (I) => {
+Scenario('@functional @unlock My user account is unlocked when I reset my password - citizen', async (I) => {
     I.lockAccount(citizenEmail, serviceName);
     I.click('reset your password');
     I.waitForText('Reset your password', 20, 'h1');

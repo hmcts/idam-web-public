@@ -36,13 +36,14 @@ withNightlyPipeline(type, product, component) {
     env.TUNNEL_IDENTIFIER = params.REFORM_TUNNEL
     env.SAUCE_ACCESS_KEY = params.SAUCE_KEY
     env.SAUCE_USERNAME = params.SAUCE_USERNAME
+
     loadVaultSecrets(secrets)
 
-    enableSecurityScan()
+    //enableSecurityScan()
 
     //enableMutationTest()
 
-    enableFullFunctionalTest()
+    //enableFullFunctionalTest()
 
     enableCrossBrowserTest()
 
@@ -51,34 +52,34 @@ withNightlyPipeline(type, product, component) {
 //        archiveArtifacts '**/build/reports/pitest/**/*'
 
 
-    after('fullFunctionalTest') {
-
-        sh "./gradlew smoke"
-
-        archiveArtifacts '**/build/test-results/**/*'
-
-        publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-admin-e2e-result.html",
-            reportName           : "IDAM Web Admin E2E smoke tests result"
-        ]
-
-        sh "./gradlew functional"
-
-        archiveArtifacts '**/build/test-results/**/*'
-
-        publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-admin-e2e-result.html",
-            reportName           : "IDAM Web Admin E2E functional tests result"
-        ]
-    }
+//    after('fullFunctionalTest') {
+//
+//        sh "./gradlew smoke"
+//
+//        archiveArtifacts '**/build/test-results/**/*'
+//
+//        publishHTML target: [
+//            allowMissing         : true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll              : true,
+//            reportDir            : "output",
+//            reportFiles          : "idam-web-admin-e2e-result.html",
+//            reportName           : "IDAM Web Admin E2E smoke tests result"
+//        ]
+//
+//        sh "./gradlew functional"
+//
+//        archiveArtifacts '**/build/test-results/**/*'
+//
+//        publishHTML target: [
+//            allowMissing         : true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll              : true,
+//            reportDir            : "output",
+//            reportFiles          : "idam-web-admin-e2e-result.html",
+//            reportName           : "IDAM Web Admin E2E functional tests result"
+//        ]
+//    }
 
     after('crossBrowserTest') {
 
