@@ -46,7 +46,7 @@ const setupConfig = {
       desiredCapabilities: { }
     },
     SauceLabsReportingHelper: { require: './src/test/js/shared/sauceLabsReportingHelper.js' },
-    Idam_Helper: {"require": "./src/test/js/shared/idam_helper.js" }
+    IdamHelper: { require: './src/test/js/shared/idam_helper.js' }
    },
   include: { I: './src/test/js/shared/custom_steps.js' },
   mocha: {
