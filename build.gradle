@@ -170,7 +170,7 @@ allprojects  {
 
   task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js','--steps', '--grep', '@functional', '--verbose', '--debug', '--reporter', 'mochawesome'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 
   task pa11y(type: Exec, dependsOn: 'pa11yInstall') {
@@ -235,4 +235,3 @@ test.finalizedBy jacocoTestReport
 bootRun {
   systemProperties = System.properties
 }
-
