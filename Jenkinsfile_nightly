@@ -42,7 +42,7 @@ withNightlyPipeline(type, product, component) {
 
     //enableMutationTest()
 
-    enableFullFunctionalTest()
+    //enableFullFunctionalTest()
 
     enableCrossBrowserTest()
 
@@ -51,34 +51,34 @@ withNightlyPipeline(type, product, component) {
 //        archiveArtifacts '**/build/reports/pitest/**/*'
 
 
-    after('fullFunctionalTest') {
-
-        sh "./gradlew smoke"
-
-        archiveArtifacts '**/build/test-results/**/*'
-
-        publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-admin-e2e-result.html",
-            reportName           : "IDAM Web Admin E2E smoke tests result"
-        ]
-
-        sh "./gradlew functional"
-
-        archiveArtifacts '**/build/test-results/**/*'
-
-        publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-admin-e2e-result.html",
-            reportName           : "IDAM Web Admin E2E functional tests result"
-        ]
-    }
+//    after('fullFunctionalTest') {
+//
+//        sh "./gradlew smoke"
+//
+//        archiveArtifacts '**/build/test-results/**/*'
+//
+//        publishHTML target: [
+//            allowMissing         : true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll              : true,
+//            reportDir            : "output",
+//            reportFiles          : "idam-web-admin-e2e-result.html",
+//            reportName           : "IDAM Web Admin E2E smoke tests result"
+//        ]
+//
+//        sh "./gradlew functional"
+//
+//        archiveArtifacts '**/build/test-results/**/*'
+//
+//        publishHTML target: [
+//            allowMissing         : true,
+//            alwaysLinkToLastBuild: true,
+//            keepAll              : true,
+//            reportDir            : "output",
+//            reportFiles          : "idam-web-admin-e2e-result.html",
+//            reportName           : "IDAM Web Admin E2E functional tests result"
+//        ]
+//    }
 
     after('crossBrowserTest') {
 
