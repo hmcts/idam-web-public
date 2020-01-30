@@ -4,7 +4,7 @@ const browser = process.env.SAUCE_BROWSER || 'chrome';
 const tunnelName = process.env.TUNNEL_IDENTIFIER || 'reformtunnel';
 
 const waitForTimeout = 60000;
-const smartWait = 45000;
+const smartWait = 5000;
 
 const getBrowserConfig = browserGroup => {
   const browserConfig = [];
@@ -13,7 +13,7 @@ const getBrowserConfig = browserGroup => {
       const desiredCapability = supportedBrowsers[browserGroup][candidateBrowser];
       desiredCapability.acceptSslCerts = true;
       desiredCapability.tunnelIdentifier = tunnelName;
-      desiredCapability.tags = ['idam-web-punlic'];
+      desiredCapability.tags = ['idam-web-public'];
       browserConfig.push({
         browser: desiredCapability.browserName,
         desiredCapabilities: desiredCapability
