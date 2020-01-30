@@ -48,7 +48,7 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional As a service, I can request a custom scope on user login', async (I) => {
+Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async (I) => {
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h1');
     I.fillField('#username', citizenEmail);
@@ -72,7 +72,7 @@ Scenario('@functional As a service, I can request a custom scope on user login',
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional As a service, I can request a custom scope on PIN user login', async (I) => {
+Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on PIN user login', async (I) => {
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
     let code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
