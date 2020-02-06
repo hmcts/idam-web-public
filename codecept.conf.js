@@ -2,22 +2,31 @@ const TestData = require('./src/test/js/config/test_data')
 
 exports.config = {
     name: 'idam-web-public',
-    tests: './src/test/js/**/*_test.js',
+    tests: './src/test/js/**/cross-browser-test.js',
     output: './output',
     timeout: 180000,
     bootstrap: false,
     helpers: {
-        Puppeteer: {
+        WebDriver: {
             // show: true,
+            browser: 'chrome',
             url: TestData.WEB_PUBLIC_URL,
             waitForTimeout: 60000,
             waitForAction: 2000,
             getPageTimeout: 20000,
+            capabilities: {
+               proxy: {
+                   "proxyType": "manual",
+                   "httpProxy": process.env.PROXY_SERVER,
+                   "sslProxy": process.env.PROXY_SERVER
+               },
+            },
+
             chrome: {
-                //args: ["--proxy-server=" + process.env.PROXY_SERVER],
-                ignoreHTTPSErrors: true
+               ignoreHTTPSErrors: true
             }
         },
+        MockRequest: {},
         idam_helper: {
             "require": "./src/test/js/shared/idam_helper.js"
         }
