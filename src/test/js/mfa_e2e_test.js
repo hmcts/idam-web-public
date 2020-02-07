@@ -83,7 +83,7 @@ Scenario('@functional @crossbroswers @mfaLogin I am able to login with MFA', asy
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 
-Scenario('@functional @crossbrowser @mfaLogin I am not able to login with MFA for the block policy ', async (I) => {
+Scenario('@functional @mfaLogin I am not able to login with MFA for the block policy ', async (I) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);

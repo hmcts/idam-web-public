@@ -105,7 +105,7 @@ Scenario('@functional @crossbrowser @uplift I am able to use a pin to create an 
     I.see('You can now sign in to your account.');
 });
 
-Scenario('@functional @crossbrowser @upliftLogin uplift a user via login journey', async (I) => {
+Scenario('@functional  @upliftLogin uplift a user via login journey', async (I) => {
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);

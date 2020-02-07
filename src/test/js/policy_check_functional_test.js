@@ -1,3 +1,4 @@
+
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 
@@ -28,10 +29,10 @@ BeforeSuite(async (I) => {
     const serviceSuperRole = response.name;
     const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
     roleNames.push(serviceRoles);
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
-    serviceNames.push(serviceName);
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
-    userFirstNames.push(randomUserFirstName + 'Admin');
+      await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+      serviceNames.push(serviceName);
+//    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
+//    userFirstNames.push(randomUserFirstName + 'Admin');
     await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
@@ -45,7 +46,7 @@ AfterSuite(async (I) => {
     ]);
 });
 
-Scenario('@functional @crossbroswer @policy As a citizen with policies blocking me from login I should see an error message', async (I) => {
+Scenario('@functional  @policy As a citizen with policies blocking me from login I should see an error message', async (I) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);

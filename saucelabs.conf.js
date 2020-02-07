@@ -1,4 +1,3 @@
-
 const supportedBrowsers = require('./src/test/js/config/supportedBrowsers.js');
 const browser = process.env.SAUCE_BROWSER || 'chrome';
 const tunnelName = process.env.TUNNEL_IDENTIFIER || 'reformtunnel';
@@ -26,36 +25,31 @@ const getBrowserConfig = browserGroup => {
 };
 
 const setupConfig = {
-  tests: './src/test/js/*_test.js',
+  tests: './src/test/js/cross_browser_test.js',
   output: `${process.cwd()}/functional-output`,
   helpers: {
-    WebDriverIO: {
+    WebDriver: {
       url: process.env.TEST_URL,
       browser : 'chrome',
       waitForTimeout,
       smartWait,
-      cssSelectorsEnabled: 'true',
+      //cssSelectorsEnabled: 'true',
       host: 'ondemand.eu-central-1.saucelabs.com',
       port: 80,
       region: 'eu',
       sauceConnect: true,
       services: ['sauce'],
-      //acceptInsecureCerts : true,
+      acceptInsecureCerts : true,
       user: process.env.SAUCE_USERNAME,
       key: process.env.SAUCE_ACCESS_KEY,
       desiredCapabilities: { }
     },
     SauceLabsReportingHelper: { require: './src/test/js/shared/sauceLabsReportingHelper.js' },
-    IdamHelper: { require: './src/test/js/shared/idam_helper.js' }
+    idam_helper: { require: './src/test/js/shared/idam_helper.js' }
    },
   include: { I: './src/test/js/shared/custom_steps.js' },
-  mocha: {
-    reporterOptions: {
-      reportDir: `${process.cwd()}/functional-output`,
-      reportName: 'index',
-      inlineAssets: true
-    }
-  },
+
+
   multiple: {
     microsoftIE11: {
       browsers: getBrowserConfig('microsoftIE11')
