@@ -36,7 +36,6 @@ const setupConfig = {
       waitForTimeout,
       smartWait,
       //cssSelectorsEnabled: 'true',
-      acceptSslCerts : true;
       host: 'ondemand.eu-central-1.saucelabs.com',
       port: 80,
       region: 'eu',
