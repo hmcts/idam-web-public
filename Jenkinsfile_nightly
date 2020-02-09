@@ -36,6 +36,7 @@ withNightlyPipeline(type, product, component) {
     env.TUNNEL_IDENTIFIER = params.REFORM_TUNNEL
     env.SAUCE_ACCESS_KEY = params.SAUCE_KEY
     env.SAUCE_USERNAME = params.SAUCE_USERNAME
+    env.PROXY_SERVER = "http://proxyout.reform.hmcts.net:8080"
     loadVaultSecrets(secrets)
 
     enableSecurityScan()
