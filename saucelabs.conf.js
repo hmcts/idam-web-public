@@ -12,7 +12,7 @@ const getBrowserConfig = browserGroup => {
       const desiredCapability = supportedBrowsers[browserGroup][candidateBrowser];
       desiredCapability.acceptSslCerts = true;
       desiredCapability.tunnelIdentifier = tunnelName;
-      desiredCapability.proxyType = 'manual,
+      desiredCapability.proxyType = 'manual',
       desiredCapability.httpProxy = 'proxyout.reform.hmcts.net:8080';
       desiredCapability.tags = ['idam-web-public'];
       browserConfig.push({
