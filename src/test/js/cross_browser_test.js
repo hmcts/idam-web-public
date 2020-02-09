@@ -117,8 +117,7 @@ Scenario('@functional @crossbrowser Idam Web public cross browser tests', async 
     I.wait(2)
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-
- });
+});
 
 
 
