@@ -44,7 +44,7 @@ const setupConfig = {
       acceptInsecureCerts : true,
       user: process.env.SAUCE_USERNAME,
       key: process.env.SAUCE_ACCESS_KEY,
-      no-ssl-bump-domains : all,
+
       desiredCapabilities: { }
     },
     SauceLabsReportingHelper: { require: './src/test/js/shared/sauceLabsReportingHelper.js' },
