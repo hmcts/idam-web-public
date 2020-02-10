@@ -116,5 +116,6 @@
   "10104_User Agent Fuzzer_https://idam-web-public.aat.platform.hmcts.net/assets/stylesheets_GET": "ignore",
   "10104_User Agent Fuzzer_https://idam-web-public.aat.platform.hmcts.net/assets/stylesheets_GET": "ignore",
   "10104_User Agent Fuzzer_https://idam-web-public.aat.platform.hmcts.net/assets/stylesheets_GET": "ignore",
-  "40029_Trace.axd Information Leak_https://idam-web-public.aat.platform.hmcts.net/assets/trace.axd_GET":"ignore"
+  "40029_Trace.axd Information Leak_https://idam-web-public.aat.platform.hmcts.net/assets/trace.axd_GET":"ignore",
+  "10096_Timestamp Disclosure - Unix_https://idam-web-public.aat.platform.hmcts.net/_GET":"ignore"
 }
