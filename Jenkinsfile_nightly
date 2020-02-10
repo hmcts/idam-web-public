@@ -58,8 +58,8 @@ withNightlyPipeline(type, product, component) {
             alwaysLinkToLastBuild: true,
             keepAll              : true,
             reportDir            : "output",
-            reportFiles          : "idam-web-admin-e2e-result.html",
-            reportName           : "IDAM Web Admin E2E smoke tests result"
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web public E2E smoke tests result"
         ]
 
         sh "./gradlew functional"
@@ -71,8 +71,8 @@ withNightlyPipeline(type, product, component) {
             alwaysLinkToLastBuild: true,
             keepAll              : true,
             reportDir            : "output",
-            reportFiles          : "idam-web-admin-e2e-result.html",
-            reportName           : "IDAM Web Admin E2E functional tests result"
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web public E2E functional tests result"
         ]
     }
 
