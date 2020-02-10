@@ -6,6 +6,6 @@ module.exports = {
     NOTIFY_API_KEY: process.env.NOTIFY_API_KEY,
     SCENARIO_RETRY_LIMIT: 3,
     PASSWORD: "Passw0rdIDAM",
-    SERVICE_REDIRECT_URI: 'https://idam.testservice.gov.uk',
+    SERVICE_REDIRECT_URI: 'http://idam.testservice.gov.uk',
     SERVICE_CLIENT_SECRET: 'autotestingservice',
 };

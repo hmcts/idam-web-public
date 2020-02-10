@@ -85,7 +85,7 @@ Scenario('@functional @crossbrowser Idam Web public cross browser tests', async 
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
-
+    I.wait(5);
     I.lockAccount(citizenEmail, serviceName);
     I.click('reset your password');
     I.waitForText('Reset your password', 20, 'h1');
@@ -117,6 +117,8 @@ Scenario('@functional @crossbrowser Idam Web public cross browser tests', async 
     I.wait(2)
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
+    Iwait(2);
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
 });
 
 

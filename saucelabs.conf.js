@@ -12,8 +12,6 @@ const getBrowserConfig = browserGroup => {
       const desiredCapability = supportedBrowsers[browserGroup][candidateBrowser];
       desiredCapability.acceptSslCerts = true;
       desiredCapability.tunnelIdentifier = tunnelName;
-      desiredCapability.proxyType = 'manual';
-      desiredCapability.httpProxy = 'proxyout.reform.hmcts.net:8080';
       desiredCapability.tags = ['idam-web-public'];
       browserConfig.push({
         browser: desiredCapability.browserName,
@@ -35,16 +33,15 @@ const setupConfig = {
       browser : 'chrome',
       waitForTimeout,
       smartWait,
-      //cssSelectorsEnabled: 'true',
+      cssSelectorsEnabled: 'true',
       host: 'ondemand.eu-central-1.saucelabs.com',
       port: 80,
       region: 'eu',
       sauceConnect: true,
       services: ['sauce'],
-      acceptInsecureCerts : true,
+      acceptSslCerts : true,
       user: process.env.SAUCE_USERNAME,
       key: process.env.SAUCE_ACCESS_KEY,
-
       desiredCapabilities: { }
     },
     SauceLabsReportingHelper: { require: './src/test/js/shared/sauceLabsReportingHelper.js' },
