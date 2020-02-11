@@ -42,10 +42,9 @@ withNightlyPipeline(type, product, component) {
 
     //enableMutationTest()
 
-    enableFullFunctionalTest()
-
     enableCrossBrowserTest()
 
+    enableFullFunctionalTest(200)
 
     after('fullFunctionalTest') {
 
@@ -59,7 +58,7 @@ withNightlyPipeline(type, product, component) {
             keepAll              : true,
             reportDir            : "output",
             reportFiles          : "idam-web-public-e2e-result.html",
-            reportName           : "IDAM Web public E2E smoke tests result"
+            reportName           : "IDAM Web Public E2E smoke tests result"
         ]
 
         sh "./gradlew functional"
@@ -67,14 +66,15 @@ withNightlyPipeline(type, product, component) {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
-            allowMissing         : true,
+            allowMissing : true,
             alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-public-e2e-result.html",
-            reportName           : "IDAM Web public E2E functional tests result"
+            keepAll : true,
+            reportDir : "output",
+            reportFiles : "idam-web-public-e2e-result.html",
+            reportName : "IDAM Web Public E2E functional tests result"
         ]
     }
+
 
     after('crossBrowserTest') {
 
