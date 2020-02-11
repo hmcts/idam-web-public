@@ -89,15 +89,5 @@ withNightlyPipeline(type, product, component) {
 
 }
 
-//       env.TEST_URL = params.URL_TO_TEST
-//        enableSecurityScan()
-//
-//        sh "./gradlew --no-daemon --init-script init.gradle pitest"
-//
-//        archiveArtifacts '**/build/reports/pitest/**/*'
-//
-//        withSonarQubeEnv("SonarQube") {
-//            sh "./gradlew --info sonarqube"
-//        }
 
 
