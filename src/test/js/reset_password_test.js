@@ -185,7 +185,7 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
     I.see("Your password is too easy to guess");
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @resetpass As a citizen user I can reset my password with repeated special characters', async (I) => {
     I.amOnPage(loginPage);
