@@ -38,11 +38,7 @@ withNightlyPipeline(type, product, component) {
     env.SAUCE_USERNAME = params.SAUCE_USERNAME
     loadVaultSecrets(secrets)
 
-    //enableSecurityScan()
-
-    //enableMutationTest()
-
-    enableCrossBrowserTest()
+    //enableCrossBrowserTest()
 
     enableFullFunctionalTest(200)
 
@@ -61,7 +57,7 @@ withNightlyPipeline(type, product, component) {
             reportName           : "IDAM Web Public E2E smoke tests result"
         ]
 
-        sh "./gradlew functional"
+        sh "./gradlew codeceptFunctional"
 
         archiveArtifacts '**/build/test-results/**/*'
 
@@ -76,20 +72,20 @@ withNightlyPipeline(type, product, component) {
     }
 
 
-    after('crossBrowserTest') {
-
-              try {
-                  withSauceConnect("reform_tunnel") {
-                      sh "./gradlew functionalSauce"
-                      steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-                  }
-              }
-
-              finally {
-                      steps.saucePublisher()
-                  }
-
-            }
+//    after('crossBrowserTest') {
+//
+//              try {
+//                  withSauceConnect("reform_tunnel") {
+//                      sh "./gradlew functionalSauce"
+//                      steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+//                  }
+//              }
+//
+//              finally {
+//                      steps.saucePublisher()
+//                  }
+//
+//            }
 
 }
 
