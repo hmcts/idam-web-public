@@ -476,7 +476,6 @@ class IdamHelper extends Helper {
             const regex = "(https.+)"
             const url = emailResponse.body.match(regex);
             if (url[0]) {
-                //return url[0].replace(/https:\/\/idam-web-public\..+?\.platform\.hmcts\.net/i, TestData.WEB_PUBLIC_URL);
                 return url[0].replace(/https:\/\/idam-web-public\..+?\.platform\.hmcts\.net/i, TestData.WEB_PUBLIC_URL).replace(")", "");
             }
         }
@@ -494,13 +493,13 @@ class IdamHelper extends Helper {
     }
 
     async getCurrentUrl() {
-        const helper = this.helpers['Puppeteer'] || this.helpers['WebDriverIO'];
+        const helper = this.helpers['Puppeteer'];
         console.log("Page is " + helper.page.url());
         return helper.page.url();
     }
 
     interceptRequestsAfterSignin() {
-        const helper = this.helpers['Puppeteer'] || this.helpers['WebDriverIO'];
+        const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
         helper.page.on('request', request => {
             if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0 || request.url().indexOf('/activate') > 0 || request.url().indexOf('/verification') > 0) {
@@ -516,7 +515,7 @@ class IdamHelper extends Helper {
     }
 
     resetRequestInterception() {
-        const helper = this.helpers['Puppeteer'] || this.helpers['WebDriverIO'];
+        const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(false);
     }
 
@@ -536,7 +535,7 @@ class IdamHelper extends Helper {
             })
             .catch(err => {
                 console.log(err)
-                let browser = this.helpers['Puppeteer'].browser || this.helpers['WebDriverIO'].browser;
+                let browser = this.helpers['Puppeteer'].browser;
                 browser.close();
             });
     }
@@ -554,7 +553,7 @@ class IdamHelper extends Helper {
         })
             .catch(err => {
                 console.log(err)
-                let browser = this.helpers['Puppeteer'].browser || this.helpers['WebDriverIO'].browser ;
+                let browser = this.helpers['Puppeteer'].browser;
                 browser.close();
             });
     }
@@ -581,7 +580,7 @@ class IdamHelper extends Helper {
             return json.access_token;
         }).catch(err => {
             console.log(err)
-            let browser = this.helpers['Puppeteer'].browser || this.helpers['WebDriverIO'].browser;
+            let browser = this.helpers['Puppeteer'].browser;
             browser.close();
         });
     }

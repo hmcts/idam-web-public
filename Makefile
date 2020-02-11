@@ -15,23 +15,28 @@ UNAME := $(uname)
 
 setup:
 	- @if [ -z "${HELM_INSTALLED}" ] && [[ "${UNAME}" == 'Darwin' ]]; then \
-			brew install kubernetes-helm ; \
+			brew install helm ; \
+		elif $$(helm version | grep -q 'v2'); then \
+			brew upgrade helm ; \
 		fi
-	az account set --subscription ${ACR_SUBSCRIPTION}
-	az configure --defaults acr=${ACR}
-	az acr helm repo add
-	az aks get-credentials --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER}
+		@az account set --subscription ${ACR_SUBSCRIPTION}
+		@az configure --defaults acr=${ACR}
+		@az acr helm repo add
+		@az aks get-credentials --resource-group ${AKS_RESOURCE_GROUP} --name ${AKS_CLUSTER}
 	-	@if [ ! -d $${HOME}/.helm ]; then \
 			helm init --client-only ; \
 		fi
 
 clean:
-	- @helm delete --purge ${RELEASE}
+	- @helm uninstall --namespace ${NAMESPACE} ${RELEASE}
+	- @for i in $$(kubectl -n ${NAMESPACE} get deploy -o name | grep ${RELEASE}); do \
+			kubectl -n ${NAMESPACE} delete $${i} --grace-period=0 --force ; \
+		done
 	- @for i in $$(kubectl -n ${NAMESPACE} get rs -o name | grep ${RELEASE}); do \
-	   	kubectl -n ${NAMESPACE} delete $${i} --grace-period=0 --force ; \
+			kubectl -n ${NAMESPACE} delete $${i} --grace-period=0 --force ; \
 		done
 	- @for i in $$(kubectl -n ${NAMESPACE} get pod -o name | grep ${RELEASE}); do \
-	   	kubectl -n ${NAMESPACE} delete $${i} --grace-period=0 --force ; \
+			kubectl -n ${NAMESPACE} delete $${i} --grace-period=0 --force ; \
 		done
 
 update:
@@ -41,16 +46,16 @@ lint:
 	helm lint charts/${CHART}
 
 template:
-	helm template charts/${CHART}
+	helm template ${RELEASE} --set "java.releaseNameOverride=${RELEASE}" --namespace ${NAMESPACE} charts/${CHART} 
 
 dry-run:
-	helm install charts/${CHART} --name ${RELEASE} --namespace ${NAMESPACE} -f ci-values.yaml --dry-run --timeout 30 --atomic
+	helm install ${RELEASE} --set "java.releaseNameOverride=${RELEASE}" --namespace ${NAMESPACE} --dry-run --timeout 30s --atomic charts/${CHART}
 
 deploy:
-	helm install charts/${CHART} --name ${RELEASE} --namespace ${NAMESPACE} --wait --timeout 30
+	helm install ${RELEASE} --set "java.releaseNameOverride=${RELEASE}" --set "java.replicas=1" --namespace ${NAMESPACE} --wait --timeout 8m charts/${CHART} 
 
 test:
-	helm test charts/${RELEASE}
+	helm test ${RELEASE} --namespace ${NAMESPACE}
 
 force-update-pods:
 	@kubectl -n ${NAMESPACE} scale  --current-replicas=2 --replicas=0 deploy/idam-api

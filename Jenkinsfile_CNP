@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@SIDM_increase_FuncTest_timout_test")
+@Library("Infrastructure@SIDM_increase_FuncTest_timout")
 
 def type = "java"
 
@@ -35,7 +35,6 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
-    enableDockerBuild()
     enableSlackNotifications('#idam_tech')
     installCharts()
 
