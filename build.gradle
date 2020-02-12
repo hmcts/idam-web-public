@@ -128,14 +128,6 @@ allprojects  {
     description = 'Executes functional tests against a running instance'
   }
 
-//  task crossBrowserTests(type: Test) {
-//    include '**/*runUITestsSauceLabs.sh'
-//    testLogging.showStandardStreams = true
-//
-//    systemProperties = System.properties
-//    systemProperties['user.dir'] = workingDir
-//  }
-
   task yarnInstall(type: Exec) {
     workingDir '.'
     commandLine 'yarn', 'install'
