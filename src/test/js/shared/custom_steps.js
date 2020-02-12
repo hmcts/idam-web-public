@@ -12,7 +12,7 @@ module.exports = function() {
         this.dontSee('Incorrect email or password');
         this.fillField('username', email);
         this.fillField('password', '111');
-        //XB: this.scrollPageToBottom();
+        this.scrollPageToBottom();
         this.click('Sign in');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attemptone');
@@ -24,7 +24,7 @@ module.exports = function() {
         this.dontSeeInCurrentUrl('attemptone');
         this.fillField('username', email);
         this.fillField('password', '111111');
-        //XB: this.scrollPageToBottom();
+        this.scrollPageToBottom();
         this.click('Sign in');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attempttwo');
@@ -37,7 +37,7 @@ module.exports = function() {
         this.dontSeeInCurrentUrl('attempttwo');
         this.fillField('username', email);
         this.fillField('password', '111111111');
-        //XB: this.scrollPageToBottom();
+        this.scrollPageToBottom();
         this.click('Sign in');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attemptthree');
@@ -51,7 +51,7 @@ module.exports = function() {
         this.dontSeeInCurrentUrl('attemptthree');
         this.fillField('username', email);
         this.fillField('password', '111111111111');
-        //XB: this.scrollPageToBottom();
+        this.scrollPageToBottom();
         this.click('Sign in');
         this.waitForText('Incorrect email or password', 20, 'h2');
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attemptfour');
@@ -68,7 +68,7 @@ module.exports = function() {
         this.dontSeeInCurrentUrl('attemptfour');
         this.fillField('username', email);
         this.fillField('password', '111111111111111111');
-        //XB: this.scrollPageToBottom();
+        this.scrollPageToBottom();
         this.click('Sign in');
         this.wait(5);
         // Final
@@ -82,7 +82,7 @@ module.exports = function() {
         this.dontSeeInCurrentUrl('attemptfive');
         this.fillField('username', email);
         this.fillField('password', '111111111111111111');
-        //XB: this.scrollPageToBottom();
+        this.scrollPageToBottom();
         this.click('Sign in');
         this.waitForText('There is a problem with your account login details', 20, 'h2');
         this.retry({retries:3, minTimeout:1000}).seeInCurrentUrl('state', 'attemptfinal');
