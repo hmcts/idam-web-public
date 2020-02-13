@@ -50,20 +50,11 @@ const setupConfig = {
   include: { I: './src/test/js/shared/custom_steps.js' },
 
   multiple: {
-    microsoftIE11: {
-      browsers: getBrowserConfig('microsoftIE11')
-    },
-    microsoftEdge: {
-      browsers: getBrowserConfig('microsoftEdge')
-    },
     chrome: {
       browsers: getBrowserConfig('chrome')
     },
     firefox: {
       browsers: getBrowserConfig('firefox')
-    },
-    safari: {
-      browsers: getBrowserConfig('safari')
     }
   },
   name: 'Idam web public'
