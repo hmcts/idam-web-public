@@ -68,7 +68,6 @@ Scenario('@functional @crossbrowser Idam Web public cross browser tests', async 
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
-
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);

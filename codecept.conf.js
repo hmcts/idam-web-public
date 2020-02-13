@@ -22,8 +22,7 @@ exports.config = {
                 "require": "./src/test/js/shared/idam_helper.js"
             }
         },
-
-    "include": {
+     "include": {
       "I": "./src/test/js/shared/custom_steps.js"
     },
     mocha: {

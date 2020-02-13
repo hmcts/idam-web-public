@@ -60,7 +60,7 @@ AfterSuite(async (I) => {
     ]);
 });
 
-Scenario('@functional @crossbroswers @mfaLogin I am able to login with MFA', async (I) => {
+Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);

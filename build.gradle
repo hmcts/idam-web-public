@@ -177,7 +177,6 @@ allprojects  {
     workingDir '.'
     commandLine './node_modules/.bin/pa11y', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
   }
-
 }
 
 project.tasks['sonarqube'].dependsOn test

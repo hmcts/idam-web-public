@@ -49,7 +49,6 @@ const setupConfig = {
    },
   include: { I: './src/test/js/shared/custom_steps.js' },
 
-
   multiple: {
     microsoftIE11: {
       browsers: getBrowserConfig('microsoftIE11')

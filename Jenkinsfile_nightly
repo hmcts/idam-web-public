@@ -16,12 +16,13 @@ def type = "java"
 def product = "idam"
 def component = "idam-web-public"
 def secrets = [
-    'idam-idam-aat':[
+    'idam-idam-aat': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY')
     ]
 ]
+
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     [$class     : 'AzureKeyVaultSecret',
      secretType : 'Secret',
@@ -30,12 +31,18 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
      envVariable: envVar
     ]
 }
+
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
+
     env.IDAMAPI = params.API_URL_TO_TEST
+
     env.TUNNEL_IDENTIFIER = params.REFORM_TUNNEL
+
     env.SAUCE_ACCESS_KEY = params.SAUCE_KEY
+
     env.SAUCE_USERNAME = params.SAUCE_USERNAME
+
     loadVaultSecrets(secrets)
 
     enableCrossBrowserTest()
@@ -57,35 +64,33 @@ withNightlyPipeline(type, product, component) {
             reportName           : "IDAM Web Public E2E smoke tests result"
         ]
 
-        sh "./gradlew codeceptFunctional"
+        sh "./gradlew functional"
 
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
-            allowMissing : true,
+            allowMissing         : true,
             alwaysLinkToLastBuild: true,
-            keepAll : true,
-            reportDir : "output",
-            reportFiles : "idam-web-public-e2e-result.html",
-            reportName : "IDAM Web Public E2E functional tests result"
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E functional tests result"
         ]
     }
 
-
     after('crossBrowserTest') {
-
-              try {
-                  withSauceConnect("reform_tunnel") {
-                      sh "./gradlew functionalSauce"
-                      steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-                  }
-              }
-
-              finally {
-                      steps.saucePublisher()
-                  }
-
+        try {
+            withSauceConnect("reform_tunnel") {
+                sh "./gradlew functionalSauce"
+                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
             }
+        }
+
+        finally {
+            steps.saucePublisher()
+        }
+
+    }
 
 }
 
