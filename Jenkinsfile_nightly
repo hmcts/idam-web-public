@@ -28,17 +28,30 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
      envVariable: envVar
     ]
 }
-
 withNightlyPipeline(type, product, component) {
+
     env.TEST_URL = params.URL_TO_TEST
 
     env.IDAMAPI = params.API_URL_TO_TEST
 
     loadVaultSecrets(secrets)
 
+    enableFullFunctionalTest(200)
+
     enableCrossBrowserTest()
 
-    enableFullFunctionalTest(200)
+    after('crossBrowserTest') {
+
+        try {
+            withSauceConnect("reform_tunnel") {
+                sh "./gradlew functionalSauce"
+                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+            }
+        }
+        finally {
+            steps.saucePublisher()
+        }
+    }
 
     after('fullFunctionalTest') {
 
@@ -68,19 +81,4 @@ withNightlyPipeline(type, product, component) {
             reportName           : "IDAM Web Public E2E functional tests result"
         ]
     }
-
-    after('crossBrowserTest') {
-        try {
-            withSauceConnect("reform_tunnel") {
-                sh "./gradlew functionalSauce"
-                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-            }
-        }
-
-        finally {
-            steps.saucePublisher()
-        }
-
-    }
-
 }
