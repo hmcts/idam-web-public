@@ -200,7 +200,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.saveScreenshot('create-newpassword.png');
-    I.seeVisualDiff('create-newpassword.png', {tolerance: 6, prepareBaseImage: false});
+    I.seeVisualDiff('create-newpassword.png', {tolerance: 6, prepareBaseImage: true});
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);

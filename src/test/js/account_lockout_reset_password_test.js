@@ -41,7 +41,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.lockAccount(citizenEmail, serviceName);
     I.click('reset your password');
     I.saveScreenshot('reset-password.png');
-    I.seeVisualDiff('reset-password.png', {tolerance: 6, prepareBaseImage: false});
+    I.seeVisualDiff('reset-password.png', {tolerance: 6, prepareBaseImage: true});
     I.wait(5);
     I.waitForText('Reset your password', 20, 'h1');
     I.fillField('#email', citizenEmail);
@@ -56,7 +56,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
     I.saveScreenshot('password-changed.png');
-    I.seeVisualDiff('password-changed.png', {tolerance: 6, prepareBaseImage: false});
+    I.seeVisualDiff('password-changed.png', {tolerance: 6, prepareBaseImage: true});
     I.waitForText('Your password has been changed', 20, 'h1');
     I.see('You can now sign in with your new password.');
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
