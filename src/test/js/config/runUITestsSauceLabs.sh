@@ -1,5 +1,5 @@
 #!/bin/bash
- supportedBrowsers=`sed '/\/\//d' ./supportedBrowsers.js | sed '/: {/!d' | sed "s/[\'\:\{ ]//g"`
+supportedBrowsers=`sed '/\/\//d' ./supportedBrowsers.js | sed '/\/\//d' | sed "s/[\'\:\{ ]//g"`
 browsersArray=(${supportedBrowsers//$'\n'/ })
 
 outputDirectory="${E2E_CROSSBROWSER_OUTPUT_DIR:-functional-output/crossbrowser/reports}"
@@ -28,8 +28,4 @@ do
         mv $f ../../../../output/$FOLDERNAME
     done
 
-    exitStatus=$?
-    if [ $exitStatus -ne 0 ]; then
-        finalExitStatus=$exitStatus
-    fi
 done

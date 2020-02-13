@@ -1,4 +1,3 @@
-
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 

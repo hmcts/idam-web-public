@@ -70,4 +70,3 @@ const setupConfig = {
 };
 
 exports.config = setupConfig;
-

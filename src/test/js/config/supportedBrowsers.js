@@ -1,20 +1,4 @@
 const supportedBrowsers = {
-  microsoftIE11: {
-    ie11: {
-      browserName: 'internet explorer',
-      name: 'IE11',
-      platform: 'Windows 10',
-      version: '11.285'
-    }
-  },
-  microsoftEdge: {
-    edge: {
-      browserName: 'MicrosoftEdge',
-      name: 'Edge_Win10',
-      platform: 'Windows 10',
-      version: '18.17763'
-    }
-  },
   chrome: {
     chrome_win_latest: {
       browserName: 'chrome',
@@ -41,15 +25,6 @@ const supportedBrowsers = {
       name: 'MAC_FIREFOX_LATEST',
       platform: 'macOS 10.13',
       version: 'latest'
-    }
-  },
-  safari: {
-    safari11: {
-      browserName: 'safari',
-      name: 'DIV_SAFARI_11',
-      platform: 'macOS 10.13',
-      version: '11.1',
-      avoidProxy: true
     }
   }
 };

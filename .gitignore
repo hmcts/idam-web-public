@@ -1,6 +1,8 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 functional-output/
+yarn lockfile v1
+
 
 ### STS ###
 .apt_generated
