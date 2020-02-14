@@ -312,7 +312,7 @@ class IdamHelper extends Helper {
     createPolicyForMfaTest(name, roleName, api_auth_token) {
         const data = {
             "name": name,
-            "applicationName": "TestHmctsPolicySet",
+            "applicationName": "HmctsPolicySet",
             "description": "Require MFA for test user",
             "active": true,
             "actionValues": {
@@ -363,7 +363,7 @@ class IdamHelper extends Helper {
     createPolicyForMfaBlockTest(name, roleName, api_auth_token) {
         const data = {
             "name": name,
-            "applicationName": "TestHmctsPolicySet",
+            "applicationName": "HmctsPolicySet",
             "description": "Require MFA for test user",
             "active": true,
             "actionValues": {
@@ -476,7 +476,18 @@ class IdamHelper extends Helper {
             const regex = "(https.+)"
             const url = emailResponse.body.match(regex);
             if (url[0]) {
-                return url[0].replace(/https:\/\/idam-web-public\..+?\.platform\.hmcts\.net/i, TestData.WEB_PUBLIC_URL);
+                return url[0].replace(/https:\/\/idam-web-public[^\/]+/i, TestData.WEB_PUBLIC_URL).replace(")", "");
+            }
+        }
+    }
+
+    async extractOtpFromEmail(searchEmail) {
+        const emailResponse = await this.getEmail(searchEmail);
+        if(emailResponse) {
+            const regex = "[0-9]{8}";
+            const url = emailResponse.body.match(regex);
+            if (url[0]) {
+                return url[0];
             }
         }
     }

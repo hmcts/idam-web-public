@@ -53,7 +53,6 @@ Scenario('@functional @policy As a citizen with policies blocking me from login 
     I.fillField('#username', citizenEmail.toUpperCase());
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(10);
     I.waitForText('Policies check failed', 10, 'h2');
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
