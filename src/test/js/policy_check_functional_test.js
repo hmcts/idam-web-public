@@ -16,7 +16,6 @@ const box = {
     right: 200,
     bottom: 600
 };
-
 const serviceName = randomData.getRandomServiceName();
 
 BeforeSuite(async (I) => {
@@ -60,9 +59,8 @@ Scenario('@functional @policy As a citizen with policies blocking me from login 
     I.fillField('#username', citizenEmail.toUpperCase());
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(10);
     I.saveScreenshot( 'Polycheck-login.png');
-    I.seeVisualDiff('Polycheck-login.png', {tolerance: 6, prepareBaseImage: true, ignoredBox: box});
+    I.seeVisualDiff('Polycheck-login.png', {tolerance: 6, prepareBaseImage: false, ignoredBox: box});
     I.waitForText('Policies check failed', 10, 'h2');
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
