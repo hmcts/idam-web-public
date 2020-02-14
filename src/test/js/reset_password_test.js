@@ -56,10 +56,10 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
     I.waitForText('Reset your password', 20, 'h1');
-    I.wait(3);
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
