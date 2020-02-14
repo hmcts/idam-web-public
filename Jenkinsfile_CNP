@@ -37,6 +37,8 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     enableSlackNotifications('#idam_tech')
     installCharts()
+    enableAksStagingDeployment()
+    disableLegacyDeployment()
 
     // AKS Callbacks
     before('akschartsinstall') {
