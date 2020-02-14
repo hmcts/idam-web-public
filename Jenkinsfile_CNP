@@ -68,6 +68,12 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
+    
+    before('buildinfra:idam-ithc') {
+        env.ITHC_ENVIRONMENT_NAME = 'ithc'
+        println """\
+                Using ITHC_ENVIRONMENT_NAME: ${env.ITHC_ENVIRONMENT_NAME}""".stripIndent()
+    }
 
     after('akschartsinstall') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
