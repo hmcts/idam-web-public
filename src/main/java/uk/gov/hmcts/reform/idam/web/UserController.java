@@ -249,7 +249,7 @@ public class UserController {
         model.put("token", token);
         model.put("code", code);
         try {
-            if (validationService.validateResetPasswordRequest(password1, password2, model)) {
+            if (validationService.validatePassword(password1, password2, model)) {
                 String activation = "{\"token\":\"" + token + "\",\"code\":\"" + code + "\",\"password\":\"" + password1 + "\"}";
                 ResponseEntity<String> response = spiService.activateUser(activation);
                 String redirectUri = getRedirectUri(response.getBody());
@@ -266,14 +266,33 @@ public class UserController {
 
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED)) {
-                    ErrorHelper.showError("Error", "public.common.error.blacklisted.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+                    ErrorHelper.showError("Error",
+                        "public.common.error.blacklisted.password",
+                        "public.common.error.blacklisted.password",
+                        "public.common.error.enter.password",
+                        model);
                     return "useractivation";
                 }
+
+                if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)) {
+                    ErrorHelper.showError("Error",
+                        "public.common.error.containspersonalinfo.password",
+                        "public.common.error.containspersonalinfo.password",
+                        "public.common.error.enter.password",
+                        model);
+                    return "useractivation";
+                }
+
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.TOKEN_INVALID)) {
                     return "expiredtoken";
                 }
             }
-            ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+
+            ErrorHelper.showError("Error",
+                "public.common.error.invalid.password",
+                "public.common.error.invalid.password",
+                "public.common.error.enter.password",
+                model);
         }
 
         return "useractivation";
