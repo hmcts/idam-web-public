@@ -56,7 +56,6 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
     I.waitForText('Reset your password', 20, 'h1');
-    I.wait(3);
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
@@ -80,7 +79,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
-})
+});
  //NOTE: Retrying this scenario is problematic.
 
 Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset my password with diff case email address', async (I) => {
@@ -118,7 +117,6 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
     I.waitForText('Reset your password', 20, 'h1');
-    I.wait(3);
     I.fillField('#email', plusCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
@@ -149,14 +147,12 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
     I.waitForText('Reset your password', 20, 'h1');
-    I.wait(3);
     I.fillField('#email', otherCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
     I.wait(5);
     const resetPasswordUrl = await I.extractUrl(otherCitizenEmail);
     I.amOnPage(resetPasswordUrl);
-    I.wait(10);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('password1', 'Passw0rd');
@@ -185,7 +181,7 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
     I.see("Your password is too easy to guess");
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @resetpass As a citizen user I can reset my password with repeated special characters', async (I) => {
     I.amOnPage(loginPage);
