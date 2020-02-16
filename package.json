@@ -19,6 +19,7 @@
     "notifications-node-client": "^4.7.2",
     "pa11y": "^4.13.2",
     "proxy-agent": "^3.0.1",
-    "puppeteer": "^2.0.0"
+    "puppeteer": "^2.0.0",
+    "node-fetch": "^2.6.0"
   }
 }
