@@ -37,6 +37,8 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     enableSlackNotifications('#idam_tech')
     installCharts()
+    enableAksStagingDeployment()
+    disableLegacyDeployment()
 
     // AKS Callbacks
     before('akschartsinstall') {
@@ -65,6 +67,12 @@ withPipeline(type, product, component) {
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+    }
+    
+    before('buildinfra:idam-ithc') {
+        env.ITHC_ENVIRONMENT_NAME = 'ithc'
+        println """\
+                Using ITHC_ENVIRONMENT_NAME: ${env.ITHC_ENVIRONMENT_NAME}""".stripIndent()
     }
 
     after('akschartsinstall') {
