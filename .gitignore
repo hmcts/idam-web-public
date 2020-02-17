@@ -1,6 +1,7 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 functional-output/
+package-lock.json
 
 ### STS ###
 .apt_generated
