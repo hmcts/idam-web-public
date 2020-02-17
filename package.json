@@ -4,10 +4,11 @@
   "repository": "git@github.com:hmcts/idam-web-public.git",
   "license": "MIT",
   "engines": {
-    "node": ">=8.9.4"
+    "node": ">=12.4.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "codeceptjs-resemblehelper": "^1.9.0",
     "codeceptjs": "^2.4.3",
     "deep-equal-in-any-order": "^1.0.13",
     "mocha": "^5.2.0",
@@ -15,11 +16,11 @@
     "mocha-multi": "^1.0.1",
     "mochawesome": "^3.0.2",
     "nightmare": "^3.0.1",
-    "node-fetch": "^2.5.0",
     "notifications-node-client": "^4.7.2",
     "pa11y": "^4.13.2",
     "proxy-agent": "^3.0.1",
-    "puppeteer": "^1.4.0",
+    "puppeteer": "^2.0.0",
+    "node-fetch": "^2.6.0",
     "wdio-sauce-service": "^0.4.4",
     "webdriverio": "^4.14.2"
   },
