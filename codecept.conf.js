@@ -4,15 +4,17 @@ exports.config = {
     name: 'idam-web-public',
     tests: './src/test/js/**/*_test.js',
     output: './output',
+    fullPageScreenshots: true,
     timeout: 180000,
     bootstrap: false,
     helpers: {
         Puppeteer: {
-            //show: true,
+            // show: true,
             url: TestData.WEB_PUBLIC_URL,
             waitForTimeout: 60000,
-            waitForAction: 100,
-            getPageTimeout: 90000,
+            waitForAction: 2000,
+            windowSize: "1280x960",
+            getPageTimeout: 20000,
             chrome: {
                 //args: ["--proxy-server=" + process.env.PROXY_SERVER],
                 ignoreHTTPSErrors: true
@@ -20,7 +22,13 @@ exports.config = {
         },
         idam_helper: {
             "require": "./src/test/js/shared/idam_helper.js"
-        }
+        },
+        "ResembleHelper" : {
+                   "require": "codeceptjs-resemblehelper",
+                   "screenshotFolder" : "./functional-output/output/",
+                   "baseFolder": "./functional-output/screenshots/base/",
+                   "diffFolder": "./functional-output/screenshots/diff/"
+         }
     },
     "include": {
       "I": "./src/test/js/shared/custom_steps.js"

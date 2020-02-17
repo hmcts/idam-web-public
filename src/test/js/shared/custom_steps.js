@@ -70,7 +70,7 @@ module.exports = function() {
         this.fillField('password', '111111111111111111');
         this.scrollPageToBottom();
         this.click('Sign in');
-        this.wait(10);
+        this.wait(5);
         // Final
         this.amOnPage(loginPage + 'attemptfinal');
         this.waitForText('Sign in', 180, 'h1');
