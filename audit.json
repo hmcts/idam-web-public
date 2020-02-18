@@ -220,5 +220,6 @@
   "10010_Cookie No HttpOnly Flag_https://idam-web-public.aat.platform.hmcts.net/robots.txt_GET": "ignore",
   "10036_Server Leaks Version Information via \"Server\" HTTP Response Header Field_https://idam-web-public.aat.platform.hmcts.net/ruxitagentjs_ICA2SVfjqrux_10185200212095618.js_GET": "ignore",
   "10036_Server Leaks Version Information via \"Server\" HTTP Response Header Field_https://idam-web-public.aat.platform.hmcts.net/_GET": "ignore",
-  "90033_Loosely Scoped Cookie_https://idam-web-public.aat.platform.hmcts.net/robots.txt_GET": "ignore"
+  "90033_Loosely Scoped Cookie_https://idam-web-public.aat.platform.hmcts.net/robots.txt_GET": "ignore",
+  "10095_Backup File Disclosure_https://idam-web-public.aat.platform.hmcts.net/Copy of ruxitagentjs_ICA2SVfjqrux_10185200212095618.js_GET": "ignore"
 }
