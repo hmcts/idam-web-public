@@ -156,5 +156,4 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
-<<<<<<< HEAD
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
