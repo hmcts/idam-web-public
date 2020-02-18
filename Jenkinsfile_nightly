@@ -19,7 +19,7 @@ def product = "idam"
 def component = "web-public"
 
 def secrets = [
-    'idam-idam-preview': [
+    'idam-idam-aats': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY')
