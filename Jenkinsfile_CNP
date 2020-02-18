@@ -173,8 +173,4 @@ withPipeline(type, product, component) {
             reportName           : "IDAM Web Public E2E functional tests result"
         ]
     }
-
-    before('buildinfra:idam-prod') {
-        error('Stopping pipeline before Prod stages')
-    }
 }
