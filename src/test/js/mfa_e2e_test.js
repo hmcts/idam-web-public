@@ -96,7 +96,7 @@ Scenario('@functional @mfaLogin I am not able to login with MFA for the block po
     I.waitForText('Policies check failed', 10, 'h2');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@mfaLogin Validate verification code and 3 incorrect otp attempts should redirect user to the sign in page', async (I) => {
+Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts should redirect user to the sign in page', async (I) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);

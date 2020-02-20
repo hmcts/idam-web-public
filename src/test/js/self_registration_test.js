@@ -124,7 +124,7 @@ Scenario('@functional @selfregister I can self register', async (I) => {
 });
 
 
-Scenario('@selfregister @prePopulatedScreen I can self register with pre-populated user account screen', async (I) => {
+Scenario('@functional @selfregister @prePopulatedScreen I can self register with pre-populated user account screen', async (I) => {
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
     const randomUserEmailAddress = 'citizen.' + randomData.getRandomEmailAddress();
     const userAccountDetails = {
