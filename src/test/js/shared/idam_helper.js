@@ -268,7 +268,7 @@ class IdamHelper extends Helper {
     createPolicyToBlockUser(name, userEmail, api_auth_token) {
         const data = {
             "name": name,
-            "applicationName": "HmctsPolicySet",
+            "applicationName": "TestHmctsPolicySet",
             "description": "Blocks specific user",
             "active": true,
             "actionValues": {
