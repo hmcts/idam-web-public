@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @ConfigurationProperties(prefix = "strategic")
@@ -53,6 +54,6 @@ public class StrategicConfigurationProperties {
     @Data
     public static class Session {
         private String idamSessionCookie;
-        private String affinityCookie;
+        private List<String> affinityCookies;
     }
 }
