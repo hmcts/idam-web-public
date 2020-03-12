@@ -7,9 +7,9 @@
 
 <t:wrapper titleKey="public.template.footer.support.link.privacy.policy">
     <article class="content__body">
-        <a href="javascript:history.go(-1)" class="link-back">Back</a>
+        <a href="javascript:history.go(-1)" class="link-back"><spring:message code="public.common.link.back" /></a>
         <h1 class="heading-xlarge">
-            Privacy policy
+            <spring:message code="public.privacy.title" />
         </h1>
         <div id="tabs" class="ui-tabs ui-corner-all ui-widget ui-widget-content">
             <div id="nav-links">

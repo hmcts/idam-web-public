@@ -7,57 +7,57 @@
 
 <t:wrapper titleKey="public.template.footer.support.link.contact.us">
     <article class="content__body">
-        <a href="javascript:history.back()" class="link-back">Back</a>
+        <a href="javascript:history.back()" class="link-back"><spring:message code="public.common.link.back" /></a>
         <h1 class="heading-large">
-            Contact us
+            <spring:message code="public.contact.title" />
         </h1>
 
-        <h2 class="heading-medium">Divorce</h2>
+        <h2 class="heading-medium"><spring:message code="public.contact.divorce.section.title" /></h2>
         <ul class="list">
-            <li>Email: divorce@justice.gov.uk</li>
-            <li>Phone: 0300 303 0642 </li>
-            <li>Monday to Friday, 8am to 8pm</li>
-            <li>Saturday, 8am to 2pm</li>
-            <li> <a href="https://www.gov.uk/call-charges">Find out about call charges</a> </li>
+            <li><spring:message code="public.contact.divorce.line-1" /></li>
+            <li><spring:message code="public.contact.divorce.line-2" /></li>
+            <li><spring:message code="public.contact.divorce.line-3" /></li>
+            <li><spring:message code="public.contact.divorce.line-4" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contact.call.charges" /></a> </li>
         </ul>
 
-        <h2 class="heading-medium">Family Public Law</h2>
+        <h2 class="heading-medium"><spring:message code="public.contact.family-public-law.section.title" /></h2>
         <ul class="list">
-            <li>Email: dcd-familypubliclawservicedesk@hmcts.net</li>
+            <li><spring:message code="public.contact.family-public-law.line-1" /></li>
         </ul>
 
-        <h2 class="heading-medium">Money Claims</h2>
+        <h2 class="heading-medium"><spring:message code="public.contact.money-claims.section.title" /></h2>
         <ul class="list">
-            <li>Email: moneyclaims@justice.gov.uk</li>
-            <li>Phone: 0300 123 7050</li>
-            <li>Monday to Friday, 9am to 5pm</li>
-            <li> <a href="https://www.gov.uk/call-charges">Find out about call charges</a> </li>
+            <li><spring:message code="public.contact.money-claims.line-1" /></li>
+            <li><spring:message code="public.contact.money-claims.line-2" /></li>
+            <li><spring:message code="public.contact.money-claims.line-3" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contact.call.charges" /></a> </li>
         </ul>
 
-        <h2 class="heading-medium">Probate</h2>
+        <h2 class="heading-medium"><spring:message code="public.contact.probate.section.title" /></h2>
         <ul class="list">
-            <li>Phone: 0300 303 0648 </li>
-            <li>Monday to Friday, 8am to 8pm</li>
-            <li>Saturday, 8am to 2pm</li>
-            <li> <a href="https://www.gov.uk/call-charges">Find out about call charges</a> </li>
+            <li><spring:message code="public.contact.probate.line-1" /></li>
+            <li><spring:message code="public.contact.probate.line-2" /></li>
+            <li><spring:message code="public.contact.probate.line-3" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contact.call.charges" /></a> </li>
         </ul>
 
-        <h2 class="heading-medium">Appeal a benefit decision (England and Wales)</h2>
+        <h2 class="heading-medium"><spring:message code="public.contact.appeal.england-wales.section.title" /></h2>
         <ul class="list">
-            <li>Email: Contactsscs@justice.gov.uk</li>
-            <li>Phone: 0300 123 1142 </li>
-            <li>Monday to Friday, 8am to 8pm</li>
-            <li>Saturday, 8am to 2pm</li>
-            <li> <a href="https://www.gov.uk/call-charges">Find out about call charges</a> </li>
+            <li><spring:message code="public.contact.appeal.england-wales.line-1" /></li>
+            <li><spring:message code="public.contact.appeal.england-wales.line-2" /></li>
+            <li><spring:message code="public.contact.appeal.england-wales.line-3" /></li>
+            <li><spring:message code="public.contact.appeal.england-wales.line-4" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contact.call.charges" /></a> </li>
         </ul>
 
-        <h2 class="heading-medium">Appeal a benefit decision (Scotland)</h2>
+        <h2 class="heading-medium"><spring:message code="public.contact.appeal.scotland.section.title" /></h2>
         <ul class="list">
-            <li>Email: SSCSA-Glasgow@justice.gov.uk</li>
-            <li>Phone: 0300 790 6234 </li>
-            <li>Monday to Friday, 8am to 8pm</li>
-            <li>Saturday, 8am to 2pm</li>
-            <li> <a href="https://www.gov.uk/call-charges">Find out about call charges</a> </li>
+            <li><spring:message code="public.contact.appeal.scotland.line-1" /></li>
+            <li><spring:message code="public.contact.appeal.scotland.line-2" /></li>
+            <li><spring:message code="public.contact.appeal.scotland.line-3" /></li>
+            <li><spring:message code="public.contact.appeal.scotland.line-4" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contact.call.charges" /></a> </li>
         </ul>
     </article>
 </t:wrapper>
