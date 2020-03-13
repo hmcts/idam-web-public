@@ -36,7 +36,6 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.see('Create an account');
     I.click("Continue");
     I.waitForText('Information is missing or invalid', 20, 'h2');
-    I.wait(5);
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
@@ -110,7 +109,6 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
-    I.wait(5);
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
     I.seeInCurrentUrl("state=selfreg");
@@ -119,7 +117,6 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.wait(10);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -158,7 +155,6 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
-    I.wait(5);
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
     I.seeInCurrentUrl("state=selfreg");
