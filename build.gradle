@@ -153,6 +153,26 @@ allprojects  {
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
 
+  task smokeSauce(dependsOn: ':codeceptSmokeSauce') {
+    group = 'Delivery pipeline'
+    description = 'Executes non-destructive smoke tests against a running instance'
+  }
+
+  task codeceptSmokeSauce(type: Exec, dependsOn: ':yarnInstall') {
+    workingDir '.'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js','--steps', '--grep', '@smoke', '--verbose', '--debug', '--reporter', 'mochawesome'
+  }
+
+  task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
+    group = 'Delivery pipeline'
+    description = 'Executes non-destructive smoke tests against a running instance'
+  }
+
+  task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
+    workingDir '.'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--reporter', 'mochawesome'
+  }
+
   task pa11y(type: Exec, dependsOn: 'pa11yInstall') {
     workingDir '.'
     commandLine './node_modules/.bin/pa11y', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
@@ -215,4 +235,3 @@ test.finalizedBy jacocoTestReport
 bootRun {
   systemProperties = System.properties
 }
-
