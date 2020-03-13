@@ -60,7 +60,6 @@ Scenario('@functional @policy @debug As a citizen with policies blocking me from
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.saveScreenshot( 'Polycheck-login.png')
-    I.wait(5);
     // I.seeVisualDiff('Polycheck-login.png', {tolerance: 6, prepareBaseImage: false, ignoredBox: box});
     I.waitForText('Policies check failed', 10, 'h2');
 
