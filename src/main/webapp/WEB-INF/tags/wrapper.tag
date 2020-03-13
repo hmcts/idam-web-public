@@ -134,6 +134,7 @@
                         code="public.template.header.phase.description"
                         arguments="${smartSurveyUrl}"
                     />
+                    <a href="?locale=<spring:message code="public.common.language.switch.locale"/>" class="language"><spring:message code="public.common.language.switch.text"/></a>
                 </span>
             </p>
         </div>
