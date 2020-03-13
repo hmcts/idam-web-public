@@ -51,7 +51,7 @@ AfterSuite(async (I) => {
     ]);
 });
 
-Scenario('@functional @policy As a citizen with policies blocking me from login I should see an error message', async (I) => {
+Scenario('@functional @policy @debug As a citizen with policies blocking me from login I should see an error message', async (I) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
@@ -59,8 +59,8 @@ Scenario('@functional @policy As a citizen with policies blocking me from login 
     I.fillField('#username', citizenEmail.toUpperCase());
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.saveScreenshot( 'Polycheck-login.png');
-    I.seeVisualDiff('Polycheck-login.png', {tolerance: 6, prepareBaseImage: false, ignoredBox: box});
+    I.saveScreenshot( 'Polycheck-login.png')
+    // I.seeVisualDiff('Polycheck-login.png', {tolerance: 6, prepareBaseImage: false, ignoredBox: box});
     I.waitForText('Policies check failed', 10, 'h2');
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

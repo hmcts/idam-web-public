@@ -1224,7 +1224,7 @@ public class AppControllerTest {
     }
 
     /**
-     * @verifies put in model correct data  then call authorize service and redirect using redirect url returned by service
+     * @verifies put in model correct data then call authorize service and redirect using redirect url returned by service
      * @see AppController#login(AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
      */
     @Test
