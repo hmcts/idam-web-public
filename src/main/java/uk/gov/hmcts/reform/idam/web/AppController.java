@@ -342,7 +342,7 @@ public class AppController {
     }
 
     /**
-     * @should put in model correct data  then call authorize service and redirect using redirect url returned by service
+     * @should put in model correct data then call authorize service and redirect using redirect url returned by service
      * @should put in model correct data if username or  password are empty.
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
      * @should put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
@@ -462,11 +462,10 @@ public class AppController {
         List<String> secureCookies = makeCookiesSecure(responseCookies);
         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
 
-        final String affinityCookieName = configurationProperties.getStrategic().getSession().getAffinityCookie();
+        final List<String> affinityCookieNames = configurationProperties.getStrategic().getSession().getAffinityCookies();
         cookies.stream().
-            filter(cookie -> cookie.contains(affinityCookieName))
-            .findFirst()
-            .ifPresent(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie.split(";")[0]));
+            filter(cookie -> affinityCookieNames.stream().anyMatch(cookie::contains))
+            .forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie.split(";")[0]));
 
         Map<String, Object> authorizeParams = model.asMap();
         authorizeParams.remove(USERNAME);

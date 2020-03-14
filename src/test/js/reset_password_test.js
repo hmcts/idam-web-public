@@ -80,7 +80,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.dontSee('error=');
     I.resetRequestInterception();
 });
-// NOTE: Retrying this scenario is problematic.
+ //NOTE: Retrying this scenario is problematic.
 
 Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset my password with diff case email address', async (I) => {
     I.amOnPage(loginPage);
@@ -195,6 +195,8 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
+    I.saveScreenshot('create-newpassword.png');
+    I.seeVisualDiff('create-newpassword.png', {tolerance: 6, prepareBaseImage: false});
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);

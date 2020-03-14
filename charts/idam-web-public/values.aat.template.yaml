@@ -1,7 +1,9 @@
 java:
   releaseNameOverride: ${SERVICE_NAME}
   image: ${IMAGE_NAME}
-  replicas: 1
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  aadIdentityName: idam
+  environment:
+    STRATEGIC_SERVICE_URL: http://idam-api-aat.service.core-compute-aat.internal
