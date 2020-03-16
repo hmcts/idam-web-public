@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
@@ -35,39 +36,40 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, Object handler) {
 
         final String localesTagsString = request.getParameter(getParamName());
+        if (localesTagsString == null) return true;
 
-        if (localesTagsString != null) {
-            final String[] localesTags = localesTagsString.split(" ");
-            final String requestMethod = request.getMethod().toLowerCase();
+        final String[] localesTags = localesTagsString.split(" ");
 
-            if ("post".equals(requestMethod) || "get".equals(requestMethod)) {
-                final LocaleResolver localeResolver = getLocaleResolver(request);
-                if (localeResolver == null) {
-                    throw new IllegalStateException(
-                        "No LocaleResolver found: not in a DispatcherServlet request?");
+        final String requestMethod = request.getMethod().toLowerCase();
+        if (!("post".equals(requestMethod) || "get".equals(requestMethod))) return true;
+
+        final LocaleResolver localeResolver = Optional.ofNullable(getLocaleResolver(request))
+            .orElseThrow(() -> new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?"));
+
+        for (final String localesTag : localesTags) {
+            try {
+                final Locale locale = parseLocaleValue(localesTag);
+                if (locale != null && allowedLocales.contains(locale)) {
+                    localeResolver.setLocale(request, response, locale);
+                    return true;
                 }
-                for (final String localesTag : localesTags) {
-                    try {
-                        final Locale locale = parseLocaleValue(localesTag);
-                        if (locale != null && allowedLocales.contains(locale)) {
-                            localeResolver.setLocale(request, response, locale);
-                            return true;
-                        }
-                    } catch (IllegalArgumentException ex) {
-                        if (isIgnoreInvalidLocale()) {
-                            if (logger.isDebugEnabled()) {
-                                logger.debug("Ignoring invalid locale value [" + localesTag + "]: " + ex.getMessage());
-                            }
-                        } else {
-                            throw ex;
-                        }
-                    }
-                }
+            } catch (IllegalArgumentException ex) {
+                handleException(localesTag, ex);
             }
         }
 
         // Proceed in any case.
         return true;
+    }
+
+    private void handleException(String localesTag, @NonNull final IllegalArgumentException ex) {
+        if (isIgnoreInvalidLocale()) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Ignoring invalid locale value [" + localesTag + "]: " + ex.getMessage());
+            }
+        } else {
+            throw ex;
+        }
     }
 
     @Nullable
