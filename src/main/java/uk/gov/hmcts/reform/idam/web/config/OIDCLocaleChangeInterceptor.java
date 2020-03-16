@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.idam.web.config;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -14,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import java.util.Locale;
 import java.util.Set;
 
-@Slf4j
 public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
 
     protected final Set<Locale> allowedLocales;
@@ -53,7 +51,6 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
                         final Locale locale = parseLocaleValue(localesTag);
                         if (locale != null && allowedLocales.contains(locale)) {
                             localeResolver.setLocale(request, response, locale);
-                            log.debug("Set locale to {}.", locale.toString());
                             return true;
                         }
                     } catch (IllegalArgumentException ex) {
