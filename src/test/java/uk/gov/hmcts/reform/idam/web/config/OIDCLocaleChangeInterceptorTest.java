@@ -42,7 +42,7 @@ public class OIDCLocaleChangeInterceptorTest {
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
 
         // should produce no cookie
-        Assert.assertTrue(cookieHeaders.stream().noneMatch(h -> h.contains(LOCALE_COOKIE_NAME + EQUALS + "en")));
+        Assert.assertTrue(cookieHeaders.stream().noneMatch(h -> h.contains(LOCALE_COOKIE_NAME)));
     }
 
     /**
