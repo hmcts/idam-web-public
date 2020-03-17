@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
-import uk.gov.hmcts.reform.idam.web.helper.LocalePassingInterceptor;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
@@ -62,7 +61,6 @@ public class SPIService {
     @Autowired
     public SPIService(RestTemplate restTemplate, ConfigurationProperties configurationProperties) {
         this.restTemplate = restTemplate;
-        this.restTemplate.getInterceptors().add(new LocalePassingInterceptor());
         this.configurationProperties = configurationProperties;
     }
 
