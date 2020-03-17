@@ -1,26 +1,32 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
-import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
+import java.net.URL;
+import java.util.*;
+import java.util.stream.Collectors;
 
+/**
+ * The OpenID Connect Locale Change Interceptor.
+ */
 public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
 
-    protected final Set<Locale> allowedLocales;
+    private static final String UI_LOCALE_PARAM_SEPARATOR = " ";
 
-    public OIDCLocaleChangeInterceptor(@NonNull final Set<Locale> allowedLocales) {
+    protected final Set<Locale> supportedLocales;
+
+    public OIDCLocaleChangeInterceptor() {
         super();
-        this.allowedLocales = ImmutableSet.copyOf(allowedLocales);
+        this.supportedLocales = getSupportedLocales();
+        this.supportedLocales.add(Locale.ENGLISH);
     }
 
     /**
@@ -38,10 +44,7 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
         final String localesTagsString = request.getParameter(getParamName());
         if (localesTagsString == null) return true;
 
-        final String[] localesTags = localesTagsString.split(" ");
-
-        final String requestMethod = request.getMethod().toLowerCase();
-        if (!("post".equals(requestMethod) || "get".equals(requestMethod))) return true;
+        final String[] localesTags = localesTagsString.split(UI_LOCALE_PARAM_SEPARATOR);
 
         final LocaleResolver localeResolver = Optional.ofNullable(getLocaleResolver(request))
             .orElseThrow(() -> new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?"));
@@ -49,7 +52,7 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
         for (final String localesTag : localesTags) {
             try {
                 final Locale locale = parseLocaleValue(localesTag);
-                if (locale != null && allowedLocales.contains(locale)) {
+                if (locale != null && supportedLocales.contains(locale)) {
                     localeResolver.setLocale(request, response, locale);
                     return true;
                 }
@@ -75,5 +78,16 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
     @Nullable
     private LocaleResolver getLocaleResolver(@NotNull final HttpServletRequest request) {
         return RequestContextUtils.getLocaleResolver(request);
+    }
+
+    @Nonnull
+    private Set<Locale> getSupportedLocales() {
+        return Arrays.stream(Locale.getISOLanguages())
+            .map(language -> {
+                final URL systemResource = ClassLoader.getSystemResource("messages_" + language + ".properties");
+                return systemResource == null ? null : parseLocaleValue(language);
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
     }
 }
