@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RunWith(SpringRunner.class)
 public class OIDCLocaleChangeInterceptorTest {
 
-    private static final String LOCALE_COOKIE_NAME = "org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE";
+    private static final String LOCALE_COOKIE_NAME = "idam_ui_locales";
     private static final String EQUALS = "=";
     private static final String COOKIE_HEADER_NAME = "Set-Cookie";
     private static final String LANGUAGE_HEADER_NAME = "Content-Language";
