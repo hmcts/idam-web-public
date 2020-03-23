@@ -37,13 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_ACTIVATION_LINK_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 
 /**
  * @author Ivano
@@ -170,6 +164,10 @@ public class UserController {
             model.addAttribute(SCOPE, scope);
             return SELF_REGISTER_VIEW;
         }
+
+        log.error("service is present: " + service.isPresent());
+        if (service.isPresent())
+            log.error("is SR allowed: " + service.get().isSelfRegistrationAllowed());
 
         return PAGE_NOT_FOUND_VIEW;
     }
