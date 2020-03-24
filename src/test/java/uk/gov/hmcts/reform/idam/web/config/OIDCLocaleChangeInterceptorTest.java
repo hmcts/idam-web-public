@@ -19,7 +19,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RunWith(SpringRunner.class)
 public class OIDCLocaleChangeInterceptorTest {
 
-    private static final String LOCALE_COOKIE_NAME = "idam_ui_locales";
     private static final String EQUALS = "=";
     private static final String COOKIE_HEADER_NAME = "Set-Cookie";
     private static final String LANGUAGE_HEADER_NAME = "Content-Language";
@@ -42,7 +41,7 @@ public class OIDCLocaleChangeInterceptorTest {
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
 
         // should produce no cookie
-        Assert.assertTrue(cookieHeaders.stream().noneMatch(h -> h.contains(LOCALE_COOKIE_NAME)));
+        Assert.assertTrue(cookieHeaders.stream().noneMatch(h -> h.contains(MessagesConfiguration.IDAM_LOCALES_COOKIE_NAME)));
     }
 
     /**
@@ -51,7 +50,7 @@ public class OIDCLocaleChangeInterceptorTest {
      */
     @Test
     public void preHandle_shouldAcceptInvalidLocales() throws Exception {
-        final String url = "/?ui_locales=null gibberish en";
+        final String url = "/?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=null gibberish en";
         MvcResult result;
 
         result = this.mockMvc.perform(get(url)).andReturn();
@@ -60,7 +59,7 @@ public class OIDCLocaleChangeInterceptorTest {
         Object languageHeader = result.getResponse().getHeaderValue(LANGUAGE_HEADER_NAME);
 
         Assert.assertEquals("en", languageHeader);
-        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(LOCALE_COOKIE_NAME + EQUALS + "en")));
+        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(MessagesConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
     }
 
     /**
@@ -69,14 +68,14 @@ public class OIDCLocaleChangeInterceptorTest {
      */
     @Test
     public void preHandle_shouldSetLocaleToFirstMatchingLanguageTag() throws Exception {
-        final String url = "/?ui_locales=pl fr cy en";
+        final String url = "/?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=pl fr cy en";
         final MvcResult result = this.mockMvc.perform(get(url)).andReturn();
 
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
         final Object languageHeader = result.getResponse().getHeaderValue(LANGUAGE_HEADER_NAME);
 
         Assert.assertEquals("cy", languageHeader);
-        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(LOCALE_COOKIE_NAME + EQUALS + "cy")));
+        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(MessagesConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "cy")));
     }
 
     /**
@@ -85,13 +84,13 @@ public class OIDCLocaleChangeInterceptorTest {
      */
     @Test
     public void preHandle_shouldSetLocaleToASingleTag() throws Exception {
-        final String url = "/?ui_locales=en";
+        final String url = "/?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=en";
         final MvcResult result = this.mockMvc.perform(get(url)).andReturn();
 
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
         final Object languageHeader = result.getResponse().getHeaderValue(LANGUAGE_HEADER_NAME);
 
         Assert.assertEquals("en", languageHeader);
-        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(LOCALE_COOKIE_NAME + EQUALS + "en")));
+        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(MessagesConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
     }
 }

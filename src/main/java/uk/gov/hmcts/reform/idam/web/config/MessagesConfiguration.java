@@ -11,12 +11,13 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 @Configuration
 public class MessagesConfiguration implements WebMvcConfigurer {
 
-    private static final String UI_LOCALES_PARAM_NAME = "ui_locales";
+    public static final String UI_LOCALES_PARAM_NAME = "ui_locales";
+    public static final String IDAM_LOCALES_COOKIE_NAME = "idam_ui_locales";
 
     @Bean
     public LocaleResolver localeResolver() {
         final CookieLocaleResolver localeResolver = new CookieLocaleResolver();
-        localeResolver.setCookieName("idam_ui_locales");
+        localeResolver.setCookieName(IDAM_LOCALES_COOKIE_NAME);
         return localeResolver;
     }
 
