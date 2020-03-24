@@ -3,17 +3,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ tag description="Language Switcher Tag" pageEncoding="UTF-8" %>
-
-<spring:message code="public.common.language.switch.locale" var="languageSwitchLocale"/>
-<script>
-    function getOtherLocaleUrl() {
-        const url = new URL(location.href);
-        const query_string = url.search;
-        const search_params = new URLSearchParams(query_string);
-        search_params.set('ui_locales', '${languageSwitchLocale}');
-        url.search = search_params.toString();
-        return url.toString();
-    }
-</script>
-<a href="#" onclick="location.href=getOtherLocaleUrl()" class="language">
-    <spring:message code="public.common.language.switch.text"/></a>
+<spring:eval expression="T(uk.gov.hmcts.reform.idam.web.helper.JSPHelper).getOtherLocaleUrl()" var="languageSwitchUrl"/>
+<a href="${languageSwitchUrl}" class="language"><spring:message code="public.common.language.switch.text"/></a>

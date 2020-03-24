@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import uk.gov.hmcts.reform.idam.web.AppController;
 
 import java.util.List;
@@ -25,9 +24,6 @@ public class OIDCLocaleChangeInterceptorTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private LocaleChangeInterceptor localeChangeInterceptor;
 
     /**
      * @verifies accept no parameter
