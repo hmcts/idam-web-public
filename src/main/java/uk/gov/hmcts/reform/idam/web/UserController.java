@@ -165,7 +165,7 @@ public class UserController {
             return SELF_REGISTER_VIEW;
         }
 
-        log.error("service is present: " + service.isPresent());
+        log.error("service [" + clientId + "] present: " + service.isPresent());
         if (service.isPresent())
             log.error("is SR allowed: " + service.get().isSelfRegistrationAllowed());
 
