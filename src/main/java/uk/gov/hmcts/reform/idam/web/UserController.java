@@ -164,11 +164,6 @@ public class UserController {
             model.addAttribute(SCOPE, scope);
             return SELF_REGISTER_VIEW;
         }
-
-        log.error("service [" + clientId + "] present: " + service.isPresent());
-        if (service.isPresent())
-            log.error("is SR allowed: " + service.get().isSelfRegistrationAllowed());
-
         return PAGE_NOT_FOUND_VIEW;
     }
 
