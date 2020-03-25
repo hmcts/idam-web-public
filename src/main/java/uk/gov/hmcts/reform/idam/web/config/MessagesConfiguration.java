@@ -1,30 +1,32 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
-import java.util.Locale;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Configuration
 public class MessagesConfiguration implements WebMvcConfigurer {
 
+    public static final String UI_LOCALES_PARAM_NAME = "ui_locales";
+    public static final String IDAM_LOCALES_COOKIE_NAME = "idam_ui_locales";
+
     @Bean
     public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.UK);
-        return slr;
+        final CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        localeResolver.setCookieName(IDAM_LOCALES_COOKIE_NAME);
+        return localeResolver;
     }
 
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
-        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-        lci.setParamName("lang");
-        return lci;
+        final LocaleChangeInterceptor interceptor = new OIDCLocaleChangeInterceptor();
+        interceptor.setParamName(UI_LOCALES_PARAM_NAME);
+        interceptor.setIgnoreInvalidLocale(true);
+        return interceptor;
     }
 
     @Override
