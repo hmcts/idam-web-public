@@ -10,7 +10,7 @@ properties([
     ])
 ])
 
-@Library("Infrastructure")
+@Library("Infrastructure") _
 
 def type = "java"
 
@@ -36,18 +36,25 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withNightlyPipeline(type, product, component) {
-
     env.TEST_URL = params.URL_TO_TEST
-
     env.IDAMAPI = params.API_URL_TO_TEST
-
     loadVaultSecrets(secrets)
-
     enableSecurityScan()
-
     enableMutationTest()
-
     enableFullFunctionalTest(200)
+    enableCrossBrowserTest()
+
+    after('crossBrowserTest') {
+        try {
+            withSauceConnect("reform_tunnel") {
+                sh "./gradlew functionalSauce"
+                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+            }
+        }
+        finally {
+            steps.saucePublisher()
+        }
+    }
 
     after('fullFunctionalTest') {
 
