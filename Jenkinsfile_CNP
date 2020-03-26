@@ -69,6 +69,22 @@ withPipeline(type, product, component) {
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
     
+    before('smoketest-aks:idam-aat') {
+        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+        env.IDAMAPI = "https://idam-api-staging.service.core-compute-aat.internal"
+        println """\
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+    }
+
+    before('functionalTest-aks:idam-aat') {
+        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+        env.IDAMAPI = "https://idam-api-staging.service.core-compute-aat.internal"
+        println """\
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+    }
+    
     before('buildinfra:idam-ithc') {
         env.ITHC_ENVIRONMENT_NAME = 'ithc'
         println """\
