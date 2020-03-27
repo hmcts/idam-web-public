@@ -16,13 +16,12 @@
             <spring:message code="public.user.activation.expired.text.p1.1"/>
             <c:choose>
                 <c:when test="${empty redirect_uri}">
-                    <spring:message code="public.user.activation.expired.text.p1.2"/>
+                    <spring:message code="public.user.activation.expired.text.p1.2"/>.
                 </c:when>
                 <c:otherwise>
-                    <a href="${fn:escapeXml(redirect_uri)}"><spring:message code="public.user.activation.expired.text.p1.2" text=""/></a>
+                    <a href="${fn:escapeXml(redirect_uri)}"><spring:message code="public.user.activation.expired.text.p1.2" text=""/>.</a>
                 </c:otherwise>
             </c:choose>
-            .
         </p>
         <p class="lede">
             <spring:message code="public.user.activation.expired.text.p2"/>

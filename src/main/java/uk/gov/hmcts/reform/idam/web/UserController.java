@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_ACTIVATION_LINK_VIEW;
@@ -118,8 +119,13 @@ public class UserController {
     }
 
     private String buildRegistrationLink(ActivationResult activationResult) {
-        return "/users/selfRegister?redirect_uri=" + activationResult.getRedirectUri() +
-            "&client_id=" + activationResult.getClientId();
+        String redirectUri = activationResult.getRedirectUri();
+        String clientId = activationResult.getClientId();
+        if (isEmpty(redirectUri) || isEmpty(clientId)) {
+            return null;
+        }
+        return "/users/selfRegister?redirect_uri=" + redirectUri +
+            "&client_id=" + clientId;
     }
 
     /**
