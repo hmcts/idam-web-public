@@ -35,7 +35,6 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
     private ConfigurationProperties configurationProperties;
 
     @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RestTemplate getRestTemplate()
         throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom()
