@@ -14,8 +14,8 @@ public class MessagesConfiguration implements WebMvcConfigurer {
     public static final String UI_LOCALES_PARAM_NAME = "ui_locales";
     public static final String IDAM_LOCALES_COOKIE_NAME = "idam_ui_locales";
 
-    /** A year worth of expiration time for the locale cookie. */
-    private static final Integer COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+    /** A 10 years worth of expiration time for the locale cookie. */
+    private static final Integer COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365 * 10;
 
     @Bean
     public LocaleResolver localeResolver() {
