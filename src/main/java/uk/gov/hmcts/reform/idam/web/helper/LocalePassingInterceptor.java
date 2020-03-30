@@ -17,7 +17,6 @@ public class LocalePassingInterceptor implements ClientHttpRequestInterceptor {
     @Override
     public ClientHttpResponse intercept(@Nonnull HttpRequest request, @Nonnull byte[] body, ClientHttpRequestExecution execution) throws IOException {
         request.getHeaders().add(HttpHeaders.ACCEPT_LANGUAGE, LocaleContextHolder.getLocale().toString());
-      log.info( LocaleContextHolder.getLocale().toString());
         return execution.execute(request, body);
     }
 }
