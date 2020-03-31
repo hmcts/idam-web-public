@@ -118,7 +118,10 @@ public class UserController {
         return "useractivation";
     }
 
-    private String buildRegistrationLink(ActivationResult activationResult) {
+    /**
+     * @should return null if redirecturi or clientid are empty
+     */
+    String buildRegistrationLink(ActivationResult activationResult) {
         String redirectUri = activationResult.getRedirectUri();
         String clientId = activationResult.getClientId();
         if (isEmpty(redirectUri) || isEmpty(clientId)) {
