@@ -1,13 +1,5 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -23,8 +15,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.client.RestTemplate;
-
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.helper.LocalePassingInterceptor;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class AppConfiguration extends WebSecurityConfigurerAdapter {
@@ -65,7 +65,9 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
         requestFactory.setConnectTimeout(configurationProperties.getServer().getConnectionTimeout());
         requestFactory.setReadTimeout(configurationProperties.getServer().getReadTimeout());
 
-        return new RestTemplate(requestFactory);
+        final RestTemplate restTemplate = new RestTemplate(requestFactory);
+        restTemplate.getInterceptors().add(new LocalePassingInterceptor());
+        return restTemplate;
     }
 
     @Override
