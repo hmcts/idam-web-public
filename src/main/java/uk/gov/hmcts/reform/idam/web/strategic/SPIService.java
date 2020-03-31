@@ -8,6 +8,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -289,6 +290,8 @@ public class SPIService {
     public ResponseEntity<String> forgetPassword(final String email, final String redirectUri, final String clientId) throws IOException, InterruptedException, ExecutionException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        // need to pass locale here as the request will be executed in another thread
+        headers.add(HttpHeaders.ACCEPT_LANGUAGE, LocaleContextHolder.getLocale().toString());
 
         HttpEntity<ForgotPasswordDetails> entity = new HttpEntity<>(
             new ForgotPasswordDetails()

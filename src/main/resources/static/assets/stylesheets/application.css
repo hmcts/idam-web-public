@@ -1177,6 +1177,11 @@ textarea {
     border-bottom: 1px solid #bfc1c3;
 }
 
+.phase-banner-alpha .language,
+.phase-banner-beta .language {
+    float: right;
+}
+
 @media (min-width: 641px) {
     .phase-banner-alpha,
     .phase-banner-beta {
@@ -1234,6 +1239,7 @@ textarea {
 .phase-banner-beta span {
     display: table-cell;
     vertical-align: baseline;
+    width: 100%;
 }
 
 .phase-tag {
