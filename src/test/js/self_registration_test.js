@@ -85,7 +85,7 @@ Scenario('@functional @selfregister Account already created', async (I) => {
 
 });
 
-Scenario('@functional @selfregister I can self register', async (I) => {
+Scenario('@functional @selfregister I can self register and cannot use activation link again', async (I) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
@@ -121,6 +121,9 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
+
+    I.amOnPage(userActivationUrl);
+    I.waitForText('Your link has expired, or has already been used', 40, 'h1');
 });
 
 
