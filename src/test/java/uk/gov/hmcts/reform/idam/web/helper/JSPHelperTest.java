@@ -9,8 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.web.Application;
+import uk.gov.hmcts.reform.idam.web.config.MessagesConfiguration;
 
 import java.util.Locale;
 
@@ -74,4 +76,35 @@ public class JSPHelperTest {
         Assert.assertEquals("cy", JSPHelper.getTargetLocale());
     }
 
+    /**
+     * @verifies return correct url for English
+     * @see JSPHelper#getOtherLocaleUrl()
+     */
+    @Test
+    public void getOtherLocaleUrl_shouldReturnCorrectUrlForEnglish() throws Exception {
+        LocaleContextHolder.setLocale(new Locale("en"));
+        final String otherLocaleUrl = JSPHelper.getOtherLocaleUrl();
+        Assert.assertTrue(otherLocaleUrl.endsWith("?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=cy"));
+    }
+
+    /**
+     * @verifies return correct url for Welsh
+     * @see JSPHelper#getOtherLocaleUrl()
+     */
+    @Test
+    public void getOtherLocaleUrl_shouldReturnCorrectUrlForWelsh() throws Exception {
+        LocaleContextHolder.setLocale(new Locale("cy"));
+        final String otherLocaleUrl = JSPHelper.getOtherLocaleUrl();
+        Assert.assertTrue(otherLocaleUrl.endsWith("?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=en"));
+    }
+
+    /**
+     * @verifies throw if there is no request in context
+     * @see JSPHelper#getOtherLocaleUrl()
+     */
+    @Test(expected = IllegalStateException.class)
+    public void getOtherLocaleUrl_shouldThrowIfThereIsNoRequestInContext() throws Exception {
+        RequestContextHolder.resetRequestAttributes();
+        JSPHelper.getOtherLocaleUrl();
+    }
 }

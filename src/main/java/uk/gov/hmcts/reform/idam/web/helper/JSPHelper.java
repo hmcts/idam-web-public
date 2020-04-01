@@ -22,6 +22,11 @@ public class JSPHelper {
     private static final UrlPathHelper PATH_HELPER = new UrlPathHelper();
     private static MessageSource messageSource;
 
+    /**
+     * @should return correct url for English
+     * @should return correct url for Welsh
+     * @should throw if there is no request in context
+     */
     @Nonnull
     public static String getOtherLocaleUrl() {
         final ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());

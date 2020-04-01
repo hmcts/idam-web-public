@@ -41,6 +41,7 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
      * @should accept no parameter
      * @should accept invalid locales
      * @should set locale to first matching language tag
+     * @should handle invalid locales tag exception
      */
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, Object handler) {
@@ -69,7 +70,11 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
         return true;
     }
 
-    private void handleException(String localesTag, @NonNull final IllegalArgumentException ex) {
+    /**
+     * @should throw if ignore invalid locale is true
+     * @should not throw if ignore invalid locale is false
+     */
+    protected void handleException(String localesTag, @NonNull final IllegalArgumentException ex) {
         if (isIgnoreInvalidLocale()) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Ignoring invalid locale value [" + localesTag + "]: " + ex.getMessage());
