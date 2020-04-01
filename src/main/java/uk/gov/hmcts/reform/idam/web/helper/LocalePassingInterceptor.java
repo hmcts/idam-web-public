@@ -14,11 +14,20 @@ import java.io.IOException;
 @Slf4j
 public class LocalePassingInterceptor implements ClientHttpRequestInterceptor {
 
+
     @Override
     public ClientHttpResponse intercept(@Nonnull HttpRequest request, @Nonnull byte[] body, ClientHttpRequestExecution execution) throws IOException {
+        addMissingLanguageHeader(request);
+        return execution.execute(request, body);
+    }
+
+    /**
+     * @should add language header if absent
+     * @should not modify existing language header
+     */
+    void addMissingLanguageHeader(@Nonnull HttpRequest request) {
         if (!request.getHeaders().containsKey(HttpHeaders.ACCEPT_LANGUAGE)) {
             request.getHeaders().add(HttpHeaders.ACCEPT_LANGUAGE, LocaleContextHolder.getLocale().toString());
         }
-        return execution.execute(request, body);
     }
 }
