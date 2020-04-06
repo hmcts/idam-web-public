@@ -149,8 +149,9 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
     I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
 
+    I.wait(3);
     I.amOnPage(userActivationUrl);
-    I.waitForText('Your link has expired, or has already been used', 40, 'h1');
+    I.waitForText('Your account is already activated.', 40, 'h1');
 });
 
 
