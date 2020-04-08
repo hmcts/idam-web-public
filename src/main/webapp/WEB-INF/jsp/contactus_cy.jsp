@@ -17,7 +17,7 @@
         <li>Rhif ffôn: 0300 303 5171 </li>
         <li>Dydd Llun i ddydd Iau, 8am – 5pm</li>
         <li>Dydd Gwener, 8am - 4pm</li>
-        <li>Dim oriau agor dydd Sadwrn</li>
+        <li>Nid oes oriau agor ar gyfer dydd Sadwrn</li>
         <li> <a href="https://www.gov.uk/costau-galwadau">Gwybodaeth am brisiau galwadau</a> </li>
     </ul>
 
@@ -42,7 +42,7 @@
         <li>Rhif ffôn: 0300 303 0654 </li>
         <li>Dydd Llun i ddydd Iau, 8am – 5pm</li>
         <li>Dydd Gwener, 8am - 4pm</li>
-        <li>Dim oriau agor dydd Sadwrn</li>
+        <li>Nid oes oriau agor ar gyfer dydd Sadwrn</li>
         <li> <a href="https://www.gov.uk/costau-galwadau">Gwybodaeth am brisiau galwadau</a> </li>
     </ul>
 
@@ -52,7 +52,7 @@
         <li>Rhif ffôn: 0300 303 5176 </li>
         <li>Dydd Llun i ddydd Iau, 8am – 5pm</li>
         <li>Dydd Gwener, 8am - 4pm</li>
-        <li>Dim oriau agor dydd Sadwrn</li>
+        <li>Nid oes oriau agor ar gyfer dydd Sadwrn</li>
         <li> <a href="https://www.gov.uk/costau-galwadau">Gwybodaeth am brisiau galwadau</a> </li>
     </ul>
 
@@ -62,7 +62,7 @@
         <li>Rhif ffôn: 0300 790 6234 </li>
         <li>Dydd Llun i ddydd Iau, 8am – 5pm</li>
         <li>Dydd Gwener, 8am - 4pm</li>
-        <li>Dim oriau agor dydd Sadwrn</li>
+        <li>Nid oes oriau agor ar gyfer dydd Sadwrn</li>
         <li> <a href="https://www.gov.uk/costau-galwadau">Gwybodaeth am brisiau galwadau</a> </li>
     </ul>
 </article>
