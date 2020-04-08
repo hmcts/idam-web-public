@@ -123,6 +123,37 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.resetRequestInterception();
 });
 
+Scenario('@functional @selfregister I can self register and cannot use activation link again', async (I) => {
+
+    const email = 'test_citizen.' + randomData.getRandomEmailAddress();
+    const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
+
+    I.amOnPage(selfRegUrl);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+
+    I.see('Create an account');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', email);
+    I.click("Continue");
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
+    const userActivationUrl = await I.extractUrl(email);
+    I.amOnPage(userActivationUrl);
+    I.waitForText('Create a password', 20, 'h1');
+    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.fillField('#password1', TestData.PASSWORD);
+    I.fillField('#password2', TestData.PASSWORD);
+    I.click('Continue');
+    I.waitForText('Account created', 20, 'h1');
+    I.see('You can now sign in to your account.');
+
+    I.wait(3);
+    I.amOnPage(userActivationUrl);
+    I.waitForText('Your account is already activated.', 40, 'h1');
+});
+
 
 Scenario('@functional @selfregister @prePopulatedScreen I can self register with pre-populated user account screen', async (I) => {
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;

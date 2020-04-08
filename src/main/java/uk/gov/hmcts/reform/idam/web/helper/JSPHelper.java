@@ -22,6 +22,11 @@ public class JSPHelper {
     private static final UrlPathHelper PATH_HELPER = new UrlPathHelper();
     private static MessageSource messageSource;
 
+    /**
+     * @should return correct url for English
+     * @should return correct url for Welsh
+     * @should throw if there is no request in context
+     */
     @Nonnull
     public static String getOtherLocaleUrl() {
         final ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
@@ -38,10 +43,20 @@ public class JSPHelper {
         throw new IllegalStateException("No active request was found.");
     }
 
+    /**
+     * @param builder      the URI builder
+     * @param targetLocale the target locale
+     * @should override existing parameter
+     * @should add nonexisting parameter
+     */
     public static String overrideLocaleParameter(@NonNull final UriComponentsBuilder builder, @NonNull final String targetLocale) {
         return builder.replaceQueryParam(MessagesConfiguration.UI_LOCALES_PARAM_NAME, new Locale(targetLocale)).toUriString();
     }
 
+    /**
+     * @should return en if current locale is welsh
+     * @should return cy if current locale is english
+     */
     @Nonnull
     public static String getTargetLocale() {
         if (JSPHelper.messageSource == null) {
@@ -49,7 +64,11 @@ public class JSPHelper {
             JSPHelper.messageSource = Optional.ofNullable(newMessageSource)
                 .orElseThrow(() -> new IllegalStateException("No messages source is available"));
         }
-        return JSPHelper.messageSource.getMessage("public.common.language.switch.locale", null, LocaleContextHolder.getLocale());
+        return JSPHelper.messageSource.getMessage("public.common.language.switch.locale", null, getCurrentLocale());
+    }
+
+    private static Locale getCurrentLocale() {
+        return LocaleContextHolder.getLocale();
     }
 
 }
