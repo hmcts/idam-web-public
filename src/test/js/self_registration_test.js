@@ -13,6 +13,10 @@ let serviceNames = [];
 let specialCharacterPassword;
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
+const languageParam = 'ui_locales';
+const selfRegUrlForceEn = `${selfRegUrl}&${languageParam}=en`;
+const selfRegUrlForceCy = `${selfRegUrl}&${languageParam}=cy`;
+const selfRegUrlInvalidLang = `${selfRegUrl}&${languageParam}=invalid`;
 
 BeforeSuite(async (I) => {
     randomUserFirstName = randomData.getRandomUserName();
@@ -82,6 +86,66 @@ Scenario('@functional @selfregister Account already created', async (I) => {
     I.wait(5);
     const emailResponse = await I.getEmail(citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
+
+});
+
+Scenario('@functional @selfregister Account already created (force English)', async (I) => {
+
+    I.amOnPage(selfRegUrlForceEn);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+
+    I.see('Create an account');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', citizenEmail);
+    I.click("Continue");
+
+    I.waitForText('Check your email', 20, 'h1');
+
+    I.wait(5);
+    const emailResponse = await I.getEmail(citizenEmail);
+    assert.equal('You already have an account', emailResponse.subject);
+
+});
+
+Scenario('@functional @selfregister Account already created (force invalid language)', async (I) => {
+
+    I.amOnPage(selfRegUrlInvalidLang);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+
+    I.see('Create an account');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', citizenEmail);
+    I.click("Continue");
+
+    I.waitForText('Check your email', 20, 'h1');
+
+    I.wait(5);
+    const emailResponse = await I.getEmail(citizenEmail);
+    assert.equal('You already have an account', emailResponse.subject);
+
+});
+
+Scenario('@functional @selfregister Account already created (force Welsh)', async (I) => {
+
+    I.amOnPage(selfRegUrlForceCy);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Creu cyfrif neu fewngofnodi', 20, 'h1');
+
+    I.see('Creu cyfrif');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', citizenEmail);
+    I.click("Parhau");
+
+    I.waitForText('Gwiriwch eich negeseuon e-bost', 20, 'h1');
+
+    I.wait(5);
+    const emailResponse = await I.getEmail(citizenEmail);
+    assert.equal('Mae gennych gyfrif yn barod / You already have an account', emailResponse.subject);
 
 });
 
