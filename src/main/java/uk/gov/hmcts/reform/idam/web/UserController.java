@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
@@ -123,7 +124,7 @@ public class UserController {
     String buildRegistrationLink(ActivationResult activationResult) {
         String redirectUri = activationResult.getRedirectUri();
         String clientId = activationResult.getClientId();
-        if (isEmpty(redirectUri) || isEmpty(clientId)) {
+        if (isBlank(redirectUri) || isBlank(clientId)) {
             return null;
         }
         return "/users/selfRegister?redirect_uri=" + redirectUri +

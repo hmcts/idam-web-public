@@ -13,13 +13,16 @@
             </h1>
         </header>
         <p class="lede">
-            <spring:message code="public.user.activation.expired.text.p1.1"/>
             <c:choose>
                 <c:when test="${empty redirect_uri}">
-                    <spring:message code="public.user.activation.expired.text.p1.2"/>.
+                    <spring:message code="public.user.activation.expired.text.p1"/>
                 </c:when>
                 <c:otherwise>
-                    <a href="${fn:escapeXml(redirect_uri)}"><spring:message code="public.user.activation.expired.text.p1.2" text=""/>.</a>
+                    <spring:message
+                        htmlEscape="false"
+                        code="public.user.activation.expired.text.p1.hyperlink"
+                        arguments="${redirect_uri}"
+                    />
                 </c:otherwise>
             </c:choose>
         </p>
