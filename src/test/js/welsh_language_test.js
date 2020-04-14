@@ -36,15 +36,15 @@ Scenario('@functional @welshLanguage There is a language switch that is working'
 
     I.amOnPage(Welsh.pageUrlWithParamEnglish);
 
-    I.waitForText(welshLinkValue, 20, 'a');
     I.waitForText('Access Denied', 20, 'h1');
+    I.waitForText(welshLinkValue);
 
     I.click(welshLinkValue);
     I.waitForText(Welsh.accessDeniedWelsh, 20, 'h1');
-    I.waitForText(englishLinkValue, 20, 'a');
+    I.waitForText(englishLinkValue);
 
     I.click(englishLinkValue);
-    I.waitForText(welshLinkValue, 20, 'a');
+    I.waitForText(welshLinkValue, 20);
 });
 
 Scenario('@functional @welshLanguage I can set the language with a cookie', async (I) => {
