@@ -1,6 +1,7 @@
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 const assert = require('assert');
+const Welsh = require('./shared/welsh_constants');
 
 Feature('Self Registration');
 
@@ -13,10 +14,6 @@ let serviceNames = [];
 let specialCharacterPassword;
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
-const languageParam = 'ui_locales';
-const selfRegUrlForceEn = `${selfRegUrl}&${languageParam}=en`;
-const selfRegUrlForceCy = `${selfRegUrl}&${languageParam}=cy`;
-const selfRegUrlInvalidLang = `${selfRegUrl}&${languageParam}=invalid`;
 
 BeforeSuite(async (I) => {
     randomUserFirstName = randomData.getRandomUserName();
@@ -69,8 +66,9 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.see('Sign in');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @selfregister Account already created', async (I) => {
+Scenario('@functional @selfregister @welshLanguage Account already created (no language)', async (I) => {
 
+    I.clearCookie(Welsh.localeCookie);
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
@@ -89,11 +87,15 @@ Scenario('@functional @selfregister Account already created', async (I) => {
 
 });
 
-Scenario('@functional @selfregister Account already created (force English)', async (I) => {
+Scenario('@functional @selfregister @welshLanguage Account already created (force English)', async (I) => {
 
-    I.amOnPage(selfRegUrlForceEn);
+    I.clearCookie(Welsh.localeCookie);
+    I.amOnPage(selfRegUrl + Welsh.urlForceEn);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
+
+    let cookie = await I.grabCookie(Welsh.localeCookie);
+    assert(cookie.value, 'en');
 
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName);
@@ -109,11 +111,14 @@ Scenario('@functional @selfregister Account already created (force English)', as
 
 });
 
-Scenario('@functional @selfregister Account already created (force invalid language)', async (I) => {
+Scenario('@functional @selfregister @welshLanguage Account already created (force invalid language)', async (I) => {
 
-    I.amOnPage(selfRegUrlInvalidLang);
+    I.clearCookie(Welsh.localeCookie);
+    I.amOnPage(selfRegUrl + Welsh.urlInvalidLang);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
+
+    I.dontSeeCookie(Welsh.localeCookie);
 
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName);
@@ -129,23 +134,27 @@ Scenario('@functional @selfregister Account already created (force invalid langu
 
 });
 
-Scenario('@functional @selfregister Account already created (force Welsh)', async (I) => {
+Scenario('@functional @selfregister @welshLanguage Account already created (force Welsh)', async (I) => {
 
-    I.amOnPage(selfRegUrlForceCy);
+    I.clearCookie(Welsh.localeCookie);
+    I.amOnPage(selfRegUrl + Welsh.urlForceCy);
     I.waitInUrl('users/selfRegister', 180);
-    I.waitForText('Creu cyfrif neu fewngofnodi', 20, 'h1');
+    I.waitForText(Welsh.createAnAccountOrSignIn, 20, 'h1');
 
-    I.see('Creu cyfrif');
+    let cookie = await I.grabCookie(Welsh.localeCookie);
+    assert(cookie.value, 'cy');
+
+    I.see(Welsh.createAnAccount);
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmail);
-    I.click("Parhau");
+    I.click(Welsh.continueBtn);
 
-    I.waitForText('Gwiriwch eich negeseuon e-bost', 20, 'h1');
+    I.waitForText(Welsh.checkYourEmail, 20, 'h1');
 
     I.wait(5);
     const emailResponse = await I.getEmail(citizenEmail);
-    assert.equal('Mae gennych gyfrif yn barod / You already have an account', emailResponse.subject);
+    assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
 
 });
 
