@@ -32,5 +32,6 @@ module.exports = {
     resetYourPassword: 'ailosod eich cyfrinair',
     submitBtn: 'Cyflwyno',
     createANewPassword: 'Creu cyfrinair newydd',
-    passwordChanged: 'Mae eich cyfrinair wedi cael ei newid'
+    passwordChanged: 'Mae eich cyfrinair wedi cael ei newid',
+    verificationRequired: 'Mae angen dilysu eich cyfrif'
 };

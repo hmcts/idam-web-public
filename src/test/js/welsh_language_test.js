@@ -80,8 +80,7 @@ Scenario('@functional @welshLanguage I can set the language to English with an i
     I.waitForText('Access Denied', 20, 'h1');
 });
 
-// todo I can reset my password in Welsh
-Scenario('@functional @welshLanguage I can reset my password in Welsh @1234', async (I) => {
+Scenario('@functional @welshLanguage I can reset my password in Welsh', async (I) => {
 
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}${Welsh.urlForceCy}`;
 
@@ -104,5 +103,3 @@ Scenario('@functional @welshLanguage I can reset my password in Welsh @1234', as
     I.waitInUrl('doResetPassword');
     I.waitForText(Welsh.passwordChanged, 20, 'h1');
 });
-
-// todo I can login with OTP in Welsh
