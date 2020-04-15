@@ -22,4 +22,15 @@ module.exports = {
     continueBtn: 'Parhau',
     checkYourEmail: 'Gwiriwch eich negeseuon e-bost',
     youAlreadyHaveAccountSubject: 'Mae gennych gyfrif yn barod / You already have an account',
+    createAPassword: 'Creu cyfrinair',
+    userActivationTitle: 'Actifadu Cyfrif Defnyddiwr - Mynediad GLlTEM',
+    accountCreated: 'Mae eich cyfrif wedi cael ei greu',
+    youCanNowSignIn: 'Gallwch nawr fewngofnodi i’ch cyfrif.',
+    signIn: 'Mewngofnodi',
+    signInOrCreateAccount: 'Mewngofnodwch neu crëwch gyfrif',
+    forgottenPassword: 'Wedi anghofio eich cyfrinair?',
+    resetYourPassword: 'ailosod eich cyfrinair',
+    submitBtn: 'Cyflwyno',
+    createANewPassword: 'Creu cyfrinair newydd',
+    passwordChanged: 'Mae eich cyfrinair wedi cael ei newid'
 };

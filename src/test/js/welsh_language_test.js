@@ -71,3 +71,38 @@ Scenario('@functional @welshLanguage I can set the language with a parameter', a
     I.amOnPage(Welsh.pageUrlWithParamWelsh);
     I.waitForText(Welsh.accessDeniedWelsh, 20, 'h1');
 });
+
+Scenario('@functional @welshLanguage I can set the language to English with an invalid parameter', async (I) => {
+
+    I.amOnPage(Welsh.pageUrl);
+    I.clearCookie(Welsh.localeCookie);
+    I.amOnPage(Welsh.pageUrl + '?' + Welsh.urlInvalidLang);
+    I.waitForText('Access Denied', 20, 'h1');
+});
+
+// todo I can reset my password in Welsh
+Scenario('@functional @welshLanguage I can reset my password in Welsh @1234', async (I) => {
+
+    const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}${Welsh.urlForceCy}`;
+
+    I.amOnPage(loginPage);
+    I.waitForText(Welsh.signInOrCreateAccount, 20, 'h1');
+    I.see(Welsh.forgottenPassword);
+    I.click(Welsh.forgottenPassword);
+    I.waitInUrl('reset/forgotpassword');
+    I.waitForText(Welsh.resetYourPassword, 20, 'h1');
+    I.fillField('#email', citizenEmail);
+    I.click(Welsh.submitBtn);
+    I.waitForText(Welsh.checkYourEmail, 20, 'h1');
+    I.wait(5);
+    const userPwdResetUrl = await I.extractUrl(citizenEmail);
+    I.amOnPage(userPwdResetUrl);
+    I.waitForText(Welsh.createANewPassword, 20, 'h1');
+    I.fillField('#password1', specialCharacterPassword);
+    I.fillField('#password2', specialCharacterPassword);
+    I.click(Welsh.continueBtn);
+    I.waitInUrl('doResetPassword');
+    I.waitForText(Welsh.passwordChanged, 20, 'h1');
+});
+
+// todo I can login with OTP in Welsh
