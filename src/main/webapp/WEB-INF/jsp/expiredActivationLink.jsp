@@ -26,9 +26,6 @@
                 </c:otherwise>
             </c:choose>
         </p>
-        <p class="lede">
-            <spring:message code="public.user.activation.expired.text.p2"/>
-        </p>
     </article>
     <script>
         sendEvent('Expired Token', 'Expired', 'User activation token has expired');
