@@ -120,6 +120,7 @@ public class UserController {
 
     /**
      * @should return null if redirecturi or clientid are empty
+     * @should build link if redirecturi and clientid are present
      */
     String buildRegistrationLink(ActivationResult activationResult) {
         String redirectUri = activationResult.getRedirectUri();

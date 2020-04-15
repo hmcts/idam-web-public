@@ -21,9 +21,11 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -525,5 +527,18 @@ public class UserControllerTest {
         assertNull(userController.buildRegistrationLink(new ActivationResult()));
         assertNull(userController.buildRegistrationLink(new ActivationResult().redirectUri(GOOGLE_WEB_ADDRESS)));
         assertNull(userController.buildRegistrationLink(new ActivationResult().clientId(CLIENT_ID)));
+    }
+
+    /**
+     * @verifies build link if redirecturi and clientid are present
+     * @see UserController#buildRegistrationLink(ActivationResult)
+     */
+    @Test
+    public void buildRegistrationLink_shouldBuildLinkIfRedirecturiAndClientidArePresent() throws Exception {
+        UserController userController = new UserController();
+        assertThat(
+            userController.buildRegistrationLink(
+                new ActivationResult().redirectUri(GOOGLE_WEB_ADDRESS).clientId(CLIENT_ID)),
+            is("/users/selfRegister?redirect_uri=https://www.google.com&client_id=clientId"));
     }
 }
