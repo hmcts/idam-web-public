@@ -21,8 +21,11 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -37,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ALREADY_ACTIVATED_KEY;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BASE64_ENC_FORM_DATA;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
@@ -511,5 +515,30 @@ public class UserControllerTest {
             .andExpect(model().attribute("lastName", nullValue()))
             .andExpect(model().attribute("email", nullValue()))
             .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
+    }
+
+    /**
+     * @verifies return null if redirecturi or clientid are empty
+     * @see UserController#buildRegistrationLink(ActivationResult)
+     */
+    @Test
+    public void buildRegistrationLink_shouldReturnNullIfRedirecturiOrClientidAreEmpty() throws Exception {
+        UserController userController = new UserController();
+        assertNull(userController.buildRegistrationLink(new ActivationResult()));
+        assertNull(userController.buildRegistrationLink(new ActivationResult().redirectUri(GOOGLE_WEB_ADDRESS)));
+        assertNull(userController.buildRegistrationLink(new ActivationResult().clientId(CLIENT_ID)));
+    }
+
+    /**
+     * @verifies build link if redirecturi and clientid are present
+     * @see UserController#buildRegistrationLink(ActivationResult)
+     */
+    @Test
+    public void buildRegistrationLink_shouldBuildLinkIfRedirecturiAndClientidArePresent() throws Exception {
+        UserController userController = new UserController();
+        assertThat(
+            userController.buildRegistrationLink(
+                new ActivationResult().redirectUri(GOOGLE_WEB_ADDRESS).clientId(CLIENT_ID)),
+            is("/users/selfRegister?redirect_uri=https://www.google.com&client_id=clientId"));
     }
 }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Base64;
 import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +36,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_ACTIVATION_LINK_VIEW;
@@ -117,9 +118,18 @@ public class UserController {
         return "useractivation";
     }
 
-    private String buildRegistrationLink(ActivationResult activationResult) {
-        return "/users/selfRegister?redirect_uri=" + activationResult.getRedirectUri() +
-            "&client_id=" + activationResult.getClientId();
+    /**
+     * @should return null if redirecturi or clientid are empty
+     * @should build link if redirecturi and clientid are present
+     */
+    String buildRegistrationLink(ActivationResult activationResult) {
+        String redirectUri = activationResult.getRedirectUri();
+        String clientId = activationResult.getClientId();
+        if (isBlank(redirectUri) || isBlank(clientId)) {
+            return null;
+        }
+        return "/users/selfRegister?redirect_uri=" + redirectUri +
+            "&client_id=" + clientId;
     }
 
     /**
@@ -144,7 +154,7 @@ public class UserController {
 
         Optional<Service> service;
 
-        if (StringUtils.isEmpty(clientId) || StringUtils.isEmpty(redirectUri)) {
+        if (isEmpty(clientId) || isEmpty(redirectUri)) {
             return PAGE_NOT_FOUND_VIEW;
         }
 
