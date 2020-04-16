@@ -1,19 +1,16 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-import java.net.URL;
-import java.util.Arrays;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,10 +24,13 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
 
     protected final Set<Locale> supportedLocales;
 
-    public OIDCLocaleChangeInterceptor() {
+    public OIDCLocaleChangeInterceptor(@Nullable final Set<String> supportedLocales) {
         super();
-        this.supportedLocales = getSupportedLocales();
-        this.supportedLocales.add(Locale.ENGLISH);
+        this.supportedLocales = Optional.ofNullable(supportedLocales)
+                                        .orElse(ImmutableSet.of())
+                                        .stream()
+                                        .map(Locale::forLanguageTag)
+                                        .collect(Collectors.toSet());
     }
 
     /**
@@ -51,8 +51,9 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
 
         final String[] localesTags = localesTagsString.split(UI_LOCALE_PARAM_SEPARATOR);
 
-        final LocaleResolver localeResolver = Optional.ofNullable(getLocaleResolver(request))
-            .orElseThrow(() -> new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?"));
+        final LocaleResolver localeResolver =
+            Optional.ofNullable(getLocaleResolver(request))
+                    .orElseThrow(() -> new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?"));
 
         for (final String localesTag : localesTags) {
             try {
@@ -87,16 +88,5 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
     @Nullable
     private LocaleResolver getLocaleResolver(@NotNull final HttpServletRequest request) {
         return RequestContextUtils.getLocaleResolver(request);
-    }
-
-    @Nonnull
-    private Set<Locale> getSupportedLocales() {
-        return Arrays.stream(Locale.getISOLanguages())
-            .map(language -> {
-                final URL systemResource = ClassLoader.getSystemResource("messages_" + language + ".properties");
-                return systemResource == null ? null : parseLocaleValue(language);
-            })
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
     }
 }
