@@ -119,7 +119,7 @@
 <main id="content" role="main">
     <div class="centered-content">
         <div class="phase-banner-beta">
-            <pre>
+            <p>
                 <strong class="phase-tag"><spring:message code="public.template.header.phase.tag" /></strong>
                 <span>
                     <c:set var="smartSurveyParam">
@@ -136,18 +136,6 @@
                         arguments="${smartSurveyUrl}"
                     />
                     <t:languageSwitch />
-
-                            <%
-                                java.util.Enumeration params = request.getParameterNames();
-                                while(params.hasMoreElements()) {
-                                String paramName = (String) params.nextElement();
-                                String paramValue = request.getParameter(paramName);
-                            %>
-
-  <pre><%=paramName%> = <%=paramValue%></pre><%
-        }
-    %>
-
                 </span>
             </p>
         </div>

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import uk.gov.hmcts.reform.idam.web.AppController;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -31,6 +33,7 @@ public class OIDCLocaleChangeInterceptorTest {
     private static final String EQUALS = "=";
     private static final String COOKIE_HEADER_NAME = "Set-Cookie";
     private static final String LANGUAGE_HEADER_NAME = "Content-Language";
+    private static final Set<String> AVAILABLE_LOCALES = ImmutableSet.of("en", "cy");
 
     @Autowired
     private MockMvc mockMvc;
@@ -108,8 +111,8 @@ public class OIDCLocaleChangeInterceptorTest {
      * @see OIDCLocaleChangeInterceptor#handleException(String, IllegalArgumentException)
      */
     @Test(expected = IllegalArgumentException.class)
-    public void handleException_shouldThrowIfIgnoreInvalidLocaleIsTrue() throws Exception {
-        final OIDCLocaleChangeInterceptor interceptor = new OIDCLocaleChangeInterceptor();
+    public void handleException_shouldThrowIfIgnoreInvalidLocaleIsTrue() {
+        final OIDCLocaleChangeInterceptor interceptor = new OIDCLocaleChangeInterceptor(AVAILABLE_LOCALES);
         interceptor.setIgnoreInvalidLocale(false);
         interceptor.handleException(null, new IllegalArgumentException());
     }
@@ -120,7 +123,7 @@ public class OIDCLocaleChangeInterceptorTest {
      */
     @Test
     public void handleException_shouldNotThrowIfIgnoreInvalidLocaleIsFalse() {
-        final OIDCLocaleChangeInterceptor interceptor = new OIDCLocaleChangeInterceptor();
+        final OIDCLocaleChangeInterceptor interceptor = new OIDCLocaleChangeInterceptor(AVAILABLE_LOCALES);
         interceptor.setIgnoreInvalidLocale(true);
         interceptor.handleException(null, new IllegalArgumentException());
     }
@@ -131,7 +134,7 @@ public class OIDCLocaleChangeInterceptorTest {
      */
     @Test
     public void preHandle_shouldHandleInvalidLocalesTagException() {
-        final OIDCLocaleChangeInterceptor interceptor = spy(new OIDCLocaleChangeInterceptor());
+        final OIDCLocaleChangeInterceptor interceptor = spy(new OIDCLocaleChangeInterceptor(AVAILABLE_LOCALES));
         interceptor.setParamName(MessagesConfiguration.UI_LOCALES_PARAM_NAME);
         interceptor.setIgnoreInvalidLocale(true);
 
