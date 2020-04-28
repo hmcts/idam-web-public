@@ -28,8 +28,8 @@ allprojects  {
   group = 'uk.gov.hmcts.reform.idam'
   description = 'idam-web-public'
 
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+  sourceCompatibility = 11
+  targetCompatibility = 11
 
   def idamBomVersion = '1.9.7'
   ext['tomcat.version'] = '9.0.31'
