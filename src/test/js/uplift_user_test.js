@@ -1,5 +1,7 @@
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
+const chai = require('chai');
+const {expect} = chai;
 
 Feature('I am able to uplift a user');
 
@@ -46,6 +48,27 @@ BeforeSuite(async (I) => {
 
 AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+});
+
+Scenario('@functional @loginWithPin As a Defendant, I should be able to login with the pin received from the Claimant', async (I) => {
+    let pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/pin?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
+    I.waitForText('Enter security code', 30, 'h1');
+    I.fillField('#pin', pinUser.pin);
+
+    I.interceptRequestsAfterSignin();
+    I.click('Continue');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+
+    let pageSource = await I.grabSource();
+    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+
+    let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
+    expect(userInfo.roles).to.eql(['letter-holder']);
+
+    I.resetRequestInterception();
 });
 
 Scenario('@functional @uplift @upliftvalid User Validation errors', (I) => {
