@@ -5,4 +5,4 @@ spring:
       prefixed: false
       paths: /mnt/secrets/idam-idam
       aliases:
-        AppInsightsInstrumentationKey: APP_INSIGHTS_INSTRUMENTATION_KEY 
+        AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
