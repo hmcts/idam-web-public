@@ -482,7 +482,10 @@ class IdamHelper extends Helper {
     }
 
     async extractOtpFromEmail(searchEmail) {
-        const emailResponse = await this.getEmail(searchEmail);
+        return this.extractOtpFromEmailBody(await this.getEmail(searchEmail))
+    }
+
+    async extractOtpFromEmailBody(emailResponse) {
         if(emailResponse) {
             const regex = "[0-9]{8}";
             const url = emailResponse.body.match(regex);

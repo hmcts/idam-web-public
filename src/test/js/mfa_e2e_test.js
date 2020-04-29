@@ -1,5 +1,7 @@
 const randomData = require('./shared/random_data');
 const TestData = require('./config/test_data');
+const Welsh = require('./shared/welsh_constants');
+const assert = require('assert');
 
 Feature('I am able to login with MFA');
 
@@ -78,6 +80,30 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.click('Submit');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in Welsh', async (I) => {
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}${Welsh.urlForceCy}`;
+
+    I.amOnPage(loginUrl);
+    I.waitForText(Welsh.signInOrCreateAccount, 20, 'h1');
+    I.fillField('#username', mfaUserEmail);
+    I.fillField('#password', TestData.PASSWORD);
+    I.click(Welsh.signIn);
+    I.seeInCurrentUrl("/verification");
+    I.waitForText(Welsh.verificationRequired, 10, 'h1');
+    I.wait(5);
+    const otpEmailBody = await I.getEmail(mfaUserEmail);
+    assert.equal(otpEmailBody.body.startsWith('Ysgrifennwyd'), true);
+    const otpCode = await I.extractOtpFromEmailBody(otpEmailBody);
+
+    I.fillField('code', otpCode);
+    I.interceptRequestsAfterSignin();
+    I.click(Welsh.submitBtn);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
