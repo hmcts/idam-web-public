@@ -9,8 +9,8 @@ def product = "idam"
 def component = "web-public"
 
 env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
-env.PROD_ENVIRONMENT_NAME    = 'idam-prod'
-env.DEMO_ENVIRONMENT_NAME    = 'idam-demo'
+env.PROD_ENVIRONMENT_NAME = 'idam-prod'
+env.DEMO_ENVIRONMENT_NAME = 'idam-demo'
 env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
 env.PERFTEST_ENVIRONMENT_NAME = 'idam-perftest'
 env.ITHC_ENVIRONMENT_NAME = 'idam-ithc'
@@ -65,6 +65,22 @@ withPipeline(type, product, component) {
         env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+    }
+    
+    before('smoketest-aks:idam-aat') {
+        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+        env.IDAMAPI = "https://idam-api-staging.service.core-compute-aat.internal"
+        println """\
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+    }
+
+    before('functionalTest-aks:idam-aat') {
+        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+        env.IDAMAPI = "https://idam-api-staging.service.core-compute-aat.internal"
+        println """\
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
