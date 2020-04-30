@@ -504,8 +504,10 @@ class IdamHelper extends Helper {
     interceptRequestsAfterSignin() {
         const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
+        const pages = ["/login", "/register", "/activate", "/verification"];
+
         helper.page.on('request', request => {
-            if (request.url().indexOf('/login') > 0 || request.url().indexOf('/register') > 0 || request.url().indexOf('/activate') > 0 || request.url().indexOf('/verification') > 0) {
+            if (pages.some(v => request.url().includes(v))) {
                 request.continue();
             } else {
                 request.respond({
@@ -590,6 +592,22 @@ class IdamHelper extends Helper {
 
     getUserInfo(accessToken) {
         return fetch(`${TestData.IDAM_API}/details`, {
+            agent: agent,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        }).then(response => {
+            if (response.status != 200) {
+                console.log('Error getting user details', response.status);
+                throw new Error()
+            }
+            return response.json();
+        })
+    }
+
+    getOidcUserInfo(accessToken) {
+        return fetch(`${TestData.IDAM_API}/o/userinfo`, {
             agent: agent,
             method: 'GET',
             headers: {
