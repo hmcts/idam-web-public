@@ -50,6 +50,10 @@ AfterSuite(async (I) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
+After((I) => {
+    I.resetRequestInterception();
+});
+
 Scenario('@functional @loginWithPin As a Defendant, I should be able to login with the pin received from the Claimant', async (I) => {
     let pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/pin?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
@@ -67,8 +71,6 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
     expect(userInfo.roles).to.eql(['letter-holder']);
-
-    I.resetRequestInterception();
 });
 
 Scenario('@functional @uplift @upliftvalid User Validation errors', (I) => {
@@ -144,5 +146,4 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
-    I.resetRequestInterception();
 });
