@@ -5,6 +5,5 @@ java:
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
   replicas: 1
-  aadIdentityName: idam
   environment:
     STRATEGIC_SERVICE_URL: http://idam-api-staging.service.core-compute-aat.internal

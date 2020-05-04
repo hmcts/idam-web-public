@@ -40,3 +40,6 @@ bin
 ### Helm ###
 **/charts/*.tgz
 charts/*/requirements.lock
+
+### Jenkins Additions ###
+init.gradle
