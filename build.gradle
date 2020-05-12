@@ -31,17 +31,11 @@ allprojects {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '2.0.1'
-  ext['tomcat.version'] = '9.0.31'
-  ext['spring.boot.version'] = '2.2.6.RELEASE'
+  def idamBomVersion = '2.1.0'
 
   dependencyManagement {
     imports {
       mavenBom "uk.gov.hmcts.reform.idam:idam-bom:${idamBomVersion}"
-    }
-    dependencies{
-      dependency "org.apache.logging.log4j:log4j-api:2.13.2"
-      dependency "org.apache.logging.log4j:log4j-to-slf4j:2.13.2"
     }
   }
 
