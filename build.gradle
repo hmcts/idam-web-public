@@ -6,7 +6,7 @@ plugins {
   id 'io.spring.dependency-management' version '1.0.9.RELEASE' apply false
   id 'org.owasp.dependencycheck' version '5.1.1'
   id 'org.sonarqube' version '2.6.2'
-  id 'org.springframework.boot' version '2.2.4.RELEASE' apply false
+  id 'org.springframework.boot' version '2.2.6.RELEASE' apply false
   id 'com.gorylenko.gradle-git-properties' version '1.4.21'
   id "info.solidsoft.pitest" version "1.3.0"
   id 'pmd'
@@ -17,7 +17,7 @@ gitProperties {
   dateFormat = "yyyy-MM-dd HH:mm:ssZ"
 }
 
-allprojects  {
+allprojects {
   apply plugin: 'java'
   apply plugin: 'io.spring.dependency-management'
   apply plugin: 'org.owasp.dependencycheck'
@@ -31,8 +31,7 @@ allprojects  {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  def idamBomVersion = '1.9.7'
-  ext['tomcat.version'] = '9.0.31'
+  def idamBomVersion = '2.1.0'
 
   dependencyManagement {
     imports {
@@ -43,7 +42,7 @@ allprojects  {
   repositories {
     mavenCentral()
     maven {
-       url "https://dl.bintray.com/hmcts/hmcts-maven"
+      url "https://dl.bintray.com/hmcts/hmcts-maven"
     }
     jcenter()
   }
@@ -66,18 +65,18 @@ allprojects  {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     // TODO: remove version once 2.2.2.RELEASE is out
-    implementation (group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.1.RELEASE') {
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.1.RELEASE') {
       exclude(module: 'rxnetty-contexts')
       exclude(module: 'rxnetty-servo')
       exclude(module: 'rxnetty')
     }
     implementation group: 'org.springframework.security', name: 'spring-security-taglibs'
-    
+
     compileOnly("org.projectlombok:lombok")
-    
+
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-    
+
     implementation group: 'javax.servlet', name: 'jstl'
     implementation group: 'javax.json', name: 'javax.json-api'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
@@ -92,22 +91,21 @@ allprojects  {
     implementation group: 'org.pitest', name: 'pitest', version: '1.3.2'
     implementation group: 'org.owasp.encoder', name: 'encoder-jsp', version: '1.2.2'
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.3.0'
-    implementation group: 'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: '0.5'
+    implementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: '0.5'
+    implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+    implementation group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
 
     // TODO mockito version is not correctly resolved from IdAM BOM. Remove version when this is fixed
     testCompileOnly("org.projectlombok:lombok")
-    
+
     testAnnotationProcessor("org.projectlombok:lombok")
-    
+
     testImplementation group: 'org.mockito', name: 'mockito-core'
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
-    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
-        exclude(module: 'commons-logging')
+    testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+      exclude(module: 'commons-logging')
     }
     testImplementation group: 'org.springframework.security', name: 'spring-security-test'
-    
-    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
-    compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
   }
 
   tasks.withType(JavaCompile) {
@@ -160,7 +158,7 @@ allprojects  {
 
   task codeceptSmokeSauce(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js','--steps', '--grep', '@smoke', '--verbose', '--debug', '--reporter', 'mochawesome'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js', '--steps', '--grep', '@smoke', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 
   task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
@@ -182,20 +180,20 @@ allprojects  {
 project.tasks['sonarqube'].dependsOn test
 
 def listFiles(String pattern) {
-    return new FileNameFinder()
-        .getFileNames("${project.rootDir}", pattern)
-        .stream()
-        .collect(Collectors.joining(","))
+  return new FileNameFinder()
+    .getFileNames("${project.rootDir}", pattern)
+    .stream()
+    .collect(Collectors.joining(","))
 }
 
 sonarqube {
   properties {
     property "sonar.projectName", "SIDAM-WEB-PUBLIC"
     property "sonar.exclusions", "**/uk/gov/hmcts/reform/idam/web/config/properties/*.java," +
-            "**/uk/gov/hmcts/reform/idam/web/model/*.java," +
-            "**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys.java," +
-            "**/uk/gov/hmcts/reform/idam/web/Application.java," +
-            "**/*Exception.java"
+      "**/uk/gov/hmcts/reform/idam/web/model/*.java," +
+      "**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys.java," +
+      "**/uk/gov/hmcts/reform/idam/web/Application.java," +
+      "**/*Exception.java"
     property "sonar.host.url", "https://sonar.reform.hmcts.net/"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
