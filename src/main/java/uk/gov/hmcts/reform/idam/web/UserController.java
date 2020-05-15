@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Base64;
 import org.owasp.encoder.Encode;
@@ -50,9 +49,6 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 
-/**
- * @author Ivano
- */
 @Controller
 @RequestMapping("/users")
 @Slf4j
@@ -279,7 +275,7 @@ public class UserController {
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 // don't expose the token in the error page
-                return new ModelAndView("redirect:expiredtoken", ImmutableMap.of());
+                return new ModelAndView("redirect:expiredtoken", (Map<String, ?>) null);
             }
 
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
