@@ -313,8 +313,10 @@ public class UserController {
     }
 
     @GetMapping("/useractivated")
-    public String userActivated(@RequestParam final String redirectUri, final Map<String, Object> model) {
-        model.put("redirectUri", redirectUri);
+    public String userActivated(@RequestParam(required = false) final String redirectUri, final Map<String, Object> model) {
+        if (redirectUri != null) {
+            model.put("redirectUri", redirectUri);
+        }
         return "useractivated";
     }
 
