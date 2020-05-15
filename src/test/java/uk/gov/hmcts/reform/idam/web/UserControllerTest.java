@@ -18,14 +18,17 @@ import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -541,5 +544,28 @@ public class UserControllerTest {
             userController.buildRegistrationLink(
                 new ActivationResult().redirectUri(GOOGLE_WEB_ADDRESS).clientId(CLIENT_ID)),
             is("/users/selfRegister?redirect_uri=https://www.google.com&client_id=clientId"));
+    }
+
+    @Test
+    public void userActivated_shouldReturnCorrectValue() {
+        UserController userController = new UserController();
+        String result;
+        Map<String, Object> model = new HashMap<>();
+
+        result = userController.userActivated(null, model);
+        assertEquals("useractivated", result);
+        assertTrue(model.isEmpty());
+
+        model.clear();
+        result = userController.userActivated("uri", model);
+        assertEquals("useractivated", result);
+        assertEquals(1, model.size());
+        assertEquals("uri", model.get("redirectUri"));
+    }
+
+    @Test
+    public void expiredToken_shouldReturnCorrectValue() {
+        UserController userController = new UserController();
+        assertEquals("expiredtoken", userController.expiredToken(null));
     }
 }
