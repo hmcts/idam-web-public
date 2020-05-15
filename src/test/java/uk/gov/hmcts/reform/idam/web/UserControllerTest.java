@@ -55,6 +55,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MESSAGE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MSG;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_TITLE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_VIEW_NAME;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_REDIRECTED_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_ACTIVATION_TOKEN_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORM_DATA;
@@ -295,7 +296,7 @@ public class UserControllerTest {
         given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willReturn(ResponseEntity.ok("{\"redirectUri\":\"" + REDIRECT_URI + "\"}"));
 
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
-            .andExpect(status().isOk())
+            .andExpect(status().is3xxRedirection())
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
             .andExpect(view().name(USER_ACTIVATED_VIEW_NAME));
     }
@@ -350,7 +351,7 @@ public class UserControllerTest {
         given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", TOKEN_INVALID_RESPONSE.getBytes(), null));
         given(validationService.isErrorInResponse(eq(TOKEN_INVALID_RESPONSE), eq(ErrorResponse.CodeEnum.TOKEN_INVALID))).willReturn(true);
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
-            .andExpect(status().isOk())
+            .andExpect(status().is3xxRedirection())
             .andExpect(view().name(EXPIREDTOKEN_VIEW_NAME));
     }
 
@@ -384,7 +385,7 @@ public class UserControllerTest {
 
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl(EXPIREDTOKEN_VIEW_NAME));
+            .andExpect(redirectedUrl(EXPIREDTOKEN_REDIRECTED_VIEW_NAME));
 
     }
 
