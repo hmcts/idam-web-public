@@ -33,7 +33,6 @@ import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -314,7 +313,7 @@ public class UserController {
     }
 
     @GetMapping("/useractivated")
-    public String userActivated(@RequestParam(required = false) final String redirectUri, @Nonnull final Map<String, Object> model) {
+    public String userActivated(@RequestParam(required = false) final String redirectUri, final Map<String, Object> model) {
         if (redirectUri != null) {
             model.put("redirectUri", redirectUri);
         }
