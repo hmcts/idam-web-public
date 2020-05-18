@@ -40,7 +40,7 @@ public class JSPHelper {
         if (request != null) {
             final String requestUri = PATH_HELPER.getOriginatingRequestUri(request);
             final String originatingQueryString = PATH_HELPER.getOriginatingQueryString(request);
-            final String requestQueryString = originatingQueryString == null ? null : URLDecoder.decode(originatingQueryString, "UTF-8");
+            final String requestQueryString = originatingQueryString == null ? null : URLDecoder.decode(originatingQueryString, "UTF-8"); //NOSONAR
             final UriComponentsBuilder initialUrl = UriComponentsBuilder.fromPath(requestUri).replaceQuery(requestQueryString);
 
             return overrideLocaleParameter(initialUrl, targetLocale);
