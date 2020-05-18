@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.idam.web.helper;
 
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -13,6 +14,8 @@ import uk.gov.hmcts.reform.idam.web.config.MessagesConfiguration;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -28,14 +31,16 @@ public class JSPHelper {
      * @should throw if there is no request in context
      */
     @Nonnull
-    public static String getOtherLocaleUrl() {
+    @SneakyThrows(UnsupportedEncodingException.class)
+    public String getOtherLocaleUrl() {
         final ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         final HttpServletRequest request = servletRequestAttributes != null ? servletRequestAttributes.getRequest() : null;
         final String targetLocale = getTargetLocale();
 
         if (request != null) {
             final String requestUri = PATH_HELPER.getOriginatingRequestUri(request);
-            final String requestQueryString = PATH_HELPER.getOriginatingQueryString(request);
+            final String originatingQueryString = PATH_HELPER.getOriginatingQueryString(request);
+            final String requestQueryString = originatingQueryString == null ? null : URLDecoder.decode(originatingQueryString, "UTF-8"); //NOSONAR
             final UriComponentsBuilder initialUrl = UriComponentsBuilder.fromPath(requestUri).replaceQuery(requestQueryString);
 
             return overrideLocaleParameter(initialUrl, targetLocale);
@@ -44,12 +49,14 @@ public class JSPHelper {
     }
 
     /**
-     * @param builder      the URI builder
+     * @param builder the URI builder
      * @param targetLocale the target locale
+     *
      * @should override existing parameter
      * @should add nonexisting parameter
      */
     public static String overrideLocaleParameter(@NonNull final UriComponentsBuilder builder, @NonNull final String targetLocale) {
+
         return builder.replaceQueryParam(MessagesConfiguration.UI_LOCALES_PARAM_NAME, new Locale(targetLocale)).toUriString();
     }
 
