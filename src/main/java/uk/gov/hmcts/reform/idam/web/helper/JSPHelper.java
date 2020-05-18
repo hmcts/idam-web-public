@@ -32,14 +32,15 @@ public class JSPHelper {
      */
     @Nonnull
     @SneakyThrows(UnsupportedEncodingException.class)
-    public static String getOtherLocaleUrl() {
+    public String getOtherLocaleUrl() {
         final ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         final HttpServletRequest request = servletRequestAttributes != null ? servletRequestAttributes.getRequest() : null;
         final String targetLocale = getTargetLocale();
 
         if (request != null) {
             final String requestUri = PATH_HELPER.getOriginatingRequestUri(request);
-            final String requestQueryString = URLDecoder.decode(PATH_HELPER.getOriginatingQueryString(request), "UTF-8");
+            final String originatingQueryString = PATH_HELPER.getOriginatingQueryString(request);
+            final String requestQueryString = originatingQueryString == null ? null : URLDecoder.decode(originatingQueryString, "UTF-8");
             final UriComponentsBuilder initialUrl = UriComponentsBuilder.fromPath(requestUri).replaceQuery(requestQueryString);
 
             return overrideLocaleParameter(initialUrl, targetLocale);
@@ -48,8 +49,9 @@ public class JSPHelper {
     }
 
     /**
-     * @param builder      the URI builder
+     * @param builder the URI builder
      * @param targetLocale the target locale
+     *
      * @should override existing parameter
      * @should add nonexisting parameter
      */
