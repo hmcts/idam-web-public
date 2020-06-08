@@ -85,6 +85,8 @@ strategic:
     affinityCookies:
       - ApplicationGatewayAffinity
       - idam-session-affinity
+  language:
+    supportedLocales: en,cy
 
 validation:
   password:

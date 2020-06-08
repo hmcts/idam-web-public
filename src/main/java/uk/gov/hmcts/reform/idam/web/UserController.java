@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Base64;
 import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +16,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.servlet.ModelAndView;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
@@ -33,10 +34,13 @@ import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_ACTIVATION_LINK_VIEW;
@@ -45,9 +49,6 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
 
-/**
- * @author Ivano
- */
 @Controller
 @RequestMapping("/users")
 @Slf4j
@@ -82,9 +83,9 @@ public class UserController {
      * @should return expiredtoken view and  have redirect_uri attribute in model  if token expired
      * @should return useractivation view and no redirect_uri attribute in model if the token is valid
      * @should return errorpage view error message and no redirect_uri attribute in model if api returns server error
-     * @should return errorpage view error message for alredy activated account and no redirect_uri attribute in model if api returns status 409
+     * @should return errorpage view error message for already activated account and no redirect_uri attribute in model if api returns status 409
      */
-    @RequestMapping(path = "/register", method = RequestMethod.GET)
+    @GetMapping("/register")
     public String userActivation(@RequestParam("token") String token, @RequestParam("code") String code, final Map<String, Object> model) {
         ValidateRequest validateRequest = new ValidateRequest();
         validateRequest.setCode(code);
@@ -117,9 +118,18 @@ public class UserController {
         return "useractivation";
     }
 
-    private String buildRegistrationLink(ActivationResult activationResult) {
-        return "/users/selfRegister?redirect_uri=" + activationResult.getRedirectUri() +
-            "&client_id=" + activationResult.getClientId();
+    /**
+     * @should return null if redirecturi or clientid are empty
+     * @should build link if redirecturi and clientid are present
+     */
+    String buildRegistrationLink(ActivationResult activationResult) {
+        String redirectUri = activationResult.getRedirectUri();
+        String clientId = activationResult.getClientId();
+        if (isBlank(redirectUri) || isBlank(clientId)) {
+            return null;
+        }
+        return "/users/selfRegister?redirect_uri=" + redirectUri +
+            "&client_id=" + clientId;
     }
 
     /**
@@ -144,7 +154,7 @@ public class UserController {
 
         Optional<Service> service;
 
-        if (StringUtils.isEmpty(clientId) || StringUtils.isEmpty(redirectUri)) {
+        if (isEmpty(clientId) || isEmpty(redirectUri)) {
             return PAGE_NOT_FOUND_VIEW;
         }
 
@@ -243,9 +253,10 @@ public class UserController {
      * @should return expiredtoken view if HttpClientErrorException occurs and http status is 400 and token is invalid
      * @should return redirect expiredtoken page if selfRegisterUser service throws HttpClientErrorException and Http code is 404
      */
-    @RequestMapping(path = "/activate", method = RequestMethod.POST)
-    public String activateUser(@RequestParam("token") String token, @RequestParam("code") String code, @RequestParam("password1") String password1, @RequestParam("password2") String password2,
-                               final Map<String, Object> model) throws IOException {
+    @PostMapping("/activate")
+    public ModelAndView activateUser(@RequestParam("token") String token, @RequestParam("code") String code,
+                                     @RequestParam("password1") String password1, @RequestParam("password2") String password2,
+                                     final Map<String, Object> model) throws IOException {
         model.put("token", token);
         model.put("code", code);
         try {
@@ -253,15 +264,18 @@ public class UserController {
                 String activation = "{\"token\":\"" + token + "\",\"code\":\"" + code + "\",\"password\":\"" + password1 + "\"}";
                 ResponseEntity<String> response = spiService.activateUser(activation);
                 String redirectUri = getRedirectUri(response.getBody());
+                // don't expose parameters other than the url to a GET request
+                Map<String, Object> successModel = new HashMap<>();
                 if (redirectUri != null) {
-                    model.put("redirectUri", redirectUri);
+                    successModel.put("redirectUri", redirectUri);
                 }
 
-                return "useractivated";
+                return new ModelAndView("redirect:useractivated", successModel);
             }
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                return "redirect:expiredtoken";
+                // don't expose the token in the error page
+                return new ModelAndView("redirect:expiredtoken", (Map<String, ?>) null);
             }
 
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
@@ -271,7 +285,7 @@ public class UserController {
                         "public.common.error.blacklisted.password",
                         "public.common.error.enter.password",
                         model);
-                    return "useractivation";
+                    return new ModelAndView("useractivation");
                 }
 
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)) {
@@ -280,11 +294,11 @@ public class UserController {
                         "public.common.error.containspersonalinfo.password",
                         "public.common.error.enter.password",
                         model);
-                    return "useractivation";
+                    return new ModelAndView("useractivation");
                 }
 
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.TOKEN_INVALID)) {
-                    return "expiredtoken";
+                    return new ModelAndView("redirect:expiredtoken", model);
                 }
             }
 
@@ -295,7 +309,20 @@ public class UserController {
                 model);
         }
 
-        return "useractivation";
+        return new ModelAndView("useractivation");
+    }
+
+    @GetMapping("/useractivated")
+    public String userActivated(@RequestParam(required = false) final String redirectUri, final Map<String, Object> model) {
+        if (redirectUri != null) {
+            model.put("redirectUri", redirectUri);
+        }
+        return "useractivated";
+    }
+
+    @GetMapping("/expiredtoken")
+    public String expiredToken(final Map<String, Object> model) {
+        return "expiredtoken";
     }
 
     private String getRedirectUri(String json) throws IOException {
