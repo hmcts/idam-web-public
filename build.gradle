@@ -159,6 +159,7 @@ allprojects {
   task codeceptSmokeSauce(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js', '--steps', '--grep', '@smoke', '--verbose', '--debug', '--reporter', 'mochawesome'
+
   }
 
   task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
