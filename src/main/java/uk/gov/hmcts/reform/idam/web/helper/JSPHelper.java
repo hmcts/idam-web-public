@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.helper;
 
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -31,21 +30,24 @@ public class JSPHelper {
      * @should throw if there is no request in context
      */
     @Nonnull
-    @SneakyThrows(UnsupportedEncodingException.class)
     public String getOtherLocaleUrl() {
         final ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         final HttpServletRequest request = servletRequestAttributes != null ? servletRequestAttributes.getRequest() : null;
         final String targetLocale = getTargetLocale();
 
-        if (request != null) {
-            final String requestUri = PATH_HELPER.getOriginatingRequestUri(request);
-            final String originatingQueryString = PATH_HELPER.getOriginatingQueryString(request);
-            final String requestQueryString = originatingQueryString == null ? null : URLDecoder.decode(originatingQueryString, "UTF-8"); //NOSONAR
-            final UriComponentsBuilder initialUrl = UriComponentsBuilder.fromPath(requestUri).replaceQuery(requestQueryString);
+        try {
+            if (request != null) {
+                final String requestUri = PATH_HELPER.getOriginatingRequestUri(request);
+                final String originatingQueryString = PATH_HELPER.getOriginatingQueryString(request);
+                final String requestQueryString = URLDecoder.decode(Optional.ofNullable(originatingQueryString).orElse(null), "UTF-8");
+                final UriComponentsBuilder initialUrl = UriComponentsBuilder.fromPath(requestUri).replaceQuery(requestQueryString);
 
-            return overrideLocaleParameter(initialUrl, targetLocale);
+                return overrideLocaleParameter(initialUrl, targetLocale);
+            }
+            throw new IllegalStateException("No active request was found.");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
-        throw new IllegalStateException("No active request was found.");
     }
 
     /**
@@ -54,9 +56,9 @@ public class JSPHelper {
      *
      * @should override existing parameter
      * @should add nonexisting parameter
+     * @should throw on any of the parameters being null
      */
     public static String overrideLocaleParameter(@NonNull final UriComponentsBuilder builder, @NonNull final String targetLocale) {
-
         return builder.replaceQueryParam(MessagesConfiguration.UI_LOCALES_PARAM_NAME, new Locale(targetLocale)).toUriString();
     }
 
