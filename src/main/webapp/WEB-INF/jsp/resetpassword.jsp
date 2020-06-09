@@ -30,8 +30,8 @@
             <ul class="list list-bullet">
                 <li><spring:message code="public.reset.password.new.password.rule.characters" /></li>
                 <li><spring:message code="public.reset.password.new.password.rule.capital.letter" /></li>
-                <li><spring:message code="public.reset.password.new.password.rule.lowercase.letter" /></li>
                 <li><spring:message code="public.reset.password.new.password.rule.number" /></li>
+                <li><spring:message code="public.reset.password.new.password.rule.no.name" /></li>
             </ul>
 
             <c:set var="hasPassword1Error" value="${not empty errorLabelOne}" />

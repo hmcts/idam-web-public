@@ -1035,7 +1035,7 @@ public class AppControllerTest {
             .param(TOKEN_PARAMETER, RESET_PASSWORD_TOKEN)
             .param(CODE_PARAMETER, RESET_PASSWORD_CODE))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl(EXPIREDTOKEN_VIEW_NAME));
+            .andExpect(redirectedUrl(EXPIREDTOKEN_REDIRECTED_VIEW_NAME));
 
         verify(spiService).resetPassword(eq(PASSWORD_ONE), eq(RESET_PASSWORD_TOKEN), eq(RESET_PASSWORD_CODE));
     }

@@ -33,6 +33,7 @@ fi
 # Wait for ZAP to start
 printf "Waiting for ZAP to start"
 i=0
+
 while ! (curl -s http://${ZAP_HOST}:${ZAP_PORT}) >/dev/null; do
     i=$(((i + 1) % 5))
     if [ $i -eq 0 ]; then

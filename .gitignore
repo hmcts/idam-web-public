@@ -29,7 +29,7 @@ build
 out
 output/
 
-**/application-local.yaml
+**/application-local*.yaml
 
 ### VS Code ###
 bin
@@ -40,3 +40,6 @@ bin
 ### Helm ###
 **/charts/*.tgz
 charts/*/requirements.lock
+
+### Jenkins Additions ###
+init.gradle

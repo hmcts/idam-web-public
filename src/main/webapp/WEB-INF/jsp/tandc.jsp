@@ -7,123 +7,87 @@
 
 <t:wrapper titleKey="public.template.footer.support.link.terms.and.conditions">
     <article class="content__body">
-        <h1 class="heading-large">Terms and conditions</h1>
-        <p>By using this service you're agreeing to these terms of use. This includes the <a href="/privacy-policy">privacy
-            policy</a>.</p>
-        <h2 class="heading-medium">Terms and conditions for professional users</h2>
-        <p>If you are a professional user, you'll be asked to agree to the additional terms and conditions of the service after you create a MyHMCTS account.</p>
-        <h2 class="heading-medium">Who we are</h2>
-        <p>This service is managed by Her Majesty's Courts and Tribunals Service (referred to as 'us' or 'we' from
-            now
-            on).
-            You should check these terms and conditions regularly. We may update them at any time without notice. If
-            you
-            continue to use this service after the terms and conditions have changed, you are deemed to have agreed
-            to
-            the changes.</p>
-        <h2 class="heading-medium">Information provided by this service</h2>
-        <p>This service provides information to support your claim or application. We cannot give legal advice on
-            individual cases.
-            You should answer the questions in the service based on your circumstances and seek legal advice if you
-            need
-            it.</p>
-        <h2 class="heading-medium">Sharing and storing data</h2>
-        <p>Our <a href="/privacy-policy">privacy policy</a> explains where your data is stored, and who it is shared
-            with. Our cookie policy explains how this service uses and stores cookies.</p>
-        <h2 class="heading-medium">Laws applying to this service</h2>
-        <p>Your use of this service and any dispute arising from its use will be governed by and construed in
-            accordance with the laws of England and Wales, including but not limited to the:
+        <h1 class="heading-large"><spring:message code="public.tandc.text_0001" /></h1>
+        <p><spring:message code="public.tandc.text_0002" /> <a href="/privacy-policy"><spring:message code="public.tandc.text_0003" /></a><spring:message code="public.tandc.text_0004" /></p>
+        <h2 class="heading-medium"><spring:message code="public.tandc.text_0005" /></h2>
+        <p><spring:message code="public.tandc.text_0006" /></p>
+        <h2 class="heading-medium"><spring:message code="public.tandc.text_0007" /></h2>
+        <p><spring:message code="public.tandc.text_0008" /></p>
+        <h2 class="heading-medium"><spring:message code="public.tandc.text_0009" /></h2>
+        <p><spring:message code="public.tandc.text_0010" /></p>
+        <h2 class="heading-medium"><spring:message code="public.tandc.text_0011" /></h2>
+        <p><spring:message code="public.tandc.text_0012" /> <a href="/privacy-policy"><spring:message code="public.tandc.text_0013" /></a> <spring:message code="public.tandc.text_0014" /></p>
+        <h2 class="heading-medium"><spring:message code="public.tandc.text_0015" /></h2>
+        <p><spring:message code="public.tandc.text_0016" />
         </p>
         <ul class="list-bullet">
-            <li>Computer Misuse Act 1990</li>
-            <li>Data Protection Act 1998 (until 25 May 2018)</li>
-            <li>Data Protection Act 2018 (from 25 May 2018)</li>
-            <li>General Data Protection Regulation</li>
-            <li>Mental Capacity Act 2005</li>
+            <li><spring:message code="public.tandc.text_0017" /></li>
+            <li><spring:message code="public.tandc.text_0018" /></li>
+            <li><spring:message code="public.tandc.text_0019" /></li>
+            <li><spring:message code="public.tandc.text_0020" /></li>
+            <li><spring:message code="public.tandc.text_0021" /></li>
         </ul>
-        <h2 class="heading-medium">How to use this service responsibly</h2>
-        <p>There are risks in using a shared computer (for example, in a library) to access this service. It's your
-            responsibility to be aware of these risks and to avoid using any computer which may leave your personal
-            information accessible to others. You're responsible if you choose to leave a computer unprotected while
-            using this service.
-            You should take your own precautions to ensure that the way you access this service does not expose you
-            to
-            the risk of:</p>
+        <h2 class="heading-medium"><spring:message code="public.tandc.text_0022" /></h2>
+        <p><spring:message code="public.tandc.text_0023" /></p>
         <ul class="list-bullet">
-            <li>viruses</li>
-            <li>malicious computer code</li>
-            <li>other forms of interference which may damage your computer system</li>
+            <li><spring:message code="public.tandc.text_0024" /></li>
+            <li><spring:message code="public.tandc.text_0025" /></li>
+            <li><spring:message code="public.tandc.text_0026" /></li>
         </ul>
-        <p>You must not misuse this service by knowingly introducing viruses, trojans, worms, logic bombs or other
-            material which is malicious or technologically harmful. You must not attempt to gain unauthorised access to
-            this service, the system on which it is stored, or any server, computer or database connected to it. You
-            must not attack this site using a denial-of-service attack or a distributed denial-of-service attack.</p>
+        <p><spring:message code="public.tandc.text_0027" /></p>
 
-        <h3 class="heading-small">Entering personally sensitive information</h3>
-        <p>This online service contains several free-text fields in which you may choose to enter information which
-            is
-            personally sensitive.
-            If you enter information about your:</p>
+        <h3 class="heading-small"><spring:message code="public.tandc.text_0028" /></h3>
+        <p><spring:message code="public.tandc.text_0029" /></p>
         <ul class="list-bullet">
-            <li>religious beliefs</li>
-            <li>sexual orientation or sex life</li>
-            <li>racial or ethnic origins</li>
-            <li>political opinions</li>
-            <li>religious or philosophical beliefs</li>
-            <li>trade union membership</li>
-            <li>genetic data or biometric data</li>
-            <li>health data</li>
+            <li><spring:message code="public.tandc.text_0030" /></li>
+            <li><spring:message code="public.tandc.text_0031" /></li>
+            <li><spring:message code="public.tandc.text_0032" /></li>
+            <li><spring:message code="public.tandc.text_0033" /></li>
+            <li><spring:message code="public.tandc.text_0034" /></li>
+            <li><spring:message code="public.tandc.text_0035" /></li>
+            <li><spring:message code="public.tandc.text_0036" /></li>
+            <li><spring:message code="public.tandc.text_0037" /></li>
         </ul>
-        <p>you give us your consent to processing this information for the purpose of dealing with your application.
-            For more information about how we collect and store your personal data, see the <a href="/privacy-policy">privacy
-                policy</a>.</p>
-        <h2 class="heading-medium">Disclaimer</h2>
-        <p>While we make every effort to keep information up to date, we don't provide any guarantees, conditions or
-            warranties that it will be:</p>
+        <p><spring:message code="public.tandc.text_0038" /> <a href="/privacy-policy"><spring:message code="public.tandc.text_0039" /></a><spring:message code="public.tandc.text_0040" /></p>
+        <h2 class="heading-medium"><spring:message code="public.tandc.text_0041" /></h2>
+        <p><spring:message code="public.tandc.text_0042" /></p>
         <ul class="list-bullet">
-            <li>current</li>
-            <li>secure</li>
-            <li>accurate</li>
-            <li>complete</li>
-            <li>free from bugs or viruses</li>
+            <li><spring:message code="public.tandc.text_0043" /></li>
+            <li><spring:message code="public.tandc.text_0044" /></li>
+            <li><spring:message code="public.tandc.text_0045" /></li>
+            <li><spring:message code="public.tandc.text_0046" /></li>
+            <li><spring:message code="public.tandc.text_0047" /></li>
         </ul>
 
-        <p>We don't publish advice. You should get professional or specialist advice before doing anything on the
-            basis
-            of the information in the service.
-            We're not liable for any loss or damage that may come from using this service. This includes:</p>
+        <p><spring:message code="public.tandc.text_0048" /></p>
         <ul class="list-bullet">
-            <li>any direct, indirect or consequential losses</li>
-            <li>any loss or damage caused by civil wrongs ('tort', including negligence), breach of contract or
-                otherwise
+            <li><spring:message code="public.tandc.text_0049" /></li>
+            <li><spring:message code="public.tandc.text_0050" />
             </li>
-            <li>the use of this service, GOV.UK and any websites that are linked to or from it</li>
-            <li>the inability to use this service, GOV.UK and any websites that are linked to or from it</li>
+            <li><spring:message code="public.tandc.text_0051" /></li>
+            <li><spring:message code="public.tandc.text_0052" /></li>
         </ul>
-        <p>This applies if the loss or damage was foreseeable, arose in the normal course of things or you advised
-            us
-            that it might happen.
-            This includes (but isn't limited to) the loss of your:</p>
+        <p><spring:message code="public.tandc.text_0053" /></p>
         <ul class="list-bullet">
-            <li>income or revenue</li>
-            <li>salary, benefits or other payments</li>
-            <li>business</li>
-            <li>profits or contracts</li>
-            <li>opportunity</li>
-            <li>anticipated savings</li>
-            <li>data</li>
-            <li>goodwill or reputation</li>
-            <li>tangible property</li>
-            <li>intangible property, including loss, corruption or damage to data or any computer system</li>
-            <li>wasted management or office time</li>
+            <li><spring:message code="public.tandc.text_0054" /></li>
+            <li><spring:message code="public.tandc.text_0055" /></li>
+            <li><spring:message code="public.tandc.text_0056" /></li>
+            <li><spring:message code="public.tandc.text_0057" /></li>
+            <li><spring:message code="public.tandc.text_0058" /></li>
+            <li><spring:message code="public.tandc.text_0059" /></li>
+            <li><spring:message code="public.tandc.text_0060" /></li>
+            <li><spring:message code="public.tandc.text_0061" /></li>
+            <li><spring:message code="public.tandc.text_0062" /></li>
+            <li><spring:message code="public.tandc.text_0063" /></li>
+            <li><spring:message code="public.tandc.text_0064" /></li>
         </ul>
-        <p>We may still be liable for:</p>
+        <p><spring:message code="public.tandc.text_0065" /></p>
         <ul class="list-bullet">
-            <li>death or personal injury arising from our negligence</li>
-            <li>fraudulent misrepresentation</li>
-            <li>any other liability which cannot be excluded or limited under applicable law</li>
+            <li><spring:message code="public.tandc.text_0066" /></li>
+            <li><spring:message code="public.tandc.text_0067" /></li>
+            <li><spring:message code="public.tandc.text_0068" /></li>
         </ul>
 
-        <p><a href="/contact-us">Contact us</a> for further information.</p>
+        <p><a href="/contact-us"><spring:message code="public.tandc.text_0069" /></a> <spring:message code="public.tandc.text_0070" /></p>
     </article>
 </t:wrapper>

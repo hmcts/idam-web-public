@@ -63,11 +63,12 @@ public class TestConstants {
     public static final String EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME = "expiredPasswordResetLink";
     public static final String EXPIRED_ACTIVATION_TOKEN_VIEW_NAME = "expiredActivationLink";
     public static final String USER_ACTIVATION_VIEW_NAME = "useractivation";
-    public static final String USER_ACTIVATED_VIEW_NAME = "useractivated";
+    public static final String USER_ACTIVATED_VIEW_NAME = "redirect:useractivated";
     public static final String ERROR_VIEW_NAME = "errorpage";
     public static final String USER_CREATED_VIEW_NAME = "usercreated";
     public static final String RESETPASSWORD_VIEW_NAME = "resetpassword";
-    public static final String EXPIREDTOKEN_VIEW_NAME = "expiredtoken";
+    public static final String EXPIREDTOKEN_VIEW_NAME = "redirect:expiredtoken";
+    public static final String EXPIREDTOKEN_REDIRECTED_VIEW_NAME = "expiredtoken";
     public static final String FORGOT_PASSWORD_VIEW = "forgotpassword";
     public static final String FORGOT_PASSWORD_SUCCESS_VIEW = "forgotpasswordsuccess";
     public static final String RESET_PASSWORD_SUCCESS_VIEW = "resetpasswordsuccess";
