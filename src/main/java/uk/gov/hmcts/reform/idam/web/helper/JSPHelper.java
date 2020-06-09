@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.idam.web.helper;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.net.URLCodec;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -13,8 +15,6 @@ import uk.gov.hmcts.reform.idam.web.config.MessagesConfiguration;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -22,6 +22,7 @@ import java.util.Optional;
 public class JSPHelper {
 
     private static final UrlPathHelper PATH_HELPER = new UrlPathHelper();
+    private static final URLCodec URL_CODEC = new URLCodec();
     private static MessageSource messageSource;
 
     /**
@@ -30,24 +31,22 @@ public class JSPHelper {
      * @should throw if there is no request in context
      */
     @Nonnull
-    public String getOtherLocaleUrl() {
+    public String getOtherLocaleUrl() throws DecoderException {
         final ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         final HttpServletRequest request = servletRequestAttributes != null ? servletRequestAttributes.getRequest() : null;
         final String targetLocale = getTargetLocale();
 
-        try {
-            if (request != null) {
-                final String requestUri = PATH_HELPER.getOriginatingRequestUri(request);
-                final String originatingQueryString = PATH_HELPER.getOriginatingQueryString(request);
-                final String requestQueryString = URLDecoder.decode(Optional.ofNullable(originatingQueryString).orElse(null), "UTF-8");
-                final UriComponentsBuilder initialUrl = UriComponentsBuilder.fromPath(requestUri).replaceQuery(requestQueryString);
 
-                return overrideLocaleParameter(initialUrl, targetLocale);
-            }
-            throw new IllegalStateException("No active request was found.");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+        if (request != null) {
+            final String requestUri = PATH_HELPER.getOriginatingRequestUri(request);
+            final String originatingQueryString = PATH_HELPER.getOriginatingQueryString(request);
+            final String requestQueryString; //NOSONAR
+            requestQueryString = originatingQueryString == null ? null : URL_CODEC.decode(originatingQueryString);
+            final UriComponentsBuilder initialUrl = UriComponentsBuilder.fromPath(requestUri).replaceQuery(requestQueryString);
+
+            return overrideLocaleParameter(initialUrl, targetLocale);
         }
+        throw new IllegalStateException("No active request was found.");
     }
 
     /**
