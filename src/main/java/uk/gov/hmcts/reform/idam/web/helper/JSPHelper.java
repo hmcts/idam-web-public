@@ -21,9 +21,9 @@ import java.util.Optional;
 @UtilityClass
 public class JSPHelper {
 
-    private static final UrlPathHelper PATH_HELPER = new UrlPathHelper();
     private static final URLCodec URL_CODEC = new URLCodec();
     private static MessageSource messageSource;
+    private final UrlPathHelper pathHelper = new UrlPathHelper();
 
     /**
      * @should return correct url for English
@@ -38,10 +38,9 @@ public class JSPHelper {
 
 
         if (request != null) {
-            final String requestUri = PATH_HELPER.getOriginatingRequestUri(request);
-            final String originatingQueryString = PATH_HELPER.getOriginatingQueryString(request);
-            final String requestQueryString; //NOSONAR
-            requestQueryString = originatingQueryString == null ? null : URL_CODEC.decode(originatingQueryString);
+            final String requestUri = pathHelper.getOriginatingRequestUri(request);
+            final String originatingQueryString = pathHelper.getOriginatingQueryString(request);
+            final String requestQueryString = originatingQueryString == null ? null : URL_CODEC.decode(originatingQueryString); //NOSONAR
             final UriComponentsBuilder initialUrl = UriComponentsBuilder.fromPath(requestUri).replaceQuery(requestQueryString);
 
             return overrideLocaleParameter(initialUrl, targetLocale);
