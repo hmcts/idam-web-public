@@ -64,12 +64,14 @@ public class JSPHelperTest {
     public void overrideLocaleParameter_shouldThrowOnAnyOfTheParametersBeingNull() {
         try {
             JSPHelper.overrideLocaleParameter(UriComponentsBuilder.newInstance(), null);
+            Assert.fail();
         } catch (NullPointerException e) {
             // do nothing, expected
         }
 
         try {
             JSPHelper.overrideLocaleParameter(null, "en");
+            Assert.fail();
         } catch (NullPointerException e) {
             // do nothing, expected
         }
