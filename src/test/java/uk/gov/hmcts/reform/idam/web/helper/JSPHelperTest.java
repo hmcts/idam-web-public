@@ -57,6 +57,27 @@ public class JSPHelperTest {
     }
 
     /**
+     * @verifies throw on any of the parameters being null
+     * @see JSPHelper#overrideLocaleParameter(org.springframework.web.util.UriComponentsBuilder, String)
+     */
+    @Test
+    public void overrideLocaleParameter_shouldThrowOnAnyOfTheParametersBeingNull() {
+        try {
+            JSPHelper.overrideLocaleParameter(UriComponentsBuilder.newInstance(), null);
+            Assert.fail();
+        } catch (NullPointerException e) {
+            // do nothing, expected
+        }
+
+        try {
+            JSPHelper.overrideLocaleParameter(null, "en");
+            Assert.fail();
+        } catch (NullPointerException e) {
+            // do nothing, expected
+        }
+    }
+
+    /**
      * @verifies return en if current locale is welsh
      * @see JSPHelper#getTargetLocale()
      */
