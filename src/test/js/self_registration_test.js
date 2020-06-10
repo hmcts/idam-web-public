@@ -1,6 +1,7 @@
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 const assert = require('assert');
+const Welsh = require('./shared/welsh_constants');
 
 Feature('Self Registration');
 
@@ -65,8 +66,9 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.see('Sign in');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @selfregister Account already created', async (I) => {
+Scenario('@functional @selfregister @welshLanguage Account already created (no language)', async (I) => {
 
+    I.clearCookie(Welsh.localeCookie);
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
@@ -85,11 +87,36 @@ Scenario('@functional @selfregister Account already created', async (I) => {
 
 });
 
-Scenario('@functional @selfregister I can self register', async (I) => {
+Scenario('@functional @selfregister @welshLanguage Account already created (force Welsh)', async (I) => {
+
+    I.clearCookie(Welsh.localeCookie);
+    I.amOnPage(selfRegUrl + Welsh.urlForceCy);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText(Welsh.createAnAccountOrSignIn, 20, 'h1');
+
+    let cookie = await I.grabCookie(Welsh.localeCookie);
+    assert(cookie.value, 'cy');
+
+    I.see(Welsh.createAnAccount);
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', citizenEmail);
+    I.click(Welsh.continueBtn);
+
+    I.waitForText(Welsh.checkYourEmail, 20, 'h1');
+
+    I.wait(5);
+    const emailResponse = await I.getEmail(citizenEmail);
+    assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
+
+});
+
+Scenario('@functional @selfregister @welshLanguage I can self register (no language)', async (I) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
 
+    I.clearCookie(Welsh.localeCookie);
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
     I.waitForText('Create an account or sign in', 20, 'h1');
@@ -121,6 +148,75 @@ Scenario('@functional @selfregister I can self register', async (I) => {
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
+});
+
+Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)', async (I) => {
+
+    const email = 'test_citizen.' + randomData.getRandomEmailAddress();
+    const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
+
+    I.amOnPage(selfRegUrl + Welsh.urlForceCy);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText(Welsh.createAnAccountOrSignIn, 20, 'h1');
+
+    I.see(Welsh.createAnAccount);
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', email);
+    I.click(Welsh.continueBtn);
+    I.waitForText(Welsh.checkYourEmail, 20, 'h1');
+    I.wait(5);
+    const userActivationUrl = await I.extractUrl(email);
+    I.amOnPage(userActivationUrl);
+    I.waitForText(Welsh.createAPassword, 20, 'h1');
+    I.seeTitleEquals(Welsh.userActivationTitle);
+    I.fillField('#password1', TestData.PASSWORD);
+    I.fillField('#password2', TestData.PASSWORD);
+    I.click(Welsh.continueBtn);
+    I.waitForText(Welsh.accountCreated, 20, 'h1');
+    I.see(Welsh.youCanNowSignIn);
+    I.amOnPage(loginPage);
+    I.seeInCurrentUrl("state=selfreg");
+    I.waitForText(Welsh.signInOrCreateAccount, 20, 'h1');
+    I.fillField('#username', email);
+    I.fillField('#password', TestData.PASSWORD);
+    I.interceptRequestsAfterSignin();
+    I.click(Welsh.signIn);
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
+
+Scenario('@functional @selfregister I can self register and cannot use activation link again', async (I) => {
+
+    const email = 'test_citizen.' + randomData.getRandomEmailAddress();
+    const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
+
+    I.amOnPage(selfRegUrl);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+
+    I.see('Create an account');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', email);
+    I.click("Continue");
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
+    const userActivationUrl = await I.extractUrl(email);
+    I.amOnPage(userActivationUrl);
+    I.waitForText('Create a password', 20, 'h1');
+    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.fillField('#password1', TestData.PASSWORD);
+    I.fillField('#password2', TestData.PASSWORD);
+    I.click('Continue');
+    I.waitForText('Account created', 20, 'h1');
+    I.see('You can now sign in to your account.');
+
+    I.wait(3);
+    I.amOnPage(userActivationUrl);
+    I.waitForText('Your account is already activated.', 40, 'h1');
 });
 
 
