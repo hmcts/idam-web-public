@@ -6,7 +6,6 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.Set;
-
 import java.util.regex.Pattern;
 
 @ConfigurationProperties(prefix = "strategic")
