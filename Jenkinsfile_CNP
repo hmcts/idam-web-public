@@ -36,7 +36,6 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     enableSlackNotifications('#idam_tech')
-    installCharts()
     enableAksStagingDeployment()
     disableLegacyDeployment()
 
@@ -65,6 +64,22 @@ withPipeline(type, product, component) {
         env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+    }
+    
+    before('smoketest-aks:idam-aat') {
+        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+        env.IDAMAPI = "https://idam-api-staging.service.core-compute-aat.internal"
+        println """\
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+    }
+
+    before('functionalTest-aks:idam-aat') {
+        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+        env.IDAMAPI = "https://idam-api-staging.service.core-compute-aat.internal"
+        println """\
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
@@ -173,8 +188,8 @@ withPipeline(type, product, component) {
             reportName           : "IDAM Web Public E2E functional tests result"
         ]
     }
-
-    before('buildinfra:idam-prod') {
-        error('Stopping pipeline before Prod stages')
-    }
+  
+  before('buildinfra:idam-prod') {
+      error('Stopping pipeline before Prod stages')
+  }
 }

@@ -2,6 +2,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ tag description="Simple Wrapper Tag" pageEncoding="UTF-8" %>
 <%@attribute name="titleKey" required="true"%>
 <!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
@@ -134,6 +135,7 @@
                         code="public.template.header.phase.description"
                         arguments="${smartSurveyUrl}"
                     />
+                    <t:languageSwitch />
                 </span>
             </p>
         </div>

@@ -12,7 +12,7 @@ function randomAlphabeticString(length = 10) {
     return randomString
 }
 
-const testBasePrefix = "SIDMTESTWP" + randomAlphabeticString();
+const testBasePrefix = "SIDMTESTWP_" + randomAlphabeticString();
 const testUserPrefix = testBasePrefix + "USER";
 const testRolePrefix = testBasePrefix + "ROLE_";
 const testServicePrefix = testBasePrefix + "SERVICE_";

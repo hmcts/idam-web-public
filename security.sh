@@ -2,23 +2,58 @@
 #echo "${SECURITYCONTEXT}" > /zap/security.context
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
-zap-x.sh -d -host 0.0.0.0 -port 1001 -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true /dev/null 2>&1 &
+
+ZAP_PORT=1001
+ZAP_HOST=0.0.0.0
+DEBUG=false
+
+# ------------------------------------------------------------------
+
+if [ "$DEBUG" == "true" ]; then
+    ZAP_PORT=8080
+    TEST_URL=https://idam-web-public.aat.platform.hmcts.net
+
+    # start ZAP locally
+    echo "Starting a local instance of ZAP..."
+    #docker pull owasp/zap2docker-weekly:latest
+    docker run -d -u zap -p $ZAP_PORT:$ZAP_PORT owasp/zap2docker-weekly zap-x.sh \
+        -d \
+        -host $ZAP_HOST \
+        -port $ZAP_PORT \
+        -config api.disablekey=true \
+        -config scanner.attackOnStart=true \
+        -config view.mode=attack \
+        -config connection.dnsTtlSuccessfulQueries=-1 \
+        -config api.addrs.addr.name=".*" \
+        -config api.addrs.addr.regex=true
+else
+    zap-x.sh -d -host $ZAP_HOST -port $ZAP_PORT -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true /dev/null 2>&1 &
+fi
+
+# Wait for ZAP to start
+printf "Waiting for ZAP to start"
 i=0
-while !(curl -s http://0.0.0.0:1001) > /dev/null
-  do
-    i=$(( (i+1) %4 ))
-    sleep .1
-  done
-  echo "ZAP has successfully started"
-  zap-cli --zap-url http://0.0.0.0 -p 1001 status -t 120
-  zap-cli --zap-url http://0.0.0.0 -p 1001 open-url "${TEST_URL}"
-  zap-cli --zap-url http://0.0.0.0 -p 1001 exclude ".*jquery-3.4.1.min.js$"
-  zap-cli --zap-url http://0.0.0.0 -p 1001 spider ${TEST_URL}
-  zap-cli --zap-url http://0.0.0.0 -p 1001 active-scan --scanners all --recursive "${TEST_URL}"
-  zap-cli --zap-url http://0.0.0.0 -p 1001 report -o activescan.html -f html
-  echo 'Changing owner from $(id -u):$(id -g) to $(id -u):$(id -u)'
-  chown -R $(id -u):$(id -u) activescan.html
-  cp *.html functional-output/
-  zap-cli -p 1001 alerts -l Informational
-  zap-cli --zap-url http://0.0.0.0 -p 1001 alerts -l High --exit-code False
-  curl --fail http://0.0.0.0:1001/OTHER/core/other/jsonreport/?formMethod=GET --output report.json
+
+while ! (curl -s http://${ZAP_HOST}:${ZAP_PORT}) >/dev/null; do
+    i=$(((i + 1) % 5))
+    if [ $i -eq 0 ]; then
+        printf "."
+    fi
+    sleep .2
+done
+echo
+echo "ZAP has successfully started"
+
+zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT status -t 120
+zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT open-url "${TEST_URL}"
+xargs -I % echo "Excluding regexp: %" <zap-exclusions
+xargs -I % zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT exclude % <zap-exclusions
+zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT spider ${TEST_URL}
+zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT active-scan --scanners all --recursive "${TEST_URL}"
+zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT report -o activescan.html -f html
+echo 'Changing owner from $(id -u):$(id -g) to $(id -u):$(id -u)'
+chown -R $(id -u):$(id -u) activescan.html
+cp *.html functional-output/
+zap-cli -p $ZAP_PORT alerts -l Informational
+zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT alerts -l High --exit-code False
+curl --fail http://${ZAP_HOST}:${ZAP_PORT}/OTHER/core/other/jsonreport/?formMethod=GET --output report.json
