@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.idam.web.helper;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.net.URLCodec;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -19,8 +21,9 @@ import java.util.Optional;
 @UtilityClass
 public class JSPHelper {
 
-    private static final UrlPathHelper PATH_HELPER = new UrlPathHelper();
+    private static final URLCodec URL_CODEC = new URLCodec();
     private static MessageSource messageSource;
+    private final UrlPathHelper pathHelper = new UrlPathHelper();
 
     /**
      * @should return correct url for English
@@ -28,14 +31,16 @@ public class JSPHelper {
      * @should throw if there is no request in context
      */
     @Nonnull
-    public static String getOtherLocaleUrl() {
+    public String getOtherLocaleUrl() throws DecoderException {
         final ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         final HttpServletRequest request = servletRequestAttributes != null ? servletRequestAttributes.getRequest() : null;
         final String targetLocale = getTargetLocale();
 
+
         if (request != null) {
-            final String requestUri = PATH_HELPER.getOriginatingRequestUri(request);
-            final String requestQueryString = PATH_HELPER.getOriginatingQueryString(request);
+            final String requestUri = pathHelper.getOriginatingRequestUri(request);
+            final String originatingQueryString = pathHelper.getOriginatingQueryString(request);
+            final String requestQueryString = originatingQueryString == null ? null : URL_CODEC.decode(originatingQueryString); //NOSONAR
             final UriComponentsBuilder initialUrl = UriComponentsBuilder.fromPath(requestUri).replaceQuery(requestQueryString);
 
             return overrideLocaleParameter(initialUrl, targetLocale);
@@ -44,10 +49,12 @@ public class JSPHelper {
     }
 
     /**
-     * @param builder      the URI builder
+     * @param builder the URI builder
      * @param targetLocale the target locale
+     *
      * @should override existing parameter
      * @should add nonexisting parameter
+     * @should throw on any of the parameters being null
      */
     public static String overrideLocaleParameter(@NonNull final UriComponentsBuilder builder, @NonNull final String targetLocale) {
         return builder.replaceQueryParam(MessagesConfiguration.UI_LOCALES_PARAM_NAME, new Locale(targetLocale)).toUriString();
