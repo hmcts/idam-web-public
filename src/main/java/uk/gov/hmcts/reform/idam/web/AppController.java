@@ -343,17 +343,20 @@ public class AppController {
                 httpRequest.getHeader(X_FORWARDED_FOR),
                 httpRequest.getRemoteAddr());
 
-            final List<String> cookies = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
+//            final List<String> cookies = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
 
-            if (cookies == null) {
-                log.info("/login: Authenticate returned no cookies for user - {}", obfuscateEmailAddress(request.getUsername()));
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
-                return new ModelAndView(LOGIN_VIEW, model.asMap());
-            }
+//            if (cookies == null) {
+//                log.info("/login: Authenticate returned no cookies for user - {}", obfuscateEmailAddress(request.getUsername()));
+//                model.addAttribute(HAS_LOGIN_FAILED, true);
+//                bindingResult.reject("Login failure");
+//                return new ModelAndView(LOGIN_VIEW, model.asMap());
+//            }
 
             final String redirectUri = request.getRedirect_uri();
-            final PolicyService.EvaluatePoliciesAction policyCheckResponse = policyService.evaluatePoliciesForUser(redirectUri, cookies, ipAddress);
+//            final PolicyService.EvaluatePoliciesAction policyCheckResponse = policyService.evaluatePoliciesForUser(redirectUri, cookies, ipAddress);
+
+           // todo initiate login flow
+            // todo expect: block, mfa required, allow, how would we know?
 
             if (policyCheckResponse == PolicyService.EvaluatePoliciesAction.BLOCK) {
                 log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
