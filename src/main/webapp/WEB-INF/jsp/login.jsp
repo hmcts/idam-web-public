@@ -70,8 +70,7 @@
                         </c:when>
                         <c:when test="${isAccountRetired}">
                             <script>
-                            <!--TODO find proper event from hmcts-->
-                                sendEvent('Authorization', 'Error', 'Account is retired, stale user has been sent registration');
+                                sendEvent('Authorization', 'Error', 'Account is retired, stale user has been sent reregistration');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.retired.title"/>
