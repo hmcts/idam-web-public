@@ -70,7 +70,7 @@ withPipeline(type, product, component) {
     
     before('smoketest-aks:idam-aat') {
         env.NONPROD_ENVIRONMENT_NAME = 'aat'
-        env.IDAMAPI = "https://idam-api-staging.service.core-compute-aat.internal"
+        env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
         println """\
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
@@ -78,7 +78,7 @@ withPipeline(type, product, component) {
 
     before('functionalTest-aks:idam-aat') {
         env.NONPROD_ENVIRONMENT_NAME = 'aat'
-        env.IDAMAPI = "https://idam-api-staging.service.core-compute-aat.internal"
+        env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
         println """\
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
