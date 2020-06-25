@@ -1372,6 +1372,23 @@ public class AppControllerTest {
             .andExpect(status().isOk())
 
             .andExpect(view().name(LOGIN_VIEW));
+
+
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.name(), ERR_STALE_USER_REGISTRATION_SENT.getBytes(), null));
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(model().attribute(IS_ACCOUNT_RETIRED, true))
+            .andExpect(status().isOk())
+
+            .andExpect(view().name(LOGIN_VIEW));
     }
 
     /**

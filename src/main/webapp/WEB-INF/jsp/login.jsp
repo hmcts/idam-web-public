@@ -68,6 +68,19 @@
                                 </p>
                             </div>
                         </c:when>
+                        <c:when test="${isAccountRetired}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'Account is retired, stale user has been sent reregistration');
+                            </script>
+                            <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
+                                <spring:message code="public.login.error.retired.title"/>
+                            </h2>
+                            <div class="text">
+                                <p>
+                                    <spring:message code="public.login.error.retired.instruction"/>
+                                </p>
+                            </div>
+                        </c:when>
                         <c:when test="${hasPolicyCheckFailed}">
                             <script>
                                 sendEvent('Authorization', 'Error', 'User policy check has failed');

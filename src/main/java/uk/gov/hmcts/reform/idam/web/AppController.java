@@ -84,6 +84,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INDEX_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_RETIRED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
@@ -421,7 +422,7 @@ public class AppController {
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
-            if (HttpStatus.FORBIDDEN == he.getStatusCode() || HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
+            if (HttpStatus.FORBIDDEN == he.getStatusCode() || HttpStatus.UNAUTHORIZED == he.getStatusCode() || HttpStatus.NOT_FOUND == he.getStatusCode()) {
                 getLoginFailureReason(he, model, bindingResult);
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
@@ -639,6 +640,9 @@ public class AppController {
             } else if (ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED.equals(error.getCode())) {
                 model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
                 bindingResult.reject("Account suspended");
+            } else if (ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT.equals(error.getCode())) {
+                model.addAttribute(IS_ACCOUNT_RETIRED, true);
+                bindingResult.reject("Account retired");
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
