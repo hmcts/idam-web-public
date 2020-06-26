@@ -728,6 +728,22 @@ class IdamHelper extends Helper {
             });
     }
 
+    async retireStaleUser(userEmail) {
+        const userDetails = await this.getUserByEmail(userEmail);
+        const userId = userDetails.id;
+        const authToken = await this.getAuthToken();
+        return fetch(`${TestData.IDAM_API}/api/v1/staleUsers/${userId}/retire`, {
+            agent: agent,
+            method: 'POST',
+            headers: {'Authorization': 'AdminApiAuthToken ' + authToken},
+        }).then((response) => {
+            if (response.status !== 200) {
+                console.log('Error retiring stale user', response.status);
+                throw new Error();
+            }
+        });
+    }
+
     deleteAllTestData(testDataPrefix = '', userNames = [], roleNames = [], serviceNames = [], async = false) {
         return fetch(`${TestData.IDAM_API}/testing-support/test-data?async=${async}&userNames=${userNames.join(',')}&roleNames=${roleNames.join(',')}&testDataPrefix=${testDataPrefix}&serviceNames=${serviceNames.join(',')}`, {
             agent: agent,
