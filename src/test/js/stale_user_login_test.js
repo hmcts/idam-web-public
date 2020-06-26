@@ -23,7 +23,7 @@ AfterSuite(async(I) => {
     I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@feature @staleUserLogin Stale user login', async(I) => {
+Scenario('@functional @staleUserLogin Stale user login', async(I) => {
     const loginUrl = `${testData.WEB_PUBLIC_URL}/login?redirect_uri=${testData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
