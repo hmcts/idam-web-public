@@ -27,27 +27,27 @@ data "azurerm_key_vault" "idam" {
 
 module "redis-cache" {
   source      = "git@github.com:hmcts/cnp-module-redis?ref=master"
-  product     = var.product
-  location    = var.location
-  env         = var.env
-  subnetid    = element(azurerm_virtual_network.idam.subnets, 3)
-  common_tags = var.common_tags
+  product     = "${var.product}-${var.app}"
+  location    = "${var.location}"
+  env         = "${var.env}"
+  subnetid    = "${element(azurerm_virtual_network.idam.subnets, 3)}"
+  common_tags = "${var.common_tags}"
 }
 
 resource "azurerm_key_vault_secret" "redis_hostname" {
   name         = "redis-hostname"
-  value        = module.redis-cache.host_name
-  key_vault_id = data.azurerm_key_vault.default.id
+  value        = "${module.redis-cache.host_name}"
+  key_vault_id = "${data.azurerm_key_vault.default.id}"
 }
 
 resource "azurerm_key_vault_secret" "redis_port" {
   name         = "redis-hostname"
-  value        = module.redis-cache.redis_port
-  key_vault_id = data.azurerm_key_vault.default.id
+  value        = "${module.redis-cache.redis_port}"
+  key_vault_id = "${data.azurerm_key_vault.default.id}"
 }
 
 resource "azurerm_key_vault_secret" "redis_access_key" {
   name         = "redis-key"
-  value        = module.redis-cache.access_key
-  key_vault_id = data.azurerm_key_vault.default.id
+  value        = "${module.redis-cache.access_key}"
+  key_vault_id = "${data.azurerm_key_vault.default.id}"
 }
