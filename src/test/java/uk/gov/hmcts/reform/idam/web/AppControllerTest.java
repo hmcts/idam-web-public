@@ -11,7 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -1387,7 +1386,7 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().isOk())
 
-            .andExpect(view().name(STALE_USER_FORGOT_PASSWORD_VIEW));
+            .andExpect(view().name(STALE_USER_RESET_PASSWORD_VIEW));
     }
 
     /**

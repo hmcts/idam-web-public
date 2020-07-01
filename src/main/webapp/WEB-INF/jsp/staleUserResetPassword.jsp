@@ -3,17 +3,17 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<t:wrapper titleKey="public.forgot.password.stale.users.title.text">
+<t:wrapper titleKey="public.reset.password.stale.users.title.text">
     <article class="content__body">
         <div class="error-summary" aria-labelledby="validation-error-summary-heading" tabindex="-1">
              <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                <spring:message code="public.forgot.password.stale.users.reset.password.header" />
+                <spring:message code="public.reset.password.stale.users.warning.header" />
              </h2>
              <p>
-                 <spring:message code="public.forgot.password.stale.users.reset.password.fix" />
+                 <spring:message code="public.reset.password.stale.users.warning.fix" />
              </p>
              <ul class="error-summary-list">
-                <li><a href="#password"><spring:message code="public.forgot.password.stale.users.reset.password.action"/></a></li>
+                <li><a href="#password"><spring:message code="public.reset.password.stale.users.warning.reset"/></a></li>
              </ul>
         </div>
         <div class="text">
@@ -52,7 +52,7 @@
                 <spring:message code="public.common.user.created.few.minutes"/>
             </p>
             <p>
-                <spring:message code="public.forgot.password.stale.users.email.notarrived"/><a href="/"> <spring:message code="public.forgot.password.stale.users.email.tryagain"/></a>
+                <spring:message code="public.reset.password.stale.users.email.notarrived"/><a href="/"> <spring:message code="public.reset.password.stale.users.email.tryagain"/></a>
             </p>
         </div>
     </article>

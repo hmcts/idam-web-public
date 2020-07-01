@@ -387,7 +387,7 @@ public class AppController {
                 try {
                     ErrorResponse error = objectMapper.readValue(he.getResponseBodyAsString(), ErrorResponse.class);
                     if (ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT.equals(error.getCode())) {
-                        return new ModelAndView(STALE_USER_FORGOT_PASSWORD_VIEW, model.asMap());
+                        return new ModelAndView(STALE_USER_RESET_PASSWORD_VIEW, model.asMap());
                     }
                 } catch (JsonProcessingException ex) {
                     log.error("Error reading authentication response : {}", ex.getMessage(), ex);
