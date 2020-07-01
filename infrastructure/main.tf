@@ -27,7 +27,7 @@ data "azurerm_key_vault" "idam" {
 
 module "redis-cache" {
   source      = "git@github.com:hmcts/cnp-module-redis?ref=master"
-  product     = "${var.product}-${var.app}"
+  product     = "idam-web-public"
   location    = "${var.location}"
   env         = "${var.env}"
   subnetid    = "${element(azurerm_virtual_network.idam.subnets, 3)}"
