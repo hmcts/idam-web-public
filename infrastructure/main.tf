@@ -17,13 +17,13 @@ locals {
 }
 
 data "azurerm_virtual_network" "idam" {
-  name                = "core-infra-vnet-idam-${var.env}"
-  resource_group_name = "core-infra-idam-${var.env}"
+  name                = "core-infra-vnet-${var.env}"
+  resource_group_name = "core-infra-${var.env}"
 }
 
 data "azurerm_key_vault" "idam" {
   name                = "${local.vault_name}"
-  resource_group_name = "idam-idam-${var.env}"
+  resource_group_name = "idam-${var.env}"
 }
 
 module "redis-cache" {
