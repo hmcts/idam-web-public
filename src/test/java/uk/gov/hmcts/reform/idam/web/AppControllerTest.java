@@ -1385,10 +1385,9 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
-            .andExpect(model().attribute(IS_ACCOUNT_RETIRED, true))
             .andExpect(status().isOk())
 
-            .andExpect(view().name(LOGIN_VIEW));
+            .andExpect(view().name(STALE_USER_FORGOT_PASSWORD_VIEW));
     }
 
     /**

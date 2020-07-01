@@ -78,6 +78,7 @@ public class TestConstants {
     public static final String LOGIN_LOGOUT_VIEW = "/login?logout";
     public static final String NOT_FOUND_VIEW = "404";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
+    public static final String STALE_USER_FORGOT_PASSWORD_VIEW = "staleUserForgotPassword";
 
 
     //User
