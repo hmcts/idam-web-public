@@ -53,7 +53,7 @@ resource "azurerm_key_vault_secret" "redis_port" {
   key_vault_id = data.azurerm_key_vault.idam.id
 }
 
-resource "azurerm_key_vault_secret" "redis_access_key" {
+resource "azurerm_key_vault_secret" "redis_key" {
   name         = "redis-key"
   value        = module.redis-cache.access_key
   key_vault_id = data.azurerm_key_vault.idam.id
