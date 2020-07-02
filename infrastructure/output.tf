@@ -1,10 +1,10 @@
 output "vaultUri" {
-  value = "${local.vault_uri}"
+  value = local.vault_uri
 }
 
 output "vaultName" {
-  value = "${local.vault_name}"
+  value = local.vault_name
 }
 output "idamApi" {
-  value = "${local.idam_api_url}"
+  value = local.idam_api_url
 }

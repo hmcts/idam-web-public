@@ -3,6 +3,8 @@ variable "product" {}
 
 variable "component" {}
 
+variable "deployment_namespace" {}
+
 variable "location" {
   default = "UK South"
 }
