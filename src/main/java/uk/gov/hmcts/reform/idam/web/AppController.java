@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -63,49 +64,7 @@ import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CODE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_SUB_MSG;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_PASSWORD_RESET_LINK_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_SESSION_EXPIRED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_POLICY_CHECK_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INDEX_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_RETIRED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 
 @Slf4j
 @Controller
@@ -422,8 +381,20 @@ public class AppController {
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
-            if (HttpStatus.FORBIDDEN == he.getStatusCode() || HttpStatus.UNAUTHORIZED == he.getStatusCode() || HttpStatus.NOT_FOUND == he.getStatusCode()) {
+            if (HttpStatus.FORBIDDEN == he.getStatusCode() || HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
                 getLoginFailureReason(he, model, bindingResult);
+            } else if (HttpStatus.NOT_FOUND == he.getStatusCode()) {
+                try {
+                    ErrorResponse error = objectMapper.readValue(he.getResponseBodyAsString(), ErrorResponse.class);
+                    if (ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT.equals(error.getCode())) {
+                        return new ModelAndView(STALE_USER_RESET_PASSWORD_VIEW, model.asMap());
+                    }
+                } catch (JsonProcessingException ex) {
+                    log.error("Error reading authentication response : {}", ex.getMessage(), ex);
+                }
+
+                model.addAttribute(HAS_LOGIN_FAILED, true);
+                bindingResult.reject("Login failure");
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
@@ -640,9 +611,6 @@ public class AppController {
             } else if (ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED.equals(error.getCode())) {
                 model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
                 bindingResult.reject("Account suspended");
-            } else if (ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT.equals(error.getCode())) {
-                model.addAttribute(IS_ACCOUNT_RETIRED, true);
-                bindingResult.reject("Account retired");
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject("Login failure");
