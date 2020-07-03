@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
+import uk.gov.hmcts.reform.idam.web.strategic.ApiAuthResult;
 import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -342,8 +343,9 @@ public class AppController {
             final String ipAddress = ObjectUtils.defaultIfNull(
                 httpRequest.getHeader(X_FORWARDED_FOR),
                 httpRequest.getRemoteAddr());
+            final String redirectUri = request.getRedirect_uri();
 
-//            final List<String> cookies = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
+            final ApiAuthResult authenticationResult = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
 
 //            if (cookies == null) {
 //                log.info("/login: Authenticate returned no cookies for user - {}", obfuscateEmailAddress(request.getUsername()));
@@ -352,13 +354,16 @@ public class AppController {
 //                return new ModelAndView(LOGIN_VIEW, model.asMap());
 //            }
 
-            final String redirectUri = request.getRedirect_uri();
 //            final PolicyService.EvaluatePoliciesAction policyCheckResponse = policyService.evaluatePoliciesForUser(redirectUri, cookies, ipAddress);
 
-           // todo initiate login flow
+            // todo initiate login flow
             // todo expect: block, mfa required, allow, how would we know?
+            if (authenticationResult.isSuccess()) {
 
-            if (policyCheckResponse == PolicyService.EvaluatePoliciesAction.BLOCK) {
+            } else {
+
+            }
+            if (authenticationResult.getPoliciesAction() == PolicyService.EvaluatePoliciesAction.BLOCK) {
                 log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
                 bindingResult.reject("Policy check failure");
@@ -430,9 +435,9 @@ public class AppController {
     }
 
     private ModelAndView initiateOtpFlow(AuthorizeRequest request,
-                                 List<String> cookies,
-                                 String ipAddress,
-                                 HttpServletResponse response, Model model) {
+                                         List<String> cookies,
+                                         String ipAddress,
+                                         HttpServletResponse response, Model model) {
         log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
 
         final List<String> responseCookies = spiService.initiateOtpeAuthentication(cookies, ipAddress);
@@ -461,7 +466,7 @@ public class AppController {
      */
     @GetMapping("/verification")
     public String verificationView(@ModelAttribute("authorizeCommand") VerificationRequest request,
-                            BindingResult bindingResult, Model model) {
+                                   BindingResult bindingResult, Model model) {
         if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
             model.addAttribute(ERROR_MSG, "error.page.access.denied");
             model.addAttribute(ERROR_SUB_MSG, "public.error.page.access.denied.text");
@@ -493,10 +498,10 @@ public class AppController {
      */
     @PostMapping("/verification")
     public ModelAndView verification(@ModelAttribute("authorizeCommand") @Validated VerificationRequest request,
-                               BindingResult bindingResult,
-                               Model model,
-                               HttpServletRequest httpRequest,
-                               HttpServletResponse response) {
+                                     BindingResult bindingResult,
+                                     Model model,
+                                     HttpServletRequest httpRequest,
+                                     HttpServletResponse response) {
 
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
@@ -525,7 +530,7 @@ public class AppController {
         final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
 
         final String idamSessionCookie = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
-        final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
+        final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[]{}))
             .filter(c -> !idamSessionCookie.equals(c.getName()))
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
             .collect(Collectors.toList());

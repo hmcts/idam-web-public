@@ -29,6 +29,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
+import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
@@ -130,7 +131,7 @@ public class SPIService {
      * @should return null if no cookie is found
      * @should return a set-cookie header
      */
-    public List<String> authenticate(final String username, final String password, final String ipAddress) {
+    public ApiAuthResult authenticate(final String username, final String password, final String ipAddress) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
         form.add("username", username);
         form.add("password", password);
@@ -138,15 +139,39 @@ public class SPIService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(X_FORWARDED_FOR, ipAddress);
-        ResponseEntity<Void> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl()
+        ResponseEntity<Object> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl()
                 + "/" + configurationProperties.getStrategic().getEndpoint().getAuthorize(), HttpMethod.POST,
-            new HttpEntity<>(form, headers), Void.class);
+            new HttpEntity<>(form, headers), Object.class);
 
-        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
-            return new ArrayList<>(response.getHeaders().get(HttpHeaders.SET_COOKIE));
-        } else {
-            return null;
+        final ApiAuthResult.ApiAuthResultBuilder resultBuilder = ApiAuthResult.builder()
+            .httpStatus(response.getStatusCode());
+
+        switch (response.getStatusCode()) {
+            case OK:
+                // check if already logged in or if requires MFA
+                final List<String> cookies = response.getHeaders().get(HttpHeaders.SET_COOKIE);
+
+                // todo
+                boolean requiresMfa = false;
+
+
+                resultBuilder.headers(new ArrayList<>(cookies)).requiresMfa(requiresMfa);
+                break;
+            case FORBIDDEN:
+                final ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+                errorResponse.getCode()==CodeEnum.
+                resultBuilder.policiesAction();
+                break;
+            case NOT_FOUND:
+                final ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+                break;
+            case UNAUTHORIZED:
+
+                break;
+            default:
         }
+
+        return resultBuilder.build();
     }
 
     /**
