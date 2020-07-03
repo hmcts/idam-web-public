@@ -1395,7 +1395,6 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().isOk())
-
             .andExpect(view().name(STALE_USER_RESET_PASSWORD_VIEW));
     }
 
@@ -1421,7 +1420,6 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().isOk())
-
             .andExpect(view().name(LOGIN_VIEW));
     }
     /**
