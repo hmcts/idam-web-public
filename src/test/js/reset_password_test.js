@@ -8,6 +8,7 @@ let randomUserFirstName;
 let citizenEmail;
 let otherCitizenEmail;
 let plusCitizenEmail;
+let staleUserEmail;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
@@ -22,6 +23,7 @@ BeforeSuite(async (I) => {
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
     plusCitizenEmail = `plus.extra+${randomData.getRandomEmailAddress()}`;
+    staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
     specialCharacterPassword = 'New&&&$$$%%%<>234';
 
     const token = await I.getAuthToken();
@@ -44,7 +46,9 @@ BeforeSuite(async (I) => {
     userFirstNames.push(randomUserFirstName + 'Other');
     await I.createUserWithRoles(plusCitizenEmail, randomUserFirstName + 'Plus', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Plus');
-
+    await I.createUserWithRoles(staleUserEmail, randomUserFirstName + 'Stale', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Stale');
+    await I.retireStaleUser(staleUserEmail)
 });
 
 AfterSuite(async (I) => {
@@ -213,4 +217,30 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
+});
+
+
+Scenario('@functional @staleuserresetpass As a stale user, I can reset my password', async (I) => {
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password', 20, 'h1');
+    I.fillField('#email', staleUserEmail);
+    I.click('Submit');
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
+    const resetPasswordUrl = await I.extractUrl(staleUserEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a password', 20, 'h1');
+    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.fillField('#password1', 'Passw0rd1234');
+    I.fillField('#password2', 'Passw0rd1234');
+    I.click('Continue');
+    I.waitForText('Account created', 20, 'h1');
+    I.see('You can now sign in to your account.');
+    I.interceptRequestsAfterSignin();
+    I.click('Continue');
+    I.waitForText(testData.SERVICE_REDIRECT_URI);
+    I.resetRequestInterception();
+
 });
