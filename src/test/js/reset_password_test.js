@@ -240,7 +240,6 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.see('You can now sign in to your account.');
     I.interceptRequestsAfterSignin();
     I.click('Continue');
-    I.waitForText(testData.SERVICE_REDIRECT_URI);
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.resetRequestInterception();
-
 });
