@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -29,7 +31,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
-import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
@@ -89,7 +90,6 @@ public class SPIService {
     /**
      * @should call api with the correct data and return api response body if response code is 200
      * @should return api location in header in api response if response code is 302
-     * @should return null if api response code is not 200 nor 302
      */
     public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, final String state, final String scope) {
         ResponseEntity<String> response;
@@ -127,14 +127,12 @@ public class SPIService {
         }
     }
 
-    /**
-     * @should return null if no cookie is found
-     * @should return a set-cookie header
-     */
-    public ApiAuthResult authenticate(final String username, final String password, final String ipAddress) {
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+    public ApiAuthResult authenticate(final String username, final String password, final String redirectUri, final String ipAddress) {
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>(4);
         form.add("username", username);
         form.add("password", password);
+        form.add("redirectUri", redirectUri);
+        form.add("originIp", ipAddress);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -149,24 +147,23 @@ public class SPIService {
         switch (response.getStatusCode()) {
             case OK:
                 // check if already logged in or if requires MFA
-                final List<String> cookies = response.getHeaders().get(HttpHeaders.SET_COOKIE);
+                final List<String> cookies = Optional.ofNullable(response.getHeaders().get(HttpHeaders.SET_COOKIE)).orElse(ImmutableList.of());
+                final boolean requiresMfa = cookies.stream()
+                    .map(cookie -> cookie.startsWith("Idam.AuthId"))
+                    .findFirst()
+                    .isPresent();
 
-                // todo
-                boolean requiresMfa = false;
-
-
-                resultBuilder.headers(new ArrayList<>(cookies)).requiresMfa(requiresMfa);
+                resultBuilder.cookies(new ArrayList<>(cookies)).policiesAction(requiresMfa ? EvaluatePoliciesAction.MFA_REQUIRED : EvaluatePoliciesAction.ALLOW);
                 break;
             case FORBIDDEN:
-                final ErrorResponse errorResponse = (ErrorResponse) response.getBody();
-                errorResponse.getCode()==CodeEnum.
-                resultBuilder.policiesAction();
+//                final ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+//                errorResponse.getCode()==CodeEnum.
+//                resultBuilder.policiesAction();
                 break;
             case NOT_FOUND:
-                final ErrorResponse errorResponse = (ErrorResponse) response.getBody();
+//                final ErrorResponse errorResponse = (ErrorResponse) response.getBody();
                 break;
             case UNAUTHORIZED:
-
                 break;
             default:
         }
@@ -203,21 +200,14 @@ public class SPIService {
     }
 
     /**
-     * @should return a set-cookie header to set Idam.AuthId if successful
-     * @should return null if no cookie is found
-     */
-    public List<String> initiateOtpeAuthentication(final List<String> cookies, final String ipAddress) {
-        return submitOtpeAuthentication(cookies, ipAddress, null);
-    }
-
-    /**
      * @should return a set-cookie header to set Idam.Session if successful
      * @should return null if no cookie is found
      */
-    public List<String> submitOtpeAuthentication(final List<String> cookies, final String ipAddress,
+    public List<String> submitOtpeAuthentication(@NonNull final String authId, final String ipAddress,
                                                  @Nullable final String otp) {
         final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
         form.add("service", "otpe");
+        form.add("authId", authId);
 
         if (otp != null) {
             form.add("otp", otp);
@@ -226,9 +216,6 @@ public class SPIService {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(X_FORWARDED_FOR, ipAddress);
-        if (cookies != null) {
-            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookies, ";"));
-        }
 
         final String endpoint = String.format("%s/%s",
             configurationProperties.getStrategic().getService().getUrl(),
