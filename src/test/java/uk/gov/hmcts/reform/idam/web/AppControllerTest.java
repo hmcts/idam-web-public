@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.idam.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.codec.CharEncoding;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -35,6 +36,7 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -1394,8 +1396,8 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
-            .andExpect(status().isOk())
-            .andExpect(view().name(STALE_USER_RESET_PASSWORD_VIEW));
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/reset/inactiveUser?response_type=" + URLEncoder.encode(RESPONSE_TYPE, CharEncoding.UTF_8) + "&state=" + URLEncoder.encode(STATE, CharEncoding.UTF_8) + "&client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URI + "&scope=" + CUSTOM_SCOPE));
     }
 
 
