@@ -84,7 +84,6 @@ strategic:
     idamSessionCookie: Idam.Session
     affinityCookies:
       - ApplicationGatewayAffinity
-      - idam-session-affinity
   language:
     supportedLocales: en,cy
 
