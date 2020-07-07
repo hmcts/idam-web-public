@@ -82,9 +82,6 @@ strategic:
     privateIpsFilterPattern: "10\\.\\d+\\.\\d+\\.\\d+"
   session:
     idamSessionCookie: Idam.Session
-    affinityCookies:
-      - ApplicationGatewayAffinity
-      - idam-session-affinity
   language:
     supportedLocales: en,cy
 
