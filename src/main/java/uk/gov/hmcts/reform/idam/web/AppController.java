@@ -391,7 +391,7 @@ public class AppController {
                         staleUserResetPasswordParams.remove(USERNAME);
                         staleUserResetPasswordParams.remove(PASSWORD);
                         staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
-                        return new ModelAndView("redirect:/reset/inactiveUser", staleUserResetPasswordParams);
+                        return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
                     }
                 } catch (JsonProcessingException ex) {
                     log.error("Error reading authentication response : {}", ex.getMessage(), ex);
@@ -878,7 +878,7 @@ public class AppController {
     /**
      * @should return staleUserResetPassword
      */
-    @GetMapping("/reset/inactiveUser")
+    @GetMapping("/reset/inactive-user")
     public String resetPasswordStaleUser(@RequestParam("client_id") String clientId,
                                          @RequestParam("redirect_uri") String redirectUri,
                                          @RequestParam String state,
