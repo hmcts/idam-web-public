@@ -54,11 +54,6 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
     I.waitForText('You can now sign in to your account.', 20);
-    I.waitForText('Continue', 20);
-    I.interceptRequestsAfterSignin();
-    I.click('Continue');
-    I.waitForText(testData.SERVICE_REDIRECT_URI);
-    I.resetRequestInterception();
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h1');
@@ -69,6 +64,6 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
     I.waitForText(testData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
-
     I.resetRequestInterception();
 });
+

@@ -238,8 +238,14 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
     I.see('You can now sign in to your account.');
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', staleUserEmail);
+    I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
-    I.click('Continue');
+    I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
     I.resetRequestInterception();
 });

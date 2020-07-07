@@ -7,6 +7,7 @@ Feature('Self Registration');
 
 const serviceName = randomData.getRandomServiceName();
 const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
+let staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
 let randomUserFirstName;
 let randomUserLastName;
 let userFirstNames = [];
@@ -23,6 +24,9 @@ BeforeSuite(async (I) => {
     await I.createUserWithRoles(citizenEmail, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     specialCharacterPassword = 'New%%%&&&234';
+    await I.createUserWithRoles(staleUserEmail, randomUserFirstName + 'Stale', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Stale');
+    await I.retireStaleUser(staleUserEmail)
 });
 
 AfterSuite(async (I) => {
@@ -344,3 +348,23 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
     I.waitForText('There was a problem with the password you entered', 20, 'h2');
     I.see("Your password is too easy to guess");
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @selfregister @staleuserregister stale user should get you already have an account email', async (I) => {
+
+    I.amOnPage(selfRegUrl);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+
+    I.see('Create an account');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', staleUserEmail);
+    I.click("Continue");
+
+    I.waitForText('Check your email', 20, 'h1');
+
+    I.wait(5);
+    const emailResponse = await I.getEmail(staleUserEmail);
+    assert.equal('You already have an account', emailResponse.subject);
+
+});
