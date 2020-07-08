@@ -44,8 +44,8 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
     I.fillField('#username', staleUserEmail);
     I.fillField('#password', testData.PASSWORD);
     I.click('Sign in');
-    I.waitForText('You need to reset your password', 20, 'h2');
     I.wait(5);
+    I.waitForText('You need to reset your password', 20, 'h2');
     const reRegistrationUrl = await I.extractUrl(staleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password', 20, 'h1');
