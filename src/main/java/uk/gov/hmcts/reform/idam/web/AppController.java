@@ -430,7 +430,11 @@ public class AppController {
                 try {
                     ErrorResponse error = objectMapper.readValue(he.getResponseBodyAsString(), ErrorResponse.class);
                     if (ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT.equals(error.getCode())) {
-                        return new ModelAndView(STALE_USER_RESET_PASSWORD_VIEW, model.asMap());
+                        Map<String, Object> staleUserResetPasswordParams = model.asMap();
+                        staleUserResetPasswordParams.remove(USERNAME);
+                        staleUserResetPasswordParams.remove(PASSWORD);
+                        staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
+                        return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
                     }
                 } catch (JsonProcessingException ex) {
                     log.error("Error reading authentication response : {}", ex.getMessage(), ex);
@@ -912,6 +916,23 @@ public class AppController {
     @GetMapping("/reset")
     public String tacticalResetPwd() {
         return TACTICAL_RESET_PWD_VIEW;
+    }
+
+    /**
+     * @should return staleUserResetPassword
+     */
+    @GetMapping("/reset/inactive-user")
+    public String resetPasswordStaleUser(@RequestParam("client_id") String clientId,
+                                         @RequestParam("redirect_uri") String redirectUri,
+                                         @RequestParam String state,
+                                         @RequestParam String scope,
+                                         Model model) {
+        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(clientId));
+        model.addAttribute(CLIENTID, clientId);
+        model.addAttribute(REDIRECTURI, redirectUri);
+        model.addAttribute(STATE, state);
+        model.addAttribute(SCOPE, scope);
+        return STALE_USER_RESET_PASSWORD_VIEW;
     }
 
     private boolean isSelfRegistrationEnabled(String clientId) {
