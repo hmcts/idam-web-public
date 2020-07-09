@@ -1402,6 +1402,31 @@ public class AppControllerTest {
 
 
     @Test
+    public void login_onAuthenticateThrowsNotFoundWithStaleUserRegistrationCode_withNonStaleUserResponseCode_returnLoginView() throws Exception {
+
+        List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
+        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
+            .willReturn(PolicyService.EvaluatePoliciesAction.ALLOW);
+
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.name(), "{\"code\":\"someErrorCode\"}".getBytes(), null));
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(status().isOk())
+            .andExpect(view().name(LOGIN_VIEW));
+    }
+
+
+    @Test
     public void login_onAuthenticateThrowsNotFoundWithStaleUserRegistrationCode_withBadResponseDate_returnLoginView() throws Exception {
 
         List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
