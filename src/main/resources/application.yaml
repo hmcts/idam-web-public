@@ -45,6 +45,9 @@ ssl:
 spring:
   application:
     name: IDAM Web Public
+  redis:
+    host: localhost
+    port: 6379
   mvc:
     view:
       prefix: /WEB-INF/jsp/

@@ -64,6 +64,11 @@ allprojects {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis-reactive'
+    implementation (group: 'it.ozimov', name: 'embedded-redis', version: '0.7.3') {
+      exclude(module: 'slf4j-simple')
+    }
+
     // TODO: remove version once 2.2.2.RELEASE is out
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.1.RELEASE') {
       exclude(module: 'rxnetty-contexts')
