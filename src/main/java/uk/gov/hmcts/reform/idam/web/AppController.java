@@ -882,8 +882,8 @@ public class AppController {
     @GetMapping("/reset/inactive-user")
     public String resetPasswordStaleUser(@RequestParam("client_id") String clientId,
                                          @RequestParam("redirect_uri") String redirectUri,
-                                         @RequestParam String state,
-                                         @RequestParam String scope,
+                                         @RequestParam(required = false) String state,
+                                         @RequestParam(required = false) String scope,
                                          Model model) {
         model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(clientId));
         model.addAttribute(CLIENTID, clientId);
