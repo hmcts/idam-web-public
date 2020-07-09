@@ -11,3 +11,4 @@ spring:
     host: ${redis-hostname}
     port: ${redis-port}
     password: ${redis-key}
+    ssl: true
