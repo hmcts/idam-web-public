@@ -29,7 +29,7 @@ java:
   memoryRequests: '1024Mi'
   memoryLimits: '2048Mi'
 
-  devmemoryRequests: '512Mi'
+  devmemoryRequests: '768Mi'
   devcpuRequests: '1000m'
   devmemoryLimits: '1024Mi'
   devcpuLimits: '2500m'
