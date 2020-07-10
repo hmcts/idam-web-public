@@ -31,8 +31,7 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.2.6'
-  ext['idam.api-spec.version'] = '2.17.8-RC4'
+  def idamBomVersion = '2.2.7'
 
   dependencyManagement {
     imports {
