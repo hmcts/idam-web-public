@@ -8,8 +8,8 @@ provider "azurerm" {
 }
 
 locals {
-  default_vault_name         = "${var.product}-${var.env}"
-  vault_uri                  = "https://${local.default_vault_name}.vault.azure.net/"
+  vault_name                 = "${var.product}-${var.env}"
+  vault_uri                  = "https://${local.vault_name}.vault.azure.net/"
   default_external_host_name = "idam-web-public.${replace(var.env, "idam-", "")}.platform.hmcts.net"
   env                        = "${var.env == "idam-preview" && var.product == "idam" ? "idam-dev" : var.env}"
   tags                       = "${merge(var.common_tags, map("environment", local.env))}"
