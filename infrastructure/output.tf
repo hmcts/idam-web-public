@@ -3,5 +3,5 @@ output "vaultUri" {
 }
 
 output "vaultName" {
-  value = local.default_vault_name
+  value = local.vault_name
 }
