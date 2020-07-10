@@ -1,3 +1,7 @@
+output "vaultUri" {
+  value = local.vault_uri
+}
+
 output "vaultName" {
-  value = data.azurerm_key_vault.idam.id
+  value = local.vault_name
 }
