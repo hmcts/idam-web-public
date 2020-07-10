@@ -42,7 +42,6 @@ import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
 import uk.gov.hmcts.reform.idam.web.strategic.ApiAuthResult;
-import uk.gov.hmcts.reform.idam.web.strategic.EvaluatePoliciesAction;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
@@ -357,7 +356,7 @@ public class AppController {
                     List<String> secureCookies = makeCookiesSecure(cookies);
                     secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
 
-                    final List<String> affinityCookieNames = configurationProperties.getStrategic().getSession().getAffinityCookies();
+                    final List<String> affinityCookieNames = Optional.ofNullable(configurationProperties.getStrategic().getSession().getAffinityCookies()).orElse(new ArrayList<>());
                     cookies.stream()
                         .filter(cookie -> affinityCookieNames.stream().anyMatch(cookie::contains))
                         .forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie.split(";")[0]));
@@ -385,25 +384,28 @@ public class AppController {
                     }
                 }
             } else {
-                // blocked by policies?
-                if (authenticationResult.getPoliciesAction() == EvaluatePoliciesAction.BLOCK) {
+                final ErrorResponse.CodeEnum errorCode = authenticationResult.getErrorCode();
+                if (errorCode == ErrorResponse.CodeEnum.ACCOUNT_LOCKED) {
+                    model.addAttribute(IS_ACCOUNT_LOCKED, true);
+                    bindingResult.reject("Account locked");
+                } else if (errorCode == ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED) {
+                    model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
+                    bindingResult.reject("Account suspended");
+                } else if (errorCode == ErrorResponse.CodeEnum.POLICIES_FAIL) {
                     log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
                     model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
                     bindingResult.reject("Policy check failure");
                     return new ModelAndView(LOGIN_VIEW, model.asMap());
+                } else {
+                    model.addAttribute(HAS_LOGIN_FAILED, true);
+                    bindingResult.reject("Login failure");
                 }
             }
-            return null;
-        } catch (HttpClientErrorException | HttpServerErrorException he) {
+        } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
-            if (HttpStatus.FORBIDDEN == he.getStatusCode() || HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
-                getLoginFailureReason(he, model, bindingResult);
-            } else {
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
-            }
+            model.addAttribute(HAS_LOGIN_FAILED, true);
+            bindingResult.reject("Login failure");
         }
-
         return new ModelAndView(LOGIN_VIEW, model.asMap());
     }
 

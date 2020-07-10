@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -652,7 +653,7 @@ public class SPIServiceTest {
      * @see SPIService#authenticate(String, String, String, String)
      */
     @Test
-    public void authenticate_shouldReturnSessionCookieOnSuccess() {
+    public void authenticate_shouldReturnSessionCookieOnSuccess() throws JsonProcessingException {
         String cookie = "Idam.Session=1234567890";
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
             eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
@@ -665,7 +666,7 @@ public class SPIServiceTest {
      * @see SPIService#authenticate(String, String, String, String)
      */
     @Test
-    public void authenticate_shouldNotReturnSessionCookie() {
+    public void authenticate_shouldNotReturnSessionCookie() throws JsonProcessingException {
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
             eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
             .willReturn(ResponseEntity.ok().build());
