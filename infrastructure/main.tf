@@ -9,10 +9,10 @@ provider "azurerm" {
 
 locals {
   vault_name                 = "${var.product}-${var.env}"
-  vault_uri                  = "https://${local.vault_name}.vault.azure.net/"
   default_external_host_name = "idam-web-public.${replace(var.env, "idam-", "")}.platform.hmcts.net"
   env                        = "${var.env == "idam-preview" && var.product == "idam" ? "idam-dev" : var.env}"
   tags                       = "${merge(var.common_tags, map("environment", local.env))}"
+  redis_enabled              = "${lookup(var.redis_enabled, var.env)}"
 }
 
 data "azurerm_virtual_network" "idam" {
@@ -32,6 +32,7 @@ data "azurerm_key_vault" "idam" {
 }
 
 module "redis-cache" {
+  count       = local.redis_enabled
   source      = "git@github.com:hmcts/cnp-module-redis?ref=master"
   product     = "idam-web-public"
   location    = var.location
@@ -41,18 +42,21 @@ module "redis-cache" {
 }
 
 resource "azurerm_key_vault_secret" "redis_hostname" {
+  count        = local.redis_enabled
   name         = "redis-hostname"
   value        = module.redis-cache.host_name
   key_vault_id = data.azurerm_key_vault.idam.id
 }
 
 resource "azurerm_key_vault_secret" "redis_port" {
+  count        = local.redis_enabled
   name         = "redis-port"
   value        = module.redis-cache.redis_port
   key_vault_id = data.azurerm_key_vault.idam.id
 }
 
 resource "azurerm_key_vault_secret" "redis_key" {
+  count        = local.redis_enabled
   name         = "redis-key"
   value        = module.redis-cache.access_key
   key_vault_id = data.azurerm_key_vault.idam.id
