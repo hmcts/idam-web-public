@@ -31,7 +31,7 @@ java:
 
   devmemoryRequests: '768Mi'
   devcpuRequests: '1000m'
-  devmemoryLimits: '1024Mi'
+  devmemoryLimits: '1536Mi'
   devcpuLimits: '2500m'
 
 global:
