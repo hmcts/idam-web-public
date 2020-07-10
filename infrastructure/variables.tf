@@ -2,6 +2,8 @@ variable "product" {}
 
 variable "component" {}
 
+variable "deployment_namespace" {}
+
 variable "location" {
   default = "UK South"
 }
@@ -15,5 +17,5 @@ variable "app" {
 }
 
 variable "common_tags" {
-  type = "map"
+  type = map
 }
