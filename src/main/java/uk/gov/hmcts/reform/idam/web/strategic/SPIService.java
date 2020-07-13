@@ -172,7 +172,7 @@ public class SPIService {
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             httpStatus = he.getStatusCode();
-            if (httpStatus == HttpStatus.FORBIDDEN || httpStatus == HttpStatus.UNAUTHORIZED) {
+            if (httpStatus == HttpStatus.FORBIDDEN || httpStatus == HttpStatus.UNAUTHORIZED || httpStatus == HttpStatus.NOT_FOUND) {
                 ErrorResponse errorResponse = objectMapper.readValue(he.getResponseBodyAsString(), ErrorResponse.class);
                 resultBuilder.errorCode(errorResponse.getCode());
             } else {

@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -65,7 +64,49 @@ import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CODE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_SUB_MSG;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_PASSWORD_RESET_LINK_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_SESSION_EXPIRED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_POLICY_CHECK_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INDEX_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STALE_USER_RESET_PASSWORD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
 
 @Slf4j
 @Controller
@@ -396,6 +437,12 @@ public class AppController {
                     model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
                     bindingResult.reject("Policy check failure");
                     return new ModelAndView(LOGIN_VIEW, model.asMap());
+                } else if (errorCode == ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT) {
+                    Map<String, Object> staleUserResetPasswordParams = model.asMap();
+                    staleUserResetPasswordParams.remove(USERNAME);
+                    staleUserResetPasswordParams.remove(PASSWORD);
+                    staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
+                    return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
                 } else {
                     model.addAttribute(HAS_LOGIN_FAILED, true);
                     bindingResult.reject("Login failure");
@@ -592,26 +639,6 @@ public class AppController {
             }).collect(Collectors.toList());
     }
 
-    private void getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {
-
-        try {
-            final ErrorResponse error = objectMapper.readValue(hex.getResponseBodyAsString(), ErrorResponse.class);
-            if (ErrorResponse.CodeEnum.ACCOUNT_LOCKED.equals(error.getCode())) {
-                model.addAttribute(IS_ACCOUNT_LOCKED, true);
-                bindingResult.reject("Account locked");
-            } else if (ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED.equals(error.getCode())) {
-                model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
-                bindingResult.reject("Account suspended");
-            } else {
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
-            }
-        } catch (IOException e) {
-            log.error("Authentication error : {}", hex.getResponseBodyAsString(), hex);
-            throw new BadCredentialsException("Exception occurred during authentication", hex);
-        }
-    }
-
     /**
      * @should uplift user
      * @should reject request if username is not provided
@@ -715,7 +742,8 @@ public class AppController {
      * @should return error view when there is an unexpected error
      */
     @PostMapping(value = "/reset/doForgotPassword")
-    public String forgotPassword(@ModelAttribute("forgotPasswordCommand") @Validated ForgotPasswordRequest forgotPasswordRequest,
+    public String forgotPassword(@ModelAttribute("forgotPasswordCommand") @Validated ForgotPasswordRequest
+                                     forgotPasswordRequest,
                                  final BindingResult bindingResult,
                                  final Map<String, Object> model) {
         model.put(REDIRECTURI, forgotPasswordRequest.getRedirectUri());
@@ -752,7 +780,8 @@ public class AppController {
      * @should return reset password view if request validation fails.
      */
     @PostMapping(value = "/doResetPassword")
-    public String resetPassword(final String action, final String password1, final String password2, final String token, final String code, final Map<String, Object> model) throws IOException {
+    public String resetPassword(final String action, final String password1, final String password2,
+                                final String token, final String code, final Map<String, Object> model) throws IOException {
         try {
             if (validationService.validatePassword(password1, password2, model)) {
                 ResponseEntity<String> resetPasswordEntity = spiService.resetPassword(password1, token, code);
