@@ -552,7 +552,8 @@ public class AppController {
             final String authId = StringUtils.substringAfter(
                 cookies.stream()
                     .filter(cookie -> cookie.startsWith("Idam.AuthId="))
-                    .findFirst().get(),
+                    .findFirst()
+                    .orElseThrow(),
                 "Idam.AuthId=");
             final List<String> responseCookies = spiService.submitOtpeAuthentication(authId, ipAddress, request.getCode());
             log.info("/verification: Successful OTP submission request");
