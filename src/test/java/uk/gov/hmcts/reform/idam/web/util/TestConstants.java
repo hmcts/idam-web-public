@@ -45,6 +45,7 @@ public class TestConstants {
     public static final String TACTICAL_ACTIVATE_ENDPOINT = "/activate";
     public static final String TACTICAL_RESET_ENDPOINT = "/reset";
     public static final String HEALTH_ENDPOINT = "health";
+    public static final String RESET_PASSWORD_SUCCESS_ENDPOINT = "/users/reset-password-success";
 
     //uris
     public static final String GOOGLE_WEB_ADDRESS = "https://www.google.com";
@@ -79,6 +80,7 @@ public class TestConstants {
     public static final String NOT_FOUND_VIEW = "404";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
     public static final String STALE_USER_RESET_PASSWORD_VIEW = "staleUserResetPassword";
+    public static final String RESET_PASSWORD_SUCCESS_REDIRECT_VIEW = "redirect:reset-password-success";
 
 
     //User

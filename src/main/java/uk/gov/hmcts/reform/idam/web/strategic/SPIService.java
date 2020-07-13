@@ -84,13 +84,13 @@ public class SPIService {
     /**
      * @should call api with the correct data
      */
-    public ResponseEntity<String> activateUser(final String activationJson) {
+    public ResponseEntity<ActivationResult> activateUser(final String activationJson) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(activationJson, headers);
 
-        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getActivation(), HttpMethod.PATCH, entity, String.class);
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getActivation(), HttpMethod.PATCH, entity, ActivationResult.class);
     }
 
     /**
