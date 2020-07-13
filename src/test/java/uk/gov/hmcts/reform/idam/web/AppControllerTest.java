@@ -103,7 +103,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_PREVIOUSLY_U
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_TITLE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERR_LOCKED_FAILED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERR_SUSPENDED_RESPONSE;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERR_STALE_USER_REGISTRATION_SENT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_REDIRECTED_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_TOKEN_ENDPOINT;
@@ -1432,8 +1432,22 @@ public class AppControllerTest {
             .policiesAction(EvaluatePoliciesAction.ALLOW)
             .build();
 
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS))).willReturn(authResult);
-        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
+        ApiAuthResult authResultLocked = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.OK)
+            .errorCode(ErrorResponse.CodeEnum.ACCOUNT_LOCKED)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
+
+        ApiAuthResult authResultSuspended = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.OK)
+            .errorCode(ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
+
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResult);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
@@ -1449,7 +1463,8 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_LOCKED_FAILED_RESPONSE.getBytes(), null));
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResultLocked);
 
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
@@ -1465,8 +1480,8 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
-
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResultSuspended);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
@@ -1482,7 +1497,8 @@ public class AppControllerTest {
 
             .andExpect(view().name(LOGIN_VIEW));
 
-        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, HttpStatus.UNAUTHORIZED.name(), ERR_SUSPENDED_RESPONSE.getBytes(), null));
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResultSuspended);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
@@ -1502,14 +1518,15 @@ public class AppControllerTest {
 
     @Test
     public void login_onAuthenticateThrowsNotFoundWithStaleUserRegistrationCode_returnStaleUserResetPasswordView() throws Exception {
-
         List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
-        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
-        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
-            .willReturn(PolicyService.EvaluatePoliciesAction.ALLOW);
+        ApiAuthResult authResult = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.OK)
+            .errorCode(ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
 
-        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.name(), ERR_STALE_USER_REGISTRATION_SENT.getBytes(), null));
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS))).willReturn(authResult);
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
@@ -1527,13 +1544,15 @@ public class AppControllerTest {
 
     @Test
     public void login_onAuthenticateThrowsNotFoundWithStaleUserRegistrationCode_withNonStaleUserResponseCode_returnLoginView() throws Exception {
-
         List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
-        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
-        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
-            .willReturn(PolicyService.EvaluatePoliciesAction.ALLOW);
+        ApiAuthResult authResult = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.OK)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
 
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS))).willReturn(authResult);
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
         given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.name(), "{\"code\":\"someErrorCode\"}".getBytes(), null));
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
@@ -1552,13 +1571,15 @@ public class AppControllerTest {
 
     @Test
     public void login_onAuthenticateThrowsNotFoundWithStaleUserRegistrationCode_withBadResponseDate_returnLoginView() throws Exception {
-
         List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(USER_IP_ADDRESS))).willReturn(cookieList);
-        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
-        given(policyService.evaluatePoliciesForUser(any(), any(), any()))
-            .willReturn(PolicyService.EvaluatePoliciesAction.ALLOW);
+        ApiAuthResult authResult = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.OK)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
 
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS))).willReturn(authResult);
+        given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, HttpStatus.FORBIDDEN.name(), HAS_LOGIN_FAILED_RESPONSE.getBytes(), null));
         given(spiService.authorize(any(), eq(cookieList))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.name(), "BAD_DATE".getBytes(), null));
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
@@ -1573,6 +1594,7 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(LOGIN_VIEW));
     }
+
     /**
      * @verifies put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
      * @see AppController#login(AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
@@ -1826,6 +1848,7 @@ public class AppControllerTest {
         List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
         ApiAuthResult authResult = ApiAuthResult.builder()
             .cookies(cookieList)
+            .errorCode(ErrorResponse.CodeEnum.POLICIES_FAIL)
             .policiesAction(EvaluatePoliciesAction.BLOCK)
             .build();
 

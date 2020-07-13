@@ -17,7 +17,8 @@ public class ApiAuthResult {
     private ErrorResponse.CodeEnum errorCode;
 
     public boolean isSuccess() {
-        return httpStatus == HttpStatus.OK || httpStatus == HttpStatus.FOUND;
+        return (httpStatus == HttpStatus.OK || httpStatus == HttpStatus.FOUND) &&
+            errorCode == null && policiesAction != EvaluatePoliciesAction.BLOCK;
     }
 
     public boolean requiresMfa() {

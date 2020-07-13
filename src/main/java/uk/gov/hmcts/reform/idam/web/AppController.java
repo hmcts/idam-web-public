@@ -583,8 +583,11 @@ public class AppController {
                 if (ErrorResponse.CodeEnum.INCORRECT_OTP.equals(error.getCode())) {
                     model.addAttribute(HAS_OTP_CHECK_FAILED, true);
                     bindingResult.reject("Incorrect OTP");
-                    he.getResponseHeaders()
-                        .get(HttpHeaders.SET_COOKIE)
+                    Optional.ofNullable(
+                        Optional.ofNullable(he.getResponseHeaders())
+                            .orElse(new HttpHeaders())
+                            .get(HttpHeaders.SET_COOKIE))
+                        .orElse(new ArrayList<>())
                         .stream()
                         .filter(cookie -> cookie.startsWith("Idam.AuthId="))
                         .map(cookie -> StringUtils.substringAfter(cookie, "Idam.AuthId="))

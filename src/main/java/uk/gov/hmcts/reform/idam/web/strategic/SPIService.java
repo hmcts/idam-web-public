@@ -66,16 +66,10 @@ public class SPIService {
 
     private ConfigurationProperties configurationProperties;
 
-    private String serviceUrl;
-
-    private String authorizeEndpoint;
-
     @Autowired
     public SPIService(RestTemplate restTemplate, ConfigurationProperties configurationProperties, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
-        this.serviceUrl = configurationProperties.getStrategic().getService().getUrl();
-        this.authorizeEndpoint = configurationProperties.getStrategic().getEndpoint().getAuthorize();
         this.objectMapper = objectMapper;
     }
 
@@ -84,7 +78,7 @@ public class SPIService {
      */
     public ResponseEntity<ActivationResult> validateActivationToken(final ValidateRequest activationJson) {
         HttpEntity<ValidateRequest> entity = new HttpEntity<>(activationJson);
-        return restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getValidateActivationToken(), HttpMethod.POST, entity, ActivationResult.class);
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getValidateActivationToken(), HttpMethod.POST, entity, ActivationResult.class);
     }
 
     /**
@@ -96,7 +90,7 @@ public class SPIService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(activationJson, headers);
 
-        return restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getActivation(), HttpMethod.PATCH, entity, String.class);
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getActivation(), HttpMethod.PATCH, entity, String.class);
     }
 
     /**
@@ -125,7 +119,7 @@ public class SPIService {
 
         entity = new HttpEntity<>(form, headers);
 
-        response = restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getUplift(), HttpMethod.POST, entity,
+        response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getUplift(), HttpMethod.POST, entity,
             String.class);
         log.warn("Uplift ended at {}", System.currentTimeMillis() - startTime);
 
@@ -155,7 +149,8 @@ public class SPIService {
         HttpStatus httpStatus;
 
         try {
-            ResponseEntity<Object> response = restTemplate.exchange(serviceUrl + "/" + authorizeEndpoint, HttpMethod.POST, new HttpEntity<>(form, headers), Object.class);
+            ResponseEntity<Object> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" +
+                configurationProperties.getStrategic().getEndpoint().getAuthorize(), HttpMethod.POST, new HttpEntity<>(form, headers), Object.class);
             httpStatus = response.getStatusCode();
 
             // check if already logged in or if requires MFA
@@ -179,7 +174,6 @@ public class SPIService {
                 throw he;
             }
         }
-        // todo handle not found and stale user
 
         resultBuilder.httpStatus(httpStatus);
         return resultBuilder.build();
@@ -201,7 +195,7 @@ public class SPIService {
         params.forEach(form::add);
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic()
+        ResponseEntity<String> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic()
                 .getEndpoint().getAuthorizeOauth2(),
             HttpMethod.POST, entity, String.class);
 
@@ -231,8 +225,8 @@ public class SPIService {
         headers.add(X_FORWARDED_FOR, ipAddress);
 
         final String endpoint = String.format("%s/%s",
-            serviceUrl,
-            authorizeEndpoint);
+            configurationProperties.getStrategic().getService().getUrl(),
+            configurationProperties.getStrategic().getEndpoint().getAuthorize());
 
         ResponseEntity<Void> response = restTemplate.exchange(endpoint, HttpMethod.POST,
             new HttpEntity<>(form, headers), Void.class);
@@ -266,7 +260,7 @@ public class SPIService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         StringBuilder sb = new StringBuilder(9);
-        sb.append(serviceUrl);
+        sb.append(configurationProperties.getStrategic().getService().getUrl());
         sb.append("/");
         sb.append(configurationProperties.getStrategic().getEndpoint().getLoginWithPin());
         sb.append("?redirect_uri=");
@@ -325,7 +319,7 @@ public class SPIService {
                 .clientId(clientId),
             headers);
 
-        CompletableFuture.supplyAsync(() -> restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getForgotPassword(), HttpMethod.POST, entity, String.class));
+        CompletableFuture.supplyAsync(() -> restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getForgotPassword(), HttpMethod.POST, entity, String.class));
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
@@ -340,7 +334,7 @@ public class SPIService {
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        return restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getValidateResetPasswordToken(), HttpMethod.POST, entity,
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getValidateResetPasswordToken(), HttpMethod.POST, entity,
             String.class);
     }
 
@@ -361,7 +355,7 @@ public class SPIService {
 
         HttpEntity<ResetPasswordRequest> entity = new HttpEntity<>(request, headers);
 
-        return restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getResetPassword(), HttpMethod.POST, entity,
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getResetPassword(), HttpMethod.POST, entity,
             String.class);
     }
 
@@ -384,7 +378,7 @@ public class SPIService {
         request.setState(registerUserRequest.getState());
 
         HttpEntity<uk.gov.hmcts.reform.idam.api.shared.model.SelfRegisterRequest> requestEntity = new HttpEntity<>(request, headers);
-        return restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + registerUserRequest.getJwt(), HttpMethod.POST, requestEntity, String.class);
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegisterUser() + "?jwt=" + registerUserRequest.getJwt(), HttpMethod.POST, requestEntity, String.class);
     }
 
     /**
@@ -398,14 +392,14 @@ public class SPIService {
 
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(selfRegisterRequest), headers);
 
-        return restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegistration(), HttpMethod.POST, entity, String.class);
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getSelfRegistration(), HttpMethod.POST, entity, String.class);
     }
 
     /**
      * @should call api health check
      */
     public ResponseEntity<HealthCheckStatus> healthCheck() throws RestClientException {
-        return restTemplate.getForEntity(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getHealth(), HealthCheckStatus.class);
+        return restTemplate.getForEntity(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getHealth(), HealthCheckStatus.class);
     }
 
     /**
@@ -425,7 +419,7 @@ public class SPIService {
 
         try {
 
-            response = restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getDetails(), HttpMethod.GET, entity, User.class);
+            response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getDetails(), HttpMethod.GET, entity, User.class);
             return Optional.of(response.getBody());
         } catch (Exception e) {
             log.error("Error getting User Details", e);
@@ -441,7 +435,7 @@ public class SPIService {
     public Optional<uk.gov.hmcts.reform.idam.api.internal.model.Service> getServiceByClientId(String clientId) {
 
         ResponseEntity<ArrayOfServices> response =
-            restTemplate.exchange(serviceUrl + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class); //NOSONAR
+            restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class); //NOSONAR
 
         if (Objects.nonNull(response.getBody()) && !response.getBody().isEmpty()) {
             return Optional.of(response.getBody().get(0));
