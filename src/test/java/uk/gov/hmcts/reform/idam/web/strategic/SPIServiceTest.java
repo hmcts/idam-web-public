@@ -318,7 +318,7 @@ public class SPIServiceTest {
 
         spiService.activateUser(ACTIVATE_USER_REQUEST);
 
-        verify(restTemplate).exchange(eq(API_URL + SLASH + ACTIVATE_ENDPOINT), eq(HttpMethod.PATCH), captor.capture(), eq(String.class));
+        verify(restTemplate).exchange(eq(API_URL + SLASH + ACTIVATE_ENDPOINT), eq(HttpMethod.PATCH), captor.capture(), eq(ActivationResult.class));
 
         HttpEntity<?> entity = captor.getValue();
 
