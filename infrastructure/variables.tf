@@ -19,3 +19,11 @@ variable "app" {
 variable "common_tags" {
   type = map
 }
+
+variable "deploy_redis_into_vnet" {
+  type = map(bool)
+
+  default = {
+    idam-sandbox = false
+  }
+}

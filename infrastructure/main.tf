@@ -36,7 +36,7 @@ module "redis-cache" {
   product     = "idam-web-public"
   location    = var.location
   env         = var.env
-  subnetid    = data.azurerm_subnet.redis.id
+  subnetid    = lookup(var.deploy_redis_into_vnet, var.env, true) ? data.azurerm_subnet.redis.id : null
   common_tags = var.common_tags
 }
 
