@@ -6,6 +6,7 @@ Feature('Stale user login');
 
 let randomUserFirstName;
 let staleUserEmail;
+let staleUserEmailWelsh;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
@@ -16,6 +17,7 @@ BeforeSuite(async(I) => {
 
     randomUserFirstName = randomData.getRandomUserName();
     staleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
+    staleUserEmailWelsh = 'staleuser.' + randomData.getRandomEmailAddress();
     const token = await I.getAuthToken();
     let response;
     response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
@@ -31,6 +33,10 @@ BeforeSuite(async(I) => {
     await I.createUserWithRoles(staleUserEmail, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(staleUserEmail);
+
+    await I.createUserWithRoles(staleUserEmailWelsh, randomUserFirstName + 'StaleUserWelsh', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'StaleUserWelsh');
+    await I.retireStaleUser(staleUserEmailWelsh);
 });
 
 AfterSuite(async(I) => {
@@ -75,13 +81,13 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
 
     I.amOnPage(loginUrl);
     I.waitForText(Welsh.signIn, 20, 'h2');
-    I.fillField('#username', staleUserEmail);
+    I.fillField('#username', staleUserEmailWelsh);
     I.fillField('#password', testData.PASSWORD);
     I.click(Welsh.signIn);
     I.wait(5);
     I.waitForText(Welsh.youNeedToResetYourPassword, 20, 'h2');
     I.waitForText(Welsh.staleUserErrorMessage, 20);
-    const reRegistrationUrl = await I.extractUrl(staleUserEmail);
+    const reRegistrationUrl = await I.extractUrl(staleUserEmailWelsh);
     I.amOnPage(reRegistrationUrl);
     I.waitForText(Welsh.createAPassword, 20, 'h1');
     I.fillField('#password1', testData.PASSWORD);
@@ -92,7 +98,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
 
     I.amOnPage(loginUrl);
     I.waitForText(Welsh.signIn, 20, 'h2');
-    I.fillField('#username', staleUserEmail);
+    I.fillField('#username', staleUserEmailWelsh);
     I.fillField('#password', testData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click(Welsh.signIn);
