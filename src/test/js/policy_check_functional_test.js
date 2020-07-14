@@ -20,7 +20,6 @@ const serviceName = randomData.getRandomServiceName();
 
 BeforeSuite(async (I) => {
     const randomUserFirstName = randomData.getRandomUserName();
-    const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     policyName = `SIDM_TEST_POLICY_${serviceName}`;
 
@@ -49,7 +48,7 @@ AfterSuite(async (I) => {
     ]);
 });
 
-Scenario('@functional @policy @debug As a citizen with policies blocking me from login I should see an error message', async (I) => {
+Scenario('@functional @policy As a citizen with policies blocking me from login I should see an error message', async (I) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
