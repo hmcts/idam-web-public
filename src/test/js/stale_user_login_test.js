@@ -50,7 +50,7 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.', 20);
     const reRegistrationUrl = await I.extractUrl(staleUserEmail);
     I.amOnPage(reRegistrationUrl);
-    I.waitForText('Create a new password', 20, 'h1');
+    I.waitForText('Create a password', 20, 'h1');
     I.fillField('#password1', testData.PASSWORD);
     I.fillField('#password2', testData.PASSWORD);
     I.click('Continue');
@@ -74,6 +74,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     const loginUrl = `${testData.WEB_PUBLIC_URL}/login?redirect_uri=${testData.SERVICE_REDIRECT_URI}&client_id=${serviceName}${Welsh.urlForceCy}`;
 
     I.amOnPage(loginUrl);
+    I.wait(2);
     I.waitForText(Welsh.signIn, 20, 'h1');
     I.fillField('#username', staleUserEmail);
     I.fillField('#password', testData.PASSWORD);
@@ -83,7 +84,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.waitForText(Welsh.staleUserErrorMessage, 20);
     const reRegistrationUrl = await I.extractUrl(staleUserEmail);
     I.amOnPage(reRegistrationUrl);
-    I.waitForText(Welsh.createANewPassword, 20, 'h1');
+    I.waitForText(Welsh.createAPassword, 20, 'h1');
     I.fillField('#password1', testData.PASSWORD);
     I.fillField('#password2', testData.PASSWORD);
     I.click(Welsh.continueBtn);
@@ -91,6 +92,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.waitForText(Welsh.youCanNowSignInWithYourNewPassword);
 
     I.amOnPage(loginUrl);
+    I.wait(2);
     I.waitForText(Welsh.signIn, 20, 'h1');
     I.fillField('#username', staleUserEmail);
     I.fillField('#password', testData.PASSWORD);

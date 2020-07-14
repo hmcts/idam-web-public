@@ -236,8 +236,8 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.fillField('#password1', 'Passw0rd1234');
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
-    I.waitForText('Account created', 20, 'h1');
-    I.see('You can now sign in to your account.');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', staleUserEmail);
