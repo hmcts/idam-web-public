@@ -101,6 +101,7 @@ public class TestConstants {
     //Service
     public static final String SERVICE_LABEL = "label";
     public static final String SERVICE_CLIENT_ID = "client_id";
+    public static final String SERVICE_REDIRECT_URI = "redirect_uri";
 
 
     //Parameters
