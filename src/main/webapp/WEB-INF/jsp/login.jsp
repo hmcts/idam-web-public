@@ -257,6 +257,9 @@
                 </div>
                 </div>
             </c:if>
+            <script>
+                $('body').find(':input.form-control-error:first').focus();
+            </script>
         </form:form>
     </article>
 </t:wrapper>
