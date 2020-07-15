@@ -57,8 +57,7 @@
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.locked.title"/>
                             </h2>
-                            <p class="text"><spring:message code="public.login.error.locked.instruction"
-                                                            arguments="${forgotPasswordUrl}" htmlEscape="false"/></p>
+                            <p class="text"><spring:message code="public.login.error.locked.instruction" arguments="${forgotPasswordUrl}" htmlEscape="false"/></p>
                         </c:when>
                         <c:when test="${isAccountSuspended}">
                             <script>
@@ -131,8 +130,7 @@
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.verificationcheck.title"/>
                             </h2>
-                            <p class="text"><spring:message
-                                code="public.login.error.verificationcheck.instruction"/></p>
+                            <p class="text"><spring:message code="public.login.error.verificationcheck.instruction"/></p>
                         </c:when>
                         <c:otherwise>
                             <script>
@@ -144,17 +142,23 @@
                             <p class="text"><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:otherwise>
                     </c:choose>
+
+                    <c:if test="${isUsernameEmpty}">
+                        <script>
+                            sendEvent('Authorization', 'Error', 'Username is empty');
+                        </script>
+                    </c:if>
+                    <c:if test="${isPasswordEmpty}">
+                        <script>
+                            sendEvent('Authorization', 'Error', 'Password is empty');
+                        </script>
+                    </c:if>
+
                     <ul class="error-summary-list">
                         <c:if test="${isUsernameEmpty}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'Username is empty');
-                            </script>
                             <li><a href="#username"><form:errors path="username"/></a></li>
                         </c:if>
                         <c:if test="${isPasswordEmpty}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'Password is empty');
-                            </script>
                             <li><a href="#password"><form:errors path="password"/></a></li>
                         </c:if>
                         <c:if test="${hasLoginFailed}">
