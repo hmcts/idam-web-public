@@ -12,11 +12,10 @@ import static org.springframework.http.ResponseEntity.ok;
 public class SSOController {
 
     public SSOController() {
-
     }
 
     @GetMapping("/sso/handle")
-    public ResponseEntity<Void> expiredTokenView() {
+    public ResponseEntity<Void> ssoHandle() {
         System.out.println("SOMETHING HAPPENED");
         return ok().build();
     }
