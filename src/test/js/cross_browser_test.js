@@ -59,9 +59,8 @@ AfterSuite(async (I) => {
      return I.deleteAllTestData(randomData.TEST_BASE_PREFIX)
 });
 
-Scenario('@functional @crossbrowser Idam Web public cross browser tests', async (I) => {
+Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
 
-    const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;

@@ -62,7 +62,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:image" content="/assets/images/opengraph-image.png">
 
-    <script src="/assets/javascripts/jquery-3.4.1.min.js"></script>
+    <script src="/assets/javascripts/jquery-3.5.1.min.js"></script>
 </head>
 <body>
 <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>

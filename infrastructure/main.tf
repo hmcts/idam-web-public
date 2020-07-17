@@ -1,67 +1,60 @@
 provider "azurerm" {
-  version = "1.22.1"
+  version = "~> 2.16.0"
+  features {}
 }
 
 locals {
   default_vault_name = "${var.product}-${var.env}"
   vault_name = "${coalesce(var.vault_name_override, local.default_vault_name)}"
   vault_uri = "https://${local.vault_name}.vault.azure.net/"
-
   default_external_host_name = "idam-web-public.${replace(var.env, "idam-", "")}.platform.hmcts.net"
   external_host_name = "${var.external_host_name_override != "" ? var.external_host_name_override : local.default_external_host_name}"
-
   default_idam_api = "https://idam-api.${replace(var.env, "idam-", "")}.platform.hmcts.net"
   idam_api_url = "${var.idam_api_url_override != "" ? var.idam_api_url_override : local.default_idam_api}"
-
   idam_api_testing_support_url = "${var.idam_api_testing_support_url_override != "" ? var.idam_api_testing_support_url_override : local.idam_api_url}"
-
-  default_asp_name = "${var.product}-${var.env}"
-  asp_name = "${substr(var.product, 0, 3) == "pr-" ? local.default_asp_name : coalesce(var.asp_name_override, local.default_asp_name)}"
-
-  default_asp_rg = "${var.product}-${var.env}"
-  asp_rg = "${coalesce(var.asp_rg_override, local.default_asp_rg)}"
-
-  secure_actuator_endpoints = "${var.env == "idam-prod" || var.env == "idam-demo" ? true : false}"
-
   env = "${var.env == "idam-preview" && var.product == "idam" ? "idam-dev" : var.env}"
-
-  // in PRs var.product = "pr-XX-idam"
   tags = "${merge(var.common_tags, map("environment", local.env))}"
 }
 
-data "azurerm_key_vault" "cert_vault" {
-  name = "infra-vault-${var.subscription}"
-  resource_group_name = "${var.env == "prod" || var.env == "idam-prod" ? "core-infra-prod" : "cnp-core-infra"}"
+data "azurerm_virtual_network" "idam" {
+  name                = "core-infra-vnet-${var.env}"
+  resource_group_name = "core-infra-${var.env}"
 }
 
-module "idam-web-public" {
-  source = "git@github.com:hmcts/cnp-module-webapp?ref=SIDM-3089"
-  product = "${var.product}-${var.app}"
-  location = "${var.location}"
-  env = "${var.env}"
-  ilbIp = "${var.ilbIp}"
-  is_frontend = "${local.env == "idam-preview" ? 0 : 1}"
-  subscription = "${var.subscription}"
-  capacity = "${var.capacity}"
-  https_only = "${var.https_only}"
-  additional_host_name = "${local.env == "idam-preview" ? "null" : local.external_host_name}"
-  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
-  common_tags = "${local.tags}"
-  java_container_version = "9.0"
+data "azurerm_subnet" "redis" {
+  name                 = element(data.azurerm_virtual_network.idam.subnets, 3)
+  virtual_network_name = data.azurerm_virtual_network.idam.name
+  resource_group_name  = "core-infra-${var.env}"
+}
 
-  asp_name = "${local.asp_name}"
-  asp_rg = "${local.asp_rg}"
+data "azurerm_key_vault" "idam" {
+  name                = local.vault_name
+  resource_group_name = "idam-${var.env}"
+}
 
-  app_settings = {
-    MANAGEMENT_SECURITY_ENABLED   = "${local.secure_actuator_endpoints}"
-    ENDPOINTS_ENABLED             = "${local.secure_actuator_endpoints ? false : true}"
+module "redis-cache" {
+  source      = "git@github.com:hmcts/cnp-module-redis?ref=master"
+  product     = "idam-web-public"
+  location    = var.location
+  env         = var.env
+  subnetid    = var.deploy_redis_into_vnet ? data.azurerm_subnet.redis.id : null
+  common_tags = var.common_tags
+}
 
-    SSL_VERIFICATION_ENABLED      = "${var.ssl_verification_enabled}"
+resource "azurerm_key_vault_secret" "redis_hostname" {
+  name         = "redis-hostname"
+  value        = module.redis-cache.host_name
+  key_vault_id = data.azurerm_key_vault.idam.id
+}
 
-    STRATEGIC_SERVICE_URL         = "${local.idam_api_url}"
+resource "azurerm_key_vault_secret" "redis_port" {
+  name         = "redis-port"
+  value        = module.redis-cache.redis_port
+  key_vault_id = data.azurerm_key_vault.idam.id
+}
 
-    GA_TRACKING_ID                = "${var.ga_tracking_id}"
-
-    STRATEGIC_POLICIES_PRIVATEIPSFILTERPATTERN = "${var.vnet_private_ip_pattern}"
-  }
+resource "azurerm_key_vault_secret" "redis_key" {
+  name         = "redis-key"
+  value        = module.redis-cache.access_key
+  key_vault_id = data.azurerm_key_vault.idam.id
 }

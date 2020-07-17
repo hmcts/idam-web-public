@@ -262,14 +262,17 @@ public class UserController {
         try {
             if (validationService.validatePassword(password1, password2, model)) {
                 String activation = "{\"token\":\"" + token + "\",\"code\":\"" + code + "\",\"password\":\"" + password1 + "\"}";
-                ResponseEntity<String> response = spiService.activateUser(activation);
-                String redirectUri = getRedirectUri(response.getBody());
+                ResponseEntity<ActivationResult> response = spiService.activateUser(activation);
+                ActivationResult activationResult = response.getBody();
                 // don't expose parameters other than the url to a GET request
                 Map<String, Object> successModel = new HashMap<>();
-                if (redirectUri != null) {
-                    successModel.put("redirectUri", redirectUri);
+                if (activationResult.getRedirectUri() != null) {
+                    successModel.put("redirectUri", activationResult.getRedirectUri());
                 }
 
+                if(activationResult.isStaleUserActivated()){
+                    return new ModelAndView("redirect:reset-password-success", successModel);
+                }
                 return new ModelAndView("redirect:useractivated", successModel);
             }
         } catch (HttpClientErrorException e) {
@@ -320,20 +323,16 @@ public class UserController {
         return "useractivated";
     }
 
+    @GetMapping("/reset-password-success")
+    public String resetPasswordSuccess(@RequestParam(required = false) final String redirectUri, Model model) {
+        Optional.ofNullable(redirectUri).ifPresent(rUri -> model.addAttribute("redirectUri", rUri));
+
+        return "resetpasswordsuccess";
+    }
+
     @GetMapping("/expiredtoken")
     public String expiredToken(final Map<String, Object> model) {
         return "expiredtoken";
     }
 
-    private String getRedirectUri(String json) throws IOException {
-
-        ObjectNode object = mapper.readValue(json, ObjectNode.class);
-        JsonNode node = object.get("redirectUri");
-
-        if (node != null) {
-            return node.textValue();
-        } else {
-            return null;
-        }
-    }
 }

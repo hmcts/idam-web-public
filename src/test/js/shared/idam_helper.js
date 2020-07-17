@@ -504,7 +504,7 @@ class IdamHelper extends Helper {
     interceptRequestsAfterSignin() {
         const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
-        const pages = ["/login", "/register", "/activate", "/verification"];
+        const pages = ["/login", "/register", "/activate", "/verification", "/useractivated"];
 
         helper.page.on('request', request => {
             if (pages.some(v => request.url().includes(v))) {
@@ -726,6 +726,22 @@ class IdamHelper extends Helper {
             .catch(err => {
                 console.log(err);
             });
+    }
+
+    async retireStaleUser(userEmail) {
+        const userDetails = await this.getUserByEmail(userEmail);
+        const userId = userDetails.id;
+        const authToken = await this.getAuthToken();
+        return fetch(`${TestData.IDAM_API}/api/v1/staleUsers/${userId}/retire`, {
+            agent: agent,
+            method: 'POST',
+            headers: {'Authorization': 'AdminApiAuthToken ' + authToken},
+        }).then((response) => {
+            if (response.status !== 200) {
+                console.log('Error retiring stale user', response.status);
+                throw new Error();
+            }
+        });
     }
 
     deleteAllTestData(testDataPrefix = '', userNames = [], roleNames = [], serviceNames = [], async = false) {
