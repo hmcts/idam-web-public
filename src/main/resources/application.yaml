@@ -49,6 +49,16 @@ spring:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: http://localhost:10080/auth/realms/jhipster
+        registration:
+          oidc:
+            client-id: internal
+            client-secret: internal
 
 authentication:
   useOAuth2: true

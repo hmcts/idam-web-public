@@ -64,6 +64,13 @@ allprojects {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+
+    implementation group: 'org.springframework.security', name: 'spring-security-web'
+    implementation group: 'org.springframework.security', name: 'spring-security-data'
+    implementation group: 'org.springframework.security', name: 'spring-security-config'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+
     // TODO: remove version once 2.2.2.RELEASE is out
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.1.RELEASE') {
       exclude(module: 'rxnetty-contexts')
