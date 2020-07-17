@@ -69,7 +69,7 @@
 
 <div id="skiplink-container">
     <div>
-        <a href="#content" class="skiplink"><spring:message code="public.template.skip.to.main.content" /></a>
+        <a href="#content__body" class="skiplink"><spring:message code="public.template.skip.to.main.content" /></a>
     </div>
 </div>
 
