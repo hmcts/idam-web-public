@@ -70,6 +70,7 @@ allprojects {
     implementation group: 'org.springframework.security', name: 'spring-security-config'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis-reactive'
 
     // TODO: remove version once 2.2.2.RELEASE is out
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.1.RELEASE') {
