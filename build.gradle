@@ -109,6 +109,7 @@ allprojects {
     testAnnotationProcessor("org.projectlombok:lombok")
 
     testImplementation group: 'org.mockito', name: 'mockito-core'
+    testImplementation group: 'org.springframework', name: 'spring-test'
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
       exclude(module: 'commons-logging')
