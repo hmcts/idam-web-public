@@ -7,6 +7,8 @@ server:
   maxConnectionsPerRoute: 200
   maxConnectionsTotal: 200
   servlet:
+    session:
+      timeout: 600m
     context_parameters:
       defaultHtmlEscape: true
   tomcat:
@@ -53,6 +55,11 @@ spring:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
+  session:
+    redis:
+      flush-mode: on-save
+      namespace: spring:session
+    store-type: redis
   security:
     oauth2:
       client:

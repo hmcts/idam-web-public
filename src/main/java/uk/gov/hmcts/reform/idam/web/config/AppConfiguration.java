@@ -24,6 +24,8 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.idam.web.client.OidcApi;
+import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.LocalePassingInterceptor;
 import uk.gov.hmcts.reform.idam.web.sso.SSOAuthenticationSuccessHandler;
@@ -39,14 +41,25 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class AppConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private ConfigurationProperties configurationProperties;
+    private final ConfigurationProperties configurationProperties;
 
-    @Autowired
-    private OAuth2AuthorizedClientRepository repository;
+    private final OAuth2AuthorizedClientRepository repository;
+
+    private final SsoFederationApi ssoFederationApi;
+
+    private final OidcApi oidcApi;
 
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
+
+    public AppConfiguration(ConfigurationProperties configurationProperties,
+                            OAuth2AuthorizedClientRepository repository,
+                            SsoFederationApi ssoFederationApi, OidcApi oidcApi) {
+        this.configurationProperties = configurationProperties;
+        this.repository = repository;
+        this.ssoFederationApi = ssoFederationApi;
+        this.oidcApi = oidcApi;
+    }
 
     @Bean
     public RestTemplate getRestTemplate()
@@ -103,7 +116,9 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
             .and()
                 .oauth2Login()
+                    // non existent page otherwise defaults to /login
                     .loginPage("/sso/login.html")
+                    .failureUrl("/error")
                     .successHandler(myAuthenticationSuccessHandler(repository))
             .and()
                 .oauth2ResourceServer()
@@ -116,14 +131,19 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler myAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository){
-        return new SSOAuthenticationSuccessHandler(repository);
+        return new SSOAuthenticationSuccessHandler(repository, ssoFederationApi, oidcApi);
     }
 
+     /*
+      * If in future we have multiple providers this needs to be replaced with spring security 5s
+      * JwtIssuerAuthenticationManagerResolver which supports multiple issuers
+      */
     @Bean
     JwtDecoder jwtDecoder() {
         NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromOidcIssuerLocation(issuerUri);
         OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>();
         jwtDecoder.setJwtValidator(withAudience);
+
         return jwtDecoder;
     }
 }

@@ -72,8 +72,10 @@ allprojects {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis-reactive'
 
-    // TODO: remove version once 2.2.2.RELEASE is out
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.1.RELEASE') {
+    implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '10.11'
+    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '10.11'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.3.RELEASE'
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.3.RELEASE') {
       exclude(module: 'rxnetty-contexts')
       exclude(module: 'rxnetty-servo')
       exclude(module: 'rxnetty')
@@ -103,9 +105,7 @@ allprojects {
     implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
     implementation group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
 
-    // TODO mockito version is not correctly resolved from IdAM BOM. Remove version when this is fixed
     testCompileOnly("org.projectlombok:lombok")
-
     testAnnotationProcessor("org.projectlombok:lombok")
 
     testImplementation group: 'org.mockito', name: 'mockito-core'
