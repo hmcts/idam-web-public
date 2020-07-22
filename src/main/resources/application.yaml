@@ -65,7 +65,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: https://placeholder
+            issuer-uri: https://sts.windows.net/723e4557-2f17-43ed-9e71-f1beb253e546/
         registration:
           oidc:
             client-id: placeholder
