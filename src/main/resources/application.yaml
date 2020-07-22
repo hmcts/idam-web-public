@@ -65,13 +65,13 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: https://sts.windows.net/723e4557-2f17-43ed-9e71-f1beb253e546/
+            issuer-uri: https://placeholder
         registration:
           oidc:
-            client-id: a3810c50-f3da-4f66-bef3-aa20182ce85c
-            client-secret: U0Fo-pG6~RL5.wX9_Gqpb4_b.tTON83H1R
-            client-name: idamcft-preview
+            client-id: placeholder
+            client-secret: placeholder
             client-authentication-method: basic
+            scope: openid
 
 authentication:
   useOAuth2: true

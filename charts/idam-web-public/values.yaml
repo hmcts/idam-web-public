@@ -17,6 +17,8 @@ java:
         - redis-hostname
         - redis-key
         - redis-port
+        - sso-client-id
+        - sso-client-secret
   environment:
     STRATEGIC_SERVICE_URL: http://idam-api
     MANAGEMENT_SECURITY_ENABLED: false
