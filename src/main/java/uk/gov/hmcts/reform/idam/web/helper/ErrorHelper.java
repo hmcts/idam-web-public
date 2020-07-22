@@ -52,9 +52,6 @@ public class ErrorHelper {
     }
 
     public static String jsonErrorString(String error, String description) {
-        return "{\n" +
-            "  \"error\": \"errorString\",\n" +
-            "  \"description\": \"errorDescription\"\n" +
-            "}";
+        return String.format("{%n \"error\": \"%s\",%n  \"description\": \"%s\"%n}", error, description);
     }
 }
