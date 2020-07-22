@@ -17,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
 import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
+import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProperties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,11 +42,15 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     private final OidcApi oidcApi;
 
+    private final StrategicConfigurationProperties.Session sessionProperties;
+
     public SSOAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository,
-                                           SsoFederationApi federationApi, OidcApi oidcApi) {
+                                           SsoFederationApi federationApi, OidcApi oidcApi,
+                                           StrategicConfigurationProperties.Session sessionProperties) {
         this.repository = repository;
         this.federationApi = federationApi;
         this.oidcApi = oidcApi;
+        this.sessionProperties = sessionProperties;
     }
 
     @Override
@@ -63,9 +68,10 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         Authentication authentication
     ) throws IOException {
 
-        final OAuth2AuthorizedClient client = repository
-            .loadAuthorizedClient(((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId(),
-                authentication, request);
+        final OAuth2AuthorizedClient client = repository.loadAuthorizedClient(
+            ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId(),
+                authentication, request
+        );
 
         final String access_token = client.getAccessToken().getTokenValue();
         String bearerToken = "Bearer " + access_token;
@@ -74,6 +80,7 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
         String sessionCookie = federationApi.federationAuthenticate(bearerToken)
             .headers().get(SET_COOKIE).stream()
+            .filter(cookie -> cookie.contains(sessionProperties.getIdamSessionCookie()))
             .findAny().orElseThrow(() ->
                 restException(null, HttpStatus.UNAUTHORIZED,  new HttpHeaders(),
                     HttpStatus.UNAUTHORIZED.getReasonPhrase(), "Unable to authenticate user.")
@@ -116,6 +123,7 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         } catch (HttpStatusCodeException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
                 federationApi.createFederatedUser(bearerToken);
+                return;
             }
             throw e;
         }
@@ -137,8 +145,13 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
             params
         );
 
+        if (response.headers().get(HttpHeaders.LOCATION) == null) {
+            throw restException(null, HttpStatus.FORBIDDEN, new HttpHeaders(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(), "The server did not respond with expected response.");
+        }
+
         return response.headers().get(HttpHeaders.LOCATION)
             .stream().findAny().orElseThrow(() -> restException(null, HttpStatus.FORBIDDEN, new HttpHeaders(),
-            HttpStatus.FORBIDDEN.getReasonPhrase(), "The server did not respond with the expected response."));
+            HttpStatus.FORBIDDEN.getReasonPhrase(), "Location header was empty."));
     }
 }

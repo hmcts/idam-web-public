@@ -6,7 +6,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -131,7 +130,8 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler myAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository){
-        return new SSOAuthenticationSuccessHandler(repository, ssoFederationApi, oidcApi);
+        return new SSOAuthenticationSuccessHandler(repository, ssoFederationApi, oidcApi,
+            configurationProperties.getStrategic().getSession());
     }
 
      /*
