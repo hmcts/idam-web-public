@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -21,6 +23,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -29,6 +33,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
+import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.internal.model.ValidateRequest;
@@ -55,14 +60,17 @@ import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 @Service
 public class SPIService {
 
+    private final ObjectMapper objectMapper;
+
     private RestTemplate restTemplate;
 
     private ConfigurationProperties configurationProperties;
 
     @Autowired
-    public SPIService(RestTemplate restTemplate, ConfigurationProperties configurationProperties) {
+    public SPIService(RestTemplate restTemplate, ConfigurationProperties configurationProperties, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
+        this.objectMapper = objectMapper;
     }
 
     /**
@@ -76,19 +84,18 @@ public class SPIService {
     /**
      * @should call api with the correct data
      */
-    public ResponseEntity<String> activateUser(final String activationJson) {
+    public ResponseEntity<ActivationResult> activateUser(final String activationJson) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(activationJson, headers);
 
-        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getActivation(), HttpMethod.PATCH, entity, String.class);
+        return restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getActivation(), HttpMethod.PATCH, entity, ActivationResult.class);
     }
 
     /**
      * @should call api with the correct data and return api response body if response code is 200
      * @should return api location in header in api response if response code is 302
-     * @should return null if api response code is not 200 nor 302
      */
     public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, final String state, final String scope) {
         ResponseEntity<String> response;
@@ -126,27 +133,50 @@ public class SPIService {
         }
     }
 
-    /**
-     * @should return null if no cookie is found
-     * @should return a set-cookie header
-     */
-    public List<String> authenticate(final String username, final String password, final String ipAddress) {
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
+    public ApiAuthResult authenticate(final String username, final String password, final String redirectUri, final String ipAddress) throws JsonProcessingException {
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>(4);
         form.add("username", username);
         form.add("password", password);
+        form.add("redirectUri", redirectUri);
+        form.add("originIp", ipAddress);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(X_FORWARDED_FOR, ipAddress);
-        ResponseEntity<Void> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl()
-                + "/" + configurationProperties.getStrategic().getEndpoint().getAuthorize(), HttpMethod.POST,
-            new HttpEntity<>(form, headers), Void.class);
 
-        if (response.getHeaders().containsKey(HttpHeaders.SET_COOKIE)) {
-            return new ArrayList<>(response.getHeaders().get(HttpHeaders.SET_COOKIE));
-        } else {
-            return null;
+        final ApiAuthResult.ApiAuthResultBuilder resultBuilder = ApiAuthResult.builder();
+
+        HttpStatus httpStatus;
+
+        try {
+            ResponseEntity<Object> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" +
+                configurationProperties.getStrategic().getEndpoint().getAuthorize(), HttpMethod.POST, new HttpEntity<>(form, headers), Object.class);
+            httpStatus = response.getStatusCode();
+
+            // check if already logged in or if requires MFA
+            if (response.getStatusCode() == HttpStatus.OK) {
+                final List<String> cookies = Optional.ofNullable(response.getHeaders().get(HttpHeaders.SET_COOKIE)).orElse(ImmutableList.of());
+
+                final boolean requiresMfa = cookies.stream()
+                    .filter(cookie -> cookie.startsWith("Idam.AuthId"))
+                    .findFirst()
+                    .isPresent();
+
+                resultBuilder.cookies(new ArrayList<>(cookies))
+                    .policiesAction(requiresMfa ? EvaluatePoliciesAction.MFA_REQUIRED : EvaluatePoliciesAction.ALLOW);
+            }
+        } catch (HttpClientErrorException | HttpServerErrorException he) {
+            httpStatus = he.getStatusCode();
+            if (httpStatus == HttpStatus.FORBIDDEN || httpStatus == HttpStatus.UNAUTHORIZED || httpStatus == HttpStatus.NOT_FOUND) {
+                ErrorResponse errorResponse = objectMapper.readValue(he.getResponseBodyAsString(), ErrorResponse.class);
+                resultBuilder.errorCode(errorResponse.getCode());
+            } else {
+                throw he;
+            }
         }
+
+        resultBuilder.httpStatus(httpStatus);
+        return resultBuilder.build();
     }
 
     /**
@@ -165,8 +195,7 @@ public class SPIService {
         params.forEach(form::add);
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(configurationProperties.getStrategic()
-                .getService().getUrl() + "/" + configurationProperties.getStrategic()
+        ResponseEntity<String> response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic()
                 .getEndpoint().getAuthorizeOauth2(),
             HttpMethod.POST, entity, String.class);
 
@@ -178,21 +207,14 @@ public class SPIService {
     }
 
     /**
-     * @should return a set-cookie header to set Idam.AuthId if successful
-     * @should return null if no cookie is found
-     */
-    public List<String> initiateOtpeAuthentication(final List<String> cookies, final String ipAddress) {
-        return submitOtpeAuthentication(cookies, ipAddress, null);
-    }
-
-    /**
      * @should return a set-cookie header to set Idam.Session if successful
      * @should return null if no cookie is found
      */
-    public List<String> submitOtpeAuthentication(final List<String> cookies, final String ipAddress,
+    public List<String> submitOtpeAuthentication(@NonNull final String authId, final String ipAddress,
                                                  @Nullable final String otp) {
         final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
         form.add("service", "otpe");
+        form.add("authId", authId);
 
         if (otp != null) {
             form.add("otp", otp);
@@ -201,9 +223,6 @@ public class SPIService {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(X_FORWARDED_FOR, ipAddress);
-        if (cookies != null) {
-            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookies, ";"));
-        }
 
         final String endpoint = String.format("%s/%s",
             configurationProperties.getStrategic().getService().getUrl(),
