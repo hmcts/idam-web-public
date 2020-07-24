@@ -40,58 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ALREADY_ACTIVATED_KEY;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BASE64_ENC_FORM_DATA;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_BLACKLISTED_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CAPITAL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CONTAINS_PERSONAL_INFO_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_ENTER_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_INVALID_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_ONE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_TWO;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MESSAGE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MSG;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_TITLE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_REDIRECTED_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_ACTIVATION_TOKEN_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORM_DATA;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GENERIC_ERROR_KEY;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_COMMAND;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTER_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SERVICE_LABEL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_INVALID_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERS_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERS_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATED_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_CODE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_TOKEN;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_ACTIVATION_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_CREATED_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALIDATE_TOKEN_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.*;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getActivateUserPostRequest;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getActivationResult;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.getSelfRegisterPostRequest;
@@ -295,8 +244,11 @@ public class UserControllerTest {
     @Test
     public void activateUser_shouldReturnUseractivatedViewAndRedirectUriInModelIfReturnedBySpiServiceIfRequestMandatoryFieldsValidationSucceeds() throws Exception {
 
+        ActivationResult activationResult = new ActivationResult();
+        activationResult.setRedirectUri(REDIRECT_URI );
+
         given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
-        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willReturn(ResponseEntity.ok("{\"redirectUri\":\"" + REDIRECT_URI + "\"}"));
+        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willReturn(ResponseEntity.ok(activationResult));
 
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
             .andExpect(status().is3xxRedirection())
@@ -390,6 +342,27 @@ public class UserControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(EXPIREDTOKEN_REDIRECTED_VIEW_NAME));
 
+    }
+
+
+    /**
+     * @verifies redirect to reset password success view if stale user activated
+     * @see UserController#activateUser(String, String, String, String, java.util.Map)
+     */
+    @Test
+    public void activateUser_shouldRedirectToResetPasswordViewWhenStaleUserIsActivated() throws Exception {
+
+        ActivationResult activationResult = new ActivationResult();
+        activationResult.setRedirectUri(REDIRECT_URI);
+        activationResult.setStaleUserActivated(true);
+
+        given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
+        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willReturn(ResponseEntity.ok(activationResult));
+
+        mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
+            .andExpect(view().name(RESET_PASSWORD_SUCCESS_REDIRECT_VIEW));
     }
 
     /**
@@ -567,5 +540,14 @@ public class UserControllerTest {
     public void expiredToken_shouldReturnCorrectValue() {
         UserController userController = new UserController();
         assertEquals("expiredtoken", userController.expiredToken(null));
+    }
+
+    @Test
+    public void resetPasswordSuccess() throws Exception {
+        mockMvc.perform(get(RESET_PASSWORD_SUCCESS_ENDPOINT)
+            .param(REDIRECTURI, REDIRECTURI))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(REDIRECTURI, REDIRECTURI))
+            .andExpect(view().name(RESET_PASSWORD_SUCCESS_VIEW));
     }
 }
