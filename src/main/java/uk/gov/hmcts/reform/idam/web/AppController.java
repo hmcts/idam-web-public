@@ -844,7 +844,7 @@ public class AppController {
     }
 
     private String obfuscateEmailAddress(String email) {
-        return email.replaceAll("(^[^@]{3}|(?!^)\\G)[^@]", "$1*");
+        return email.replaceAll("(^[^@]{3}|(?!^)\\G)[^@]", "$1*"); //NOSONAR
     }
 
     /**

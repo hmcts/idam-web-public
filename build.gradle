@@ -31,7 +31,10 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.3.3'
+  def idamBomVersion = '2.3.5'
+  //TODO: Remove once spring boot have updated versions to match
+  ext['tomcat.version'] = '9.0.37'
+  ext['log4j2.version'] = '2.13.3'
 
   dependencyManagement {
     imports {
@@ -64,8 +67,18 @@ allprojects {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-    // TODO: remove version once 2.2.2.RELEASE is out
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.1.RELEASE') {
+
+    implementation group: 'org.springframework.security', name: 'spring-security-web'
+    implementation group: 'org.springframework.security', name: 'spring-security-data'
+    implementation group: 'org.springframework.security', name: 'spring-security-config'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis-reactive'
+
+    implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '10.11'
+    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '10.11'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.3.RELEASE'
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.3.RELEASE') {
       exclude(module: 'rxnetty-contexts')
       exclude(module: 'rxnetty-servo')
       exclude(module: 'rxnetty')
@@ -95,12 +108,11 @@ allprojects {
     implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
     implementation group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
 
-    // TODO mockito version is not correctly resolved from IdAM BOM. Remove version when this is fixed
     testCompileOnly("org.projectlombok:lombok")
-
     testAnnotationProcessor("org.projectlombok:lombok")
 
     testImplementation group: 'org.mockito', name: 'mockito-core'
+    testImplementation group: 'org.springframework', name: 'spring-test'
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-devtools'
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
       exclude(module: 'commons-logging')
