@@ -31,11 +31,11 @@ BeforeSuite(async (I) => {
 
     token = await I.getAuthToken();
     let response;
-    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
+    response = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_beta", 'beta description', '', token);
     const serviceBetaRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
+    response = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_admin", 'admin description', serviceBetaRole, token);
     serviceAdminRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
+    response = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_super", 'super description', serviceAdminRole, token);
     const serviceSuperRole = response.name;
     const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
     roleNames.push(serviceRoles);
