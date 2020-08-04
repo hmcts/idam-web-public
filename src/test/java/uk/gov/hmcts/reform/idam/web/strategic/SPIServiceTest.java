@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -215,7 +216,8 @@ public class SPIServiceTest {
      * @verifies call correct endpoint to reset password
      * @see SPIService#resetPassword(String, String, String)
      */
-    @Test public void resetPassword_shouldCallCorrectEndpointToResetPassword() throws Exception {
+    @Test
+    public void resetPassword_shouldCallCorrectEndpointToResetPassword() throws Exception {
         // given
 
         // when
@@ -232,7 +234,8 @@ public class SPIServiceTest {
      * @verifies register user with correct details
      * @see SPIService#resetPassword(String, String, String)
      */
-    @Test public void resetPassword_shouldRegisterUserWithCorrectDetails() throws Exception {
+    @Test
+    public void resetPassword_shouldRegisterUserWithCorrectDetails() throws Exception {
         // given
         ResetPasswordRequest resetPasswordRequest = new ResetPasswordRequest();
         resetPasswordRequest.setCode(RESET_PASSWORD_CODE);
@@ -260,7 +263,8 @@ public class SPIServiceTest {
      * @verifies return what API call returns
      * @see SPIService#resetPassword(String, String, String)
      */
-    @Test public void resetPassword_shouldReturnWhatAPICallReturns() throws Exception {
+    @Test
+    public void resetPassword_shouldReturnWhatAPICallReturns() throws Exception {
         // given
         ResponseEntity<String> expectedResponse = ResponseEntity.ok().build();
 
@@ -318,7 +322,7 @@ public class SPIServiceTest {
 
         spiService.activateUser(ACTIVATE_USER_REQUEST);
 
-        verify(restTemplate).exchange(eq(API_URL + SLASH + ACTIVATE_ENDPOINT), eq(HttpMethod.PATCH), captor.capture(), eq(String.class));
+        verify(restTemplate).exchange(eq(API_URL + SLASH + ACTIVATE_ENDPOINT), eq(HttpMethod.PATCH), captor.capture(), eq(ActivationResult.class));
 
         HttpEntity<?> entity = captor.getValue();
 
@@ -392,7 +396,7 @@ public class SPIServiceTest {
     public void authorize_shouldCallApiWithTheCorrectDataAndReturnLocationInHeaderInApiResponseIfResponseCodeIs302() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
 
-        String result = spiService.authorize(ImmutableMap.<String,String>builder()
+        String result = spiService.authorize(ImmutableMap.<String, String>builder()
             .put(USERNAME_PARAMETER, USER_EMAIL)
             .put(PASSWORD_PARAMETER, PASSWORD_ONE)
             .put(REDIRECT_URI, REDIRECTURI)
@@ -426,7 +430,7 @@ public class SPIServiceTest {
     public void authorize_shouldReturnNullIfApiResponseCodeIsNot302() throws Exception {
         given(restTemplate.exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(ResponseEntity.ok().build());
 
-        String result = spiService.authorize(ImmutableMap.<String,String>builder()
+        String result = spiService.authorize(ImmutableMap.<String, String>builder()
             .put(USERNAME_PARAMETER, USER_EMAIL)
             .put(PASSWORD_PARAMETER, PASSWORD_ONE)
             .put(REDIRECT_URI, REDIRECTURI)
@@ -447,7 +451,7 @@ public class SPIServiceTest {
 
         given(restTemplate.exchange(eq(API_URL + SLASH + OAUTH2_AUTHORIZE_ENDPOINT), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).willReturn(getFoundResponseEntity(GOOGLE_WEB_ADDRESS));
 
-        spiService.authorize(ImmutableMap.<String,String>builder()
+        spiService.authorize(ImmutableMap.<String, String>builder()
             .put(USERNAME_PARAMETER, USER_EMAIL)
             .put(PASSWORD_PARAMETER, PASSWORD_ONE)
             .put(REDIRECT_URI, REDIRECTURI)
@@ -646,135 +650,27 @@ public class SPIServiceTest {
     }
 
     /**
-     * @verifies return null if no cookie is found
-     * @see SPIService#authenticate(String, String, String)
+     * @see SPIService#authenticate(String, String, String, String)
      */
     @Test
-    public void authenticate_shouldReturnNullIfNoCookieIsFound() {
+    public void authenticate_shouldReturnSessionCookieOnSuccess() throws JsonProcessingException {
         String cookie = "Idam.Session=1234567890";
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
-            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
             .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie).build());
-        List<String> result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
-        assertTrue(result.contains(cookie));
+        ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
+        assertTrue(result.getCookies().contains(cookie));
     }
 
     /**
-     * @verifies return a set-cookie header
-     * @see SPIService#authenticate(String, String, String)
+     * @see SPIService#authenticate(String, String, String, String)
      */
     @Test
-    public void authenticate_shouldReturnASetcookieHeader() {
+    public void authenticate_shouldNotReturnSessionCookie() throws JsonProcessingException {
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
-            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
+            eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
             .willReturn(ResponseEntity.ok().build());
-        List<String> result = spiService.authenticate(USER_NAME, PASSWORD_ONE, USER_IP_ADDRESS);
-        assertNull(result);
-    }
-
-    /**
-     * @verifies return a set-cookie header to set Idam.AuthId if successful
-     * @see SPIService#initiateOtpeAuthentication(List, String)
-     */
-    @Test
-    public void initiateOtpeAuthentication_shouldReturnASetcookieHeaderToSetIdamAuthIdIfSuccessful() throws Exception {
-        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
-        given(restTemplate.exchange(eq(endpoint),
-            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
-            .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, "Idam.AuthId=authId").build());
-
-        List<String> result = spiService
-            .initiateOtpeAuthentication(singletonList("Idam.Session=idamSession"), "6.6.6.6");
-        assertThat(result, is(singletonList("Idam.AuthId=authId")));
-
-        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
-        form.add("service", "otpe");
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(X_FORWARDED_FOR, "6.6.6.6");
-        headers.add(HttpHeaders.COOKIE, "Idam.Session=idamSession");
-
-        verify(restTemplate)
-            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
-    }
-
-    /**
-     * @verifies return null if no cookie is found
-     * @see SPIService#initiateOtpeAuthentication(List, String)
-     */
-    @Test
-    public void initiateOtpeAuthentication_shouldReturnNullIfNoCookieIsFound() throws Exception {
-        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
-        given(restTemplate.exchange(eq(endpoint),
-            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
-            .willReturn(ResponseEntity.ok().build());
-
-        List<String> result = spiService
-            .initiateOtpeAuthentication(singletonList("Idam.Session=idamSession"), "6.6.6.6");
-        Assert.assertNull(result);
-
-        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
-        form.add("service", "otpe");
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(X_FORWARDED_FOR, "6.6.6.6");
-        headers.add(HttpHeaders.COOKIE, "Idam.Session=idamSession");
-
-        verify(restTemplate)
-            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
-    }
-
-    /**
-     * @verifies return a set-cookie header to set Idam.Session if successful
-     * @see SPIService#submitOtpeAuthentication(List, String, String)
-     */
-    @Test
-    public void submitOtpeAuthentication_shouldReturnASetcookieHeaderToSetIdamSessionIfSuccessful() throws Exception {
-        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
-        given(restTemplate.exchange(eq(endpoint),
-            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
-            .willReturn(ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, "Idam.Session=idamSession").build());
-
-        List<String> result = spiService
-            .submitOtpeAuthentication(singletonList("Idam.AuthId=authId"), "6.6.6.6", "123456");
-        assertThat(result, is(singletonList("Idam.Session=idamSession")));
-
-        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
-        form.add("service", "otpe");
-        form.add("otp", "123456");
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(X_FORWARDED_FOR, "6.6.6.6");
-        headers.add(HttpHeaders.COOKIE, "Idam.AuthId=authId");
-
-        verify(restTemplate)
-            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
-    }
-
-    /**
-     * @verifies return null if no cookie is found
-     * @see SPIService#submitOtpeAuthentication(List, String, String)
-     */
-    @Test
-    public void submitOtpeAuthentication_shouldReturnNullIfNoCookieIsFound() throws Exception {
-        final String endpoint = API_URL + SLASH + AUTHENTICATE_ENDPOINT;
-        given(restTemplate.exchange(eq(endpoint),
-            eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class)))
-            .willReturn(ResponseEntity.ok().build());
-
-        List<String> result = spiService
-            .submitOtpeAuthentication(singletonList("Idam.AuthId=authId"), "6.6.6.6", "123456");
-        Assert.assertNull(result);
-
-        final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
-        form.add("service", "otpe");
-        form.add("otp", "123456");
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(X_FORWARDED_FOR, "6.6.6.6");
-        headers.add(HttpHeaders.COOKIE, "Idam.AuthId=authId");
-
-        verify(restTemplate)
-            .exchange(eq(endpoint), eq(HttpMethod.POST), eq(new HttpEntity<>(form, headers)), eq(Void.class));
+        ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
+        assertTrue(result.getCookies().isEmpty());
     }
 }

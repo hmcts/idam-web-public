@@ -51,6 +51,7 @@ public class MvcKeys {
     public static final String PRIVACY_POLICY_VIEW = "privacypolicy";
     public static final String TERMS_AND_CONDITIONS_VIEW = "tandc";
     public static final String CONTACT_US_VIEW = "contactus";
+    public static final String STALE_USER_RESET_PASSWORD_VIEW = "staleUserResetPassword";
 
 
 }

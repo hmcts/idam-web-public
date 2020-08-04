@@ -45,6 +45,7 @@ public class TestConstants {
     public static final String TACTICAL_ACTIVATE_ENDPOINT = "/activate";
     public static final String TACTICAL_RESET_ENDPOINT = "/reset";
     public static final String HEALTH_ENDPOINT = "health";
+    public static final String RESET_PASSWORD_SUCCESS_ENDPOINT = "/users/reset-password-success";
 
     //uris
     public static final String GOOGLE_WEB_ADDRESS = "https://www.google.com";
@@ -78,6 +79,8 @@ public class TestConstants {
     public static final String LOGIN_LOGOUT_VIEW = "/login?logout";
     public static final String NOT_FOUND_VIEW = "404";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
+    public static final String STALE_USER_RESET_PASSWORD_VIEW = "staleUserResetPassword";
+    public static final String RESET_PASSWORD_SUCCESS_REDIRECT_VIEW = "redirect:reset-password-success";
 
 
     //User
@@ -98,6 +101,7 @@ public class TestConstants {
     //Service
     public static final String SERVICE_LABEL = "label";
     public static final String SERVICE_CLIENT_ID = "client_id";
+    public static final String SERVICE_REDIRECT_URI = "redirect_uri";
 
 
     //Parameters
@@ -146,6 +150,7 @@ public class TestConstants {
     public static final String HAS_LOGIN_FAILED = "hasLoginFailed";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
+    public static final String IS_ACCOUNT_RETIRED = "isAccountRetired";
     public static final String VALID_SECURITY_CODE_ERROR = "public.login.with.pin.valid.security.code.error";
     public static final String SECURITY_CODE_INCORRECT_ERROR = "public.login.with.pin.security.code.incorrect.error";
     public static final String ERROR_PASSWORD_NOT_EMPTY = "public.common.error.password.not.empty";
@@ -179,6 +184,7 @@ public class TestConstants {
     public static final String HAS_LOGIN_FAILED_RESPONSE = "{\"code\":\"HAS_LOGIN_FAILED\"}";
     public static final String ERR_LOCKED_FAILED_RESPONSE = "{\"code\":\"ACCOUNT_LOCKED\"}";
     public static final String ERR_SUSPENDED_RESPONSE = "{\"code\":\"ACCOUNT_SUSPENDED\"}";
+    public static final String ERR_STALE_USER_REGISTRATION_SENT = "{\"code\":\"STALE_USER_REGISTRATION_SENT\"}";
     public static final String SELF_REGISTRATION_RESPONSE = "{\"firstName\":\"" + USER_FIRST_NAME + "\",\"lastName\":\"" + USER_LAST_NAME + "\",\"email\":\"" + USER_EMAIL + "\",\"redirectUri\":\"" + REDIRECT_URI + "\",\"clientId\":\"clientId\",\"state\":\"" + STATE + "\"}";
 
 
