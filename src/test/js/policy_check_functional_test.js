@@ -20,7 +20,6 @@ const serviceName = randomData.getRandomServiceName();
 
 BeforeSuite(async (I) => {
     const randomUserFirstName = randomData.getRandomUserName();
-    const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     policyName = `SIDM_TEST_POLICY_${serviceName}`;
 

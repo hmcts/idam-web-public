@@ -7,4 +7,4 @@ java:
   replicas: 1
   aadIdentityName: idam
   environment:
-    STRATEGIC_SERVICE_URL: https://idam-api.aat.platform.hmcts.net
+    STRATEGIC_SERVICE_URL: http://idam-api-staging.service.core-compute-aat.internal
