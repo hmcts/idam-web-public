@@ -30,6 +30,17 @@
                 <c:param name="scope" value="${scope}"/>
             </c:url>
 
+            <c:set var="azureLoginUrl">
+                <spring:url value="/o/authorize">
+                    <spring:param name="redirect_uri" value="${redirect_uri}"/>
+                    <spring:param name="client_id" value="${client_id}"/>
+                    <spring:param name="state" value="${state}"/>
+                    <spring:param name="scope" value="${scope}"/>
+                    <spring:param name="response_type" value="code"/>
+                    <spring:param name="login_hint" value="ejudiciary-aad"/>
+                </spring:url>
+            </c:set>
+
             <spring:hasBindErrors name="authorizeCommand">
                 <script>
                     sendEvent('Authorization', 'Error', 'User authorization has failed');
@@ -199,10 +210,18 @@
                     </a>
                 </div>
 
-
-                <input class="button" type="submit" name="save"
-                       value="<spring:message code="public.login.form.submit" />">
-                <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled" name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
+                <div class="login-list">
+                    <input class="button" type="submit" name="save"
+                           value="<spring:message code="public.login.form.submit" />">
+                    <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled"
+                                name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
+                    <c:if test="${azureLoginEnabled}">
+                        <a><spring:message code="public.login.azure.link.or"/></a>
+                        <a href="${azureLoginUrl}">
+                            <spring:message code="public.login.azure.link"/>
+                        </a>
+                    </c:if>
+                </div>
             </div>
             <c:if test="${selfRegistrationEnabled}">
                 </div>

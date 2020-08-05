@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,6 +19,7 @@ import java.util.Locale;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@TestPropertySource(properties = "testing=true")
 public class JSPHelperTest {
 
     private static final String BASE_TEST_URI = "http://example.com/";

@@ -7,16 +7,18 @@ import com.netflix.zuul.exception.ZuulException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EJUDICIARY_AAD;
 
 @Component
 public class SSOZuulFilter extends ZuulFilter {
 
     private static final Map<String, String> ssoLoginHints
-        = ImmutableMap.of("ejudiciary-aad", "/oauth2/authorization/oidc");
+        = ImmutableMap.of(EJUDICIARY_AAD, "/oauth2/authorization/oidc");
 
     @Override
     public String filterType() {
@@ -31,9 +33,12 @@ public class SSOZuulFilter extends ZuulFilter {
     @Override
     public boolean shouldFilter() {
         RequestContext ctx = RequestContext.getCurrentContext();
-        return ctx.getRequest().getParameter("login_hint") != null
+        HttpSession session = ctx.getRequest().getSession(false);
+        boolean existingSSOSession = session != null && session.getAttribute("provider") != null;
+        boolean ssoLoginInstruction = ctx.getRequest().getParameter("login_hint") != null
             && ssoLoginHints.containsKey(ctx.getRequest()
-                .getParameter("login_hint").toLowerCase());
+            .getParameter("login_hint").toLowerCase());
+        return existingSSOSession || ssoLoginInstruction;
     }
 
     @Override
@@ -41,9 +46,23 @@ public class SSOZuulFilter extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         try {
             HttpServletRequest request = ctx.getRequest();
+            HttpSession existingSession = ctx.getRequest().getSession(false);
+
+            boolean existingSSOSession = existingSession != null
+                && existingSession.getAttribute("provider") != null;
+
             request.getSession().setAttribute("oidcParams", request.getParameterMap());
             ctx.setSendZuulResponse(false);
-            ctx.getResponse().sendRedirect(ssoLoginHints.get(request.getParameter("login_hint").toLowerCase()));
+
+            if (existingSSOSession) {
+                ctx.getResponse().sendRedirect(ssoLoginHints
+                    .get(existingSession.getAttribute("provider").toString()));
+            } else {
+                request.getSession().setAttribute("provider",
+                    request.getParameter("login_hint").toLowerCase());
+                ctx.getResponse().sendRedirect(ssoLoginHints
+                    .get(request.getParameter("login_hint").toLowerCase()));
+            }
         } catch (IOException e) {
             throw new ZuulException(e, 500, "Unable to redirect to provider: " + e.getMessage());
         }
