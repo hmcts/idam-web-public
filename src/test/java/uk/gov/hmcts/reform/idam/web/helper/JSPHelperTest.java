@@ -20,6 +20,9 @@ import java.util.Locale;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = "testing=true")
+// Disable Redis autoconfigure for test
+@TestPropertySource(properties = "SPRING_AUTOCONFIGURE_EXCLUDE=org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration")
+@TestPropertySource(properties = "spring.session.store-type: none")
 public class JSPHelperTest {
 
     private static final String BASE_TEST_URI = "http://example.com/";
