@@ -14,6 +14,8 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 @ConditionalOnProperty(name = "testing", havingValue = "false", matchIfMissing = true)
 public class SessionConfiguration {
 
+    private static final int FIVE_DAYS_IN_SECONDS = 432000;
+
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
 
@@ -23,7 +25,7 @@ public class SessionConfiguration {
         serializer.setCookieName("Idam.SSOSession");
         serializer.setCookiePath("/");
         serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
-        serializer.setCookieMaxAge(432000);
+        serializer.setCookieMaxAge(FIVE_DAYS_IN_SECONDS);
         serializer.setUseSecureCookie(useSecureCookie);
         return serializer;
     }
