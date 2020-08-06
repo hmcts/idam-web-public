@@ -4,9 +4,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -17,19 +18,28 @@ import uk.gov.hmcts.reform.idam.web.config.MessagesConfiguration;
 
 import java.util.Locale;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = "testing=true")
-public class JSPHelperTest {
+public class JSPHelperEnTest {
 
     private static final String BASE_TEST_URI = "http://example.com/";
     private static final String CORRECT_BASE_TEST_URI = "http://example.com/?ui_locales=";
 
-    @Autowired
+    @Mock
     ApplicationContext applicationContext;
+
+    @Mock
+    MessageSource enMessageSource;
 
     @Before
     public void setUp() {
+        given(enMessageSource.getMessage(anyString(), any(), any())).willReturn("en");
+        given(applicationContext.getBean(MessageSource.class)).willReturn(enMessageSource);
         Application.setContext(applicationContext);
     }
 
@@ -87,27 +97,6 @@ public class JSPHelperTest {
     public void getTargetLocale_shouldReturnEnIfCurrentLocaleIsWelsh() {
         LocaleContextHolder.setLocale(new Locale("cy"));
         Assert.assertEquals("en", JSPHelper.getTargetLocale());
-    }
-
-    /**
-     * @verifies return cy if current locale is english
-     * @see JSPHelper#getTargetLocale()
-     */
-    @Test
-    public void getTargetLocale_shouldReturnCyIfCurrentLocaleIsEnglish() {
-        LocaleContextHolder.setLocale(new Locale("en"));
-        Assert.assertEquals("cy", JSPHelper.getTargetLocale());
-    }
-
-    /**
-     * @verifies return correct url for English
-     * @see JSPHelper#getOtherLocaleUrl()
-     */
-    @Test
-    public void getOtherLocaleUrl_shouldReturnCorrectUrlForEnglish() throws Exception {
-        LocaleContextHolder.setLocale(new Locale("en"));
-        final String otherLocaleUrl = JSPHelper.getOtherLocaleUrl();
-        Assert.assertTrue(otherLocaleUrl.endsWith("?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=cy"));
     }
 
     /**
