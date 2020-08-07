@@ -57,9 +57,10 @@ spring:
       suffix: .jsp
   session:
     redis:
-      flush-mode: on-save
+      flush-mode: ON_SAVE
       namespace: spring:session
     store-type: redis
+    timeout: 432000s
   security:
     oauth2:
       client:
