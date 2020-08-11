@@ -35,6 +35,7 @@ allprojects {
   //TODO: Remove once spring boot have updated versions to match
   ext['tomcat.version'] = '9.0.37'
   ext['log4j2.version'] = '2.13.3'
+  ext['idam.api-spec.version'] = '3.0.3-BETA'
 
   dependencyManagement {
     imports {
