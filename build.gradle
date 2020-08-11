@@ -74,6 +74,7 @@ allprojects {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis-reactive'
+    implementation group: 'org.springframework.session', name: 'spring-session-data-redis', version: '2.2.3.RELEASE'
 
     implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '10.11'
     implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '10.11'
