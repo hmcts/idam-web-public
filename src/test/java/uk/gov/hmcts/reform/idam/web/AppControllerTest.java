@@ -1541,7 +1541,7 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/reset/inactive-user?response_type=" + URLEncoder.encode(RESPONSE_TYPE, CharEncoding.UTF_8) + "&state=" + URLEncoder.encode(STATE, CharEncoding.UTF_8) + "&client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URI + "&scope=" + CUSTOM_SCOPE + "&azureLoginEnabled=false"));
+            .andExpect(redirectedUrl("/reset/inactive-user?response_type=" + URLEncoder.encode(RESPONSE_TYPE, CharEncoding.UTF_8) + "&state=" + URLEncoder.encode(STATE, CharEncoding.UTF_8) + "&client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URI + "&scope=" + CUSTOM_SCOPE));
     }
 
 

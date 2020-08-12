@@ -285,14 +285,15 @@ public class AppController {
         }
 
         model.addAttribute(SELF_REGISTRATION_ENABLED, false);
-        model.addAttribute(AZURE_LOGIN_ENABLED, false);
 
         if (Objects.nonNull(request.getClient_id()) && !request.getClient_id().isEmpty()) {
             Optional<Service> service = spiService.getServiceByClientId(request.getClient_id());
             service.ifPresent(theService -> {
                 model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
-                model.addAttribute(AZURE_LOGIN_ENABLED, !CollectionUtils.isEmpty(theService.getSsoProviders())
-                    && theService.getSsoProviders().contains(EJUDICIARY_AAD));
+                if (!CollectionUtils.isEmpty(theService.getSsoProviders())
+                    && theService.getSsoProviders().contains(EJUDICIARY_AAD)) {
+                    model.addAttribute(AZURE_LOGIN_ENABLED, true);
+                }
             });
         }
 
@@ -332,7 +333,9 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
-        model.addAttribute(AZURE_LOGIN_ENABLED, request.isAzureLoginEnabled());
+        if (request.isAzureLoginEnabled()) {
+            model.addAttribute(AZURE_LOGIN_ENABLED, true);
+        }
 
         final boolean validationErrors = bindingResult.hasErrors();
         if (validationErrors) {
