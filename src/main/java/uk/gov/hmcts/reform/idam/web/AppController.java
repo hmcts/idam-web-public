@@ -285,14 +285,15 @@ public class AppController {
         }
 
         model.addAttribute(SELF_REGISTRATION_ENABLED, false);
-        model.addAttribute(AZURE_LOGIN_ENABLED, false);
 
         if (Objects.nonNull(request.getClient_id()) && !request.getClient_id().isEmpty()) {
             Optional<Service> service = spiService.getServiceByClientId(request.getClient_id());
             service.ifPresent(theService -> {
                 model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
-                model.addAttribute(AZURE_LOGIN_ENABLED, !CollectionUtils.isEmpty(theService.getSsoProviders())
-                    && theService.getSsoProviders().contains(EJUDICIARY_AAD));
+                if (!CollectionUtils.isEmpty(theService.getSsoProviders())
+                    && theService.getSsoProviders().contains(EJUDICIARY_AAD)) {
+                    model.addAttribute(AZURE_LOGIN_ENABLED, true);
+                }
             });
         }
 
@@ -332,6 +333,9 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
+        if (request.isAzureLoginEnabled()) {
+            model.addAttribute(AZURE_LOGIN_ENABLED, true);
+        }
 
         final boolean validationErrors = bindingResult.hasErrors();
         if (validationErrors) {
@@ -394,29 +398,37 @@ public class AppController {
                         return new ModelAndView(LOGIN_VIEW, model.asMap());
                     }
                 }
-            } else {
+            } else if (authenticationResult.getErrorCode() != null) {
                 final ErrorResponse.CodeEnum errorCode = authenticationResult.getErrorCode();
-                if (errorCode == ErrorResponse.CodeEnum.ACCOUNT_LOCKED) {
-                    model.addAttribute(IS_ACCOUNT_LOCKED, true);
-                    bindingResult.reject("Account locked");
-                } else if (errorCode == ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED) {
-                    model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
-                    bindingResult.reject("Account suspended");
-                } else if (errorCode == ErrorResponse.CodeEnum.POLICIES_FAIL) {
-                    log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
-                    model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
-                    bindingResult.reject("Policy check failure");
-                    return new ModelAndView(LOGIN_VIEW, model.asMap());
-                } else if (errorCode == ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT) {
-                    Map<String, Object> staleUserResetPasswordParams = model.asMap();
-                    staleUserResetPasswordParams.remove(USERNAME);
-                    staleUserResetPasswordParams.remove(PASSWORD);
-                    staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
-                    return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
-                } else {
-                    model.addAttribute(HAS_LOGIN_FAILED, true);
-                    bindingResult.reject("Login failure");
+                switch (errorCode) {
+                    case ACCOUNT_LOCKED:
+                        model.addAttribute(IS_ACCOUNT_LOCKED, true);
+                        bindingResult.reject("Account locked");
+                    case ACCOUNT_SUSPENDED:
+                        model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
+                        bindingResult.reject("Account suspended");
+                    case POLICIES_FAIL:
+                        log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
+                        model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
+                        bindingResult.reject("Policy check failure");
+                        return new ModelAndView(LOGIN_VIEW, model.asMap());
+                    case STALE_USER_REGISTRATION_SENT:
+                        Map<String, Object> staleUserResetPasswordParams = model.asMap();
+                        staleUserResetPasswordParams.remove(USERNAME);
+                        staleUserResetPasswordParams.remove(PASSWORD);
+                        staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
+                        return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
+                    case ACCOUNT_LINKED_TO_EXTERNAL_PROVIDER:
+                        model.addAttribute(IS_ACCOUNT_SSO_ACCOUNT, true);
+                        bindingResult.reject("Account Linked to SSO Provider");
+                        return new ModelAndView(LOGIN_VIEW, model.asMap());
+                    default:
+                        model.addAttribute(HAS_LOGIN_FAILED, true);
+                        bindingResult.reject("Login failure");
                 }
+            } else {
+                model.addAttribute(HAS_LOGIN_FAILED, true);
+                bindingResult.reject("Login failure");
             }
         } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
@@ -814,7 +826,7 @@ public class AppController {
     }
 
     private String obfuscateEmailAddress(String email) {
-        return email.replaceAll("(^[^@]{3}|(?!^)\\G)[^@]", "$1*"); //NOSONAR
+        return email.replaceAll("((^[^@]{3})|(?!^)\\G)[^@]", "$2*");
     }
 
     /**

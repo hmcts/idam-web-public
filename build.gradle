@@ -31,7 +31,7 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.3.5'
+  def idamBomVersion = '2.3.9'
   //TODO: Remove once spring boot have updated versions to match
   ext['tomcat.version'] = '9.0.37'
   ext['log4j2.version'] = '2.13.3'

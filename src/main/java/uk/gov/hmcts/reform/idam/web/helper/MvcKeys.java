@@ -17,6 +17,7 @@ public class MvcKeys {
     public static final String HAS_OTP_SESSION_EXPIRED = "hasOtpSessionExpired";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
+    public static final String IS_ACCOUNT_SSO_ACCOUNT = "isAccountSSOAccount";
     public static final String JWT = "jwt";
     public static final String PASSWORD = "password";
     public static final String REDIRECTURI = "redirectUri";
