@@ -18,7 +18,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -65,7 +64,49 @@ import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CODE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_SUB_MSG;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_PASSWORD_RESET_LINK_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_SESSION_EXPIRED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_POLICY_CHECK_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INDEX_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STALE_USER_RESET_PASSWORD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
 
 @Slf4j
 @Controller
@@ -284,22 +325,11 @@ public class AppController {
             return ERRORPAGE_VIEW;
         }
 
-        model.addAttribute(SELF_REGISTRATION_ENABLED, false);
-        model.addAttribute(AZURE_LOGIN_ENABLED, false);
-
-        if (Objects.nonNull(request.getClient_id()) && !request.getClient_id().isEmpty()) {
-            Optional<Service> service = spiService.getServiceByClientId(request.getClient_id());
-            service.ifPresent(theService -> {
-                model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
-                model.addAttribute(AZURE_LOGIN_ENABLED, !CollectionUtils.isEmpty(theService.getSsoProviders())
-                    && theService.getSsoProviders().contains(EJUDICIARY_AAD));
-            });
-        }
-
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
+        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(HAS_OTP_CHECK_FAILED, request.isHasOtpCheckFailed());
         if (request.isHasOtpCheckFailed()) {
@@ -814,7 +844,7 @@ public class AppController {
     }
 
     private String obfuscateEmailAddress(String email) {
-        return email.replaceAll("(^[^@]{3}|(?!^)\\G)[^@]", "$1*"); //NOSONAR
+        return email.replaceAll("((^[^@]{3})|(?!^)\\G)[^@]", "$2*");
     }
 
     /**
