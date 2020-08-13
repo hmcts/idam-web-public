@@ -398,9 +398,9 @@ public class AppController {
                         return new ModelAndView(LOGIN_VIEW, model.asMap());
                     }
                 }
-            } else {
+            } else if (authenticationResult.getErrorCode() != null) {
                 final ErrorResponse.CodeEnum errorCode = authenticationResult.getErrorCode();
-                switch(errorCode) {
+                switch (errorCode) {
                     case ACCOUNT_LOCKED:
                         model.addAttribute(IS_ACCOUNT_LOCKED, true);
                         bindingResult.reject("Account locked");
@@ -426,6 +426,9 @@ public class AppController {
                         model.addAttribute(HAS_LOGIN_FAILED, true);
                         bindingResult.reject("Login failure");
                 }
+            } else {
+                model.addAttribute(HAS_LOGIN_FAILED, true);
+                bindingResult.reject("Login failure");
             }
         } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
