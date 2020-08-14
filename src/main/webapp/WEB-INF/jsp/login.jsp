@@ -79,6 +79,30 @@
                                 </p>
                             </div>
                         </c:when>
+                        <c:when test="${isAccountSSOAccount}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'Account is SSO Linked Account');
+                            </script>
+                            <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
+                                <spring:message code="public.login.error.linked.title"/>
+                            </h2>
+                            <div class="text">
+                                <p>
+                                    <spring:message code="public.login.error.linked.please"/>
+                                    <a href="${azureLoginUrl}">
+                                        <spring:message code="public.login.azure.link"/>
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="text">
+                                <p>
+                                    <a href="${pageContext.request.contextPath}/contact-us">
+                                        <spring:message code="public.template.footer.support.link.contact.us" />
+                                    </a>
+                                    <spring:message code="public.login.error.linked.trouble"/>
+                                </p>
+                            </div>
+                        </c:when>
                         <c:when test="${isAccountRetired}">
                             <script>
                                 sendEvent('Authorization', 'Error', 'Account is retired, stale user has been sent reregistration');
@@ -216,6 +240,8 @@
                     <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled"
                                 name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
                     <c:if test="${azureLoginEnabled}">
+                        <form:input path="azureLoginEnabled" type="hidden" id="azureLoginEnabled"
+                                    name="azureLoginEnabled" value="${azureLoginEnabled}"/>
                         <a><spring:message code="public.login.azure.link.or"/></a>
                         <a href="${azureLoginUrl}">
                             <spring:message code="public.login.azure.link"/>
