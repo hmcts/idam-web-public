@@ -7,6 +7,8 @@ server:
   maxConnectionsPerRoute: 200
   maxConnectionsTotal: 200
   servlet:
+    session:
+      timeout: 600m
     context_parameters:
       defaultHtmlEscape: true
   tomcat:
@@ -45,10 +47,32 @@ ssl:
 spring:
   application:
     name: IDAM Web Public
+  # docker run --name web-public-redis -d -p 6379:6379 redis
+  redis:
+    host: localhost
+    port: 6379
   mvc:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
+  session:
+    redis:
+      flush-mode: ON_SAVE
+      namespace: spring:session
+    store-type: redis
+    timeout: 432000s
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: https://sts.windows.net/723e4557-2f17-43ed-9e71-f1beb253e546/
+        registration:
+          oidc:
+            client-id: placeholder
+            client-secret: placeholder
+            client-authentication-method: basic
+            scope: openid
 
 authentication:
   useOAuth2: true

@@ -17,6 +17,7 @@ public class MvcKeys {
     public static final String HAS_OTP_SESSION_EXPIRED = "hasOtpSessionExpired";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
+    public static final String IS_ACCOUNT_SSO_ACCOUNT = "isAccountSSOAccount";
     public static final String JWT = "jwt";
     public static final String PASSWORD = "password";
     public static final String REDIRECTURI = "redirectUri";
@@ -28,6 +29,8 @@ public class MvcKeys {
     public static final String CODE = "code";
     public static final String INVALID_PIN = "invalidPin";
     public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
+    public static final String AZURE_LOGIN_ENABLED = "azureLoginEnabled";
+    public static final String EJUDICIARY_AAD = "ejudiciary-aad";
 
     public static final String ERROR_VIEW = "error";
     public static final String ERRORPAGE_VIEW = "errorpage";
