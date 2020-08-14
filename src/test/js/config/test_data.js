@@ -8,4 +8,8 @@ module.exports = {
     PASSWORD: "Passw0rdIDAM",
     SERVICE_REDIRECT_URI: 'http://idam.testservice.gov.uk',
     SERVICE_CLIENT_SECRET: 'autotestingservice',
+    EJUDICIARY_SSO_PROVIDER_KEY: 'ejudiciary-aad',
+    //TODO: Update test username after it's set up in aad
+    EJUDICIARY_TEST_USER_USERNAME: '',
+    EJUDICIARY_TEST_USER_PASSWORD: process.env.EJUDICIARY_TEST_USER_PASSWORD
 };

@@ -83,7 +83,7 @@ class IdamHelper extends Helper {
     }
 
 
-    createService(serviceName, roleId, token, scope = '') {
+    createService(serviceName, roleId, token, scope = '', ssoProviders = '') {
         let data;
 
         if (roleId === '') {
@@ -97,7 +97,8 @@ class IdamHelper extends Helper {
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
-                selfRegistrationAllowed: true
+                selfRegistrationAllowed: true,
+                ssoProviders: ssoProviders
             };
         } else {
             data = {
@@ -111,7 +112,8 @@ class IdamHelper extends Helper {
                 onboardingRoles: ['auto-private-beta_role'],
                 allowedRoles: [roleId, 'auto-admin_role'],
                 activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
-                selfRegistrationAllowed: true
+                selfRegistrationAllowed: true,
+                ssoProviders: ssoProviders
             };
         }
         return fetch(`${TestData.IDAM_API}/services`, {
