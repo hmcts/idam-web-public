@@ -57,14 +57,7 @@
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.locked.title"/>
                             </h2>
-                            <div class="text">
-                                <p>
-                                    <spring:message
-                                        code="public.login.error.locked.instruction"
-                                        arguments="${forgotPasswordUrl}"
-                                        htmlEscape="false"/>
-                                </p>
-                            </div>
+                            <p class="text"><spring:message code="public.login.error.locked.instruction" arguments="${forgotPasswordUrl}" htmlEscape="false"/></p>
                         </c:when>
                         <c:when test="${isAccountSuspended}">
                             <script>
@@ -110,11 +103,7 @@
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.retired.title"/>
                             </h2>
-                            <div class="text">
-                                <p>
-                                    <spring:message code="public.login.error.retired.instruction"/>
-                                </p>
-                            </div>
+                            <p class="text"><spring:message code="public.login.error.retired.instruction"/></p>
                         </c:when>
                         <c:when test="${hasPolicyCheckFailed}">
                             <script>
@@ -123,11 +112,7 @@
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.policycheck.title"/>
                             </h2>
-                            <div class="text">
-                                <p>
-                                    <spring:message code="public.login.error.policycheck.instruction"/>
-                                </p>
-                            </div>
+                            <p class="text"><spring:message code="public.login.error.policycheck.instruction"/></p>
                         </c:when>
                         <c:when test="${hasLoginFailed}">
                             <script>
@@ -136,6 +121,7 @@
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.failed.title"/>
                             </h2>
+                            <p class="text"><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:when>
                         <c:when test="${hasOtpCheckFailed}">
                             <script>
@@ -144,11 +130,7 @@
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.verificationcheck.title"/>
                             </h2>
-                            <div class="text">
-                                <p>
-                                    <spring:message code="public.login.error.verificationcheck.instruction"/>
-                                </p>
-                            </div>
+                            <p class="text"><spring:message code="public.login.error.verificationcheck.instruction"/></p>
                         </c:when>
                         <c:otherwise>
                             <script>
@@ -157,20 +139,26 @@
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.other.title"/>
                             </h2>
-                            <p><spring:message code="public.common.error.please.fix.following"/></p>
+                            <p class="text"><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:otherwise>
                     </c:choose>
+
+                    <c:if test="${isUsernameEmpty}">
+                        <script>
+                            sendEvent('Authorization', 'Error', 'Username is empty');
+                        </script>
+                    </c:if>
+                    <c:if test="${isPasswordEmpty}">
+                        <script>
+                            sendEvent('Authorization', 'Error', 'Password is empty');
+                        </script>
+                    </c:if>
+
                     <ul class="error-summary-list">
                         <c:if test="${isUsernameEmpty}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'Username is empty');
-                            </script>
                             <li><a href="#username"><form:errors path="username"/></a></li>
                         </c:if>
                         <c:if test="${isPasswordEmpty}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'Password is empty');
-                            </script>
                             <li><a href="#password"><form:errors path="password"/></a></li>
                         </c:if>
                         <c:if test="${hasLoginFailed}">
