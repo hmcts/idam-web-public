@@ -338,6 +338,7 @@ public class AppController {
         if (request.isAzureLoginEnabled()) {
             model.addAttribute(AZURE_LOGIN_ENABLED, true);
         }
+        model.addAttribute(SSO_ENABLED, configurationProperties.getFeatures().isFederatedSSO());
 
         final boolean validationErrors = bindingResult.hasErrors();
         if (validationErrors) {
