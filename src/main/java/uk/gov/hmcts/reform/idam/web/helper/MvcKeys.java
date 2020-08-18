@@ -30,6 +30,7 @@ public class MvcKeys {
     public static final String INVALID_PIN = "invalidPin";
     public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
     public static final String AZURE_LOGIN_ENABLED = "azureLoginEnabled";
+    public static final String SSO_ENABLED = "ssoEnabled";
     public static final String EJUDICIARY_AAD = "ejudiciary-aad";
 
     public static final String ERROR_VIEW = "error";

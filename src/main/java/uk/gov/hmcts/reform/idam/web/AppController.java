@@ -303,6 +303,8 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(HAS_OTP_CHECK_FAILED, request.isHasOtpCheckFailed());
+        model.addAttribute(SSO_ENABLED, configurationProperties.getFeatures().isFederatedSSO());
+
         if (request.isHasOtpCheckFailed()) {
             // redirecting from otp check
             bindingResult.reject("Verification code failed");
