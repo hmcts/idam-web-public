@@ -65,7 +65,12 @@
     <script src="/assets/javascripts/jquery-3.5.1.min.js"></script>
 </head>
 <body>
-<script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+<script>
+    document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
+    $(document).ready(function () {
+        $('body').find(':input.form-control-error:first').focus();
+    });
+</script>
 
 <div id="skiplink-container">
     <div>
