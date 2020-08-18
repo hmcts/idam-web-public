@@ -1,7 +1,21 @@
 management:
   security:
     enabled: false
-        
+
 azure:
   application-insights:
     instrumentation-key: ${AppInsightsInstrumentationKey}
+
+spring:
+  redis:
+    host: ${redis-hostname}
+    port: ${redis-port}
+    password: ${redis-key}
+    ssl: true
+  security:
+    oauth2:
+      client:
+        registration:
+          oidc:
+            client-id: ${sso-client-id}
+            client-secret: ${sso-client-secret}

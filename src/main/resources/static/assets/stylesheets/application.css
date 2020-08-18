@@ -1182,6 +1182,10 @@ textarea {
     float: right;
 }
 
+.login-list a {
+    line-height: 2.2;
+}
+
 @media (min-width: 641px) {
     .phase-banner-alpha,
     .phase-banner-beta {

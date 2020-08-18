@@ -29,5 +29,7 @@ public class AuthorizeRequest {
 
     private String code;
 
+    private boolean azureLoginEnabled;
+
     private boolean hasOtpCheckFailed;
 }
