@@ -90,7 +90,7 @@
                             <div class="text">
                                 <p>
                                     <a href="${pageContext.request.contextPath}/contact-us">
-                                        <spring:message code="public.template.footer.support.link.contact.us" />
+                                        <spring:message code="public.login.error.linked.contact.us" />
                                     </a>
                                     <spring:message code="public.login.error.linked.trouble"/>
                                 </p>
