@@ -113,7 +113,7 @@ public class UserController {
                 model.put(ERROR_MSG, GENERIC_ERROR_KEY);
                 model.put(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
             }
-            return "errorpage";
+            return ERRORPAGE_VIEW;
         }
         return "useractivation";
     }
@@ -243,7 +243,7 @@ public class UserController {
         }
         model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
         model.addAttribute(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
-        return "errorpage";
+        return ERRORPAGE_VIEW;
     }
 
     /**
