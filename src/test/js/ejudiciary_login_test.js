@@ -43,6 +43,8 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
     const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
     expect(userInfo.active).to.equal(true);
     expect(userInfo.email).to.equal(TestData.EJUDICIARY_TEST_USER_USERNAME);
+    expect(userInfo.forename).to.equal('SIDM EJUD');
+    expect(userInfo.surname).to.equal('TEST A');
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.roles).to.eql(['judiciary']);
 
@@ -52,10 +54,11 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
 Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam', async (I) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in', 20, 'h2');
+    I.waitForText('Login with your eJudiciary account', 20);
     I.fillField('#username', TestData.EJUDICIARY_TEST_USER_USERNAME);
     I.fillField('#password', TestData.EJUDICIARY_TEST_USER_PASSWORD);
     I.click('Sign in');
-    I.waitForText('Login with your eJudiciary account', 20);
+    I.waitForText('You need to log in with a different account', 20, 'h2');
     I.click('Login with your eJudiciary account');
     I.waitInUrl('/login/oauth2/code/oidc', 180);
     I.waitForText('Sign in', 20);
@@ -70,16 +73,6 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
-
-    const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
-    expect(userInfo.active).to.equal(true);
-    expect(userInfo.email).to.equal(TestData.EJUDICIARY_TEST_USER_USERNAME);
-    expect(userInfo.id).to.not.equal(null);
-    expect(userInfo.roles).to.eql(['judiciary']);
 
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
