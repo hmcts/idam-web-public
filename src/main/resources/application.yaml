@@ -123,4 +123,4 @@ azure:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
 features:
-  federated-s-s-o: true
+  federated-s-s-o: ${federated.sso:true}
