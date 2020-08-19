@@ -15,7 +15,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.web.Application;
 import uk.gov.hmcts.reform.idam.web.config.IdamWebMvcConfiguration;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
 import java.util.Locale;
+import java.util.Map;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -132,5 +138,25 @@ public class JSPHelperTest {
     public void getOtherLocaleUrl_shouldThrowIfThereIsNoRequestInContext() throws Exception {
         RequestContextHolder.resetRequestAttributes();
         JSPHelper.getOtherLocaleUrl();
+    }
+
+    @Test
+    public void getBaseUrl_shouldCorrectlyBuildUrl() {
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        final Map<String, String> urlMap = Map.of(
+            "http://test.com/context/page?param=value", "http://test.com",
+            "https://test.com/context/page?param=value", "https://test.com",
+            "https://test.com:1234/context/page?param=value", "https://test.com:1234"
+        );
+
+        urlMap.forEach((key, value) -> {
+            try {
+                doReturn(new StringBuffer(key)).when(request).getRequestURL();
+                Assert.assertEquals(value, JSPHelper.getBaseUrl(request));
+            } catch (MalformedURLException e) {
+                Assert.fail("Exception was not expected here");
+            }
+        });
+
     }
 }
