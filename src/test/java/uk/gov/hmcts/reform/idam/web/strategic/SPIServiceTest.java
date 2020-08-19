@@ -707,7 +707,7 @@ public class SPIServiceTest {
     public void authenticate_whenNotFound() throws JsonProcessingException {
         given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
                 eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
-                .willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
+                .willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
         given(objectMapper.readValue(anyString(), eq(ErrorResponse.class)))
                 .willReturn(new ErrorResponse().code(ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT));
 
