@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.web.Application;
-import uk.gov.hmcts.reform.idam.web.config.MessagesConfiguration;
+import uk.gov.hmcts.reform.idam.web.config.IdamWebMvcConfiguration;
 
 import java.util.Locale;
 
@@ -110,7 +110,7 @@ public class JSPHelperTest {
     public void getOtherLocaleUrl_shouldReturnCorrectUrlForEnglish() throws Exception {
         LocaleContextHolder.setLocale(new Locale("en"));
         final String otherLocaleUrl = JSPHelper.getOtherLocaleUrl();
-        Assert.assertTrue(otherLocaleUrl.endsWith("?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=cy"));
+        Assert.assertTrue(otherLocaleUrl.endsWith("?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=cy"));
     }
 
     /**
@@ -121,7 +121,7 @@ public class JSPHelperTest {
     public void getOtherLocaleUrl_shouldReturnCorrectUrlForWelsh() throws Exception {
         LocaleContextHolder.setLocale(new Locale("cy"));
         final String otherLocaleUrl = JSPHelper.getOtherLocaleUrl();
-        Assert.assertTrue(otherLocaleUrl.endsWith("?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=en"));
+        Assert.assertTrue(otherLocaleUrl.endsWith("?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=en"));
     }
 
     /**
