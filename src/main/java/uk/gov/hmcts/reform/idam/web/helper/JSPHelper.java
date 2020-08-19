@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.idam.web.config.MessagesConfiguration;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -78,4 +80,9 @@ public class JSPHelper {
         return LocaleContextHolder.getLocale();
     }
 
+    public static String getBaseUrl(final HttpServletRequest request) throws MalformedURLException {
+        URL requestURL = new URL(request.getRequestURL().toString());
+        String port = requestURL.getPort() == -1 ? "" : ":" + requestURL.getPort();
+        return requestURL.getProtocol() + "://" + requestURL.getHost() + port;
+    }
 }
