@@ -8,6 +8,7 @@
 <!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
 <!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
+    <t:baseUrl/>
     <!-- Google Analytics -->
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
