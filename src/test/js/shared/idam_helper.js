@@ -11,7 +11,7 @@ if (process.env.PROXY_SERVER) {
     // default agent
 } else {
     console.log('using real agent');
-    const Https = require('https');
+    const Https = require('http');
     agentToUse = new Https.Agent({
         rejectUnauthorized: false
     });
@@ -32,7 +32,7 @@ class IdamHelper extends Helper {
 
     async createServiceData(serviceName) {
         const token = await this.getAuthToken();
-        this.createService(serviceName, '', token);
+        this.createService(serviceName, '', token, '', []);
     }
 
     deleteService(service) {
