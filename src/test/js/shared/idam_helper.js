@@ -11,7 +11,7 @@ if (process.env.PROXY_SERVER) {
     // default agent
 } else {
     console.log('using real agent');
-    const Https = require('http');
+    const Https = require('https');
     agentToUse = new Https.Agent({
         rejectUnauthorized: false
     });
