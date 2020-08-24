@@ -11,10 +11,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UrlPathHelper;
 import uk.gov.hmcts.reform.idam.web.Application;
-import uk.gov.hmcts.reform.idam.web.config.MessagesConfiguration;
+import uk.gov.hmcts.reform.idam.web.config.IdamWebMvcConfiguration;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -57,7 +59,7 @@ public class JSPHelper {
      * @should throw on any of the parameters being null
      */
     public static String overrideLocaleParameter(@NonNull final UriComponentsBuilder builder, @NonNull final String targetLocale) {
-        return builder.replaceQueryParam(MessagesConfiguration.UI_LOCALES_PARAM_NAME, new Locale(targetLocale)).toUriString();
+        return builder.replaceQueryParam(IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME, new Locale(targetLocale)).toUriString();
     }
 
     /**
@@ -78,4 +80,9 @@ public class JSPHelper {
         return LocaleContextHolder.getLocale();
     }
 
+    public static String getBaseUrl(final HttpServletRequest request) throws MalformedURLException {
+        URL requestURL = new URL(request.getRequestURL().toString());
+        String port = requestURL.getPort() == -1 ? "" : ":" + requestURL.getPort();
+        return requestURL.getProtocol() + "://" + requestURL.getHost() + port;
+    }
 }
