@@ -29,10 +29,10 @@ public class AuthHelperTest {
     }
 
     @Test
-    public void makeCookiesSecure_shouldReturnANonSecureCookieAndAlreadyContainsHttpOnlyFlag() {
+    public void makeCookiesSecure_shouldReturnANonSecureCookieAndAlreadyContainsHttpOnlyAndSecureFlag() {
         AuthHelper authHelper = new AuthHelper(false);
-        List<String> cookies = authHelper.makeCookiesSecure(Arrays.asList("cookie; Path=/; HttpOnly"));
-        assertEquals("cookie; Path=/; HttpOnly", cookies.get(0));
+        List<String> cookies = authHelper.makeCookiesSecure(Arrays.asList("cookie; Secure; HttpOnly"));
+        assertEquals("cookie; Secure; HttpOnly; Path=/", cookies.get(0));
     }
 
 }
