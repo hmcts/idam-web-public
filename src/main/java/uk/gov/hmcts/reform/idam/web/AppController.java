@@ -327,7 +327,7 @@ public class AppController {
     @PostMapping("/login")
     public ModelAndView login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
                               BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
-                              HttpServletResponse response) {
+                              HttpServletResponse response) throws IOException {
         model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(PASSWORD, request.getPassword());
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
@@ -353,8 +353,8 @@ public class AppController {
         }
 
         // automatically redirect SSO users
-        if (request.isAzureLoginEnabled() && SSOHelper.isSSOEmail(request.getUsername())) {
-            SSOHelper.redirectToExternalProvider(httpRequest, response, false);
+        if (configurationProperties.getFeatures().isFederatedSSO() && SSOHelper.isSSOEmail(request.getUsername())) {
+            SSOHelper.redirectToExternalProvider(httpRequest, response, request.getUsername());
             return null;
         }
 

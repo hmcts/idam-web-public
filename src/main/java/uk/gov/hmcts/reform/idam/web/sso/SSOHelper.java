@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EJUDICIARY_AAD;
 
@@ -22,26 +21,63 @@ public class SSOHelper {
     public final String PROVIDER_ATTR = "provider";
 
     // fixme - externalise
-    public final Set<String> SSO_DOMAINS = Set.of("gmail.com");
+    public final Map<String, String> SSO_DOMAINS = Map.of("gmail.com", EJUDICIARY_AAD);
 
     public boolean isSSOEmail(@NonNull final String username) {
-        return SSO_DOMAINS.contains(StringUtils.substringAfterLast(username, "@"));
+        return SSO_DOMAINS.containsKey(extractEmailDomain(username));
     }
 
+    private String extractEmailDomain(@NonNull final String username) {
+        return StringUtils.substringAfterLast(username, "@");
+    }
+
+    /**
+     * Redirects to the external provider. Takes the SSO provider from existing session if possible.
+     *
+     * @param request
+     * @param response
+     *
+     * @throws IOException
+     */
     public void redirectToExternalProvider(@NonNull final HttpServletRequest request, @NonNull final HttpServletResponse response) throws IOException {
-        redirectToExternalProvider(request, response, true);
+        redirectToExternalProvider(request, response, true, null);
     }
 
-    public void redirectToExternalProvider(@NonNull final HttpServletRequest request, @NonNull final HttpServletResponse response, final boolean reuseExistingSession) throws IOException {
+    /**
+     * Redirects to the external provider. Assumes the SSO provider based on user login (email).
+     *
+     * @param request
+     * @param response
+     * @param loginEmail
+     *
+     * @throws IOException
+     */
+    public void redirectToExternalProvider(@NonNull final HttpServletRequest request, @NonNull final HttpServletResponse response, @NonNull final String loginEmail) throws IOException {
+        redirectToExternalProvider(request, response, false, loginEmail);
+    }
 
-        final HttpSession existingSession = reuseExistingSession ? request.getSession(false) : null;
+    private void redirectToExternalProvider(@NonNull final HttpServletRequest request,
+                                            @NonNull final HttpServletResponse response,
+                                            final boolean reuseExistingSession,
+                                            final String loginEmail) throws IOException {
+
+        final HttpSession existingSession = request.getSession(false);
         boolean ssoSessionExists = existingSession != null && existingSession.getAttribute(PROVIDER_ATTR) != null;
-        final String provider = ssoSessionExists ?
-            existingSession.getAttribute(PROVIDER_ATTR).toString() :
-            request.getParameter(LOGIN_HINT_PARAM).toLowerCase();
+
+        final String provider;
+
+        if (reuseExistingSession && ssoSessionExists) {
+            provider = existingSession.getAttribute(PROVIDER_ATTR).toString();
+        } else {
+            if (loginEmail != null) {
+                provider = SSO_DOMAINS.get(extractEmailDomain(loginEmail));
+            } else {
+                provider = request.getParameter(LOGIN_HINT_PARAM).toLowerCase();
+            }
+        }
 
         if (!ssoSessionExists) {
-            request.getSession().setAttribute(PROVIDER_ATTR, request.getParameter(LOGIN_HINT_PARAM).toLowerCase());
+            request.getSession().setAttribute(PROVIDER_ATTR, provider);
         }
 
         response.sendRedirect(SSO_LOGIN_HINTS.get(provider));
