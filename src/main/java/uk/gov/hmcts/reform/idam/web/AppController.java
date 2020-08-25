@@ -291,7 +291,8 @@ public class AppController {
             service.ifPresent(theService -> {
                 model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
                 if (!CollectionUtils.isEmpty(theService.getSsoProviders())
-                    && theService.getSsoProviders().contains(EJUDICIARY_AAD)) {
+                    && theService.getSsoProviders().contains(EJUDICIARY_AAD)
+                    && configurationProperties.getFeatures().isFederatedSSO()) {
                     model.addAttribute(AZURE_LOGIN_ENABLED, true);
                 }
             });
@@ -303,7 +304,6 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(HAS_OTP_CHECK_FAILED, request.isHasOtpCheckFailed());
-        model.addAttribute(SSO_ENABLED, configurationProperties.getFeatures().isFederatedSSO());
 
         if (request.isHasOtpCheckFailed()) {
             // redirecting from otp check
@@ -335,7 +335,7 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
-        if (request.isAzureLoginEnabled()) {
+        if (request.isAzureLoginEnabled() && configurationProperties.getFeatures().isFederatedSSO()) {
             model.addAttribute(AZURE_LOGIN_ENABLED, true);
         }
 
