@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
+import uk.gov.hmcts.reform.idam.web.sso.SSOHelper;
 import uk.gov.hmcts.reform.idam.web.strategic.ApiAuthResult;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -353,6 +354,12 @@ public class AppController {
             }
             model.addAttribute(HAS_ERRORS, true);
             return new ModelAndView(LOGIN_VIEW, model.asMap());
+        }
+
+        // automatically redirect SSO users
+        if (request.isAzureLoginEnabled() && SSOHelper.isSSOEmail(request.getUsername())) {
+            SSOHelper.redirectToExternalProvider(httpRequest, response, false);
+            return null;
         }
 
         try {
