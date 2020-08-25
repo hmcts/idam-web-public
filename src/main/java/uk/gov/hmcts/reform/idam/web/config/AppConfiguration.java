@@ -121,7 +121,7 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
                 .oauth2Login()
                     // non existent page otherwise defaults to /login
                     .loginPage("/sso/login.html")
-                    .failureUrl("/error?test=a")
+                    .failureUrl("/error")
                     .successHandler(myAuthenticationSuccessHandler(repository))
             .and()
                 .oauth2ResourceServer()

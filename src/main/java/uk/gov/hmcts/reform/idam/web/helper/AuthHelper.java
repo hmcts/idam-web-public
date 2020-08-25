@@ -18,13 +18,17 @@ public class AuthHelper {
     public List<String> makeCookiesSecure(List<String> cookies) {
         return cookies.stream()
             .map(cookie -> {
-                if (!cookie.contains("HttpOnly")) {
-                    if (useSecureCookie) {
-                        return cookie + "; Path=/; Secure; HttpOnly";
-                    }
-                    return cookie + "; Path=/; HttpOnly";
+                String cookieFlags = "; Path=/";
+
+                if (useSecureCookie && !cookie.contains("Secure")) {
+                    cookieFlags += "; Secure";
                 }
-                return cookie;
+
+                if (!cookie.contains("HttpOnly")) {
+                    cookieFlags += "; HttpOnly";
+                }
+
+                return cookie + cookieFlags;
             }).collect(Collectors.toList());
     }
 }
