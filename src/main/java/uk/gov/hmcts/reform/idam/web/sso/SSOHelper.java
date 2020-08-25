@@ -21,7 +21,7 @@ public class SSOHelper {
     public final String PROVIDER_ATTR = "provider";
 
     // fixme - externalise
-    public final Map<String, String> SSO_DOMAINS = Map.of("gmail.com", EJUDICIARY_AAD);
+    public final Map<String, String> SSO_DOMAINS = Map.of("test.com", EJUDICIARY_AAD);
 
     public boolean isSSOEmail(@NonNull final String username) {
         return SSO_DOMAINS.containsKey(extractEmailDomain(username));
