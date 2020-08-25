@@ -57,7 +57,7 @@ public class ValidationService {
         // check password 2
         if (StringUtils.isEmpty(password2)) {
             errorForPassword2 = "public.common.error.enter.password";
-        } else if (!password1.equals(password2)) {
+        } else if (!password2.equals(password1)) {
             errorForPassword2 = "public.common.error.password.should.match";
         }
 
