@@ -1517,8 +1517,6 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
-            // disabled by SIDM-4810
-            // .andExpect(model().attribute(IS_ACCOUNT_SSO_ACCOUNT, true))
             .andExpect(status().isOk())
             .andExpect(view().name(LOGIN_VIEW));
 
