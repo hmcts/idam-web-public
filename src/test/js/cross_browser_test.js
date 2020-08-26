@@ -1,3 +1,5 @@
+const chai = require('chai');
+const {expect} = chai;
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 
@@ -16,7 +18,7 @@ const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=$
 
 BeforeSuite(async (I) => {
     randomUserFirstName = randomData.getRandomUserName();
-    const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
+    randomUserLastName = randomData.getRandomUserName();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
     let token = await I.getAuthToken();
@@ -31,20 +33,14 @@ BeforeSuite(async (I) => {
     roleNames.push(serviceRoles);
     await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
     serviceNames.push(serviceName);
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
-    userFirstNames.push(randomUserFirstName + 'Admin');
-    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
-    userFirstNames.push(randomUserFirstName + 'Citizen');
-    randomUserLastName = randomData.getRandomUserName();
+    userFirstNames.push(randomUserFirstName);
 });
 
 AfterSuite(async (I) => {
-     return I.deleteAllTestData(randomData.TEST_BASE_PREFIX)
+    return I.deleteAllTestData(randomData.TEST_BASE_PREFIX)
 });
 
 Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
-    citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
-
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     // create account
@@ -73,12 +69,21 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
     I.waitForText('Sign in', 20, 'h1');
     I.fillField('#username', ' ' + citizenEmail);
     I.fillField('#password', TestData.PASSWORD);
-    I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-    I.resetRequestInterception();
+    I.wait(3);
+
+    const pageSource = await I.grabSource();
+    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+
+    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+
+    const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
+    expect(userInfo.active).to.equal(true);
+    expect(userInfo.email).to.equal(citizenEmail);
+    expect(userInfo.forename).to.equal(randomUserFirstName);
+    expect(userInfo.id).to.not.equal(null);
+    expect(userInfo.surname).to.equal(randomUserLastName);
+    expect(userInfo.roles).to.eql(['citizen']);
 
     //Reset password
     I.amOnPage(loginPage);
