@@ -420,10 +420,6 @@ public class AppController {
                         staleUserResetPasswordParams.remove(PASSWORD);
                         staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
                         return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
-                    case ACCOUNT_LINKED_TO_EXTERNAL_PROVIDER:
-                        model.addAttribute(IS_ACCOUNT_SSO_ACCOUNT, true);
-                        bindingResult.reject("Account Linked to SSO Provider");
-                        return new ModelAndView(LOGIN_VIEW, model.asMap());
                     default:
                         model.addAttribute(HAS_LOGIN_FAILED, true);
                         bindingResult.reject("Login failure");
