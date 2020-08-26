@@ -227,7 +227,7 @@
                            value="<spring:message code="public.login.form.submit" />">
                     <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled"
                                 name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
-                    <c:if test="${azureLoginEnabled && ssoEnabled}">
+                    <c:if test="${azureLoginEnabled}">
                         <form:input path="azureLoginEnabled" type="hidden" id="azureLoginEnabled"
                                     name="azureLoginEnabled" value="${azureLoginEnabled}"/>
                         <a><spring:message code="public.login.azure.link.or"/></a>

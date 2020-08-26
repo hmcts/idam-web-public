@@ -57,3 +57,8 @@ cp *.html functional-output/
 zap-cli -p $ZAP_PORT alerts -l Informational
 zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT alerts -l High --exit-code False
 curl --fail http://${ZAP_HOST}:${ZAP_PORT}/OTHER/core/other/jsonreport/?formMethod=GET --output report.json
+
+# INFO: in order to add more exclusions for low-level issues, please do the following:
+# - Extract the JSON output of the security scan from the build (an array of objects, each beginning with "task":"OWASP Zaproxy")
+# - Transform it with jq using the following query: map({(.fingerprint):"ignore"})|add
+# - Add the entries you are interested in to audit.json
