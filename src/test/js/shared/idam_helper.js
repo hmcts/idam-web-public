@@ -504,7 +504,7 @@ class IdamHelper extends Helper {
     }
 
     interceptRequestsAfterSignin() {
-        const helper = this.helpers['Puppeteer'];
+        const helper = this.helpers['Puppeteer'] || this.helpers['WebDriverIO'];
         helper.page.setRequestInterception(true);
         const pages = ["/login", "/register", "/activate", "/verification", "/useractivated"];
 
@@ -522,7 +522,7 @@ class IdamHelper extends Helper {
     }
 
     resetRequestInterception() {
-        const helper = this.helpers['Puppeteer'];
+        const helper = this.helpers['Puppeteer'] || this.helpers['WebDriverIO'];
         helper.page.setRequestInterception(false);
     }
 
