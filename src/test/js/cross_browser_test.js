@@ -69,7 +69,7 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
     I.fillField('#username', ' ' + citizenEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(2);
+    I.wait(5);
     I.dontSee('Sign in');
 
     //Reset password
