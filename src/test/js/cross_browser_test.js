@@ -62,7 +62,6 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created', 20, 'h1');
-    I.see('You can now sign in to your account.');
 
     // login
     I.amOnPage(loginPage);
@@ -70,20 +69,8 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
     I.fillField('#username', ' ' + citizenEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(3);
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-
-    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
-
-    const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
-    expect(userInfo.active).to.equal(true);
-    expect(userInfo.email).to.equal(citizenEmail);
-    expect(userInfo.forename).to.equal(randomUserFirstName);
-    expect(userInfo.id).to.not.equal(null);
-    expect(userInfo.surname).to.equal(randomUserLastName);
-    expect(userInfo.roles).to.eql(['citizen']);
+    I.wait(2);
+    I.dontSee('Sign in');
 
     //Reset password
     I.amOnPage(loginPage);
