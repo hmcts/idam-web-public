@@ -75,8 +75,7 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    I.waitForText('code=');
 
     //Reset password
     I.amOnPage(loginPage);
