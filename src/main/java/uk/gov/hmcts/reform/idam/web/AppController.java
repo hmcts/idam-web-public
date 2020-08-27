@@ -41,7 +41,7 @@ import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
-import uk.gov.hmcts.reform.idam.web.sso.SSOHelper;
+import uk.gov.hmcts.reform.idam.web.sso.SSOService;
 import uk.gov.hmcts.reform.idam.web.strategic.ApiAuthResult;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -86,6 +86,9 @@ public class AppController {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    private SSOService ssoService;
 
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
@@ -293,7 +296,7 @@ public class AppController {
                 model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
                 if (!CollectionUtils.isEmpty(theService.getSsoProviders())
                     && theService.getSsoProviders().contains(EJUDICIARY_AAD)
-                    && configurationProperties.getFeatures().isFederatedSSO()) {
+                    && configurationProperties.getFeatures().getFederatedSSO().isEnabled()) {
                     model.addAttribute(AZURE_LOGIN_ENABLED, true);
                 }
             });
@@ -336,7 +339,7 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
-        if (request.isAzureLoginEnabled() && configurationProperties.getFeatures().isFederatedSSO()) {
+        if (request.isAzureLoginEnabled() && configurationProperties.getFeatures().getFederatedSSO().isEnabled()) {
             model.addAttribute(AZURE_LOGIN_ENABLED, true);
         }
 
@@ -353,8 +356,8 @@ public class AppController {
         }
 
         // automatically redirect SSO users
-        if (configurationProperties.getFeatures().isFederatedSSO() && SSOHelper.isSSOEmail(request.getUsername())) {
-            SSOHelper.redirectToExternalProvider(httpRequest, response, request.getUsername());
+        if (configurationProperties.getFeatures().getFederatedSSO().isEnabled() && ssoService.isSSOEmail(request.getUsername())) {
+            ssoService.redirectToExternalProvider(httpRequest, response, request.getUsername());
             return null;
         }
 
