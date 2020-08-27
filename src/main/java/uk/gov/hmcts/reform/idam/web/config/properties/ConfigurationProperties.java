@@ -11,10 +11,5 @@ public class ConfigurationProperties {
     private ServerConfigurationProperties server;
     private StrategicConfigurationProperties strategic;
     private SSLConfigurationProperties ssl;
-    private Features features;
-
-    @Data
-    public static class Features {
-        private boolean federatedSSO;
-    }
+    private FeaturesConfigurationProperties features;
 }
