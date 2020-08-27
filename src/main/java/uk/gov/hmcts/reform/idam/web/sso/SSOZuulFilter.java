@@ -12,16 +12,20 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
-import static uk.gov.hmcts.reform.idam.web.sso.SSOHelper.*;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.LOGIN_HINT_PARAM;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.PROVIDER_ATTR;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_LOGIN_HINTS;
 
 @Component
 public class SSOZuulFilter extends ZuulFilter {
 
     private final ConfigurationProperties configurationProperties;
+    private final SSOService ssoService;
 
     @Autowired
-    public SSOZuulFilter(final ConfigurationProperties configurationProperties) {
+    public SSOZuulFilter(final ConfigurationProperties configurationProperties, final SSOService ssoService) {
         this.configurationProperties = configurationProperties;
+        this.ssoService = ssoService;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class SSOZuulFilter extends ZuulFilter {
     }
 
     protected boolean isSSOEnabled() {
-        return configurationProperties.getFeatures().isFederatedSSO();
+        return configurationProperties.getFeatures().getFederatedSSO().isEnabled();
     }
 
     @Override
@@ -56,7 +60,7 @@ public class SSOZuulFilter extends ZuulFilter {
         ctx.setSendZuulResponse(false);
 
         try {
-            SSOHelper.redirectToExternalProvider(request, ctx.getResponse());
+            ssoService.redirectToExternalProvider(request, ctx.getResponse());
         } catch (IOException e) {
             throw new ZuulException(e, 500, "Unable to redirect to provider: " + e.getMessage());
         }

@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.idam.web.sso;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.NonNull;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,18 +15,21 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EJUDICIARY_AAD;
 
-@UtilityClass
-public class SSOHelper {
+@Component
+public class SSOService {
 
-    public final Map<String, String> SSO_LOGIN_HINTS = ImmutableMap.of(EJUDICIARY_AAD, "/oauth2/authorization/oidc");
-    public final String LOGIN_HINT_PARAM = "login_hint";
-    public final String PROVIDER_ATTR = "provider";
+    public static final Map<String, String> SSO_LOGIN_HINTS = ImmutableMap.of(EJUDICIARY_AAD, "/oauth2/authorization/oidc");
+    public static final String LOGIN_HINT_PARAM = "login_hint";
+    public static final String PROVIDER_ATTR = "provider";
 
-    // fixme - externalise
-    public final Map<String, String> SSO_DOMAINS = Map.of("test.com", EJUDICIARY_AAD);
+    @Autowired
+    private ConfigurationProperties configurationProperties;
 
     public boolean isSSOEmail(@NonNull final String username) {
-        return SSO_DOMAINS.containsKey(extractEmailDomain(username));
+        return configurationProperties.getFeatures()
+            .getFederatedSSO()
+            .getSsoEmailDomains()
+            .containsKey(extractEmailDomain(username));
     }
 
     private String extractEmailDomain(@NonNull final String username) {
@@ -70,7 +75,10 @@ public class SSOHelper {
             provider = existingSession.getAttribute(PROVIDER_ATTR).toString();
         } else {
             if (loginEmail != null) {
-                provider = SSO_DOMAINS.get(extractEmailDomain(loginEmail));
+                provider = configurationProperties.getFeatures()
+                    .getFederatedSSO()
+                    .getSsoEmailDomains()
+                    .get(extractEmailDomain(loginEmail));
             } else {
                 provider = request.getParameter(LOGIN_HINT_PARAM).toLowerCase();
             }
