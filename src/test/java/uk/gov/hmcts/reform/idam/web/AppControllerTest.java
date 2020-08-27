@@ -1876,25 +1876,6 @@ public class AppControllerTest {
             .andExpect(view().name(ERROR_VIEW_NAME));
     }
 
-    /**
-     * @verifies return a secure cookie if useSecureCookie is true
-     * @see AppController#makeCookiesSecure(List, boolean)
-     */
-    @Test
-    public void makeCookiesSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
-        AppController appController = new AppController();
-        assertThat(appController.makeCookiesSecure(singletonList(INSECURE_SESSION_COOKE), true), is(singletonList(AUTHENTICATE_SESSION_COOKE)));
-    }
-
-    /**
-     * @verifies return a non-secure cookie if useSecureCookie is false
-     * @see AppController#makeCookiesSecure(List, boolean)
-     */
-    @Test
-    public void makeCookiesSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
-        AppController appController = new AppController();
-        assertThat(appController.makeCookiesSecure(singletonList(INSECURE_SESSION_COOKE), false), is(singletonList(INSECURE_SESSION_COOKE + "; Path=/; HttpOnly")));
-    }
 
     /**
      * @verifies put in model the correct error variable in case policy returns BLOCK

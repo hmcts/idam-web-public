@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.helper.AuthHelper;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
@@ -85,6 +86,9 @@ public class AppController {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    private AuthHelper authHelper;
 
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
@@ -370,7 +374,7 @@ public class AppController {
                 if (authenticationResult.requiresMfa()) {
                     log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
 
-                    List<String> secureCookies = makeCookiesSecure(cookies);
+                    List<String> secureCookies = authHelper.makeCookiesSecure(cookies);
                     secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
 
                     final List<String> affinityCookieNames = Optional.ofNullable(configurationProperties.getStrategic().getSession().getAffinityCookies()).orElse(new ArrayList<>());
@@ -390,7 +394,7 @@ public class AppController {
 
                     if (loginSuccess) {
                         log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
-                        List<String> secureCookies = makeCookiesSecure(cookies);
+                        List<String> secureCookies = authHelper.makeCookiesSecure(cookies);
                         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                         return new ModelAndView("redirect:" + responseUrl);
                     } else {
@@ -542,7 +546,7 @@ public class AppController {
             final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
             if (loginSuccess) {
                 log.info("/verification: Successful login");
-                List<String> secureCookies = makeCookiesSecure(responseCookies);
+                List<String> secureCookies = authHelper.makeCookiesSecure(responseCookies);
                 secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                 return new ModelAndView("redirect:" + responseUrl);
             } else {
@@ -602,26 +606,7 @@ public class AppController {
         return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
     }
 
-    private List<String> makeCookiesSecure(List<String> cookies) {
-        return makeCookiesSecure(cookies, useSecureCookie);
-    }
 
-    /**
-     * @should return a secure cookie if useSecureCookie is true
-     * @should return a non-secure cookie if useSecureCookie is false
-     */
-    protected List<String> makeCookiesSecure(List<String> cookies, boolean withSecureCookie) {
-        return cookies.stream()
-            .map(cookie -> {
-                if (!cookie.contains("HttpOnly")) {
-                    if (withSecureCookie) {
-                        return cookie + "; Path=/; Secure; HttpOnly";
-                    }
-                    return cookie + "; Path=/; HttpOnly";
-                }
-                return cookie;
-            }).collect(Collectors.toList());
-    }
 
     /**
      * @should uplift user
