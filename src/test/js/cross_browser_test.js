@@ -1,9 +1,7 @@
-const chai = require('chai');
-const {expect} = chai;
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 
-Feature('Users can sign in');
+Feature('Users can create account, sign in and reset password');
 
 let randomUserFirstName;
 let citizenEmail;

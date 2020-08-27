@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.idam.web.config;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,6 +53,24 @@ public class RequestMethodInterceptorTest {
                 Assert.fail("Exception should not be thrown here");
             }
         });
+    }
+
+    @Test
+    public void preHandle_shouldNotRejectOtherHttpMethod() {
+        final RequestMethodInterceptor interceptor = new RequestMethodInterceptor();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        Object handler = new Object();
+
+        try {
+            doReturn(HttpMethod.GET.name()).when(request).getMethod();
+            doReturn("1").when(request).getHeader(eq(HttpHeaders.MAX_FORWARDS));
+
+            assertTrue(interceptor.preHandle(request, response, handler));
+        } catch (IOException e) {
+            Assert.fail("Exception should not be thrown here");
+        }
+
     }
 
 }
