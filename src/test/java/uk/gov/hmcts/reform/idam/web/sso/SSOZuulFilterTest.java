@@ -126,7 +126,7 @@ public class SSOZuulFilterTest {
     @Test
     public void run_shouldRedirectWhenThereIsExistingSessionWithAttribute() throws ZuulException, IOException {
         doReturn(session).when(request).getSession(eq(false));
-        doReturn(MvcKeys.EJUDICIARY_AAD).when(session).getAttribute(eq(SSOZuulFilter.PROVIDER_ATTR));
+        doReturn(MvcKeys.EJUDICIARY_AAD).when(session).getAttribute(eq(SSOHelper.PROVIDER_ATTR));
         underTest.run();
         verify(response, atLeastOnce()).sendRedirect(anyString());
     }
