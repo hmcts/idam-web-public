@@ -49,14 +49,13 @@ public class SSOZuulFilter extends ZuulFilter {
     }
 
     protected boolean isSSOEnabled() {
-        return configurationProperties.getFeatures().getFederatedSSO().isEnabled();
+        return configurationProperties.getFeatures().isFederatedSSO();
     }
 
     @Override
     public Object run() throws ZuulException {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
-        request.getSession().setAttribute("oidcParams", request.getParameterMap());
         ctx.setSendZuulResponse(false);
 
         try {

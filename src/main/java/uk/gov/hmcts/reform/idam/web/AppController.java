@@ -300,7 +300,7 @@ public class AppController {
                 model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
                 if (!CollectionUtils.isEmpty(theService.getSsoProviders())
                     && theService.getSsoProviders().contains(EJUDICIARY_AAD)
-                    && configurationProperties.getFeatures().getFederatedSSO().isEnabled()) {
+                    && configurationProperties.getFeatures().isFederatedSSO()) {
                     model.addAttribute(AZURE_LOGIN_ENABLED, true);
                 }
             });
@@ -343,7 +343,7 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
-        if (request.isAzureLoginEnabled() && configurationProperties.getFeatures().getFederatedSSO().isEnabled()) {
+        if (request.isAzureLoginEnabled() && configurationProperties.getFeatures().isFederatedSSO()) {
             model.addAttribute(AZURE_LOGIN_ENABLED, true);
         }
 
@@ -360,7 +360,7 @@ public class AppController {
         }
 
         // automatically redirect SSO users
-        if (configurationProperties.getFeatures().getFederatedSSO().isEnabled() && ssoService.isSSOEmail(request.getUsername())) {
+        if (configurationProperties.getFeatures().isFederatedSSO() && ssoService.isSSOEmail(request.getUsername())) {
             ssoService.redirectToExternalProvider(httpRequest, response, request.getUsername());
             return null;
         }
