@@ -110,15 +110,13 @@ public class SSOZuulFilterTest {
     public void isSSOEnabled_shouldReturnCorrectValue() {
         var configurationProperties = new ConfigurationProperties();
         var features = new FeaturesConfigurationProperties();
-        var federatedSSO = mock(FeaturesConfigurationProperties.FederatedSSO.class);
-        features.setFederatedSSO(federatedSSO);
         configurationProperties.setFeatures(features);
         var ssoZuulFilter = new SSOZuulFilter(configurationProperties, ssoService);
 
-        doReturn(true).when(federatedSSO).isEnabled();
+        doReturn(true).when(features).isFederatedSSO();
         assertTrue(ssoZuulFilter.isSSOEnabled());
 
-        doReturn(false).when(federatedSSO).isEnabled();
+        doReturn(false).when(features).isFederatedSSO();
         assertFalse(ssoZuulFilter.isSSOEnabled());
     }
 

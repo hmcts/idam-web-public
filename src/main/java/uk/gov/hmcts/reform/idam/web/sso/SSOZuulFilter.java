@@ -49,7 +49,7 @@ public class SSOZuulFilter extends ZuulFilter {
     }
 
     protected boolean isSSOEnabled() {
-        return configurationProperties.getFeatures().getFederatedSSO().isEnabled();
+        return configurationProperties.getFeatures().isFederatedSSO();
     }
 
     @Override

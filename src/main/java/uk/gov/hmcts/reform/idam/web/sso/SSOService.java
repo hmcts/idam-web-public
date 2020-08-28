@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EJUDICIARY_AAD;
@@ -26,10 +27,15 @@ public class SSOService {
     private ConfigurationProperties configurationProperties;
 
     public boolean isSSOEmail(@NonNull final String username) {
-        return configurationProperties.getFeatures()
-            .getFederatedSSO()
-            .getSsoEmailDomains()
-            .containsKey(extractEmailDomain(username));
+        final String emailDomain = extractEmailDomain(username);
+        return getSsoEmailDomains()
+            .keySet()
+            .stream()
+            .anyMatch(domain -> domain.equalsIgnoreCase(emailDomain));
+    }
+
+    protected Map<String, String> getSsoEmailDomains() {
+        return configurationProperties.getSsoEmailDomains();
     }
 
     private String extractEmailDomain(@NonNull final String username) {
@@ -75,10 +81,7 @@ public class SSOService {
             provider = existingSession.getAttribute(PROVIDER_ATTR).toString();
         } else {
             if (loginEmail != null) {
-                provider = configurationProperties.getFeatures()
-                    .getFederatedSSO()
-                    .getSsoEmailDomains()
-                    .get(extractEmailDomain(loginEmail));
+                provider = getSsoEmailDomains().get(extractEmailDomain(loginEmail));
             } else {
                 provider = request.getParameter(LOGIN_HINT_PARAM).toLowerCase();
             }
