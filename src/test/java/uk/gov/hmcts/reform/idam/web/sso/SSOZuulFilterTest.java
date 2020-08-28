@@ -109,7 +109,7 @@ public class SSOZuulFilterTest {
     @Test
     public void isSSOEnabled_shouldReturnCorrectValue() {
         var configurationProperties = new ConfigurationProperties();
-        var features = new FeaturesConfigurationProperties();
+        var features = mock(FeaturesConfigurationProperties.class);
         configurationProperties.setFeatures(features);
         var ssoZuulFilter = new SSOZuulFilter(configurationProperties, ssoService);
 
