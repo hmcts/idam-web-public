@@ -23,8 +23,12 @@ public class SSOService {
     public static final String LOGIN_HINT_PARAM = "login_hint";
     public static final String PROVIDER_ATTR = "provider";
 
+    private final ConfigurationProperties configurationProperties;
+
     @Autowired
-    private ConfigurationProperties configurationProperties;
+    public SSOService(ConfigurationProperties configurationProperties) {
+        this.configurationProperties = configurationProperties;
+    }
 
     public boolean isSSOEmail(@NonNull final String username) {
         final String emailDomain = extractEmailDomain(username);
