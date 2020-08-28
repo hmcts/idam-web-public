@@ -275,7 +275,7 @@
             https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-18640
             The Alias feature in SnakeYAML 1.18 allows entity expansion during a load operation, a related issue to CVE-2003-1564.
         </notes>
-        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <gav regex="true">^org\.yaml:snakeyaml:1\.25.*$</gav>
         <cve>CVE-2017-18640</cve>
     </suppress>
 
