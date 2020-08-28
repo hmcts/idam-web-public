@@ -56,7 +56,6 @@ public class SSOZuulFilter extends ZuulFilter {
     public Object run() throws ZuulException {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
-        request.getSession().setAttribute("oidcParams", request.getParameterMap());
         ctx.setSendZuulResponse(false);
 
         try {

@@ -91,6 +91,13 @@ public class SSOService {
             request.getSession().setAttribute(PROVIDER_ATTR, provider);
         }
 
+        final Map<String, String[]> oidcParams = new HashMap<>(request.getParameterMap());
+        if (!oidcParams.containsKey(LOGIN_HINT_PARAM)) {
+            oidcParams.put(LOGIN_HINT_PARAM, new String[]{provider});
+        }
+        request.getSession().setAttribute("oidcParams", oidcParams);
+
+
         response.sendRedirect(SSO_LOGIN_HINTS.get(provider));
     }
 }
