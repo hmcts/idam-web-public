@@ -123,7 +123,7 @@ azure:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
 features:
-  federated-s-s-o:
-    enabled: ${federated.sso:true}
-    ssoEmailDomains:
-      ejudiciary.net: ejudiciary-aad
+  federated-s-s-o: ${federated.sso:true}
+
+ssoEmailDomains:
+  ejudiciary.net: ejudiciary-aad
