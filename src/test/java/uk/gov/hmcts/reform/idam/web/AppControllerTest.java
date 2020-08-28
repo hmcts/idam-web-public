@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -68,17 +69,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHENTICATE_SESSION_COOKE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
@@ -103,7 +94,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_PREVIOUSLY_U
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_TITLE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERR_LOCKED_FAILED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERR_STALE_USER_REGISTRATION_SENT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_INACTIVE_USER_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_REDIRECTED_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_TOKEN_ENDPOINT;
@@ -180,6 +171,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(AppController.class)
+@TestPropertySource(properties = "testing=true")
 public class AppControllerTest {
 
     @Autowired
@@ -1432,10 +1424,29 @@ public class AppControllerTest {
             .policiesAction(EvaluatePoliciesAction.ALLOW)
             .build();
 
+        ApiAuthResult authResultNoCookies = ApiAuthResult.builder()
+            .httpStatus(HttpStatus.OK)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
+
         ApiAuthResult authResultLocked = ApiAuthResult.builder()
             .cookies(cookieList)
             .httpStatus(HttpStatus.OK)
             .errorCode(ErrorResponse.CodeEnum.ACCOUNT_LOCKED)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
+
+        ApiAuthResult authResultSso = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.OK)
+            .errorCode(ErrorResponse.CodeEnum.ACCOUNT_LINKED_TO_EXTERNAL_PROVIDER)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
+
+        ApiAuthResult authResultUnchecked = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.OK)
+            .errorCode(ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)
             .policiesAction(EvaluatePoliciesAction.ALLOW)
             .build();
 
@@ -1460,7 +1471,53 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(status().isOk())
+            .andExpect(view().name(LOGIN_VIEW));
 
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResultNoCookies);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
+            .andExpect(status().isOk())
+            .andExpect(view().name(LOGIN_VIEW));
+
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResultUnchecked);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
+            .andExpect(status().isOk())
+            .andExpect(view().name(LOGIN_VIEW));
+
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResultSso);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(status().isOk())
             .andExpect(view().name(LOGIN_VIEW));
 
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
@@ -1819,25 +1876,6 @@ public class AppControllerTest {
             .andExpect(view().name(ERROR_VIEW_NAME));
     }
 
-    /**
-     * @verifies return a secure cookie if useSecureCookie is true
-     * @see AppController#makeCookiesSecure(List, boolean)
-     */
-    @Test
-    public void makeCookiesSecure_shouldReturnASecureCookieIfUseSecureCookieIsTrue() throws Exception {
-        AppController appController = new AppController();
-        assertThat(appController.makeCookiesSecure(singletonList(INSECURE_SESSION_COOKE), true), is(singletonList(AUTHENTICATE_SESSION_COOKE)));
-    }
-
-    /**
-     * @verifies return a non-secure cookie if useSecureCookie is false
-     * @see AppController#makeCookiesSecure(List, boolean)
-     */
-    @Test
-    public void makeCookiesSecure_shouldReturnANonsecureCookieIfUseSecureCookieIsFalse() throws Exception {
-        AppController appController = new AppController();
-        assertThat(appController.makeCookiesSecure(singletonList(INSECURE_SESSION_COOKE), false), is(singletonList(INSECURE_SESSION_COOKE + "; Path=/; HttpOnly")));
-    }
 
     /**
      * @verifies put in model the correct error variable in case policy returns BLOCK
@@ -2216,6 +2254,17 @@ public class AppControllerTest {
             any());
     }
 
+    @Test
+    public void resetPasswordStaleUser_shouldReturnTheCorrectView() throws Exception {
+        mockMvc.perform(get(RESET_INACTIVE_USER_ENDPOINT).with(csrf())
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(view().name(STALE_USER_RESET_PASSWORD_VIEW));
+    }
+
     /**
      * @verifies submit otp authentication filtering out Idam.Session cookie to avoid session bugs
      * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
@@ -2283,5 +2332,55 @@ public class AppControllerTest {
             .andExpect(model().attribute(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
 
         verify(spiService, never()).authorize(any(), eq(authCookies));
+    }
+
+    @Test
+    public void login_shouldSetAzureLoginEnabledWhenSSOEnabledAndSSOHindPresent() throws Exception {
+        List<String> authCookies = singletonList(AUTHENTICATE_SESSION_COOKE);
+        ApiAuthResult authResult = ApiAuthResult.builder()
+            .cookies(authCookies)
+            .httpStatus(HttpStatus.OK)
+            .policiesAction(EvaluatePoliciesAction.MFA_REQUIRED)
+            .build();
+
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResult);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(AZURE_LOGIN_ENABLED, "true")
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(model().attribute(AZURE_LOGIN_ENABLED,true));
+    }
+
+    @Test
+    public void login_shouldNotSetAzureLoginEnabledWhenSSOEnabledAndSSOHindPresent() throws Exception {
+        List<String> authCookies = singletonList(AUTHENTICATE_SESSION_COOKE);
+        ApiAuthResult authResult = ApiAuthResult.builder()
+            .cookies(authCookies)
+            .httpStatus(HttpStatus.OK)
+            .policiesAction(EvaluatePoliciesAction.MFA_REQUIRED)
+            .build();
+
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResult);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(AZURE_LOGIN_ENABLED, "false")
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(model().attributeDoesNotExist(AZURE_LOGIN_ENABLED));
     }
 }

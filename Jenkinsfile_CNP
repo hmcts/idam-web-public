@@ -20,7 +20,8 @@ def secrets = [
     'idam-${env}': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
-        secret('notify-api-key', 'NOTIFY_API_KEY')
+        secret('notify-api-key', 'NOTIFY_API_KEY'),
+        secret('EJUDICIARY-TEST-USER-PASSWORD', 'EJUDICIARY_TEST_USER_PASSWORD')
     ]
 ]
 
@@ -188,4 +189,8 @@ withPipeline(type, product, component) {
             reportName           : "IDAM Web Public E2E functional tests result"
         ]
     }
+  
+  before('buildinfra:idam-prod') {
+      error('Stopping pipeline before Prod stages')
+  }
 }
