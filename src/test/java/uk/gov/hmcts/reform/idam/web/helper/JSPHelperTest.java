@@ -8,16 +8,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.web.Application;
-import uk.gov.hmcts.reform.idam.web.config.MessagesConfiguration;
+import uk.gov.hmcts.reform.idam.web.config.IdamWebMvcConfiguration;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
 import java.util.Locale;
+import java.util.Map;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@TestPropertySource(properties = "testing=true")
+// Disable Redis autoconfigure for test
+@TestPropertySource(properties = "SPRING_AUTOCONFIGURE_EXCLUDE=org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration")
+@TestPropertySource(properties = "spring.session.store-type: none")
 public class JSPHelperTest {
 
     private static final String BASE_TEST_URI = "http://example.com/";
@@ -105,7 +116,7 @@ public class JSPHelperTest {
     public void getOtherLocaleUrl_shouldReturnCorrectUrlForEnglish() throws Exception {
         LocaleContextHolder.setLocale(new Locale("en"));
         final String otherLocaleUrl = JSPHelper.getOtherLocaleUrl();
-        Assert.assertTrue(otherLocaleUrl.endsWith("?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=cy"));
+        Assert.assertTrue(otherLocaleUrl.endsWith("?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=cy"));
     }
 
     /**
@@ -116,7 +127,7 @@ public class JSPHelperTest {
     public void getOtherLocaleUrl_shouldReturnCorrectUrlForWelsh() throws Exception {
         LocaleContextHolder.setLocale(new Locale("cy"));
         final String otherLocaleUrl = JSPHelper.getOtherLocaleUrl();
-        Assert.assertTrue(otherLocaleUrl.endsWith("?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=en"));
+        Assert.assertTrue(otherLocaleUrl.endsWith("?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=en"));
     }
 
     /**
@@ -127,5 +138,25 @@ public class JSPHelperTest {
     public void getOtherLocaleUrl_shouldThrowIfThereIsNoRequestInContext() throws Exception {
         RequestContextHolder.resetRequestAttributes();
         JSPHelper.getOtherLocaleUrl();
+    }
+
+    @Test
+    public void getBaseUrl_shouldCorrectlyBuildUrl() {
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        final Map<String, String> urlMap = Map.of(
+            "http://test.com/context/page?param=value", "http://test.com",
+            "https://test.com/context/page?param=value", "https://test.com",
+            "https://test.com:1234/context/page?param=value", "https://test.com:1234"
+        );
+
+        urlMap.forEach((key, value) -> {
+            try {
+                doReturn(new StringBuffer(key)).when(request).getRequestURL();
+                Assert.assertEquals(value, JSPHelper.getBaseUrl(request));
+            } catch (MalformedURLException e) {
+                Assert.fail("Exception was not expected here");
+            }
+        });
+
     }
 }

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -20,13 +19,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
-import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
@@ -41,12 +39,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.google.common.net.HttpHeaders.X_FORWARDED_FOR;
+import static java.util.Collections.singletonList;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -120,9 +120,6 @@ public class SPIServiceTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConfigurationProperties configurationProperties;
-
-    @Mock
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @InjectMocks
     private SPIService spiService;
@@ -675,53 +672,5 @@ public class SPIServiceTest {
             .willReturn(ResponseEntity.ok().build());
         ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
         assertTrue(result.getCookies().isEmpty());
-    }
-
-    @Test
-    public void authenticate_whenForbidden() throws JsonProcessingException {
-        given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
-                eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
-                .willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
-        given(objectMapper.readValue(anyString(), eq(ErrorResponse.class)))
-                .willReturn(new ErrorResponse().code(ErrorResponse.CodeEnum.ACCOUNT_LOCKED));
-
-        ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
-        assertFalse(result.isSuccess());
-        assertEquals(result.getErrorCode(), ErrorResponse.CodeEnum.ACCOUNT_LOCKED);
-    }
-
-    @Test
-    public void authenticate_whenUnauthorized() throws JsonProcessingException {
-        given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
-                eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
-                .willThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
-        given(objectMapper.readValue(anyString(), eq(ErrorResponse.class)))
-                .willReturn(new ErrorResponse().code(ErrorResponse.CodeEnum.POLICIES_FAIL));
-
-        ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
-        assertFalse(result.isSuccess());
-        assertEquals(result.getErrorCode(), ErrorResponse.CodeEnum.POLICIES_FAIL);
-    }
-
-    @Test
-    public void authenticate_whenNotFound() throws JsonProcessingException {
-        given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
-                eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
-                .willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
-        given(objectMapper.readValue(anyString(), eq(ErrorResponse.class)))
-                .willReturn(new ErrorResponse().code(ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT));
-
-        ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
-        assertFalse(result.isSuccess());
-        assertEquals(result.getErrorCode(), ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT);
-    }
-
-    @Test(expected = HttpServerErrorException.class)
-    public void authenticate_whenBadGateway() throws JsonProcessingException {
-        given(restTemplate.exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
-                eq(HttpMethod.POST), any(HttpEntity.class), eq(Object.class)))
-                .willThrow(new HttpServerErrorException(HttpStatus.BAD_GATEWAY));
-
-        ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -34,12 +35,14 @@ import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.helper.AuthHelper;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
+import uk.gov.hmcts.reform.idam.web.sso.SSOService;
 import uk.gov.hmcts.reform.idam.web.strategic.ApiAuthResult;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
@@ -64,49 +67,7 @@ import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CODE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_MSG;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_SUB_MSG;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_PASSWORD_RESET_LINK_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORDSUCCESS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.FORGOTPASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_ERRORS;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_LOGIN_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_SESSION_EXPIRED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_POLICY_CHECK_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INDEX_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.INVALID_PIN;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_LOCKED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.IS_ACCOUNT_SUSPENDED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.JWT;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.LOGIN_WITH_PIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PAGE_NOT_FOUND_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESETPASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.RESPONSE_TYPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTRATION_ENABLED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STALE_USER_RESET_PASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_ACTIVATE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERCREATED_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 
 @Slf4j
 @Controller
@@ -126,6 +87,12 @@ public class AppController {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    private SSOService ssoService;
+
+    @Autowired
+    private AuthHelper authHelper;
 
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
@@ -325,13 +292,27 @@ public class AppController {
             return ERRORPAGE_VIEW;
         }
 
+        model.addAttribute(SELF_REGISTRATION_ENABLED, false);
+
+        if (Objects.nonNull(request.getClient_id()) && !request.getClient_id().isEmpty()) {
+            Optional<Service> service = spiService.getServiceByClientId(request.getClient_id());
+            service.ifPresent(theService -> {
+                model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
+                if (!CollectionUtils.isEmpty(theService.getSsoProviders())
+                    && theService.getSsoProviders().contains(EJUDICIARY_AAD)
+                    && configurationProperties.getFeatures().isFederatedSSO()) {
+                    model.addAttribute(AZURE_LOGIN_ENABLED, true);
+                }
+            });
+        }
+
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(HAS_OTP_CHECK_FAILED, request.isHasOtpCheckFailed());
+
         if (request.isHasOtpCheckFailed()) {
             // redirecting from otp check
             bindingResult.reject("Verification code failed");
@@ -353,7 +334,7 @@ public class AppController {
     @PostMapping("/login")
     public ModelAndView login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
                               BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
-                              HttpServletResponse response) {
+                              HttpServletResponse response) throws IOException {
         model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(PASSWORD, request.getPassword());
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
@@ -362,6 +343,9 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
+        if (request.isAzureLoginEnabled() && configurationProperties.getFeatures().isFederatedSSO()) {
+            model.addAttribute(AZURE_LOGIN_ENABLED, true);
+        }
 
         final boolean validationErrors = bindingResult.hasErrors();
         if (validationErrors) {
@@ -373,6 +357,12 @@ public class AppController {
             }
             model.addAttribute(HAS_ERRORS, true);
             return new ModelAndView(LOGIN_VIEW, model.asMap());
+        }
+
+        // automatically redirect SSO users
+        if (configurationProperties.getFeatures().isFederatedSSO() && ssoService.isSSOEmail(request.getUsername())) {
+            ssoService.redirectToExternalProvider(httpRequest, response, request.getUsername());
+            return null;
         }
 
         try {
@@ -394,7 +384,7 @@ public class AppController {
                 if (authenticationResult.requiresMfa()) {
                     log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
 
-                    List<String> secureCookies = makeCookiesSecure(cookies);
+                    List<String> secureCookies = authHelper.makeCookiesSecure(cookies);
                     secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
 
                     final List<String> affinityCookieNames = Optional.ofNullable(configurationProperties.getStrategic().getSession().getAffinityCookies()).orElse(new ArrayList<>());
@@ -414,7 +404,7 @@ public class AppController {
 
                     if (loginSuccess) {
                         log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
-                        List<String> secureCookies = makeCookiesSecure(cookies);
+                        List<String> secureCookies = authHelper.makeCookiesSecure(cookies);
                         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                         return new ModelAndView("redirect:" + responseUrl);
                     } else {
@@ -424,29 +414,33 @@ public class AppController {
                         return new ModelAndView(LOGIN_VIEW, model.asMap());
                     }
                 }
-            } else {
+            } else if (authenticationResult.getErrorCode() != null) {
                 final ErrorResponse.CodeEnum errorCode = authenticationResult.getErrorCode();
-                if (errorCode == ErrorResponse.CodeEnum.ACCOUNT_LOCKED) {
-                    model.addAttribute(IS_ACCOUNT_LOCKED, true);
-                    bindingResult.reject("Account locked");
-                } else if (errorCode == ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED) {
-                    model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
-                    bindingResult.reject("Account suspended");
-                } else if (errorCode == ErrorResponse.CodeEnum.POLICIES_FAIL) {
-                    log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
-                    model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
-                    bindingResult.reject("Policy check failure");
-                    return new ModelAndView(LOGIN_VIEW, model.asMap());
-                } else if (errorCode == ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT) {
-                    Map<String, Object> staleUserResetPasswordParams = model.asMap();
-                    staleUserResetPasswordParams.remove(USERNAME);
-                    staleUserResetPasswordParams.remove(PASSWORD);
-                    staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
-                    return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
-                } else {
-                    model.addAttribute(HAS_LOGIN_FAILED, true);
-                    bindingResult.reject("Login failure");
+                switch (errorCode) {
+                    case ACCOUNT_LOCKED:
+                        model.addAttribute(IS_ACCOUNT_LOCKED, true);
+                        bindingResult.reject("Account locked");
+                    case ACCOUNT_SUSPENDED:
+                        model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
+                        bindingResult.reject("Account suspended");
+                    case POLICIES_FAIL:
+                        log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
+                        model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
+                        bindingResult.reject("Policy check failure");
+                        return new ModelAndView(LOGIN_VIEW, model.asMap());
+                    case STALE_USER_REGISTRATION_SENT:
+                        Map<String, Object> staleUserResetPasswordParams = model.asMap();
+                        staleUserResetPasswordParams.remove(USERNAME);
+                        staleUserResetPasswordParams.remove(PASSWORD);
+                        staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
+                        return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
+                    default:
+                        model.addAttribute(HAS_LOGIN_FAILED, true);
+                        bindingResult.reject("Login failure");
                 }
+            } else {
+                model.addAttribute(HAS_LOGIN_FAILED, true);
+                bindingResult.reject("Login failure");
             }
         } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
@@ -562,7 +556,7 @@ public class AppController {
             final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
             if (loginSuccess) {
                 log.info("/verification: Successful login");
-                List<String> secureCookies = makeCookiesSecure(responseCookies);
+                List<String> secureCookies = authHelper.makeCookiesSecure(responseCookies);
                 secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                 return new ModelAndView("redirect:" + responseUrl);
             } else {
@@ -622,26 +616,7 @@ public class AppController {
         return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
     }
 
-    private List<String> makeCookiesSecure(List<String> cookies) {
-        return makeCookiesSecure(cookies, useSecureCookie);
-    }
 
-    /**
-     * @should return a secure cookie if useSecureCookie is true
-     * @should return a non-secure cookie if useSecureCookie is false
-     */
-    protected List<String> makeCookiesSecure(List<String> cookies, boolean withSecureCookie) {
-        return cookies.stream()
-            .map(cookie -> {
-                if (!cookie.contains("HttpOnly")) {
-                    if (withSecureCookie) {
-                        return cookie + "; Path=/; Secure; HttpOnly";
-                    }
-                    return cookie + "; Path=/; HttpOnly";
-                }
-                return cookie;
-            }).collect(Collectors.toList());
-    }
 
     /**
      * @should uplift user

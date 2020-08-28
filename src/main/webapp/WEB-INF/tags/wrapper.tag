@@ -8,6 +8,7 @@
 <!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
 <!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
+    <t:baseUrl/>
     <!-- Google Analytics -->
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -65,7 +66,12 @@
     <script src="/assets/javascripts/jquery-3.5.1.min.js"></script>
 </head>
 <body>
-<script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+<script>
+    document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
+    $(document).ready(function () {
+        $('body').find(':input.form-control-error:first').focus();
+    });
+</script>
 
 <div id="skiplink-container">
     <div>
