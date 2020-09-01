@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.idam.web.sso;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -26,7 +26,7 @@ public class SSOService {
     @Autowired
     private ConfigurationProperties configurationProperties;
 
-    public boolean isSSOEmail(@NonNull final String username) {
+    public boolean isSSOEmail(@Nonnull final String username) {
         final String emailDomain = extractEmailDomain(username);
         return getSsoEmailDomains()
             .keySet()
@@ -38,7 +38,7 @@ public class SSOService {
         return configurationProperties.getSsoEmailDomains();
     }
 
-    private String extractEmailDomain(@NonNull final String username) {
+    private String extractEmailDomain(@Nonnull final String username) {
         return StringUtils.substringAfterLast(username, "@");
     }
 
@@ -50,7 +50,7 @@ public class SSOService {
      *
      * @throws IOException
      */
-    public void redirectToExternalProvider(@NonNull final HttpServletRequest request, @NonNull final HttpServletResponse response) throws IOException {
+    public void redirectToExternalProvider(@Nonnull final HttpServletRequest request, @Nonnull final HttpServletResponse response) throws IOException {
         redirectToExternalProvider(request, response, true, null);
     }
 
@@ -63,12 +63,12 @@ public class SSOService {
      *
      * @throws IOException
      */
-    public void redirectToExternalProvider(@NonNull final HttpServletRequest request, @NonNull final HttpServletResponse response, @NonNull final String loginEmail) throws IOException {
+    public void redirectToExternalProvider(@Nonnull final HttpServletRequest request, @Nonnull final HttpServletResponse response, @Nonnull final String loginEmail) throws IOException {
         redirectToExternalProvider(request, response, false, loginEmail);
     }
 
-    private void redirectToExternalProvider(@NonNull final HttpServletRequest request,
-                                            @NonNull final HttpServletResponse response,
+    private void redirectToExternalProvider(@Nonnull final HttpServletRequest request,
+                                            @Nonnull final HttpServletResponse response,
                                             final boolean reuseExistingSession,
                                             final String loginEmail) throws IOException {
 
