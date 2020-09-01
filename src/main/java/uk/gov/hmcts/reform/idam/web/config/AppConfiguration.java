@@ -124,10 +124,6 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
                     .failureUrl("/error")
                     .successHandler(myAuthenticationSuccessHandler(repository))
             .and()
-                .oauth2ResourceServer()
-            .jwt()
-            .and()
-            .and()
                 .oauth2Client();
         // @formatter:on
     }
