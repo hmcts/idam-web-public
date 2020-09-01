@@ -18,14 +18,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -45,14 +43,11 @@ import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 
@@ -126,8 +121,7 @@ public class SPIService {
         if (response.getStatusCode().is2xxSuccessful()) {
             return response.getBody();
         } else if (response.getStatusCode() == HttpStatus.FOUND) {
-            String location = response.getHeaders().getLocation().toString();
-            return location;
+            return Optional.ofNullable(response.getHeaders().getLocation()).orElseThrow().toString();
         } else {
             return null;
         }
@@ -157,10 +151,7 @@ public class SPIService {
             if (response.getStatusCode() == HttpStatus.OK) {
                 final List<String> cookies = Optional.ofNullable(response.getHeaders().get(HttpHeaders.SET_COOKIE)).orElse(ImmutableList.of());
 
-                final boolean requiresMfa = cookies.stream()
-                    .filter(cookie -> cookie.startsWith("Idam.AuthId"))
-                    .findFirst()
-                    .isPresent();
+                final boolean requiresMfa = cookies.stream().anyMatch(cookie -> cookie.startsWith("Idam.AuthId"));
 
                 resultBuilder.cookies(new ArrayList<>(cookies))
                     .policiesAction(requiresMfa ? EvaluatePoliciesAction.MFA_REQUIRED : EvaluatePoliciesAction.ALLOW);
@@ -200,7 +191,7 @@ public class SPIService {
             HttpMethod.POST, entity, String.class);
 
         if (response.getStatusCode() == HttpStatus.FOUND) {
-            return response.getHeaders().getLocation().toString();
+            return Optional.ofNullable(response.getHeaders().getLocation()).orElseThrow().toString();
         } else {
             return null;
         }
@@ -251,7 +242,7 @@ public class SPIService {
         }
     }
 
-    public String loginWithPin(final String pin, final String redirectUri, final String state, final String clientId) throws NotFoundException {
+    public String loginWithPin(final String pin, final String redirectUri, final String state, final String clientId) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -276,8 +267,7 @@ public class SPIService {
 
         ResponseEntity<String> response = getCustomRestTemplate().exchange(requestUrl, HttpMethod.GET, entity, String.class); // NOSONAR
         if (response.getStatusCode() == HttpStatus.FOUND) {
-            String location = response.getHeaders().getLocation().toString();
-            return location;
+            return Optional.ofNullable(response.getHeaders().getLocation()).orElseThrow().toString();
         } else {
             throw new BadCredentialsException(response.getStatusCode().toString());
         }
@@ -306,7 +296,7 @@ public class SPIService {
      * @should call api with the correct parameters
      * @should return 202 status code
      */
-    public ResponseEntity<String> forgetPassword(final String email, final String redirectUri, final String clientId) throws IOException, InterruptedException, ExecutionException {
+    public ResponseEntity<String> forgetPassword(final String email, final String redirectUri, final String clientId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         // need to pass locale here as the request will be executed in another thread
@@ -343,7 +333,7 @@ public class SPIService {
      * @should register user with correct details
      * @should return what API call returns
      */
-    public ResponseEntity<String> resetPassword(final String password, final String token, final String code) throws IOException {
+    public ResponseEntity<String> resetPassword(final String password, final String token, final String code) {
 
         ResetPasswordRequest request = new ResetPasswordRequest();
         request.setPassword(password);
@@ -398,7 +388,7 @@ public class SPIService {
     /**
      * @should call api health check
      */
-    public ResponseEntity<HealthCheckStatus> healthCheck() throws RestClientException {
+    public ResponseEntity<HealthCheckStatus> healthCheck() {
         return restTemplate.getForEntity(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getHealth(), HealthCheckStatus.class);
     }
 
@@ -418,9 +408,8 @@ public class SPIService {
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         try {
-
             response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getDetails(), HttpMethod.GET, entity, User.class);
-            return Optional.of(response.getBody());
+            return Optional.ofNullable(response.getBody());
         } catch (Exception e) {
             log.error("Error getting User Details", e);
             return Optional.empty();
@@ -437,7 +426,7 @@ public class SPIService {
         ResponseEntity<ArrayOfServices> response =
             restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getServices() + "?clientId=" + clientId, HttpMethod.GET, HttpEntity.EMPTY, ArrayOfServices.class); //NOSONAR
 
-        if (Objects.nonNull(response.getBody()) && !response.getBody().isEmpty()) {
+        if (response.getBody() != null && !response.getBody().isEmpty()) {
             return Optional.of(response.getBody().get(0));
         }
         return Optional.empty();
