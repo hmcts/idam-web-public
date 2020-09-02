@@ -294,7 +294,7 @@ public class AppController {
 
         model.addAttribute(SELF_REGISTRATION_ENABLED, false);
 
-        if (Objects.nonNull(request.getClient_id()) && !request.getClient_id().isEmpty()) {
+        if (StringUtils.isNotBlank(request.getClient_id())) {
             Optional<Service> service = spiService.getServiceByClientId(request.getClient_id());
             service.ifPresent(theService -> {
                 model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
