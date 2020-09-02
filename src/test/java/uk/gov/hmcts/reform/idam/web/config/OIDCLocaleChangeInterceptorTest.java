@@ -55,7 +55,7 @@ public class OIDCLocaleChangeInterceptorTest {
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
 
         // should produce no cookie
-        Assert.assertTrue(cookieHeaders.stream().noneMatch(h -> h.contains(MessagesConfiguration.IDAM_LOCALES_COOKIE_NAME)));
+        Assert.assertTrue(cookieHeaders.stream().noneMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME)));
     }
 
     /**
@@ -64,7 +64,7 @@ public class OIDCLocaleChangeInterceptorTest {
      */
     @Test
     public void preHandle_shouldAcceptInvalidLocales() throws Exception {
-        final String url = "/?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=null gibberish en";
+        final String url = "/?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=null gibberish en";
         MvcResult result;
 
         result = this.mockMvc.perform(get(url)).andReturn();
@@ -73,7 +73,7 @@ public class OIDCLocaleChangeInterceptorTest {
         Object languageHeader = result.getResponse().getHeaderValue(LANGUAGE_HEADER_NAME);
 
         Assert.assertEquals("en", languageHeader);
-        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(MessagesConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
+        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
     }
 
     /**
@@ -82,14 +82,14 @@ public class OIDCLocaleChangeInterceptorTest {
      */
     @Test
     public void preHandle_shouldSetLocaleToFirstMatchingLanguageTag() throws Exception {
-        final String url = "/?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=pl fr cy en";
+        final String url = "/?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=pl fr cy en";
         final MvcResult result = this.mockMvc.perform(get(url)).andReturn();
 
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
         final Object languageHeader = result.getResponse().getHeaderValue(LANGUAGE_HEADER_NAME);
 
         Assert.assertEquals("cy", languageHeader);
-        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(MessagesConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "cy")));
+        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "cy")));
     }
 
     /**
@@ -98,14 +98,14 @@ public class OIDCLocaleChangeInterceptorTest {
      */
     @Test
     public void preHandle_shouldSetLocaleToASingleTag() throws Exception {
-        final String url = "/?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=en";
+        final String url = "/?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=en";
         final MvcResult result = this.mockMvc.perform(get(url)).andReturn();
 
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
         final Object languageHeader = result.getResponse().getHeaderValue(LANGUAGE_HEADER_NAME);
 
         Assert.assertEquals("en", languageHeader);
-        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(MessagesConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
+        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
     }
 
     /**
@@ -137,10 +137,10 @@ public class OIDCLocaleChangeInterceptorTest {
     @Test
     public void preHandle_shouldHandleInvalidLocalesTagException() {
         final OIDCLocaleChangeInterceptor interceptor = spy(new OIDCLocaleChangeInterceptor(AVAILABLE_LOCALES));
-        interceptor.setParamName(MessagesConfiguration.UI_LOCALES_PARAM_NAME);
+        interceptor.setParamName(IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME);
         interceptor.setIgnoreInvalidLocale(true);
 
-        final String urlWithInvalidLanguageTag = "http://example.com/?" + MessagesConfiguration.UI_LOCALES_PARAM_NAME + "=^$*";
+        final String urlWithInvalidLanguageTag = "http://example.com/?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=^$*";
         final MockHttpServletRequest request =
             MockMvcRequestBuilders.request(HttpMethod.GET, urlWithInvalidLanguageTag).buildRequest(new MockServletContext());
         request.setAttribute(DispatcherServlet.LOCALE_RESOLVER_ATTRIBUTE, localeResolver);

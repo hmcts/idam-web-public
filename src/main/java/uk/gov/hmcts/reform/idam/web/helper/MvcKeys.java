@@ -32,6 +32,7 @@ public class MvcKeys {
     public static final String AZURE_LOGIN_ENABLED = "azureLoginEnabled";
     public static final String EJUDICIARY_AAD = "ejudiciary-aad";
 
+    public static final String USER_ACTIVATION_VIEW = "useractivation";
     public static final String ERROR_VIEW = "error";
     public static final String ERRORPAGE_VIEW = "errorpage";
     public static final String PAGE_NOT_FOUND_VIEW = "404";
