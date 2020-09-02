@@ -124,3 +124,6 @@ azure:
 
 features:
   federated-s-s-o: ${federated.sso:true}
+
+ssoEmailDomains:
+  ejudiciary.net: ejudiciary-aad
