@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-    pipelineTriggers([cron('10 21 * * *')]),
+    pipelineTriggers([cron('30 02 * * *')]),
 
     parameters([
 
@@ -22,7 +22,8 @@ def secrets = [
     'idam-idam-aat': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
-        secret('notify-api-key', 'NOTIFY_API_KEY')
+        secret('notify-api-key', 'NOTIFY_API_KEY'),
+        secret('EJUDICIARY-TEST-USER-PASSWORD', 'EJUDICIARY_TEST_USER_PASSWORD')
     ]
 ]
 
