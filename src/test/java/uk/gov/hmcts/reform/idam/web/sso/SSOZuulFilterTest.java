@@ -54,7 +54,7 @@ public class SSOZuulFilterTest {
     @Before
     public void setUp() {
 
-        ssoService = spy(SSOService.class);
+        ssoService = spy(new SSOService(null));
         underTest = spy(new SSOZuulFilter(null, ssoService));
         when(mockContext.getRequest()).thenReturn(request);
         when(mockContext.getResponse()).thenReturn(response);
