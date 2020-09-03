@@ -26,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
 import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.helper.AuthHelper;
 import uk.gov.hmcts.reform.idam.web.helper.LocalePassingInterceptor;
 import uk.gov.hmcts.reform.idam.web.sso.SSOAuthenticationSuccessHandler;
 
@@ -48,16 +49,19 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
 
     private final OidcApi oidcApi;
 
+    private final AuthHelper authHelper;
+
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
     public AppConfiguration(ConfigurationProperties configurationProperties,
                             OAuth2AuthorizedClientRepository repository,
-                            SsoFederationApi ssoFederationApi, OidcApi oidcApi) {
+                            SsoFederationApi ssoFederationApi, OidcApi oidcApi, AuthHelper authHelper) {
         this.configurationProperties = configurationProperties;
         this.repository = repository;
         this.ssoFederationApi = ssoFederationApi;
         this.oidcApi = oidcApi;
+        this.authHelper = authHelper;
     }
 
     @Bean
@@ -120,10 +124,6 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
                     .failureUrl("/error")
                     .successHandler(myAuthenticationSuccessHandler(repository))
             .and()
-                .oauth2ResourceServer()
-            .jwt()
-            .and()
-            .and()
                 .oauth2Client();
         // @formatter:on
     }
@@ -131,7 +131,7 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationSuccessHandler myAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository){
         return new SSOAuthenticationSuccessHandler(repository, ssoFederationApi, oidcApi,
-            configurationProperties.getStrategic().getSession());
+            configurationProperties.getStrategic().getSession(), authHelper);
     }
 
      /*

@@ -35,10 +35,11 @@ BeforeSuite(async (I) => {
 });
 
 AfterSuite(async (I) => {
-    return I.deleteAllTestData(randomData.TEST_BASE_PREFIX)
+     return I.deleteAllTestData(randomData.TEST_BASE_PREFIX)
 });
 
 Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
+
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     // create account
@@ -64,7 +65,7 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
     // login
     I.amOnPage(loginPage);
     I.waitForText('Sign in', 20, 'h1');
-    I.fillField('#username', ' ' + citizenEmail);
+    I.fillField('#username', citizenEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.wait(5);

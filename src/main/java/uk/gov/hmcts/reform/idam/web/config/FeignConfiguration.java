@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.idam.web.config.properties;
+package uk.gov.hmcts.reform.idam.web.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

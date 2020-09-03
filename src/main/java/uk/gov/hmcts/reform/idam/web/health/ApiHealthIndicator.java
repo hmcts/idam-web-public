@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 
+import java.util.Optional;
+
 @Component
 public class ApiHealthIndicator implements HealthIndicator {
 
@@ -38,7 +40,7 @@ public class ApiHealthIndicator implements HealthIndicator {
             final ResponseEntity<HealthCheckStatus> response = spiService.healthCheck();
             final HttpStatus responseCode = response.getStatusCode();
             if (HttpStatus.OK.equals(responseCode)) {
-                final String apiStatus = response.getBody().getStatus();
+                final String apiStatus = Optional.ofNullable(response.getBody()).orElseThrow().getStatus();
                 if (apiStatus != null) {
                     if (Status.UP.getCode().equals(apiStatus)) {
                         return Health.up().build();

@@ -624,6 +624,22 @@ class IdamHelper extends Helper {
         })
     }
 
+    getWebpublicOidcUserInfo(accessToken) {
+        return fetch(`${TestData.WEB_PUBLIC_URL}/o/userinfo`, {
+            agent: agent,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        }).then(response => {
+            if (response.status != 200) {
+                console.log('Error getting user info', response.status);
+                throw new Error()
+            }
+            return response.json();
+        })
+    }
+
     grantRoleToUser(roleName, accessToken) {
         return fetch(`${TestData.IDAM_API}/account/role`, {
             agent: agent,

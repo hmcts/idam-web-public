@@ -18,6 +18,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
 import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
 import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.helper.AuthHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,6 +68,9 @@ public class SSOAuthenticationSuccessHandlerTest {
     @Mock
     private HttpSession session;
 
+    @Mock
+    private AuthHelper authHelper;
+
     private SSOAuthenticationSuccessHandler underTest;
 
     @Before
@@ -74,7 +78,7 @@ public class SSOAuthenticationSuccessHandlerTest {
         given(repository.loadAuthorizedClient(any(), any(), any())).willReturn(client);
         given(client.getAccessToken().getTokenValue()).willReturn("an_access_token");
         given(sessionProperties.getIdamSessionCookie()).willReturn("Idam.Session");
-        underTest = new SSOAuthenticationSuccessHandler(repository, federationApi, oidcApi, sessionProperties);
+        underTest = new SSOAuthenticationSuccessHandler(repository, federationApi, oidcApi, sessionProperties, authHelper);
     }
 
     @Test

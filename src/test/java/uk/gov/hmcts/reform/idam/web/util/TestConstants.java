@@ -125,6 +125,7 @@ public class TestConstants {
     public static final String PIN_PARAMETER = "pin";
     public static final String AUTHORIZATION_PARAMETER = "authorization";
 	public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
+    public static final String AZURE_LOGIN_ENABLED = "azureLoginEnabled";
 
 
     //Errors

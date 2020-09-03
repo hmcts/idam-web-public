@@ -18,6 +18,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
 import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
 import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.helper.AuthHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static uk.gov.hmcts.reform.idam.web.helper.ErrorHelper.restException;
@@ -44,13 +46,17 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     private final StrategicConfigurationProperties.Session sessionProperties;
 
+    private final AuthHelper authHelper;
+
     public SSOAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository,
                                            SsoFederationApi federationApi, OidcApi oidcApi,
-                                           StrategicConfigurationProperties.Session sessionProperties) {
+                                           StrategicConfigurationProperties.Session sessionProperties,
+                                            AuthHelper authHelper) {
         this.repository = repository;
         this.federationApi = federationApi;
         this.oidcApi = oidcApi;
         this.sessionProperties = sessionProperties;
+        this.authHelper = authHelper;
     }
 
     @Override
@@ -106,7 +112,8 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         clearAuthenticationAttributes(request);
 
         if (!responseUrl.contains("error")) {
-            response.addHeader(HttpHeaders.SET_COOKIE, sessionCookie);
+            List<String> secureCookies = authHelper.makeCookiesSecure(Arrays.asList(sessionCookie));
+            secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
         }
 
         redirectStrategy.sendRedirect(request, response, responseUrl);

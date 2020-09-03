@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.idam.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Base64;
 import org.owasp.encoder.Encode;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -42,12 +39,14 @@ import java.util.Optional;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_ACTIVATION_LINK_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STATE;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USER_ACTIVATION_VIEW;
 
 @Controller
 @RequestMapping("/users")
@@ -73,7 +72,7 @@ public class UserController {
     /**
      * @should return users view
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public String users(final Map<String, Object> model) {
 
         return "users";
@@ -115,7 +114,7 @@ public class UserController {
             }
             return ERRORPAGE_VIEW;
         }
-        return "useractivation";
+        return USER_ACTIVATION_VIEW;
     }
 
     /**
@@ -172,7 +171,7 @@ public class UserController {
             return ERRORPAGE_VIEW;
         }
 
-        if (service.isPresent() && service.get().isSelfRegistrationAllowed()) {
+        if (service.isPresent() && Boolean.TRUE.equals(service.get().isSelfRegistrationAllowed())) {
             model.addAttribute("selfRegisterCommand", new SelfRegisterRequest());
             model.addAttribute(REDIRECTURI, redirectUri);
             model.addAttribute(CLIENTID, clientId);
@@ -192,7 +191,7 @@ public class UserController {
                     .readValue(Base64.decode(formData.getBytes()));
                 model.addAttribute("firstName", Encode.forHtml(data.getFirstName()));
                 model.addAttribute("lastName", Encode.forHtml(data.getLastName()));
-                model.addAttribute("email", Encode.forHtml(data.getEmail()));
+                model.addAttribute(EMAIL, Encode.forHtml(data.getEmail()));
             } catch (Exception e) {
                 log.error("form_data parameter could not be parsed", e);
             }
@@ -207,13 +206,13 @@ public class UserController {
      * @should return usercreated view  if selfRegisterUser service throws HttpClientErrorException and Http code is 409
      * @should return errorpage view and error message in model if selfRegisterUser service throws HttpServerErrorException
      */
-    @RequestMapping(path = "/selfRegister", method = RequestMethod.POST)
+    @PostMapping(path = "/selfRegister")
     public String selfRegisterUser(@ModelAttribute("selfRegisterCommand") @Validated SelfRegisterRequest selfRegisterRequest,
                                    BindingResult bindingResult,
                                    Model model) throws JsonProcessingException {
 
         // Preserve query parameters
-        model.addAttribute("redirectUri", selfRegisterRequest.getRedirectUri());
+        model.addAttribute(REDIRECTURI, selfRegisterRequest.getRedirectUri());
         model.addAttribute("clientId", selfRegisterRequest.getClientId());
         model.addAttribute("state", selfRegisterRequest.getState());
 
@@ -226,7 +225,7 @@ public class UserController {
             ResponseEntity<String> responseEntity = spiService.selfRegisterUser(selfRegisterRequest);
 
             if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-                model.addAttribute("email", selfRegisterRequest.getEmail());
+                model.addAttribute(EMAIL, selfRegisterRequest.getEmail());
             }
 
             return "usercreated";
@@ -236,7 +235,7 @@ public class UserController {
 
         } catch (HttpClientErrorException ce) {
             if (ce.getStatusCode().equals(HttpStatus.CONFLICT)) {
-                model.addAttribute("email", selfRegisterRequest.getEmail());
+                model.addAttribute(EMAIL, selfRegisterRequest.getEmail());
                 return "usercreated";
             }
             log.error("Client error during user registration, Error body: {}", ce.getResponseBodyAsString(), ce);
@@ -263,14 +262,14 @@ public class UserController {
             if (validationService.validatePassword(password1, password2, model)) {
                 String activation = "{\"token\":\"" + token + "\",\"code\":\"" + code + "\",\"password\":\"" + password1 + "\"}";
                 ResponseEntity<ActivationResult> response = spiService.activateUser(activation);
-                ActivationResult activationResult = response.getBody();
+                ActivationResult activationResult = Optional.ofNullable(response.getBody()).orElseThrow();
                 // don't expose parameters other than the url to a GET request
                 Map<String, Object> successModel = new HashMap<>();
                 if (activationResult.getRedirectUri() != null) {
-                    successModel.put("redirectUri", activationResult.getRedirectUri());
+                    successModel.put(REDIRECTURI, activationResult.getRedirectUri());
                 }
 
-                if(activationResult.isStaleUserActivated()){
+                if(Boolean.TRUE.equals(activationResult.isStaleUserActivated())){
                     return new ModelAndView("redirect:reset-password-success", successModel);
                 }
                 return new ModelAndView("redirect:useractivated", successModel);
@@ -288,7 +287,7 @@ public class UserController {
                         "public.common.error.blacklisted.password",
                         "public.common.error.enter.password",
                         model);
-                    return new ModelAndView("useractivation");
+                    return new ModelAndView(USER_ACTIVATION_VIEW);
                 }
 
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)) {
@@ -297,7 +296,7 @@ public class UserController {
                         "public.common.error.containspersonalinfo.password",
                         "public.common.error.enter.password",
                         model);
-                    return new ModelAndView("useractivation");
+                    return new ModelAndView(USER_ACTIVATION_VIEW);
                 }
 
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.TOKEN_INVALID)) {
@@ -312,20 +311,20 @@ public class UserController {
                 model);
         }
 
-        return new ModelAndView("useractivation");
+        return new ModelAndView(USER_ACTIVATION_VIEW);
     }
 
     @GetMapping("/useractivated")
     public String userActivated(@RequestParam(required = false) final String redirectUri, final Map<String, Object> model) {
         if (redirectUri != null) {
-            model.put("redirectUri", redirectUri);
+            model.put(REDIRECTURI, redirectUri);
         }
         return "useractivated";
     }
 
     @GetMapping("/reset-password-success")
     public String resetPasswordSuccess(@RequestParam(required = false) final String redirectUri, Model model) {
-        Optional.ofNullable(redirectUri).ifPresent(rUri -> model.addAttribute("redirectUri", rUri));
+        Optional.ofNullable(redirectUri).ifPresent(rUri -> model.addAttribute(REDIRECTURI, rUri));
 
         return "resetpasswordsuccess";
     }
