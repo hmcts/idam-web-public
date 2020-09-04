@@ -65,6 +65,7 @@ import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
@@ -173,17 +174,16 @@ public class AppController {
      * @should reject request if the clientId is missing
      */
     @PostMapping("/login/uplift")
-    public String upliftRegister(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request,
+    public ModelAndView upliftRegister(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request,
                                  BindingResult bindingResult,
-                                 final Map<String, Object> model,
-                                 RedirectAttributes redirectAttributes) {
+                                 final Map<String, Object> model) {
 
         if (bindingResult.hasErrors()) {
             ErrorHelper.showLoginError("Information is missing or invalid",
                 "Please fix the following",
                 request.getRedirect_uri(),
                 model);
-            return UPLIFT_REGISTER_VIEW;
+            return new ModelAndView(UPLIFT_REGISTER_VIEW, model);
         }
 
         try {
@@ -193,10 +193,20 @@ public class AppController {
             model.put(CLIENTID, request.getClient_id());
             model.put(JWT, request.getJwt());
             model.put(STATE, request.getState());
-            return USERCREATED_VIEW;
+            return new ModelAndView(USERCREATED_VIEW, model);
         } catch (HttpClientErrorException ex) {
             String msg = "";
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+
+                if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
+                    && ex.getResponseBodyAsString().contains(STALE_USER_REGISTRATION_SENT.toString())) {
+                    model.remove("registerUserCommand");
+                    model.put("client_id", request.getClient_id());
+                    model.put("redirect_uri", request.getRedirect_uri());
+                    model.put("state", request.getState());
+                    return new ModelAndView("redirect:/reset/inactive-user", model);
+                }
+
                 msg = "PIN user not longer valid";
             }
 
@@ -208,7 +218,7 @@ public class AppController {
             // by adding a binding error
             bindingResult.reject("non-existent-error-code");
 
-            return UPLIFT_REGISTER_VIEW;
+            return new ModelAndView(UPLIFT_REGISTER_VIEW, model);
         }
     }
 
@@ -649,14 +659,23 @@ public class AppController {
                 redirectUrl += jsonResponse;
             }
         } catch (HttpClientErrorException ex) {
-            log.error("Uplift process exception: {}", ex.getMessage(), ex);
+            if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
+                && ex.getResponseBodyAsString().equalsIgnoreCase(STALE_USER_REGISTRATION_SENT.toString())) {
+                model.remove("upliftRequest");
+                model.put("client_id", request.getClient_id());
+                model.put("redirect_uri", request.getRedirect_uri());
+                model.put("state", request.getState());
+                model.put("scope", request.getScope());
+                return new ModelAndView("redirect:/reset/inactive-user", model);
+            } else {
+                log.error("Uplift process exception: {}", ex.getMessage(), ex);
 
-            ErrorHelper.showLoginError("Incorrect email/password combination",
-                "Please check your email address and password and try again",
-                request.getRedirect_uri(),
-                model);
-            return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
-
+                ErrorHelper.showLoginError("Incorrect email/password combination",
+                    "Please check your email address and password and try again",
+                    request.getRedirect_uri(),
+                    model);
+                return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
+            }
         } catch (Exception ex) {
             log.error("Uplift process exception: {}", ex.getMessage());
 
