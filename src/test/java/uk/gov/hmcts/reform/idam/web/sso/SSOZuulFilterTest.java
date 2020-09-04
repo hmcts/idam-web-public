@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.config.properties.FeaturesConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 
 import javax.servlet.http.HttpSession;
@@ -48,9 +49,13 @@ public class SSOZuulFilterTest {
     @Mock
     private HttpSession session;
 
+    private SSOService ssoService;
+
     @Before
     public void setUp() {
-        underTest = spy(new SSOZuulFilter(null));
+
+        ssoService = spy(new SSOService(null));
+        underTest = spy(new SSOZuulFilter(null, ssoService));
         when(mockContext.getRequest()).thenReturn(request);
         when(mockContext.getResponse()).thenReturn(response);
         when(request.getSession()).thenReturn(session);
@@ -104,9 +109,9 @@ public class SSOZuulFilterTest {
     @Test
     public void isSSOEnabled_shouldReturnCorrectValue() {
         var configurationProperties = new ConfigurationProperties();
-        var features = mock(ConfigurationProperties.Features.class);
+        var features = mock(FeaturesConfigurationProperties.class);
         configurationProperties.setFeatures(features);
-        var ssoZuulFilter = new SSOZuulFilter(configurationProperties);
+        var ssoZuulFilter = new SSOZuulFilter(configurationProperties, ssoService);
 
         doReturn(true).when(features).isFederatedSSO();
         assertTrue(ssoZuulFilter.isSSOEnabled());
@@ -126,7 +131,7 @@ public class SSOZuulFilterTest {
     @Test
     public void run_shouldRedirectWhenThereIsExistingSessionWithAttribute() throws ZuulException, IOException {
         doReturn(session).when(request).getSession(eq(false));
-        doReturn(MvcKeys.EJUDICIARY_AAD).when(session).getAttribute(eq(SSOZuulFilter.PROVIDER_ATTR));
+        doReturn(MvcKeys.EJUDICIARY_AAD).when(session).getAttribute(eq(SSOService.PROVIDER_ATTR));
         underTest.run();
         verify(response, atLeastOnce()).sendRedirect(anyString());
     }
