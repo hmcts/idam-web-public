@@ -193,20 +193,6 @@
         <cve>CVE-2014-0119</cve>
         <cve>CVE-2016-5388</cve>
     </suppress>
-
-    <!--
-    This should not apply to the project as this package is only used in testing.
-    -->
-    <suppress>
-        <notes> 
-        https://www.cvedetails.com/cve/CVE-2019-15052/
-        The HTTP client in the Build tool in Gradle before 5.6 sends authentication credentials originally destined for the configured host. If that host returns a 30x redirect, Gradle also sends those credentials to all subsequent hosts that the request redirects to. This is similar to CVE-2018-1000007.	
-        This should not apply to the project as this package is only used in testing.
-        </notes>
-        <gav regex="true">^info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:1\.3\.0$</gav>
-        <cve>CVE-2019-15052</cve>
-        <cve>CVE-2019-16370</cve>
-    </suppress>
     
     <!--
     This vulnerability can only be exploited if polymorphic typing is enabled on the default
@@ -265,5 +251,61 @@
         <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed-.+:9\.0\.36.*$</gav>
         <cve>CVE-2020-13934</cve>
         <cve>CVE-2020-13935</cve>
+    </suppress>
+
+    <!--
+    Supress snakeyaml as it can only be exploited by devs
+    -->
+    <suppress>
+        <notes>
+            https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-18640
+            The Alias feature in SnakeYAML 1.18 allows entity expansion during a load operation, a related issue to CVE-2003-1564.
+        </notes>
+        <gav regex="true">^org\.yaml:snakeyaml:1\.25.*$</gav>
+        <cve>CVE-2017-18640</cve>
+    </suppress>
+
+    <!--
+    This should not apply to the project as this package is only used in testing.
+    -->
+    <suppress>
+        <notes>
+            https://www.cvedetails.com/cve/CVE-2019-15052/
+            The HTTP client in the Build tool in Gradle before 5.6 sends authentication credentials originally destined for the configured host. If that host returns a 30x redirect, Gradle also sends those credentials to all subsequent hosts that the request redirects to. This is similar to CVE-2018-1000007.
+            This should not apply to the project as this package is only used in testing.
+        </notes>
+        <gav regex="true">^info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:1\.4\.6$</gav>
+        <cve>CVE-2019-15052</cve>
+        <cve>CVE-2019-11065</cve>
+        <cve>CVE-2019-16370</cve>
+    </suppress>
+
+    <!--
+    This dependency is a transitional dependency of spring-security-oauth2-client,
+    as such could only be exploited by developers.
+    -->
+    <suppress>
+        <notes><![CDATA[
+            file name: jcip-annotations-1.0-1.jar
+
+            CVE-2020-10518
+            A remote code execution vulnerability was identified in GitHub Enterprise Server that could be exploited when
+            building a GitHub Pages site. User-controlled configuration of the underlying parsers used by GitHub Pages were
+            not sufficiently restricted and made it possible to execute commands on the GitHub Enterprise Server instance.
+            To exploit this vulnerability, an attacker would need permission to create and build a GitHub Pages site on the
+            GitHub Enterprise Server instance. This vulnerability affected all versions of GitHub Enterprise Server prior
+            to 2.22 and was fixed in 2.21.6, 2.20.15, and 2.19.21. The underlying issues contributing to this vulnerability
+            were identified both internally and through the GitHub Security Bug Bounty program.
+
+            CVE-2020-10517
+            An improper access control vulnerability was identified in GitHub Enterprise Server that allowed authenticated
+            users of the instance to determine the names of unauthorized private repositories given their numerical IDs. This
+            vulnerability did not allow unauthorized access to any repository content besides the name. This vulnerability
+            affected all versions of GitHub Enterprise Server prior to 2.22 and was fixed in versions 2.21.6, 2.20.15,
+            and 2.19.21. This vulnerability was reported via the GitHub Bug Bounty program.
+   ]]></notes>
+        <gav regex="true">^com\.github\.stephenc\.jcip:jcip-annotations:1\.0-1$</gav>
+        <cve>CVE-2020-10518</cve>
+        <cve>CVE-2020-10517</cve>
     </suppress>
 </suppressions>
