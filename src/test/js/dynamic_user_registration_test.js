@@ -43,7 +43,6 @@ AfterSuite(async (I) => {
 
 Scenario('@functional Register User Dynamically', async (I) => {
     I.wait(5);
-
     let url = await I.extractUrl(userEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
