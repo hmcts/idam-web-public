@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -40,7 +38,8 @@ public class ValidationServiceTest {
      * @verifies return false if the passwords is null or empty
      * @see ValidationService#validatePassword(String, String, java.util.Map)
      */
-    @Test public void validatePassword_shouldReturnFalseIfThePasswordsIsNullOrEmpty() throws Exception {
+    @Test
+    public void validatePassword_shouldReturnFalseIfThePasswordsIsNullOrEmpty() throws Exception {
 
         Map<String, Object> model = new HashMap<>();
         assertFalse(validationService.validatePassword(null, TestConstants.USER_PASSWORD, model));
@@ -64,7 +63,8 @@ public class ValidationServiceTest {
      * @verifies return false if the passwords don't match
      * @see ValidationService#validatePassword(String, String, java.util.Map)
      */
-    @Test public void validatePassword_shouldReturnFalseIfThePasswordsDontMatch() throws Exception {
+    @Test
+    public void validatePassword_shouldReturnFalseIfThePasswordsDontMatch() throws Exception {
 
         Map<String, Object> model = new HashMap<>();
 
@@ -80,7 +80,8 @@ public class ValidationServiceTest {
      * @verifies return false if the password does not comply with the length requirement
      * @see ValidationService#validatePassword(String, String, java.util.Map)
      */
-    @Test public void validatePassword_shouldReturnFalseIfThePasswordDoesNotComplyWithTheLengthRequirement() throws Exception {
+    @Test
+    public void validatePassword_shouldReturnFalseIfThePasswordDoesNotComplyWithTheLengthRequirement() throws Exception {
 
         Map<String, Object> model = new HashMap<>();
 
@@ -111,6 +112,11 @@ public class ValidationServiceTest {
 
         assertThat(model, hasEntry(is(TestConstants.ERROR), is(TestConstants.ERROR)));
         assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_ONE), is(TestConstants.ERROR_ENTER_PASSWORD)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_TWO), is(TestConstants.ERROR_ENTER_PASSWORD)));
+
+        assertFalse(validationService.validatePassword("password", null, model));
+
+        assertThat(model, hasEntry(is(TestConstants.ERROR), is(TestConstants.ERROR)));
         assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_TWO), is(TestConstants.ERROR_ENTER_PASSWORD)));
     }
 
