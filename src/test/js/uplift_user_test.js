@@ -1,6 +1,8 @@
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
+const deepEqualInAnyOrder = require('deep-equal-in-any-order');
 const chai = require('chai');
+chai.use(deepEqualInAnyOrder);
 const {expect} = chai;
 
 Feature('I am able to uplift a user');
@@ -10,10 +12,13 @@ let randomUserFirstName;
 let randomUserLastName;
 let citizenEmail;
 let existingCitizenEmail;
+let upliftAccountCreationStaleUserEmail;
+let upliftLoginStaleUserEmail;
 let accessToken;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
+const pinUserRolePrefix = 'letter-';
 
 const serviceName = randomData.getRandomServiceName();
 
@@ -23,6 +28,8 @@ BeforeSuite(async (I) => {
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     existingCitizenEmail = 'existingcitizen.' + randomData.getRandomEmailAddress();
+    upliftAccountCreationStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
+    upliftLoginStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
 
     const token = await I.getAuthToken();
     let response;
@@ -40,6 +47,14 @@ BeforeSuite(async (I) => {
     userFirstNames.push(randomUserFirstName + 'Admin');
     await I.createUserWithRoles(existingCitizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
+
+    await I.createUserWithRoles(upliftAccountCreationStaleUserEmail, randomUserFirstName + 'StaleUser', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'StaleUser');
+    await I.retireStaleUser(upliftAccountCreationStaleUserEmail);
+
+    await I.createUserWithRoles(upliftLoginStaleUserEmail, randomUserFirstName + 'StaleUser', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'StaleUser');
+    await I.retireStaleUser(upliftLoginStaleUserEmail);
 
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
@@ -146,4 +161,129 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
+});
+
+
+Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user registration for stale user uplift account creation', async (I) => {
+    const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
+    let pinUserRole = pinUserRolePrefix + pinUser.userId;
+
+    const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+
+    const response = await I.getUserByEmail(upliftAccountCreationStaleUserEmail);
+    const userId = response.id;
+
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
+    I.waitForText('Create an account or sign in', 30, 'h1');
+    I.fillField('#firstName', randomUserFirstName);
+    I.fillField('#lastName', randomUserLastName);
+    I.fillField('#username', upliftAccountCreationStaleUserEmail.toUpperCase());
+    I.scrollPageToBottom();
+    I.click('Continue');
+    I.wait(5);
+    I.waitForText('You need to reset your password', 20, 'h2');
+    I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.', 20);
+    const reRegistrationUrl = await I.extractUrl(upliftAccountCreationStaleUserEmail);
+    I.amOnPage(reRegistrationUrl);
+    I.waitForText('Create a password', 20, 'h1');
+    I.fillField('#password1', TestData.PASSWORD);
+    I.fillField('#password2', TestData.PASSWORD);
+    I.click('Continue');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.');
+
+    const responseAfterAccountReActivation = await I.getUserByEmail(upliftAccountCreationStaleUserEmail);
+    expect(responseAfterAccountReActivation.id).to.equal(userId);
+    expect(responseAfterAccountReActivation.forename).to.equal(randomUserFirstName + 'StaleUser');
+    expect(responseAfterAccountReActivation.surname).to.equal('User');
+    expect(responseAfterAccountReActivation.email).to.equal(upliftAccountCreationStaleUserEmail);
+    expect(responseAfterAccountReActivation.active).to.equal(true);
+    expect(responseAfterAccountReActivation.stale).to.equal(false);
+    expect(responseAfterAccountReActivation.roles).to.eql(['citizen']);
+
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
+    I.waitForText('Sign in or create an account', 30, 'h1');
+    I.fillField('#username', upliftAccountCreationStaleUserEmail);
+    I.fillField('#password', TestData.PASSWORD);
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+
+    const pageSource = await I.grabSource();
+    const loginCode = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftAccountCreationStaleUserEmail.toUpperCase());
+    expect(oidcUserInfo.uid).to.equal(userId);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen']);
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'StaleUser' + " User");
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'StaleUser');
+    expect(oidcUserInfo.family_name).to.equal('User');
+
+    I.resetRequestInterception();
+});
+
+Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift account creation', async (I) => {
+    const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
+    let pinUserRole = pinUserRolePrefix + pinUser.userId;
+
+    const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+
+    const response = await I.getUserByEmail(upliftLoginStaleUserEmail);
+    const userId = response.id;
+
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
+    I.waitForText('Sign in or create an account', 30, 'h1');
+    I.fillField('#username', upliftLoginStaleUserEmail.toUpperCase());
+    I.fillField('#password', TestData.PASSWORD);
+    I.click('Sign in');
+    I.wait(5);
+    I.waitForText('You need to reset your password', 20, 'h2');
+    I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.', 20);
+    const reRegistrationUrl = await I.extractUrl(upliftLoginStaleUserEmail);
+    I.amOnPage(reRegistrationUrl);
+    I.waitForText('Create a password', 20, 'h1');
+    I.fillField('#password1', TestData.PASSWORD);
+    I.fillField('#password2', TestData.PASSWORD);
+    I.click('Continue');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.');
+
+    const responseAfterAccountReActivation = await I.getUserByEmail(upliftLoginStaleUserEmail);
+    expect(responseAfterAccountReActivation.id).to.equal(userId);
+    expect(responseAfterAccountReActivation.forename).to.equal(randomUserFirstName + 'StaleUser');
+    expect(responseAfterAccountReActivation.surname).to.equal('User');
+    expect(responseAfterAccountReActivation.email).to.equal(upliftLoginStaleUserEmail);
+    expect(responseAfterAccountReActivation.active).to.equal(true);
+    expect(responseAfterAccountReActivation.stale).to.equal(false);
+    expect(responseAfterAccountReActivation.roles).to.eql(['citizen']);
+
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
+    I.waitForText('Sign in or create an account', 30, 'h1');
+    I.fillField('#username', upliftLoginStaleUserEmail);
+    I.fillField('#password', TestData.PASSWORD);
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+
+    const pageSource = await I.grabSource();
+    const loginCode = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftLoginStaleUserEmail.toUpperCase());
+    expect(oidcUserInfo.uid).to.equal(userId);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen']);
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'StaleUser' + " User");
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'StaleUser');
+    expect(oidcUserInfo.family_name).to.equal('User');
+
+    I.resetRequestInterception();
 });
