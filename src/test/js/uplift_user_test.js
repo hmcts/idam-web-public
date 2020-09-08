@@ -19,6 +19,7 @@ let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
 const pinUserRolePrefix = 'letter-';
+let serviceBetaRole;
 
 const serviceName = randomData.getRandomServiceName();
 
@@ -34,7 +35,7 @@ BeforeSuite(async (I) => {
     const token = await I.getAuthToken();
     let response;
     response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
-    const serviceBetaRole = response.name;
+    serviceBetaRole = response.name;
     response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
     const serviceAdminRole = response.name;
     response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
@@ -219,7 +220,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftAccountCreationStaleUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.equal(userId);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen']);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen', serviceBetaRole]);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'StaleUser' + " User");
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'StaleUser');
     expect(oidcUserInfo.family_name).to.equal('User');
@@ -280,7 +281,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftLoginStaleUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.equal(userId);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen']);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen', serviceBetaRole]);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'StaleUser' + " User");
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'StaleUser');
     expect(oidcUserInfo.family_name).to.equal('User');
