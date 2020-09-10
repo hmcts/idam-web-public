@@ -282,32 +282,32 @@ public class AppControllerTest {
      * @verifies put correct data in model and return login view
      * @see AppController#loginView(AuthorizeRequest, BindingResult, Model)
      */
-    @Test
-    public void loginView_shouldPutCorrectDataInModelAndReturnLoginView2() throws Exception {
-
-        Service service = new Service();
-        service.selfRegistrationAllowed(true);
-        service.setSsoProviders(List.of("ejudiciary-aad"));
-
-        //&& configurationProperties.getFeatures().isFederatedSSO()) {
-        //                    model.addAttribute(AZURE_LOGIN_ENABLED, true);
-
-        given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.of(service));
-
-        mockMvc.perform(get(LOGIN_ENDPOINT)
-            .param(REDIRECT_URI, REDIRECT_URI)
-            .param(STATE_PARAMETER, STATE)
-            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(model().attribute(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE))
-            .andExpect(model().attribute(STATE_PARAMETER, STATE))
-            .andExpect(model().attribute(CLIENT_ID_PARAMETER, CLIENT_ID))
-            .andExpect(model().attribute(REDIRECT_URI, REDIRECT_URI))
-            .andExpect(model().attribute(AZURE_LOGIN_ENABLED, true))
-            .andExpect(view().name(LOGIN_VIEW));
-    }
+//    @Test
+//    public void loginView_shouldPutCorrectDataInModelAndReturnLoginView2() throws Exception {
+//
+//        Service service = new Service();
+//        service.selfRegistrationAllowed(true);
+//        service.setSsoProviders(List.of("ejudiciary-aad"));
+//
+//        //&& configurationProperties.getFeatures().isFederatedSSO()) {
+//        //                    model.addAttribute(AZURE_LOGIN_ENABLED, true);
+//
+//        given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.of(service));
+//
+//        mockMvc.perform(get(LOGIN_ENDPOINT)
+//            .param(REDIRECT_URI, REDIRECT_URI)
+//            .param(STATE_PARAMETER, STATE)
+//            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+//            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+//            .andDo(print())
+//            .andExpect(status().isOk())
+//            .andExpect(model().attribute(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE))
+//            .andExpect(model().attribute(STATE_PARAMETER, STATE))
+//            .andExpect(model().attribute(CLIENT_ID_PARAMETER, CLIENT_ID))
+//            .andExpect(model().attribute(REDIRECT_URI, REDIRECT_URI))
+//            .andExpect(model().attribute(AZURE_LOGIN_ENABLED, true))
+//            .andExpect(view().name(LOGIN_VIEW));
+//    }
 
     /**
      * @verifies return expired token view
@@ -2381,30 +2381,30 @@ public class AppControllerTest {
         verify(spiService, never()).authorize(any(), eq(authCookies));
     }
 
-    @Test
-    public void login_shouldSetAzureLoginEnabledWhenSSOEnabledAndSSOHintPresent() throws Exception {
-        List<String> authCookies = singletonList(AUTHENTICATE_SESSION_COOKE);
-        ApiAuthResult authResult = ApiAuthResult.builder()
-            .cookies(authCookies)
-            .httpStatus(HttpStatus.OK)
-            .policiesAction(EvaluatePoliciesAction.MFA_REQUIRED)
-            .build();
-
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
-            .willReturn(authResult);
-
-        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
-            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
-            .param(USERNAME_PARAMETER, USER_EMAIL)
-            .param(PASSWORD_PARAMETER, USER_PASSWORD)
-            .param(REDIRECT_URI, REDIRECT_URI)
-            .param(STATE_PARAMETER, STATE)
-            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
-            .param(AZURE_LOGIN_ENABLED, "true")
-            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
-            .andExpect(model().attribute(AZURE_LOGIN_ENABLED,true));
-    }
+//    @Test
+//    public void login_shouldSetAzureLoginEnabledWhenSSOEnabledAndSSOHintPresent() throws Exception {
+//        List<String> authCookies = singletonList(AUTHENTICATE_SESSION_COOKE);
+//        ApiAuthResult authResult = ApiAuthResult.builder()
+//            .cookies(authCookies)
+//            .httpStatus(HttpStatus.OK)
+//            .policiesAction(EvaluatePoliciesAction.MFA_REQUIRED)
+//            .build();
+//
+//        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+//            .willReturn(authResult);
+//
+//        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+//            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+//            .param(USERNAME_PARAMETER, USER_EMAIL)
+//            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+//            .param(REDIRECT_URI, REDIRECT_URI)
+//            .param(STATE_PARAMETER, STATE)
+//            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+//            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+//            .param(AZURE_LOGIN_ENABLED, "true")
+//            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+//            .andExpect(model().attribute(AZURE_LOGIN_ENABLED,true));
+//    }
 
     @Test
     public void login_shouldReturnErrors() throws Exception {
@@ -2458,35 +2458,35 @@ public class AppControllerTest {
         };
     }
 
-    @Test
-    public void login_shouldRedirectSSOUsersWhenSSOEnabledAndEmailMatches() throws Exception {
-        List<String> authCookies = singletonList(AUTHENTICATE_SESSION_COOKE);
-        ApiAuthResult authResult = ApiAuthResult.builder()
-            .cookies(authCookies)
-            .httpStatus(HttpStatus.OK)
-            .policiesAction(EvaluatePoliciesAction.MFA_REQUIRED)
-            .build();
-
-        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
-            .willReturn(authResult);
-
-        given(ssoService.isSSOEmail(USER_EMAIL)).willReturn(true);
-
-
-        Mockito.doAnswer(redirectToExternalProvider())
-            .when(ssoService).redirectToExternalProvider(any(), any(), any());
-
-        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
-            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
-            .param(USERNAME_PARAMETER, USER_EMAIL)
-            .param(PASSWORD_PARAMETER, USER_PASSWORD)
-            .param(REDIRECT_URI, REDIRECT_URI)
-            .param(STATE_PARAMETER, STATE)
-            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
-            .param(AZURE_LOGIN_ENABLED, "true")
-            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("mockRedirect"));
-    }
+//    @Test
+//    public void login_shouldRedirectSSOUsersWhenSSOEnabledAndEmailMatches() throws Exception {
+//        List<String> authCookies = singletonList(AUTHENTICATE_SESSION_COOKE);
+//        ApiAuthResult authResult = ApiAuthResult.builder()
+//            .cookies(authCookies)
+//            .httpStatus(HttpStatus.OK)
+//            .policiesAction(EvaluatePoliciesAction.MFA_REQUIRED)
+//            .build();
+//
+//        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+//            .willReturn(authResult);
+//
+//        given(ssoService.isSSOEmail(USER_EMAIL)).willReturn(true);
+//
+//
+//        Mockito.doAnswer(redirectToExternalProvider())
+//            .when(ssoService).redirectToExternalProvider(any(), any(), any());
+//
+//        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+//            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+//            .param(USERNAME_PARAMETER, USER_EMAIL)
+//            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+//            .param(REDIRECT_URI, REDIRECT_URI)
+//            .param(STATE_PARAMETER, STATE)
+//            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+//            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+//            .param(AZURE_LOGIN_ENABLED, "true")
+//            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+//            .andExpect(status().is3xxRedirection())
+//            .andExpect(redirectedUrl("mockRedirect"));
+//    }
 }
