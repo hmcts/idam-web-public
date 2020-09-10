@@ -280,4 +280,32 @@
         <cve>CVE-2019-16370</cve>
     </suppress>
 
+    <!--
+    This dependency is a transitional dependency of spring-security-oauth2-client,
+    as such could only be exploited by developers.
+    -->
+    <suppress>
+        <notes><![CDATA[
+            file name: jcip-annotations-1.0-1.jar
+
+            CVE-2020-10518
+            A remote code execution vulnerability was identified in GitHub Enterprise Server that could be exploited when
+            building a GitHub Pages site. User-controlled configuration of the underlying parsers used by GitHub Pages were
+            not sufficiently restricted and made it possible to execute commands on the GitHub Enterprise Server instance.
+            To exploit this vulnerability, an attacker would need permission to create and build a GitHub Pages site on the
+            GitHub Enterprise Server instance. This vulnerability affected all versions of GitHub Enterprise Server prior
+            to 2.22 and was fixed in 2.21.6, 2.20.15, and 2.19.21. The underlying issues contributing to this vulnerability
+            were identified both internally and through the GitHub Security Bug Bounty program.
+
+            CVE-2020-10517
+            An improper access control vulnerability was identified in GitHub Enterprise Server that allowed authenticated
+            users of the instance to determine the names of unauthorized private repositories given their numerical IDs. This
+            vulnerability did not allow unauthorized access to any repository content besides the name. This vulnerability
+            affected all versions of GitHub Enterprise Server prior to 2.22 and was fixed in versions 2.21.6, 2.20.15,
+            and 2.19.21. This vulnerability was reported via the GitHub Bug Bounty program.
+   ]]></notes>
+        <gav regex="true">^com\.github\.stephenc\.jcip:jcip-annotations:1\.0-1$</gav>
+        <cve>CVE-2020-10518</cve>
+        <cve>CVE-2020-10517</cve>
+    </suppress>
 </suppressions>

@@ -61,18 +61,20 @@ spring:
       namespace: spring:session
     store-type: redis
     timeout: 432000s
-  security:
-    oauth2:
-      client:
-        provider:
-          oidc:
-            issuer-uri: https://sts.windows.net/723e4557-2f17-43ed-9e71-f1beb253e546/
-        registration:
-          oidc:
-            client-id: placeholder
-            client-secret: placeholder
-            client-authentication-method: basic
-            scope: openid
+################################################
+# FORCE DISABLE SSO FOR TESTING IN PREVIEW ONLY
+#  security:
+#    oauth2:
+#      client:
+#        provider:
+#          oidc:
+#            issuer-uri: https://sts.windows.net/723e4557-2f17-43ed-9e71-f1beb253e546/
+#        registration:
+#          oidc:
+#            client-id: placeholder
+#            client-secret: placeholder
+#            client-authentication-method: basic
+#            scope: openid
 
 authentication:
   useOAuth2: true
@@ -122,8 +124,10 @@ azure:
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
+################################################
+# FORCE DISABLE SSO FOR TESTING IN PREVIEW ONLY
 features:
-  federated-s-s-o: ${federated.sso:true}
+  federated-s-s-o: false
 
 ssoEmailDomains:
   ejudiciary.net: ejudiciary-aad
