@@ -12,12 +12,10 @@ spring:
     port: ${redis-port}
     password: ${redis-key}
     ssl: true
-################################################
-# FORCE DISABLE SSO FOR TESTING IN PREVIEW ONLY
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          oidc:
-#            client-id: ${sso-client-id}
-#            client-secret: ${sso-client-secret}
+  security:
+    oauth2:
+      client:
+        registration:
+          oidc:
+            client-id: ${sso-client-id}
+            client-secret: ${sso-client-secret}
