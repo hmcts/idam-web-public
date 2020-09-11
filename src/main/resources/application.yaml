@@ -61,20 +61,18 @@ spring:
       namespace: spring:session
     store-type: redis
     timeout: 432000s
-################################################
-# FORCE DISABLE SSO FOR TESTING IN PREVIEW ONLY
-#  security:
-#    oauth2:
-#      client:
-#        provider:
-#          oidc:
-#            issuer-uri: https://sts.windows.net/723e4557-2f17-43ed-9e71-f1beb253e546/
-#        registration:
-#          oidc:
-#            client-id: placeholder
-#            client-secret: placeholder
-#            client-authentication-method: basic
-#            scope: openid
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: https://sts.windows.net/723e4557-2f17-43ed-9e71-f1beb253e546/
+        registration:
+          oidc:
+            client-id: placeholder
+            client-secret: placeholder
+            client-authentication-method: basic
+            scope: openid
 
 authentication:
   useOAuth2: true
