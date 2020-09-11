@@ -16,6 +16,6 @@ spring:
     oauth2:
       client:
         registration:
-          oidc: # fixme temporarily
-            client-id: null
-            client-secret: null
+          oidc:
+            client-id: ${sso-client-id:placeholder}
+            client-secret: ${sso-client-secret:placeholder}
