@@ -122,10 +122,8 @@ azure:
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
-################################################
-# FORCE DISABLE SSO FOR TESTING IN PREVIEW ONLY
 features:
-  federated-s-s-o: false
+  federated-s-s-o: ${federated.sso:true}
 
 ssoEmailDomains:
   ejudiciary.net: ejudiciary-aad
