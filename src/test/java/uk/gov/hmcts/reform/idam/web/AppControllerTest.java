@@ -25,7 +25,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
@@ -336,7 +335,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put right error data in model if mandatory fields are missing and return upliftUser view
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldPutRightErrorDataInModelIfMandatoryFieldsAreMissingAndReturnUpliftUserView() throws Exception {
@@ -360,7 +359,7 @@ public class AppControllerTest {
 
     /**
      * @verifies return upliftUser view if register user service returns http code different from 201
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldReturnUpliftUserViewIfRegisterUserServiceReturnsHttpCodeDifferentFrom201() throws Exception {
@@ -394,7 +393,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put email in model and return usercreated view if register user service returns http code 201
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldPutEmailInModelAndReturnUsercreatedViewIfRegisterUserServiceReturnsHttpCode201() throws Exception {
@@ -417,7 +416,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put right error data in model if register user service throws HttpClientErrorException with 404 http status code
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldPutRightErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionWith404HttpStatusCode() throws Exception {
@@ -443,7 +442,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put generic error data in model if register user service throws HttpClientErrorException an http status code different from 404
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldPutGenericErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionAnHttpStatusCodeDifferentFrom404() throws Exception {
@@ -469,7 +468,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the username is invalid
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheUsernameIsInvalid() throws Exception {
@@ -494,7 +493,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the first name is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheFirstNameIsMissing() throws Exception {
@@ -519,7 +518,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the last name is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheLastNameIsMissing() throws Exception {
@@ -543,7 +542,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the jwt is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheJwtIsMissing() throws Exception {
@@ -567,7 +566,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the redirect URI is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheRedirectURIIsMissing() throws Exception {
@@ -592,7 +591,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the clientId is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheClientIdIsMissing() throws Exception {
