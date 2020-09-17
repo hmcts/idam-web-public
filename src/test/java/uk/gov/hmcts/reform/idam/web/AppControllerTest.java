@@ -440,6 +440,33 @@ public class AppControllerTest {
 
     }
 
+
+    /**
+     * @verifies redirects to "reset/inactive-user" on registration 404 with STALE_USER_REGISTRATION_SENT error
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
+     */
+    @Test
+    public void upliftRegister_redirectToResetInactiveUserOnRegistration404WithStaleUserRegistrationSentError() throws Exception {
+        byte[] staleUserErrorBytes = ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT.toString().getBytes(StandardCharsets.UTF_8);
+
+        given(spiService.registerUser(eq(aRegisterUserRequest())))
+            .willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND,
+                HttpStatus.NOT_FOUND.getReasonPhrase(), staleUserErrorBytes, StandardCharsets.UTF_8));
+
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
+            .param(JWT_PARAMETER, JWT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
+            .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/reset/inactive-user?client_id=clientId&redirect_uri=redirect_uri&state=state+test"));
+
+    }
+
     /**
      * @verifies put generic error data in model if register user service throws HttpClientErrorException an http status code different from 404
      * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
