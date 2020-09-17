@@ -74,6 +74,10 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 public class AppController {
 
     private static final String REDIRECT_RESET_INACTIVE_USER = "redirect:/reset/inactive-user";
+    public static final String LOGIN_FAILURE_ERROR_CODE = "Login failure";
+    public static final String REDIRECT_PREFIX = "redirect:";
+    public static final String IDAM_AUTH_ID_COOKIE_PREFIX = "Idam.AuthId=";
+    public static final String ERROR_TITLE = "Error";
 
     @Autowired
     private SPIService spiService;
@@ -388,7 +392,7 @@ public class AppController {
                 if (cookies == null) {
                     log.info("/login: Authenticate returned no cookies for user - {}", obfuscateEmailAddress(request.getUsername()));
                     model.addAttribute(HAS_LOGIN_FAILED, true);
-                    bindingResult.reject("Login failure");
+                    bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
                     return new ModelAndView(LOGIN_VIEW, model.asMap());
                 }
 
@@ -417,11 +421,11 @@ public class AppController {
                         log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
                         List<String> secureCookies = authHelper.makeCookiesSecure(cookies);
                         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
-                        return new ModelAndView("redirect:" + responseUrl);
+                        return new ModelAndView(REDIRECT_PREFIX + responseUrl);
                     } else {
                         log.info("/login: There is a problem while logging in  user - {}", obfuscateEmailAddress(request.getUsername()));
                         model.addAttribute(HAS_LOGIN_FAILED, true);
-                        bindingResult.reject("Login failure");
+                        bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
                         return new ModelAndView(LOGIN_VIEW, model.asMap());
                     }
                 }
@@ -431,9 +435,11 @@ public class AppController {
                     case ACCOUNT_LOCKED:
                         model.addAttribute(IS_ACCOUNT_LOCKED, true);
                         bindingResult.reject("Account locked");
+                        return new ModelAndView(LOGIN_VIEW, model.asMap());
                     case ACCOUNT_SUSPENDED:
                         model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
                         bindingResult.reject("Account suspended");
+                        return new ModelAndView(LOGIN_VIEW, model.asMap());
                     case POLICIES_FAIL:
                         log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
                         model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
@@ -447,16 +453,16 @@ public class AppController {
                         return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, staleUserResetPasswordParams);
                     default:
                         model.addAttribute(HAS_LOGIN_FAILED, true);
-                        bindingResult.reject("Login failure");
+                        bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
                 }
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
+                bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
             }
         } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException he) {
             log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
             model.addAttribute(HAS_LOGIN_FAILED, true);
-            bindingResult.reject("Login failure");
+            bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
         }
         return new ModelAndView(LOGIN_VIEW, model.asMap());
     }
@@ -556,10 +562,10 @@ public class AppController {
         try {
             final String authId = StringUtils.substringAfter(
                 cookies.stream()
-                    .filter(cookie -> cookie.startsWith("Idam.AuthId="))
+                    .filter(cookie -> cookie.startsWith(IDAM_AUTH_ID_COOKIE_PREFIX))
                     .findFirst()
                     .orElseThrow(),
-                "Idam.AuthId=");
+                IDAM_AUTH_ID_COOKIE_PREFIX);
             final List<String> responseCookies = spiService.submitOtpeAuthentication(authId, ipAddress, request.getCode());
             log.info("/verification: Successful OTP submission request");
 
@@ -569,7 +575,7 @@ public class AppController {
                 log.info("/verification: Successful login");
                 List<String> secureCookies = authHelper.makeCookiesSecure(responseCookies);
                 secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
-                return new ModelAndView("redirect:" + responseUrl);
+                return new ModelAndView(REDIRECT_PREFIX + responseUrl);
             } else {
                 log.info("/verification: There is a problem while logging in user");
                 return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
@@ -595,8 +601,8 @@ public class AppController {
                             .get(HttpHeaders.SET_COOKIE))
                         .orElse(new ArrayList<>())
                         .stream()
-                        .filter(cookie -> cookie.startsWith("Idam.AuthId="))
-                        .map(cookie -> StringUtils.substringAfter(cookie, "Idam.AuthId="))
+                        .filter(cookie -> cookie.startsWith(IDAM_AUTH_ID_COOKIE_PREFIX))
+                        .map(cookie -> StringUtils.substringAfter(cookie, IDAM_AUTH_ID_COOKIE_PREFIX))
                         .findFirst()
                         .ifPresent(authId -> response.addCookie(new Cookie("Idam.AuthId", authId)));
                     return new ModelAndView(VERIFICATION_VIEW, model.asMap());
@@ -621,7 +627,7 @@ public class AppController {
                                                                 BindingResult bindingResult,
                                                                 Model model) {
         model.addAttribute("hasOtpCheckFailed", true);
-        bindingResult.reject("Login failure");
+        bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
         model.addAttribute("authorizeCommand", request);
         model.addAttribute(USERNAME, null);
         return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
@@ -652,7 +658,7 @@ public class AppController {
             return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
         }
 
-        String redirectUrl = "redirect:";
+        String redirectUrl = REDIRECT_PREFIX;
         try {
             final String jsonResponse = spiService.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
                 request.getRedirect_uri(), request.getClient_id(), request.getState(), request.getScope());
@@ -710,7 +716,7 @@ public class AppController {
 
         try {
 
-            return "redirect:" + spiService.loginWithPin(pin, redirectUri, state, clientId); //NOSONAR
+            return REDIRECT_PREFIX + spiService.loginWithPin(pin, redirectUri, state, clientId); //NOSONAR
 
         } catch (HttpClientErrorException | BadCredentialsException e) {
             log.error("Problem with pin: {}", e.getMessage());
@@ -798,14 +804,14 @@ public class AppController {
         } catch (HttpClientErrorException e) {
             log.error("Error resetting password: {}", e.getResponseBodyAsString(), e);
             if (e.getStatusCode() == HttpStatus.PRECONDITION_FAILED) {
-                ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.invalid.password", "", model);
+                ErrorHelper.showError(ERROR_TITLE, "public.common.error.invalid.password", "public.common.error.invalid.password", "", model);
             } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED)) {
-                    ErrorHelper.showError("Error", "public.common.error.blacklisted.password", "public.common.error.blacklisted.password", "public.common.error.enter.password", model);
+                    ErrorHelper.showError(ERROR_TITLE, "public.common.error.blacklisted.password", "public.common.error.blacklisted.password", "public.common.error.enter.password", model);
                 } else if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)) {
-                    ErrorHelper.showError("Error", "public.common.error.containspersonalinfo.password", "public.common.error.containspersonalinfo.password", "public.common.error.enter.password", model);
+                    ErrorHelper.showError(ERROR_TITLE, "public.common.error.containspersonalinfo.password", "public.common.error.containspersonalinfo.password", "public.common.error.enter.password", model);
                 } else if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.ACCOUNT_LOCKED)) {
-                    ErrorHelper.showError("Error", "public.common.error.previously.used.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+                    ErrorHelper.showError(ERROR_TITLE, "public.common.error.previously.used.password", "public.common.error.password.details", "public.common.error.enter.password", model);
                 }
             } else if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 return "redirect:expiredtoken";
