@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
@@ -73,6 +72,8 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 @Slf4j
 @Controller
 public class AppController {
+
+    private static final String REDIRECT_RESET_INACTIVE_USER = "redirect:/reset/inactive-user";
 
     @Autowired
     private SPIService spiService;
@@ -204,7 +205,7 @@ public class AppController {
                     model.put("client_id", request.getClient_id());
                     model.put("redirect_uri", request.getRedirect_uri());
                     model.put("state", request.getState());
-                    return new ModelAndView("redirect:/reset/inactive-user", model);
+                    return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
                 }
 
                 msg = "PIN user not longer valid";
@@ -443,7 +444,7 @@ public class AppController {
                         staleUserResetPasswordParams.remove(USERNAME);
                         staleUserResetPasswordParams.remove(PASSWORD);
                         staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
-                        return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
+                        return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, staleUserResetPasswordParams);
                     default:
                         model.addAttribute(HAS_LOGIN_FAILED, true);
                         bindingResult.reject("Login failure");
@@ -666,7 +667,7 @@ public class AppController {
                 model.put("redirect_uri", request.getRedirect_uri());
                 model.put("state", request.getState());
                 model.put("scope", request.getScope());
-                return new ModelAndView("redirect:/reset/inactive-user", model);
+                return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
             } else {
                 log.error("Uplift process exception: {}", ex.getMessage(), ex);
 
