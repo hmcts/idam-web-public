@@ -283,7 +283,7 @@ public class AppControllerTest {
      * @see AppController#loginView(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void loginView_shouldPutCorrectDataInModelAndReturnLoginView2() throws Exception {
+    public void loginView_shouldPutCorrectDataInModelAndReturnLoginViewWithAzureLoginEnabled() throws Exception {
 
         Service service = new Service();
         service.selfRegistrationAllowed(true);
