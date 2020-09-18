@@ -25,7 +25,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
@@ -284,7 +283,7 @@ public class AppControllerTest {
      * @see AppController#loginView(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void loginView_shouldPutCorrectDataInModelAndReturnLoginView2() throws Exception {
+    public void loginView_shouldPutCorrectDataInModelAndReturnLoginViewWithAzureLoginEnabled() throws Exception {
 
         Service service = new Service();
         service.selfRegistrationAllowed(true);
@@ -336,7 +335,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put right error data in model if mandatory fields are missing and return upliftUser view
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldPutRightErrorDataInModelIfMandatoryFieldsAreMissingAndReturnUpliftUserView() throws Exception {
@@ -360,7 +359,7 @@ public class AppControllerTest {
 
     /**
      * @verifies return upliftUser view if register user service returns http code different from 201
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldReturnUpliftUserViewIfRegisterUserServiceReturnsHttpCodeDifferentFrom201() throws Exception {
@@ -394,7 +393,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put email in model and return usercreated view if register user service returns http code 201
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldPutEmailInModelAndReturnUsercreatedViewIfRegisterUserServiceReturnsHttpCode201() throws Exception {
@@ -417,7 +416,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put right error data in model if register user service throws HttpClientErrorException with 404 http status code
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldPutRightErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionWith404HttpStatusCode() throws Exception {
@@ -441,9 +440,36 @@ public class AppControllerTest {
 
     }
 
+
+    /**
+     * @verifies redirects to "reset/inactive-user" on registration 404 with STALE_USER_REGISTRATION_SENT error
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
+     */
+    @Test
+    public void upliftRegister_redirectToResetInactiveUserOnRegistration404WithStaleUserRegistrationSentError() throws Exception {
+        byte[] staleUserErrorBytes = ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT.toString().getBytes(StandardCharsets.UTF_8);
+
+        given(spiService.registerUser(eq(aRegisterUserRequest())))
+            .willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND,
+                HttpStatus.NOT_FOUND.getReasonPhrase(), staleUserErrorBytes, StandardCharsets.UTF_8));
+
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
+            .param(JWT_PARAMETER, JWT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
+            .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/reset/inactive-user?client_id=clientId&redirect_uri=redirect_uri&state=state+test"));
+
+    }
+
     /**
      * @verifies put generic error data in model if register user service throws HttpClientErrorException an http status code different from 404
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldPutGenericErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionAnHttpStatusCodeDifferentFrom404() throws Exception {
@@ -469,7 +495,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the username is invalid
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheUsernameIsInvalid() throws Exception {
@@ -494,7 +520,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the first name is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheFirstNameIsMissing() throws Exception {
@@ -519,7 +545,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the last name is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheLastNameIsMissing() throws Exception {
@@ -543,7 +569,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the jwt is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheJwtIsMissing() throws Exception {
@@ -567,7 +593,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the redirect URI is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheRedirectURIIsMissing() throws Exception {
@@ -592,7 +618,7 @@ public class AppControllerTest {
 
     /**
      * @verifies reject request if the clientId is missing
-     * @see AppController#upliftRegister(RegisterUserRequest, BindingResult, Map, RedirectAttributes)
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
     public void upliftRegister_shouldRejectRequestIfTheClientIdIsMissing() throws Exception {
@@ -1505,6 +1531,13 @@ public class AppControllerTest {
             .policiesAction(EvaluatePoliciesAction.ALLOW)
             .build();
 
+        ApiAuthResult authResultNullError = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.UNAUTHORIZED)
+            .errorCode(null)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
+
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
             .willReturn(authResult);
 
@@ -1615,6 +1648,23 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(model().attribute(IS_ACCOUNT_SUSPENDED, true))
+            .andExpect(status().isOk())
+
+            .andExpect(view().name(LOGIN_VIEW));
+
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResultNullError);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(status().isOk())
 
             .andExpect(view().name(LOGIN_VIEW));

@@ -48,7 +48,7 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h2');
-    I.fillField('#username', staleUserEmail);
+    I.fillField('#username', staleUserEmail.toUpperCase());
     I.fillField('#password', testData.PASSWORD);
     I.click('Sign in');
     I.wait(5);
@@ -65,7 +65,7 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h2');
-    I.fillField('#username', staleUserEmail);
+    I.fillField('#username', staleUserEmail.toUpperCase());
     I.fillField('#password', testData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
