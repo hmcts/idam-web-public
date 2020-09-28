@@ -323,6 +323,8 @@ public class AppController {
 
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
+        model.addAttribute(NONCE, request.getNonce());
+        model.addAttribute(PROMPT, request.getPrompt());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
