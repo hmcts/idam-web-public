@@ -193,7 +193,7 @@
         <cve>CVE-2014-0119</cve>
         <cve>CVE-2016-5388</cve>
     </suppress>
-    
+
     <!--
     This vulnerability can only be exploited if polymorphic typing is enabled on the default
     object mapper, hence not relevant to us.
@@ -214,7 +214,7 @@
     ONLY UNTIL 2019-10-01. No invulnerable package currently
     -->
     <suppress>
-        <notes> 
+        <notes>
         https://www.cvedetails.com/cve/CVE-2019-12384/
         FasterXML jackson-databind 2.x before 2.9.9.1 might allow attackers to have a variety of impacts by leveraging failure to block the logback-core class from polymorphic deserialization. Depending on the classpath content, remote code execution may be possible.
         </notes>
