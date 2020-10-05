@@ -24,7 +24,7 @@ public class SessionConfiguration {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("Idam.SSOSession");
         serializer.setCookiePath("/");
-        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+        // serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
         serializer.setCookieMaxAge(FIVE_DAYS_IN_SECONDS);
         serializer.setUseSecureCookie(useSecureCookie);
         return serializer;
