@@ -84,13 +84,13 @@ public class FeignConfiguration {
         Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequests(200);
         dispatcher.setMaxRequestsPerHost(200);
-        OkHttpClient httpClient = new OkHttpClient.Builder()
+        OkHttpClient newHttpClient = new OkHttpClient.Builder()
             .dispatcher(dispatcher)
             .readTimeout(20000, TimeUnit.MILLISECONDS)
             .followRedirects(false)
             .followSslRedirects(false)
             .build();
-        return new feign.okhttp.OkHttpClient(httpClient);
+        return new feign.okhttp.OkHttpClient(newHttpClient);
     }
 
     public Encoder feignFormEncoder() {
