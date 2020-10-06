@@ -283,7 +283,7 @@ public class AppControllerTest {
      * @see AppController#loginView(AuthorizeRequest, BindingResult, Model)
      */
     @Test
-    public void loginView_shouldPutCorrectDataInModelAndReturnLoginView2() throws Exception {
+    public void loginView_shouldPutCorrectDataInModelAndReturnLoginViewWithAzureLoginEnabled() throws Exception {
 
         Service service = new Service();
         service.selfRegistrationAllowed(true);
@@ -437,6 +437,33 @@ public class AppControllerTest {
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_TRY_AGAIN + PIN_USER_NOT_LONGER_VALID))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
             .andExpect(view().name(UPLIFT_REGISTER_VIEW));
+
+    }
+
+
+    /**
+     * @verifies redirects to "reset/inactive-user" on registration 404 with STALE_USER_REGISTRATION_SENT error
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
+     */
+    @Test
+    public void upliftRegister_redirectToResetInactiveUserOnRegistration404WithStaleUserRegistrationSentError() throws Exception {
+        byte[] staleUserErrorBytes = ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT.toString().getBytes(StandardCharsets.UTF_8);
+
+        given(spiService.registerUser(eq(aRegisterUserRequest())))
+            .willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND,
+                HttpStatus.NOT_FOUND.getReasonPhrase(), staleUserErrorBytes, StandardCharsets.UTF_8));
+
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
+            .param(JWT_PARAMETER, JWT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
+            .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/reset/inactive-user?client_id=clientId&redirect_uri=redirect_uri&state=state+test"));
 
     }
 
@@ -1504,6 +1531,13 @@ public class AppControllerTest {
             .policiesAction(EvaluatePoliciesAction.ALLOW)
             .build();
 
+        ApiAuthResult authResultNullError = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.UNAUTHORIZED)
+            .errorCode(null)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
+
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
             .willReturn(authResult);
 
@@ -1614,6 +1648,23 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(model().attribute(IS_ACCOUNT_SUSPENDED, true))
+            .andExpect(status().isOk())
+
+            .andExpect(view().name(LOGIN_VIEW));
+
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
+            .willReturn(authResultNullError);
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(model().attribute(HAS_LOGIN_FAILED, true))
             .andExpect(status().isOk())
 
             .andExpect(view().name(LOGIN_VIEW));
