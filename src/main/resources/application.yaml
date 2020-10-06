@@ -126,4 +126,6 @@ features:
   federated-s-s-o: ${federated.sso:true}
 
 ssoEmailDomains:
-  ejudiciary.net: ejudiciary-aad
+  dummy: dummy
+# re-enable only when SSO feature is enabled for everyone
+#  ejudiciary.net: ejudiciary-aad

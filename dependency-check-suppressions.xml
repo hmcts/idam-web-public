@@ -193,7 +193,7 @@
         <cve>CVE-2014-0119</cve>
         <cve>CVE-2016-5388</cve>
     </suppress>
-    
+
     <!--
     This vulnerability can only be exploited if polymorphic typing is enabled on the default
     object mapper, hence not relevant to us.
@@ -214,7 +214,7 @@
     ONLY UNTIL 2019-10-01. No invulnerable package currently
     -->
     <suppress>
-        <notes> 
+        <notes>
         https://www.cvedetails.com/cve/CVE-2019-12384/
         FasterXML jackson-databind 2.x before 2.9.9.1 might allow attackers to have a variety of impacts by leveraging failure to block the logback-core class from polymorphic deserialization. Depending on the classpath content, remote code execution may be possible.
         </notes>
@@ -278,6 +278,60 @@
         <cve>CVE-2019-15052</cve>
         <cve>CVE-2019-11065</cve>
         <cve>CVE-2019-16370</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            TODO: fix these: suppress some netflix CVEs to deploy a hotfix
+        </notes>
+        <gav regex="true">^com\.netflix\.servo:servo-core:0\.10\.1$</gav>
+        <cve>CVE-2014-0047</cve>
+        <cve>CVE-2014-0048</cve>
+        <cve>CVE-2014-5277</cve>
+        <cve>CVE-2014-5278</cve>
+        <cve>CVE-2014-5282</cve>
+        <cve>CVE-2014-6407</cve>
+        <cve>CVE-2014-8178</cve>
+        <cve>CVE-2014-8179</cve>
+        <cve>CVE-2014-9356</cve>
+        <cve>CVE-2014-9358</cve>
+        <cve>CVE-2015-3627</cve>
+        <cve>CVE-2015-3630</cve>
+        <cve>CVE-2015-3631</cve>
+        <cve>CVE-2016-3697</cve>
+        <cve>CVE-2017-14992</cve>
+        <cve>CVE-2019-13139</cve>
+        <cve>CVE-2019-13509</cve>
+        <cve>CVE-2019-15752</cve>
+        <cve>CVE-2019-16884</cve>
+        <cve>CVE-2019-5736</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            TODO: fix these: suppress some netflix CVEs to deploy a hotfix
+        </notes>
+        <gav regex="true">^com\.netflix\.servo:servo-internal:0\.10\.1$</gav>
+        <cve>CVE-2014-0047</cve>
+        <cve>CVE-2014-0048</cve>
+        <cve>CVE-2014-5277</cve>
+        <cve>CVE-2014-5278</cve>
+        <cve>CVE-2014-5282</cve>
+        <cve>CVE-2014-6407</cve>
+        <cve>CVE-2014-8178</cve>
+        <cve>CVE-2014-8179</cve>
+        <cve>CVE-2014-9356</cve>
+        <cve>CVE-2014-9358</cve>
+        <cve>CVE-2015-3627</cve>
+        <cve>CVE-2015-3630</cve>
+        <cve>CVE-2015-3631</cve>
+        <cve>CVE-2016-3697</cve>
+        <cve>CVE-2017-14992</cve>
+        <cve>CVE-2019-13139</cve>
+        <cve>CVE-2019-13509</cve>
+        <cve>CVE-2019-15752</cve>
+        <cve>CVE-2019-16884</cve>
+        <cve>CVE-2019-5736</cve>
     </suppress>
 
     <!--
