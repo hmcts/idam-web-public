@@ -16,8 +16,7 @@ import java.util.Objects;
 
 @Component
 public class ValidationService {
-
-
+    
     private final ObjectMapper mapper;
 
     private final int passwordMinLength;
