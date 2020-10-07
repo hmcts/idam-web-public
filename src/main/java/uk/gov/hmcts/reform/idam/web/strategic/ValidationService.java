@@ -16,9 +16,7 @@ import java.util.Objects;
 
 @Component
 public class ValidationService {
-
-    public static final String ERROR_TITLE = "Error";
-
+    
     private final ObjectMapper mapper;
 
     private final int passwordMinLength;
@@ -45,36 +43,34 @@ public class ValidationService {
      */
     public boolean validatePassword(final String password1, final String password2, Map<String, Object> model) {
 
-        if (StringUtils.isEmpty(password1) && StringUtils.isEmpty(password2)) {
-            ErrorHelper.showError(ERROR_TITLE, "public.common.error.password.not.empty", "public.common.error.enter.password", "public.common.error.enter.password", model);
-            return false;
-        }
+        String errorForPassword1 = "";
+        String errorForPassword2 = "";
+
+        // check password 1
         if (StringUtils.isEmpty(password1)) {
-            ErrorHelper.showError(ERROR_TITLE, "public.common.error.password.not.empty", "public.common.error.enter.password", "", model);
-            model.put("password2", password2);
-            return false;
+            errorForPassword1 = "public.common.error.enter.password";
+        } else if (password1.length() < passwordMinLength || password1.length() > passwordMaxLength || containsIllegalCharacters(password1)) {
+            errorForPassword1 = "public.common.error.password.details";
         }
+
+        // check password 2
         if (StringUtils.isEmpty(password2)) {
-            ErrorHelper.showError(ERROR_TITLE, "public.common.error.password.not.empty", "", "public.common.error.enter.password", model);
-            model.put("password1", password1);
-            return false;
+            errorForPassword2 = "public.common.error.enter.password";
+        } else if (!password2.equals(password1)) {
+            errorForPassword2 = "public.common.error.password.should.match";
         }
 
-        if (!password1.equals(password2)) {
-            ErrorHelper.showError(ERROR_TITLE, "public.common.error.password.not.same", "", "public.common.error.password.should.match", model);
-            model.put("password1", password1);
-            return false;
-        }
+        final boolean password1HasErrors = !errorForPassword1.isEmpty();
+        final boolean password2HasErrors = !errorForPassword2.isEmpty();
 
-        if (password1.length() < passwordMinLength || password1.length() > passwordMaxLength) {
-            ErrorHelper.showError(ERROR_TITLE, "public.common.error.invalid.password", "public.common.error.password.details", "", model);
-            model.put("password1", password1);
-            return false;
-        }
-
-        if (containsIllegalCharacters(password1)) {
-            ErrorHelper.showError(ERROR_TITLE, "public.common.error.invalid.password.illegal-characters", "public.common.error.password.details", "", model);
-            model.put("password1", password1);
+        if (password1HasErrors || password2HasErrors) {
+            if (!password1HasErrors) {
+                model.put("password1", password1);
+            }
+            if (!password2HasErrors) {
+                model.put("password2", password2);
+            }
+            ErrorHelper.showError(errorForPassword1, errorForPassword2, model);
             return false;
         }
         return true;
