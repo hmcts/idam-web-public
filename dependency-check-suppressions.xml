@@ -362,4 +362,11 @@
         <cve>CVE-2020-10518</cve>
         <cve>CVE-2020-10517</cve>
     </suppress>
+
+    <!-- This vulnerability exists since 2007 and has no fix as it is a design flaw. -->
+    <suppress>
+        <gav regex="true">^com\.nimbusds:oauth2-oidc-sdk:.*$</gav>
+        <cve>CVE-2007-1651</cve>
+        <cve>CVE-2007-1652</cve>
+    </suppress>
 </suppressions>
