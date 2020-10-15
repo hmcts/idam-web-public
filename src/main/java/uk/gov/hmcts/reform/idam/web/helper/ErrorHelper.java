@@ -1,7 +1,18 @@
 package uk.gov.hmcts.reform.idam.web.helper;
 
+import lombok.experimental.UtilityClass;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
+
+import javax.annotation.Nullable;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+@UtilityClass
 public class ErrorHelper {
 
     private static final String ERROR = "error";
@@ -26,5 +37,29 @@ public class ErrorHelper {
         model.put(ERROR_MESSAGE, errorMessage);
         model.put(ERROR_LABEL_ONE, errorLabelOne);
         model.put(ERROR_LABEL_TWO, errorLabelTwo);
+    }
+
+    public static void showError(String errorLabelOne, String errorLabelTwo, Map<String, Object> model) {
+        model.put(ERROR, ERROR);
+        model.put(ERROR_LABEL_ONE, errorLabelOne);
+        model.put(ERROR_LABEL_TWO, errorLabelTwo);
+    }
+
+    public static HttpStatusCodeException restException(@Nullable String message,
+                                                        HttpStatus status, HttpHeaders headers,
+                                                        String error, String description) {
+        return restException(message, status, headers, jsonErrorString(error, description).getBytes());
+    }
+
+    public static HttpStatusCodeException restException(
+        @Nullable String message, HttpStatus status, HttpHeaders headers, byte[] body) {
+        if (status.series() == HttpStatus.Series.CLIENT_ERROR) {
+            return HttpClientErrorException.create(message, status, status.getReasonPhrase(), headers, body, UTF_8);
+        }
+        return HttpServerErrorException.create(message, status, status.getReasonPhrase(), headers, body, UTF_8);
+    }
+
+    public static String jsonErrorString(String error, String description) {
+        return String.format("{%n \"error\": \"%s\",%n  \"description\": \"%s\"%n}", error, description);
     }
 }

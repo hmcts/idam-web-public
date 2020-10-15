@@ -32,7 +32,7 @@ class IdamHelper extends Helper {
 
     async createServiceData(serviceName) {
         const token = await this.getAuthToken();
-        this.createService(serviceName, '', token);
+        this.createService(serviceName, '', token, '', []);
     }
 
     deleteService(service) {
@@ -83,7 +83,7 @@ class IdamHelper extends Helper {
     }
 
 
-    createService(serviceName, roleId, token, scope = '') {
+    createService(serviceName, roleId, token, scope = '', ssoProviders = '') {
         let data;
 
         if (roleId === '') {
@@ -97,7 +97,8 @@ class IdamHelper extends Helper {
                 onboardingEndpoint: '/autotest',
                 onboardingRoles: ['auto-private-beta_role'],
                 activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
-                selfRegistrationAllowed: true
+                selfRegistrationAllowed: true,
+                ssoProviders: ssoProviders
             };
         } else {
             data = {
@@ -111,7 +112,8 @@ class IdamHelper extends Helper {
                 onboardingRoles: ['auto-private-beta_role'],
                 allowedRoles: [roleId, 'auto-admin_role'],
                 activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
-                selfRegistrationAllowed: true
+                selfRegistrationAllowed: true,
+                ssoProviders: ssoProviders
             };
         }
         return fetch(`${TestData.IDAM_API}/services`, {
@@ -504,7 +506,7 @@ class IdamHelper extends Helper {
     interceptRequestsAfterSignin() {
         const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
-        const pages = ["/login", "/register", "/activate", "/verification"];
+        const pages = ["/login", "/register", "/activate", "/verification", "/useractivated"];
 
         helper.page.on('request', request => {
             if (pages.some(v => request.url().includes(v))) {
@@ -622,6 +624,22 @@ class IdamHelper extends Helper {
         })
     }
 
+    getWebpublicOidcUserInfo(accessToken) {
+        return fetch(`${TestData.WEB_PUBLIC_URL}/o/userinfo`, {
+            agent: agent,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        }).then(response => {
+            if (response.status != 200) {
+                console.log('Error getting user info', response.status);
+                throw new Error()
+            }
+            return response.json();
+        })
+    }
+
     grantRoleToUser(roleName, accessToken) {
         return fetch(`${TestData.IDAM_API}/account/role`, {
             agent: agent,
@@ -726,6 +744,22 @@ class IdamHelper extends Helper {
             .catch(err => {
                 console.log(err);
             });
+    }
+
+    async retireStaleUser(userEmail) {
+        const userDetails = await this.getUserByEmail(userEmail);
+        const userId = userDetails.id;
+        const authToken = await this.getAuthToken();
+        return fetch(`${TestData.IDAM_API}/api/v1/staleUsers/${userId}/retire`, {
+            agent: agent,
+            method: 'POST',
+            headers: {'Authorization': 'AdminApiAuthToken ' + authToken},
+        }).then((response) => {
+            if (response.status !== 200) {
+                console.log('Error retiring stale user', response.status);
+                throw new Error();
+            }
+        });
     }
 
     deleteAllTestData(testDataPrefix = '', userNames = [], roleNames = [], serviceNames = [], async = false) {

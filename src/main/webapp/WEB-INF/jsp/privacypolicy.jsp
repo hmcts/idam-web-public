@@ -227,6 +227,8 @@
                     <p><spring:message code="public.privacypolicy.text_0155" /></p>
 
                     <p><spring:message code="public.privacypolicy.text_0156" /></p>
+
+                    <p><spring:message code="public.privacypolicy.text_0244" /></p>
                 </div>
 
                 <div id="tabs-4" aria-labelledby="ui-id-2" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
@@ -336,7 +338,7 @@
                     <p><spring:message code="public.privacypolicy.text_0229" /> <a href="/terms-and-conditions"><spring:message code="public.privacypolicy.text_0230" /></a><spring:message code="public.privacypolicy.text_0231" />	</p>
                     <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0232" /></h2>
                     <p><spring:message code="public.privacypolicy.text_0233" /></p>
-                    <p><spring:message code="public.privacypolicy.text_0234" /> <a href="mailto:dcd-familypubliclawservicedesk@hmcts.net"><spring:message code="public.privacypolicy.text_0235" /></a> <spring:message code="public.privacypolicy.text_0236" /></p>
+                    <p><spring:message code="public.privacypolicy.text_0234" /> <a href="mailto:contactfpl@justice.gov.uk"><spring:message code="public.privacypolicy.text_0235" /></a> <spring:message code="public.privacypolicy.text_0236" /></p>
                     <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0237" /></h2>
                     <p><spring:message code="public.privacypolicy.text_0238" /> <a href="mailto:data.compliance@justice.gov.uk"><spring:message code="public.privacypolicy.text_0239" /></a><spring:message code="public.privacypolicy.text_0240" /></p>
                     <p><spring:message code="public.privacypolicy.text_0241" /> <a href="https://ico.org.uk/global/contact-us"><spring:message code="public.privacypolicy.text_0242" /></a> <spring:message code="public.privacypolicy.text_0243" /></p>

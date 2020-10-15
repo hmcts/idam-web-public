@@ -18,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -27,21 +28,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.helper.AuthHelper;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.ForgotPasswordRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.idam.web.model.UpliftRequest;
 import uk.gov.hmcts.reform.idam.web.model.VerificationRequest;
-import uk.gov.hmcts.reform.idam.web.strategic.PolicyService;
+import uk.gov.hmcts.reform.idam.web.sso.SSOService;
+import uk.gov.hmcts.reform.idam.web.strategic.ApiAuthResult;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
@@ -63,6 +64,7 @@ import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
@@ -70,6 +72,12 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 @Slf4j
 @Controller
 public class AppController {
+
+    private static final String REDIRECT_RESET_INACTIVE_USER = "redirect:/reset/inactive-user";
+    public static final String LOGIN_FAILURE_ERROR_CODE = "Login failure";
+    public static final String REDIRECT_PREFIX = "redirect:";
+    public static final String IDAM_AUTH_ID_COOKIE_PREFIX = "Idam.AuthId=";
+    public static final String ERROR_TITLE = "Error";
 
     @Autowired
     private SPIService spiService;
@@ -81,13 +89,16 @@ public class AppController {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private PolicyService policyService;
-
-    @Autowired
     private ConfigurationProperties configurationProperties;
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    private SSOService ssoService;
+
+    @Autowired
+    private AuthHelper authHelper;
 
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
@@ -168,17 +179,16 @@ public class AppController {
      * @should reject request if the clientId is missing
      */
     @PostMapping("/login/uplift")
-    public String upliftRegister(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request,
+    public ModelAndView upliftRegister(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request,
                                  BindingResult bindingResult,
-                                 final Map<String, Object> model,
-                                 RedirectAttributes redirectAttributes) {
+                                 final Map<String, Object> model) {
 
         if (bindingResult.hasErrors()) {
             ErrorHelper.showLoginError("Information is missing or invalid",
                 "Please fix the following",
                 request.getRedirect_uri(),
                 model);
-            return UPLIFT_REGISTER_VIEW;
+            return new ModelAndView(UPLIFT_REGISTER_VIEW, model);
         }
 
         try {
@@ -188,10 +198,20 @@ public class AppController {
             model.put(CLIENTID, request.getClient_id());
             model.put(JWT, request.getJwt());
             model.put(STATE, request.getState());
-            return USERCREATED_VIEW;
+            return new ModelAndView(USERCREATED_VIEW, model);
         } catch (HttpClientErrorException ex) {
             String msg = "";
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+
+                if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
+                    && ex.getResponseBodyAsString().contains(STALE_USER_REGISTRATION_SENT.toString())) {
+                    model.remove("registerUserCommand");
+                    model.put("client_id", request.getClient_id());
+                    model.put("redirect_uri", request.getRedirect_uri());
+                    model.put("state", request.getState());
+                    return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
+                }
+
                 msg = "PIN user not longer valid";
             }
 
@@ -203,7 +223,7 @@ public class AppController {
             // by adding a binding error
             bindingResult.reject("non-existent-error-code");
 
-            return UPLIFT_REGISTER_VIEW;
+            return new ModelAndView(UPLIFT_REGISTER_VIEW, model);
         }
     }
 
@@ -287,13 +307,29 @@ public class AppController {
             return ERRORPAGE_VIEW;
         }
 
+        model.addAttribute(SELF_REGISTRATION_ENABLED, false);
+
+        if (StringUtils.isNotBlank(request.getClient_id())) {
+            Optional<Service> service = spiService.getServiceByClientId(request.getClient_id());
+            service.ifPresent(theService -> {
+                model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
+                if (!CollectionUtils.isEmpty(theService.getSsoProviders())
+                    && theService.getSsoProviders().contains(EJUDICIARY_AAD)
+                    && configurationProperties.getFeatures().isFederatedSSO()) {
+                    model.addAttribute(AZURE_LOGIN_ENABLED, true);
+                }
+            });
+        }
+
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
+        model.addAttribute(NONCE, request.getNonce());
+        model.addAttribute(PROMPT, request.getPrompt());
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
-        model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(request.getClient_id()));
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(HAS_OTP_CHECK_FAILED, request.isHasOtpCheckFailed());
+
         if (request.isHasOtpCheckFailed()) {
             // redirecting from otp check
             bindingResult.reject("Verification code failed");
@@ -304,19 +340,18 @@ public class AppController {
 
     /**
      * @should put in model correct data then call authorize service and redirect using redirect url returned by service
-     * @should put in model correct data if username or  password are empty.
+     * @should put in model correct data if username or password are empty.
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
      * @should put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
      * @should put in model the correct error variable in case authorize service throws a HttpClientErrorException and status code is not 403 then return login view
      * @should put in model the correct error variable in case policy check returns BLOCK
-     * @should initiate OTP flow when policy check returns MFA_REQUIRED
      * @should return forbidden if csrf token is invalid
      * @should not forward username password params on OTP
      */
     @PostMapping("/login")
     public ModelAndView login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
                               BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
-                              HttpServletResponse response) {
+                              HttpServletResponse response) throws IOException {
         model.addAttribute(USERNAME, request.getUsername());
         model.addAttribute(PASSWORD, request.getPassword());
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
@@ -325,6 +360,9 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
+        if (request.isAzureLoginEnabled() && configurationProperties.getFeatures().isFederatedSSO()) {
+            model.addAttribute(AZURE_LOGIN_ENABLED, true);
+        }
 
         final boolean validationErrors = bindingResult.hasErrors();
         if (validationErrors) {
@@ -338,74 +376,96 @@ public class AppController {
             return new ModelAndView(LOGIN_VIEW, model.asMap());
         }
 
+        // automatically redirect SSO users
+        if (configurationProperties.getFeatures().isFederatedSSO() && ssoService.isSSOEmail(request.getUsername())) {
+            ssoService.redirectToExternalProvider(httpRequest, response, request.getUsername());
+            return null;
+        }
+
         try {
-            final String ipAddress = ObjectUtils.defaultIfNull(
-                httpRequest.getHeader(X_FORWARDED_FOR),
-                httpRequest.getRemoteAddr());
-
-            final List<String> cookies = spiService.authenticate(request.getUsername(), request.getPassword(), ipAddress);
-
-            if (cookies == null) {
-                log.info("/login: Authenticate returned no cookies for user - {}", obfuscateEmailAddress(request.getUsername()));
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
-                return new ModelAndView(LOGIN_VIEW, model.asMap());
-            }
-
+            final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
             final String redirectUri = request.getRedirect_uri();
-            final PolicyService.EvaluatePoliciesAction policyCheckResponse = policyService.evaluatePoliciesForUser(redirectUri, cookies, ipAddress);
 
-            if (policyCheckResponse == PolicyService.EvaluatePoliciesAction.BLOCK) {
-                log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
-                model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
-                bindingResult.reject("Policy check failure");
-                return new ModelAndView(LOGIN_VIEW, model.asMap());
-            }
+            final ApiAuthResult authenticationResult = spiService.authenticate(request.getUsername(), request.getPassword(), redirectUri, ipAddress);
 
-            if (PolicyService.EvaluatePoliciesAction.MFA_REQUIRED == policyCheckResponse) {
-                return initiateOtpFlow(request, cookies, ipAddress, response, model);
-            }
+            // API responded with success, it's either a successful login or a request for OTP
+            if (authenticationResult.isSuccess()) {
+                final List<String> cookies = authenticationResult.getCookies();
+                if (cookies == null) {
+                    log.info("/login: Authenticate returned no cookies for user - {}", obfuscateEmailAddress(request.getUsername()));
+                    model.addAttribute(HAS_LOGIN_FAILED, true);
+                    bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
+                    return new ModelAndView(LOGIN_VIEW, model.asMap());
+                }
 
-            final String responseUrl = authoriseUser(cookies, httpRequest);
-            final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
+                if (authenticationResult.requiresMfa()) {
+                    log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
 
-            if (loginSuccess) {
-                log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
-                List<String> secureCookies = makeCookiesSecure(cookies);
-                secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
-                return new ModelAndView("redirect:" + responseUrl);
-            } else {
-                log.info("/login: There is a problem while logging in  user - {}", obfuscateEmailAddress(request.getUsername()));
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
-                return new ModelAndView(LOGIN_VIEW, model.asMap());
-            }
-        } catch (HttpClientErrorException | HttpServerErrorException he) {
-            log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
-            if (HttpStatus.FORBIDDEN == he.getStatusCode() || HttpStatus.UNAUTHORIZED == he.getStatusCode()) {
-                getLoginFailureReason(he, model, bindingResult);
-            } else if (HttpStatus.NOT_FOUND == he.getStatusCode()) {
-                try {
-                    ErrorResponse error = objectMapper.readValue(he.getResponseBodyAsString(), ErrorResponse.class);
-                    if (ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT.equals(error.getCode())) {
+                    List<String> secureCookies = authHelper.makeCookiesSecure(cookies);
+                    secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
+
+                    final List<String> affinityCookieNames = Optional.ofNullable(configurationProperties.getStrategic().getSession().getAffinityCookies()).orElse(new ArrayList<>());
+                    cookies.stream()
+                        .filter(cookie -> affinityCookieNames.stream().anyMatch(cookie::contains))
+                        .forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie.split(";")[0]));
+
+                    Map<String, Object> authorizeParams = model.asMap();
+                    authorizeParams.remove(USERNAME);
+                    authorizeParams.remove(PASSWORD);
+                    authorizeParams.remove(SELF_REGISTRATION_ENABLED);
+
+                    return new ModelAndView("redirect:/" + VERIFICATION_VIEW, authorizeParams);
+                } else {
+                    final String responseUrl = authoriseUser(cookies, httpRequest);
+                    final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
+
+                    if (loginSuccess) {
+                        log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
+                        List<String> secureCookies = authHelper.makeCookiesSecure(cookies);
+                        secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
+                        return new ModelAndView(REDIRECT_PREFIX + responseUrl);
+                    } else {
+                        log.info("/login: There is a problem while logging in  user - {}", obfuscateEmailAddress(request.getUsername()));
+                        model.addAttribute(HAS_LOGIN_FAILED, true);
+                        bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
+                        return new ModelAndView(LOGIN_VIEW, model.asMap());
+                    }
+                }
+            } else if (authenticationResult.getErrorCode() != null) {
+                final ErrorResponse.CodeEnum errorCode = authenticationResult.getErrorCode();
+                switch (errorCode) {
+                    case ACCOUNT_LOCKED:
+                        model.addAttribute(IS_ACCOUNT_LOCKED, true);
+                        bindingResult.reject("Account locked");
+                        return new ModelAndView(LOGIN_VIEW, model.asMap());
+                    case ACCOUNT_SUSPENDED:
+                        model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
+                        bindingResult.reject("Account suspended");
+                        return new ModelAndView(LOGIN_VIEW, model.asMap());
+                    case POLICIES_FAIL:
+                        log.info("/login: User failed policy checks - {}", obfuscateEmailAddress(request.getUsername()));
+                        model.addAttribute(HAS_POLICY_CHECK_FAILED, true);
+                        bindingResult.reject("Policy check failure");
+                        return new ModelAndView(LOGIN_VIEW, model.asMap());
+                    case STALE_USER_REGISTRATION_SENT:
                         Map<String, Object> staleUserResetPasswordParams = model.asMap();
                         staleUserResetPasswordParams.remove(USERNAME);
                         staleUserResetPasswordParams.remove(PASSWORD);
                         staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
-                        return new ModelAndView("redirect:/reset/inactive-user", staleUserResetPasswordParams);
-                    }
-                } catch (JsonProcessingException ex) {
-                    log.error("Error reading authentication response : {}", ex.getMessage(), ex);
+                        return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, staleUserResetPasswordParams);
+                    default:
+                        model.addAttribute(HAS_LOGIN_FAILED, true);
+                        bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
                 }
-
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
             } else {
                 model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
+                bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
             }
+        } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException he) {
+            log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
+            model.addAttribute(HAS_LOGIN_FAILED, true);
+            bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
         }
-
         return new ModelAndView(LOGIN_VIEW, model.asMap());
     }
 
@@ -426,39 +486,13 @@ public class AppController {
         return responseUrl;
     }
 
-    private ModelAndView initiateOtpFlow(AuthorizeRequest request,
-                                 List<String> cookies,
-                                 String ipAddress,
-                                 HttpServletResponse response, Model model) {
-        log.info("/login: User requires mfa authentication - {}", obfuscateEmailAddress(request.getUsername()));
-
-        final List<String> responseCookies = spiService.initiateOtpeAuthentication(cookies, ipAddress);
-
-        log.info("/login: Successful initiate OTP request - {}", obfuscateEmailAddress(request.getUsername()));
-
-        List<String> secureCookies = makeCookiesSecure(responseCookies);
-        secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
-
-        final List<String> affinityCookieNames = Optional.ofNullable(configurationProperties.getStrategic().getSession().getAffinityCookies()).orElse(new ArrayList<>());
-        cookies.stream().
-            filter(cookie -> affinityCookieNames.stream().anyMatch(cookie::contains))
-            .forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie.split(";")[0]));
-
-        Map<String, Object> authorizeParams = model.asMap();
-        authorizeParams.remove(USERNAME);
-        authorizeParams.remove(PASSWORD);
-        authorizeParams.remove(SELF_REGISTRATION_ENABLED);
-
-        return new ModelAndView("redirect:/" + VERIFICATION_VIEW, authorizeParams);
-    }
-
     /**
      * @should return error page view if OAuth2 details are missing
      * @should populate authorizeCommand
      */
     @GetMapping("/verification")
     public String verificationView(@ModelAttribute("authorizeCommand") VerificationRequest request,
-                            BindingResult bindingResult, Model model) {
+                                   BindingResult bindingResult, Model model) {
         if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
             model.addAttribute(ERROR_MSG, "error.page.access.denied");
             model.addAttribute(ERROR_SUB_MSG, "public.error.page.access.denied.text");
@@ -490,10 +524,10 @@ public class AppController {
      */
     @PostMapping("/verification")
     public ModelAndView verification(@ModelAttribute("authorizeCommand") @Validated VerificationRequest request,
-                               BindingResult bindingResult,
-                               Model model,
-                               HttpServletRequest httpRequest,
-                               HttpServletResponse response) {
+                                     BindingResult bindingResult,
+                                     Model model,
+                                     HttpServletRequest httpRequest,
+                                     HttpServletResponse response) {
 
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
@@ -522,22 +556,28 @@ public class AppController {
         final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
 
         final String idamSessionCookie = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
-        final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[] {}))
+        final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[]{}))
             .filter(c -> !idamSessionCookie.equals(c.getName()))
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
             .collect(Collectors.toList());
 
         try {
-            final List<String> responseCookies = spiService.submitOtpeAuthentication(cookies, ipAddress, request.getCode());
+            final String authId = StringUtils.substringAfter(
+                cookies.stream()
+                    .filter(cookie -> cookie.startsWith(IDAM_AUTH_ID_COOKIE_PREFIX))
+                    .findFirst()
+                    .orElseThrow(),
+                IDAM_AUTH_ID_COOKIE_PREFIX);
+            final List<String> responseCookies = spiService.submitOtpeAuthentication(authId, ipAddress, request.getCode());
             log.info("/verification: Successful OTP submission request");
 
             final String responseUrl = authoriseUser(responseCookies, httpRequest);
             final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
             if (loginSuccess) {
                 log.info("/verification: Successful login");
-                List<String> secureCookies = makeCookiesSecure(responseCookies);
+                List<String> secureCookies = authHelper.makeCookiesSecure(responseCookies);
                 secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
-                return new ModelAndView("redirect:" + responseUrl);
+                return new ModelAndView(REDIRECT_PREFIX + responseUrl);
             } else {
                 log.info("/verification: There is a problem while logging in user");
                 return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
@@ -557,6 +597,16 @@ public class AppController {
                 if (ErrorResponse.CodeEnum.INCORRECT_OTP.equals(error.getCode())) {
                     model.addAttribute(HAS_OTP_CHECK_FAILED, true);
                     bindingResult.reject("Incorrect OTP");
+                    Optional.ofNullable(
+                        Optional.ofNullable(he.getResponseHeaders())
+                            .orElse(new HttpHeaders())
+                            .get(HttpHeaders.SET_COOKIE))
+                        .orElse(new ArrayList<>())
+                        .stream()
+                        .filter(cookie -> cookie.startsWith(IDAM_AUTH_ID_COOKIE_PREFIX))
+                        .map(cookie -> StringUtils.substringAfter(cookie, IDAM_AUTH_ID_COOKIE_PREFIX))
+                        .findFirst()
+                        .ifPresent(authId -> response.addCookie(new Cookie("Idam.AuthId", authId)));
                     return new ModelAndView(VERIFICATION_VIEW, model.asMap());
                 }
 
@@ -579,52 +629,13 @@ public class AppController {
                                                                 BindingResult bindingResult,
                                                                 Model model) {
         model.addAttribute("hasOtpCheckFailed", true);
-        bindingResult.reject("Login failure");
+        bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
         model.addAttribute("authorizeCommand", request);
         model.addAttribute(USERNAME, null);
         return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
     }
 
-    private List<String> makeCookiesSecure(List<String> cookies) {
-        return makeCookiesSecure(cookies, useSecureCookie);
-    }
 
-    /**
-     * @should return a secure cookie if useSecureCookie is true
-     * @should return a non-secure cookie if useSecureCookie is false
-     */
-    protected List<String> makeCookiesSecure(List<String> cookies, boolean withSecureCookie) {
-        return cookies.stream()
-            .map(cookie -> {
-                if (!cookie.contains("HttpOnly")) {
-                    if (withSecureCookie) {
-                        return cookie + "; Path=/; Secure; HttpOnly";
-                    }
-                    return cookie + "; Path=/; HttpOnly";
-                }
-                return cookie;
-            }).collect(Collectors.toList());
-    }
-
-    private void getLoginFailureReason(HttpStatusCodeException hex, Model model, BindingResult bindingResult) {
-
-        try {
-            final ErrorResponse error = objectMapper.readValue(hex.getResponseBodyAsString(), ErrorResponse.class);
-            if (ErrorResponse.CodeEnum.ACCOUNT_LOCKED.equals(error.getCode())) {
-                model.addAttribute(IS_ACCOUNT_LOCKED, true);
-                bindingResult.reject("Account locked");
-            } else if (ErrorResponse.CodeEnum.ACCOUNT_SUSPENDED.equals(error.getCode())) {
-                model.addAttribute(IS_ACCOUNT_SUSPENDED, true);
-                bindingResult.reject("Account suspended");
-            } else {
-                model.addAttribute(HAS_LOGIN_FAILED, true);
-                bindingResult.reject("Login failure");
-            }
-        } catch (IOException e) {
-            log.error("Authentication error : {}", hex.getResponseBodyAsString(), hex);
-            throw new BadCredentialsException("Exception occurred during authentication", hex);
-        }
-    }
 
     /**
      * @should uplift user
@@ -649,7 +660,7 @@ public class AppController {
             return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
         }
 
-        String redirectUrl = "redirect:";
+        String redirectUrl = REDIRECT_PREFIX;
         try {
             final String jsonResponse = spiService.uplift(request.getUsername(), request.getPassword(), request.getJwt(),
                 request.getRedirect_uri(), request.getClient_id(), request.getState(), request.getScope());
@@ -657,14 +668,23 @@ public class AppController {
                 redirectUrl += jsonResponse;
             }
         } catch (HttpClientErrorException ex) {
-            log.error("Uplift process exception: {}", ex.getMessage(), ex);
+            if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
+                && ex.getResponseBodyAsString().equalsIgnoreCase(STALE_USER_REGISTRATION_SENT.toString())) {
+                model.remove("upliftRequest");
+                model.put("client_id", request.getClient_id());
+                model.put("redirect_uri", request.getRedirect_uri());
+                model.put("state", request.getState());
+                model.put("scope", request.getScope());
+                return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
+            } else {
+                log.error("Uplift process exception: {}", ex.getMessage(), ex);
 
-            ErrorHelper.showLoginError("Incorrect email/password combination",
-                "Please check your email address and password and try again",
-                request.getRedirect_uri(),
-                model);
-            return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
-
+                ErrorHelper.showLoginError("Incorrect email/password combination",
+                    "Please check your email address and password and try again",
+                    request.getRedirect_uri(),
+                    model);
+                return new ModelAndView(UPLIFT_LOGIN_VIEW, modelMap);
+            }
         } catch (Exception ex) {
             log.error("Uplift process exception: {}", ex.getMessage());
 
@@ -698,7 +718,7 @@ public class AppController {
 
         try {
 
-            return "redirect:" + spiService.loginWithPin(pin, redirectUri, state, clientId); //NOSONAR
+            return REDIRECT_PREFIX + spiService.loginWithPin(pin, redirectUri, state, clientId); //NOSONAR
 
         } catch (HttpClientErrorException | BadCredentialsException e) {
             log.error("Problem with pin: {}", e.getMessage());
@@ -729,7 +749,8 @@ public class AppController {
      * @should return error view when there is an unexpected error
      */
     @PostMapping(value = "/reset/doForgotPassword")
-    public String forgotPassword(@ModelAttribute("forgotPasswordCommand") @Validated ForgotPasswordRequest forgotPasswordRequest,
+    public String forgotPassword(@ModelAttribute("forgotPasswordCommand") @Validated ForgotPasswordRequest
+                                     forgotPasswordRequest,
                                  final BindingResult bindingResult,
                                  final Map<String, Object> model) {
         model.put(REDIRECTURI, forgotPasswordRequest.getRedirectUri());
@@ -766,7 +787,8 @@ public class AppController {
      * @should return reset password view if request validation fails.
      */
     @PostMapping(value = "/doResetPassword")
-    public String resetPassword(final String action, final String password1, final String password2, final String token, final String code, final Map<String, Object> model) throws IOException {
+    public String resetPassword(final String action, final String password1, final String password2,
+                                final String token, final String code, final Map<String, Object> model) throws IOException {
         try {
             if (validationService.validatePassword(password1, password2, model)) {
                 ResponseEntity<String> resetPasswordEntity = spiService.resetPassword(password1, token, code);
@@ -784,14 +806,14 @@ public class AppController {
         } catch (HttpClientErrorException e) {
             log.error("Error resetting password: {}", e.getResponseBodyAsString(), e);
             if (e.getStatusCode() == HttpStatus.PRECONDITION_FAILED) {
-                ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.invalid.password", "", model);
+                ErrorHelper.showError(ERROR_TITLE, "public.common.error.invalid.password", "public.common.error.invalid.password", "", model);
             } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED)) {
-                    ErrorHelper.showError("Error", "public.common.error.blacklisted.password", "public.common.error.blacklisted.password", "public.common.error.enter.password", model);
+                    ErrorHelper.showError(ERROR_TITLE, "public.common.error.blacklisted.password", "public.common.error.blacklisted.password", "public.common.error.enter.password", model);
                 } else if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)) {
-                    ErrorHelper.showError("Error", "public.common.error.containspersonalinfo.password", "public.common.error.containspersonalinfo.password", "public.common.error.enter.password", model);
+                    ErrorHelper.showError(ERROR_TITLE, "public.common.error.containspersonalinfo.password", "public.common.error.containspersonalinfo.password", "public.common.error.enter.password", model);
                 } else if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.ACCOUNT_LOCKED)) {
-                    ErrorHelper.showError("Error", "public.common.error.previously.used.password", "public.common.error.password.details", "public.common.error.enter.password", model);
+                    ErrorHelper.showError(ERROR_TITLE, "public.common.error.previously.used.password", "public.common.error.password.details", "public.common.error.enter.password", model);
                 }
             } else if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 return "redirect:expiredtoken";
@@ -825,7 +847,7 @@ public class AppController {
     }
 
     private String obfuscateEmailAddress(String email) {
-        return email.replaceAll("(^[^@]{3}|(?!^)\\G)[^@]", "$1*");
+        return email.replaceAll("((^[^@]{3})|(?!^)\\G)[^@]", "$2*");
     }
 
     /**

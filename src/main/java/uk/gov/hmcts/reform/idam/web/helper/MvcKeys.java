@@ -17,18 +17,24 @@ public class MvcKeys {
     public static final String HAS_OTP_SESSION_EXPIRED = "hasOtpSessionExpired";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
+    public static final String IS_ACCOUNT_SSO_ACCOUNT = "isAccountSSOAccount";
     public static final String JWT = "jwt";
     public static final String PASSWORD = "password";
     public static final String REDIRECTURI = "redirectUri";
     public static final String REDIRECT_URI = "redirect_uri";
     public static final String RESPONSE_TYPE = "response_type";
     public static final String STATE = "state";
+    public static final String NONCE = "nonce";
+    public static final String PROMPT = "prompt";
     public static final String SCOPE = "scope";
     public static final String USERNAME = "username";
     public static final String CODE = "code";
     public static final String INVALID_PIN = "invalidPin";
     public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
+    public static final String AZURE_LOGIN_ENABLED = "azureLoginEnabled";
+    public static final String EJUDICIARY_AAD = "ejudiciary-aad";
 
+    public static final String USER_ACTIVATION_VIEW = "useractivation";
     public static final String ERROR_VIEW = "error";
     public static final String ERRORPAGE_VIEW = "errorpage";
     public static final String PAGE_NOT_FOUND_VIEW = "404";

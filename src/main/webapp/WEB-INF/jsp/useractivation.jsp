@@ -9,7 +9,7 @@
 <t:wrapper titleKey="public.user.activation.title.text">
     <article class="content__body">
         <c:set var="hasError" value="${error != null}" />
-        <form:form name="useractivation" action="activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
+        <form:form name="useractivation" action="users/activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
             <c:if test="${hasError}">
                 <script>
                     sendEvent('User activation', 'Error', 'An error occurred for create password');
@@ -19,7 +19,8 @@
                         <spring:message code="public.common.error.password.heading" text="default"/>
                     </h2>
                     <ul class="error-summary-list">
-                        <li><a href="#password1"><spring:message code="${errorMessage}" text=""/></a></li>
+                      <c:if test="${!empty errorLabelOne}"><li><a href="users/activate#password1"><spring:message code="${errorLabelOne}" text=""/></a></li></c:if>
+                      <c:if test="${!empty errorLabelTwo}"><li><a href="users/activate#password2"><spring:message code="${errorLabelTwo}" text=""/></a></li></c:if>
                     </ul>
                 </div>
             </c:if>

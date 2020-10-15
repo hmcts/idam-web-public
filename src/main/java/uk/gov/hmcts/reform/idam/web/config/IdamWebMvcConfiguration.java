@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.idam.web.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -10,10 +11,11 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.mvc.WebContentInterceptor;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
 @Configuration
-public class MessagesConfiguration implements WebMvcConfigurer {
+public class IdamWebMvcConfiguration implements WebMvcConfigurer {
 
     public static final String UI_LOCALES_PARAM_NAME = "ui_locales";
     public static final String IDAM_LOCALES_COOKIE_NAME = "idam_ui_locales";
@@ -40,9 +42,23 @@ public class MessagesConfiguration implements WebMvcConfigurer {
         return interceptor;
     }
 
+    @Bean
+    WebContentInterceptor initWebContentInterceptor() {
+        WebContentInterceptor webContentInterceptor = new WebContentInterceptor();
+        webContentInterceptor.setCacheControl(CacheControl.noStore().mustRevalidate());
+        return webContentInterceptor;
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(initWebContentInterceptor());
+        registry.addInterceptor(requestMethodInterceptor());
+    }
+
+    @Bean
+    public RequestMethodInterceptor requestMethodInterceptor() {
+        return new RequestMethodInterceptor();
     }
 
     /**

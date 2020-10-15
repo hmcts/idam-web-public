@@ -15,6 +15,10 @@ public class AuthorizeRequest {
     @NotEmpty
     private String password;
 
+    private String nonce;
+
+    private String prompt;
+
     private String redirect_uri;
 
     private String state;
@@ -28,6 +32,8 @@ public class AuthorizeRequest {
     private boolean selfRegistrationEnabled;
 
     private String code;
+
+    private boolean azureLoginEnabled;
 
     private boolean hasOtpCheckFailed;
 }

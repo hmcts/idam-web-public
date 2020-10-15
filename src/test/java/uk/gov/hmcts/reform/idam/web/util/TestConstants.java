@@ -30,6 +30,7 @@ public class TestConstants {
     public static final String ACTIVATE_USER_ENDPOINT = "/users/activate";
     public static final String LOGIN_ENDPOINT = "/login";
     public static final String VERIFICATION_ENDPOINT = "/verification";
+    public static final String RESET_INACTIVE_USER_ENDPOINT = "/reset/inactive-user";
     public static final String EXPIRED_TOKEN_ENDPOINT = "/expiredtoken";
     public static final String LOGIN_PIN_ENDPOINT = "/login/pin";
     public static final String LOGOUT_ENDPOINT = "/logout";
@@ -45,6 +46,7 @@ public class TestConstants {
     public static final String TACTICAL_ACTIVATE_ENDPOINT = "/activate";
     public static final String TACTICAL_RESET_ENDPOINT = "/reset";
     public static final String HEALTH_ENDPOINT = "health";
+    public static final String RESET_PASSWORD_SUCCESS_ENDPOINT = "/users/reset-password-success";
 
     //uris
     public static final String GOOGLE_WEB_ADDRESS = "https://www.google.com";
@@ -79,6 +81,7 @@ public class TestConstants {
     public static final String NOT_FOUND_VIEW = "404";
     public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
     public static final String STALE_USER_RESET_PASSWORD_VIEW = "staleUserResetPassword";
+    public static final String RESET_PASSWORD_SUCCESS_REDIRECT_VIEW = "redirect:reset-password-success";
 
 
     //User
@@ -99,6 +102,7 @@ public class TestConstants {
     //Service
     public static final String SERVICE_LABEL = "label";
     public static final String SERVICE_CLIENT_ID = "client_id";
+    public static final String SERVICE_REDIRECT_URI = "redirect_uri";
 
 
     //Parameters
@@ -121,6 +125,7 @@ public class TestConstants {
     public static final String PIN_PARAMETER = "pin";
     public static final String AUTHORIZATION_PARAMETER = "authorization";
 	public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
+    public static final String AZURE_LOGIN_ENABLED = "azureLoginEnabled";
 
 
     //Errors
@@ -144,6 +149,7 @@ public class TestConstants {
     public static final String ERROR_CAPITAL = "Error";
     public static final String ERROR_PASSWORD_DETAILS = "public.common.error.password.details";
     public static final String ERROR_ENTER_PASSWORD = "public.common.error.enter.password";
+    public static final String ERROR_PASSWORD_SHOULD_MATCH = "public.common.error.password.should.match";
     public static final String HAS_LOGIN_FAILED = "hasLoginFailed";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
