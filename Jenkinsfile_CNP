@@ -48,9 +48,9 @@ withPipeline(type, product, component) {
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
-    
+
     before('smoketest-aks:idam-preview') {
-        env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
+        env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
         env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
         println """\
@@ -68,7 +68,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
-    
+
     before('smoketest-aks:idam-aat') {
         env.NONPROD_ENVIRONMENT_NAME = 'aat'
         env.IDAMAPI = "https://idam-api-staging.service.core-compute-aat.internal"
@@ -84,7 +84,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
-    
+
     before('buildinfra:idam-ithc') {
         env.ITHC_ENVIRONMENT_NAME = 'ithc'
         println """\
@@ -98,7 +98,7 @@ withPipeline(type, product, component) {
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
-    
+
     after('smoketest-aks:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
@@ -115,7 +115,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
     // End AKS Callbacks
-    
+
     after('test') {
         publishHTML target: [
             allowMissing         : true,
@@ -189,8 +189,8 @@ withPipeline(type, product, component) {
             reportName           : "IDAM Web Public E2E functional tests result"
         ]
     }
-  
-  before('buildinfra:idam-prod') {
-      error('Stopping pipeline before Prod stages')
-  }
+
+    before('buildinfra:idam-prod') {
+        error('Stopping pipeline before Prod stages')
+    }
 }
