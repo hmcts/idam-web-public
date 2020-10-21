@@ -31,7 +31,7 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.3.9'
+  def idamBomVersion = '2.5.0'
   //TODO: Remove once spring boot have updated versions to match
   ext['tomcat.version'] = '9.0.37'
   ext['log4j2.version'] = '2.13.3'
@@ -44,6 +44,7 @@ allprojects {
   }
 
   repositories {
+    mavenLocal()
     mavenCentral()
     maven {
       url "https://dl.bintray.com/hmcts/hmcts-maven"
