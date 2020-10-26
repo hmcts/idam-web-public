@@ -12,6 +12,7 @@ Feature('I am able to login with MFA');
 
 let token;
 let mfaUserEmail;
+let mfaDisabledUserEmail;
 let blockUserEmail;
 let randomUserFirstName;
 let serviceAdminRole;
@@ -28,10 +29,9 @@ const serviceName = randomData.getRandomServiceName();
 BeforeSuite(async (I) => {
     randomUserFirstName = randomData.getRandomUserName();
     mfaUserEmail = randomData.getRandomEmailAddress();
+    mfaDisabledUserEmail = randomData.getRandomEmailAddress();
     blockUserEmail = randomData.getRandomEmailAddress();
 
-    successMfaPolicyName = `SIDM_TEST_POLICY_SUCCESS_MFA_${randomData.getRandomString()}`;
-    failMfaPolicyName = `SIDM_TEST_POLICY_FAIL_MFA_${randomData.getRandomString()}`;
     blockPolicyName = `SIDM_TEST_POLICY_BLOCK_${randomData.getRandomString()}`;
 
     token = await I.getAuthToken();
@@ -50,12 +50,15 @@ BeforeSuite(async (I) => {
     await I.createUserWithRoles(mfaUserEmail, randomUserFirstName, [serviceAdminRole, "IDAM_ADMIN_USER"]);
     userFirstNames.push(randomUserFirstName);
 
+    await I.createUserWithRoles(mfaDisabledUserEmail, randomUserFirstName + "mfadisabled", [serviceAdminRole, "idam-mfa-disabled"]);
+    userFirstNames.push(randomUserFirstName);
+
     await I.createUserWithRoles(blockUserEmail, randomUserFirstName, [serviceBetaRole]);
     userFirstNames.push(randomUserFirstName);
 
-    await I.createPolicyForMfaTest(successMfaPolicyName, serviceAdminRole, token);
-    await I.createPolicyForMfaTest(failMfaPolicyName, serviceBetaRole, token);
     await I.createPolicyForMfaBlockTest(blockPolicyName, serviceBetaRole, token);
+
+    await I.createPolicyForApplicationMfaTest(serviceName, TestData.SERVICE_REDIRECT_URI, token);
 });
 
 AfterSuite(async (I) => {
@@ -96,6 +99,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
 
     assert.equal("access_token", jwtDecode.tokenName);
     assert.equal(nonce, jwtDecode.nonce);
+    assert.equal(1, jwtDecode.auth_level);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
@@ -140,6 +144,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
 
     assert.equal("access_token", jwtDecode.tokenName);
     assert.equal(nonce, jwtDecode.nonce);
+    assert.equal(1, jwtDecode.auth_level);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
@@ -153,8 +158,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-//TODO: revert back once the authtrees is fixed properly.
-Scenario('@mfaLogin I am not able to login with MFA for the block policy ', async (I) => {
+Scenario('@functional @mfaLogin I am not able to login with MFA for the block policy ', async (I) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
@@ -224,5 +228,51 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
+    I.resetRequestInterception();
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @mfaLogin @mfaDisabledUserLogin As an mfa disabled user I can login without mfa for the application with mfa turned on', async (I) => {
+    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTGybVUdoLV7g";
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
+
+    I.amOnPage(loginUrl);
+    I.waitForText('Sign in', 20, 'h1');
+    I.fillField('#username', mfaDisabledUserEmail);
+    I.fillField('#password', TestData.PASSWORD);
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+
+    const pageSource = await I.grabSource();
+    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+
+    let jwtDecode = await jwt_decode(accessToken);
+
+    assert.equal("access_token", jwtDecode.tokenName);
+    assert.equal(nonce, jwtDecode.nonce);
+    assert.equal(0, jwtDecode.auth_level);
+
+    //Details api
+    const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
+    expect(userInfo.active).to.equal(true);
+    expect(userInfo.email).to.equal(mfaDisabledUserEmail);
+    expect(userInfo.forename).to.equal(randomUserFirstName + 'mfadisabled');
+    expect(userInfo.id).to.not.equal(null);
+    expect(userInfo.surname).to.equal('User');
+    expect(userInfo.roles).to.deep.equalInAnyOrder([serviceAdminRole, 'idam-mfa-disabled']);
+
+    //Webpublic OIDC userinfo
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaDisabledUserEmail.toUpperCase());
+    expect(oidcUserInfo.uid).to.not.equal(null);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([serviceAdminRole, 'idam-mfa-disabled']);
+
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'mfadisabled' + ' User');
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'mfadisabled');
+    expect(oidcUserInfo.family_name).to.equal('User');
+
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

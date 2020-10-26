@@ -1,3 +1,4 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
@@ -350,6 +351,39 @@ class IdamHelper extends Helper {
                     "type": "AuthLevel",
                     "authLevel": 1
                 }
+            }
+        };
+        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        })
+            .then(res => res.json())
+            .catch(err => err);
+    }
+
+    createPolicyForApplicationMfaTest(name, redirectUri, api_auth_token) {
+        const data = {
+            "name": `MfaByApplicationPolicy-${name}`,
+            "active": true,
+            "applicationName": "HmctsPolicySet",
+            "resourceTypeUuid": "HmctsUrlResourceType",
+            "resources": [
+                `${redirectUri}`
+            ],
+            "actionValues": {},
+            "resourceAttributes": [
+                {
+                    "type": "Static",
+                    "propertyName": "mfaRequired",
+                    "propertyValues": [
+                        "true"
+                    ]
+                }
+            ],
+            "subject": {
+                "type": "AuthenticatedUsers"
             }
         };
         return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
