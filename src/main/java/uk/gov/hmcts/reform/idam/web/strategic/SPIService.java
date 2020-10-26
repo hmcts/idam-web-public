@@ -132,7 +132,7 @@ public class SPIService {
     }
 
     public ApiAuthResult authenticate(final String tokenId, final String redirectUri, final String ipAddress) throws JsonProcessingException {
-        return authenticate(null, tokenId, null, redirectUri, ipAddress);
+        return authenticate(null, null, tokenId, redirectUri, ipAddress);
     }
 
     protected ApiAuthResult authenticate(final String username, final String password, final String tokenId, final String redirectUri, final String ipAddress) throws JsonProcessingException {
