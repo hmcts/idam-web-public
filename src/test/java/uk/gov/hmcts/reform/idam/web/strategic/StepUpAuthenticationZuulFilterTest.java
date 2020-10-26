@@ -1,70 +1,93 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.sso.SSOZuulFilter;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
-class StepUpAuthenticationZuulFilterTest {
+@RunWith(JUnitParamsRunner.class)
+public class StepUpAuthenticationZuulFilterTest {
 
-    private ConfigurationProperties config;
     private StepUpAuthenticationZuulFilter filter;
 
-    @BeforeEach
+    @Before
     public void setUp() {
-        this.config = new ConfigurationProperties();
-        StrategicConfigurationProperties strategicProperties = new StrategicConfigurationProperties();
-        StrategicConfigurationProperties.Session session = new StrategicConfigurationProperties.Session();
+        final ConfigurationProperties config = new ConfigurationProperties();
+        final StrategicConfigurationProperties strategicProperties = new StrategicConfigurationProperties();
+        final StrategicConfigurationProperties.Session session = new StrategicConfigurationProperties.Session();
         session.setIdamSessionCookie("Idam.Session");
         strategicProperties.setSession(session);
-        this.config.setStrategic(strategicProperties);
-        this.filter = new StepUpAuthenticationZuulFilter(config, null);
+        config.setStrategic(strategicProperties);
+        this.filter = spy(new StepUpAuthenticationZuulFilter(config, null));
     }
 
     @Test
-    void filterType() {
+    public void filterType() {
         assertEquals(PRE_TYPE, filter.filterType());
     }
 
     @Test
-    void filterOrder() {
+    public void filterOrder() {
         assertTrue(filter.filterOrder() > SSOZuulFilter.FILTER_ORDER);
     }
 
     @Test
-    void shouldFilter() {
+    public void shouldFilter() {
+        doReturn(true).when(filter).isAuthorizeRequest(any());
+        doReturn(true).when(filter).hasSessionCookie(any());
+
+        filter.shouldFilter();
+
+        verify(filter, times(1)).isAuthorizeRequest(any());
+        verify(filter, times(1)).hasSessionCookie(any());
+    }
+
+    private Object isAuthorizeRequestParams() {
+        return new Object[]{
+            new Object[]{"http://localhost:1234/o/authorize", "POST", true},
+            new Object[]{"http://localhost:1234/o/authorize", "GET", false},
+            new Object[]{"http://localhost:1234/login?param=1", "POST", false},
+        };
     }
 
     @Test
-    void run() {
+    @Parameters(method = "isAuthorizeRequestParams")
+    public void isAuthorizeRequest(String requestUrl, String httpMethod, Boolean expectedResult) {
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        doReturn(requestUrl).when(request).getRequestURI();
+        doReturn(httpMethod).when(request).getMethod();
+        assertEquals(expectedResult, filter.isAuthorizeRequest(request));
     }
 
-    @Test
-    void getSessionToken() {
-    }
 
     @Test
-    void isAuthorizeRequest() {
+    public void hasSessionCookie() {
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+
+        doReturn(new Cookie[]{}).when(request).getCookies();
+        assertFalse(filter.hasSessionCookie(request));
+
+        Cookie cookie = new Cookie("Idam.Session", "value");
+        doReturn(new Cookie[]{cookie}).when(request).getCookies();
+        assertTrue(filter.hasSessionCookie(request));
     }
 
-    @Test
-    void hasSessionCookie() {
-    }
-
-    @Test
-    void copyRequestParameters() {
-    }
-
-    @Test
-    void zuulError() {
-    }
-
-    @Test
-    void getCookiesFromRequest() {
-    }
 }
