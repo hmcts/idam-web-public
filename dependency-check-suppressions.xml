@@ -193,7 +193,7 @@
         <cve>CVE-2014-0119</cve>
         <cve>CVE-2016-5388</cve>
     </suppress>
-    
+
     <!--
     This vulnerability can only be exploited if polymorphic typing is enabled on the default
     object mapper, hence not relevant to us.
@@ -214,7 +214,7 @@
     ONLY UNTIL 2019-10-01. No invulnerable package currently
     -->
     <suppress>
-        <notes> 
+        <notes>
         https://www.cvedetails.com/cve/CVE-2019-12384/
         FasterXML jackson-databind 2.x before 2.9.9.1 might allow attackers to have a variety of impacts by leveraging failure to block the logback-core class from polymorphic deserialization. Depending on the classpath content, remote code execution may be possible.
         </notes>
@@ -280,4 +280,93 @@
         <cve>CVE-2019-16370</cve>
     </suppress>
 
+    <suppress>
+        <notes>
+            TODO: fix these: suppress some netflix CVEs to deploy a hotfix
+        </notes>
+        <gav regex="true">^com\.netflix\.servo:servo-core:0\.10\.1$</gav>
+        <cve>CVE-2014-0047</cve>
+        <cve>CVE-2014-0048</cve>
+        <cve>CVE-2014-5277</cve>
+        <cve>CVE-2014-5278</cve>
+        <cve>CVE-2014-5282</cve>
+        <cve>CVE-2014-6407</cve>
+        <cve>CVE-2014-8178</cve>
+        <cve>CVE-2014-8179</cve>
+        <cve>CVE-2014-9356</cve>
+        <cve>CVE-2014-9358</cve>
+        <cve>CVE-2015-3627</cve>
+        <cve>CVE-2015-3630</cve>
+        <cve>CVE-2015-3631</cve>
+        <cve>CVE-2016-3697</cve>
+        <cve>CVE-2017-14992</cve>
+        <cve>CVE-2019-13139</cve>
+        <cve>CVE-2019-13509</cve>
+        <cve>CVE-2019-15752</cve>
+        <cve>CVE-2019-16884</cve>
+        <cve>CVE-2019-5736</cve>
+    </suppress>
+
+    <suppress>
+        <notes>
+            TODO: fix these: suppress some netflix CVEs to deploy a hotfix
+        </notes>
+        <gav regex="true">^com\.netflix\.servo:servo-internal:0\.10\.1$</gav>
+        <cve>CVE-2014-0047</cve>
+        <cve>CVE-2014-0048</cve>
+        <cve>CVE-2014-5277</cve>
+        <cve>CVE-2014-5278</cve>
+        <cve>CVE-2014-5282</cve>
+        <cve>CVE-2014-6407</cve>
+        <cve>CVE-2014-8178</cve>
+        <cve>CVE-2014-8179</cve>
+        <cve>CVE-2014-9356</cve>
+        <cve>CVE-2014-9358</cve>
+        <cve>CVE-2015-3627</cve>
+        <cve>CVE-2015-3630</cve>
+        <cve>CVE-2015-3631</cve>
+        <cve>CVE-2016-3697</cve>
+        <cve>CVE-2017-14992</cve>
+        <cve>CVE-2019-13139</cve>
+        <cve>CVE-2019-13509</cve>
+        <cve>CVE-2019-15752</cve>
+        <cve>CVE-2019-16884</cve>
+        <cve>CVE-2019-5736</cve>
+    </suppress>
+
+    <!--
+    This dependency is a transitional dependency of spring-security-oauth2-client,
+    as such could only be exploited by developers.
+    -->
+    <suppress>
+        <notes><![CDATA[
+            file name: jcip-annotations-1.0-1.jar
+
+            CVE-2020-10518
+            A remote code execution vulnerability was identified in GitHub Enterprise Server that could be exploited when
+            building a GitHub Pages site. User-controlled configuration of the underlying parsers used by GitHub Pages were
+            not sufficiently restricted and made it possible to execute commands on the GitHub Enterprise Server instance.
+            To exploit this vulnerability, an attacker would need permission to create and build a GitHub Pages site on the
+            GitHub Enterprise Server instance. This vulnerability affected all versions of GitHub Enterprise Server prior
+            to 2.22 and was fixed in 2.21.6, 2.20.15, and 2.19.21. The underlying issues contributing to this vulnerability
+            were identified both internally and through the GitHub Security Bug Bounty program.
+
+            CVE-2020-10517
+            An improper access control vulnerability was identified in GitHub Enterprise Server that allowed authenticated
+            users of the instance to determine the names of unauthorized private repositories given their numerical IDs. This
+            vulnerability did not allow unauthorized access to any repository content besides the name. This vulnerability
+            affected all versions of GitHub Enterprise Server prior to 2.22 and was fixed in versions 2.21.6, 2.20.15,
+            and 2.19.21. This vulnerability was reported via the GitHub Bug Bounty program.
+   ]]></notes>
+        <gav regex="true">^com\.github\.stephenc\.jcip:jcip-annotations:1\.0-1$</gav>
+        <cve>CVE-2020-10518</cve>
+        <cve>CVE-2020-10517</cve>
+    </suppress>
+
+    <!-- This vulnerability exists since 2007 and has no fix as it is a design flaw. -->
+    <suppress>
+        <gav regex="true">^com\.nimbusds:oauth2-oidc-sdk:.*$</gav>
+        <cve>CVE-2007-1651</cve>
+        <cve>CVE-2007-1652</cve>
+    </suppress>
 </suppressions>

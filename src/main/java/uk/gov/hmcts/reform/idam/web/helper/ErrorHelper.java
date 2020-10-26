@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.helper;
 
+import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@UtilityClass
 public class ErrorHelper {
 
     private static final String ERROR = "error";
@@ -33,6 +35,12 @@ public class ErrorHelper {
         model.put(ERROR, ERROR);
         model.put(ERROR_TITLE, errorTitle);
         model.put(ERROR_MESSAGE, errorMessage);
+        model.put(ERROR_LABEL_ONE, errorLabelOne);
+        model.put(ERROR_LABEL_TWO, errorLabelTwo);
+    }
+
+    public static void showError(String errorLabelOne, String errorLabelTwo, Map<String, Object> model) {
+        model.put(ERROR, ERROR);
         model.put(ERROR_LABEL_ONE, errorLabelOne);
         model.put(ERROR_LABEL_TWO, errorLabelTwo);
     }

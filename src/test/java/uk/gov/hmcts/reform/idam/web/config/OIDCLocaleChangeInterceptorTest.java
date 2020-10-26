@@ -123,7 +123,7 @@ public class OIDCLocaleChangeInterceptorTest {
      * @verifies not throw if ignore invalid locale is false
      * @see OIDCLocaleChangeInterceptor#handleException(String, IllegalArgumentException)
      */
-    @Test
+    @Test(expected = Test.None.class /* no exception expected */)
     public void handleException_shouldNotThrowIfIgnoreInvalidLocaleIsFalse() {
         final OIDCLocaleChangeInterceptor interceptor = new OIDCLocaleChangeInterceptor(AVAILABLE_LOCALES);
         interceptor.setIgnoreInvalidLocale(true);
