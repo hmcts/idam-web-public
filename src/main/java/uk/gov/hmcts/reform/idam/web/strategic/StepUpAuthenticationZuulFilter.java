@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
+import uk.gov.hmcts.reform.idam.web.sso.SSOZuulFilter;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.Cookie;
@@ -45,9 +46,16 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
         return PRE_TYPE;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Makes sure it runs AFTER the {@link SSOZuulFilter}.</p>
+     *
+     * @return
+     */
     @Override
     public int filterOrder() {
-        return 1;
+        return SSOZuulFilter.FILTER_ORDER + 1;
     }
 
     @Override
