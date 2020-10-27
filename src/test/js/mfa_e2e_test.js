@@ -10,6 +10,7 @@ const {expect} = chai;
 
 Feature('I am able to login with MFA');
 
+const scope="openid profile roles manage-user create-user";
 let token;
 let mfaUserEmail;
 let mfaDisabledUserEmail;
@@ -258,6 +259,77 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'mfadisabled' + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'mfadisabled');
+    expect(oidcUserInfo.family_name).to.equal('User');
+
+    I.resetRequestInterception();
+});
+
+Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with client A MFA turned OFF and then step-up to client B with MFA turned ON', async (I) => {
+    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService.activationRedirectUrl}&client_id=${mfaTurnedOffService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+
+    I.amOnPage(loginUrl);
+    I.waitForText('Sign in', 20, 'h1');
+    I.fillField('#username', mfaUserEmail);
+    I.fillField('#password', TestData.PASSWORD);
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(mfaTurnedOffService.activationRedirectUrl.toLowerCase());
+    I.see('code=');
+    I.dontSee('error=');
+
+    I.amOnPage(loginUrl);
+    const idamSessionCookie = await I.grabCookie('Idam.Session');
+    const cookie = idamSessionCookie.value;
+
+    // try authorizing with the Idam session cookie for the client turned ON
+    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, scope, nonce, cookie);
+    console.log("Location: " + location);
+    location.includes(`/login?client_id=${mfaTurnedOnService.oauth2ClientId}&redirect_uri=${mfaTurnedOnService.activationRedirectUrl}`);
+
+    I.amOnPage(location);
+    I.waitForText('Sign in', 20, 'h1');
+    I.fillField('#username', mfaUserEmail);
+    I.fillField('#password', TestData.PASSWORD);
+    I.click('Sign in');
+    I.seeInCurrentUrl("/verification");
+    I.waitForText('Verification required', 10, 'h1');
+    I.wait(5);
+    const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
+
+    I.fillField('code', otpCode);
+    I.click('Submit');
+    I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
+    I.see('code=');
+    I.dontSee('error=');
+
+    const pageSource = await I.grabSource();
+    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const accessToken = await I.getAccessToken(code, mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+
+    let jwtDecode = await jwt_decode(accessToken);
+
+    assert.equal("access_token", jwtDecode.tokenName);
+    assert.equal(nonce, jwtDecode.nonce);
+    assert.equal(1, jwtDecode.auth_level);
+
+    //Details api
+    const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
+    expect(userInfo.active).to.equal(true);
+    expect(userInfo.email).to.equal(mfaUserEmail);
+    expect(userInfo.forename).to.equal(randomUserFirstName);
+    expect(userInfo.id).to.not.equal(null);
+    expect(userInfo.surname).to.equal('User');
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+
+    //Webpublic OIDC userinfo
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
+    expect(oidcUserInfo.uid).to.not.equal(null);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();

@@ -82,6 +82,21 @@ class IdamHelper extends Helper {
         })
     }
 
+    getWebPublicOidcAuthorize(serviceName, serviceRedirect, oauth2Scope, nonce, cookie) {
+        return fetch(`${TestData.WEB_PUBLIC_URL}/o/authorize?redirect_uri=${serviceRedirect}&client_id=${serviceName}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${oauth2Scope}&prompt=`, {
+            agent: agent,
+            method: 'GET',
+            headers: {'Cookie': `Idam.Session=${cookie}`},
+            redirect: 'manual'
+        }).then(response => {
+            return response.headers.get('Location');
+        })
+            .catch(err => {
+                console.log(err);
+                let browser = this.helpers['Puppeteer'].browser;
+                browser.close();
+            });
+    }
 
     createService(serviceName, roleId, token, scope = '', ssoProviders = '') {
         let data;
