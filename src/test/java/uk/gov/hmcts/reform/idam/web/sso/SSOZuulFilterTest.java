@@ -70,12 +70,12 @@ public class SSOZuulFilterTest {
 
     @Test
     public void filterType() {
-        assertEquals(underTest.filterType(), PRE_TYPE);
+        assertEquals(PRE_TYPE, underTest.filterType());
     }
 
     @Test
     public void filterOrder() {
-        assertEquals(underTest.filterOrder(), 0);
+        assertEquals(0, underTest.filterOrder());
     }
 
     @Test

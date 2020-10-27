@@ -1,4 +1,5 @@
 .*jquery-3.4.1.min.js$
+.*jquery-3.5.1.min.js$
 .*/assets/images/apple-touch-icon-152x152.*
 .*/assets/images/apple-touch-icon-180x180.*
 .*/assets/images/apple-touch-icon-167x167.*

@@ -19,7 +19,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -39,14 +38,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.google.common.net.HttpHeaders.X_FORWARDED_FOR;
-import static java.util.Collections.singletonList;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -208,8 +204,8 @@ public class SPIServiceTest {
 
         HttpEntity<ValidateRequest> entity = (HttpEntity<ValidateRequest>) captor.getAllValues().get(0);
 
-        Assert.assertEquals(entity.getBody().getToken(), USER_ACTIVATION_TOKEN);
-        Assert.assertEquals(entity.getBody().getCode(), USER_ACTIVATION_CODE);
+        Assert.assertEquals(USER_ACTIVATION_TOKEN,entity.getBody().getToken() );
+        Assert.assertEquals(USER_ACTIVATION_CODE,entity.getBody().getCode() );
     }
 
     /**
@@ -288,7 +284,8 @@ public class SPIServiceTest {
     @Test
     public void forgetPassword_shouldCallApiWithTheCorrectParameters() throws Exception {
         spiService.forgetPassword(USER_EMAIL, SERVICE_OAUTH2_REDIRECT_URI, CLIENT_ID);
-        Thread.sleep(1000); // hack to get around CompletableFuture.supplyAsync()
+        // hack to get around CompletableFuture.supplyAsync()
+        Thread.sleep(1000);//NOSONAR
 
         ArgumentCaptor<HttpEntity<ForgotPasswordDetails>> captor = ArgumentCaptor.forClass(HttpEntity.class);
         verify(restTemplate).exchange(eq(FORGOT_PASSWORD_URI), eq(HttpMethod.POST), captor.capture(), eq(String.class));

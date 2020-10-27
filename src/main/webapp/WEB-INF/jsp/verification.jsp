@@ -72,6 +72,8 @@
                                 <c:param name="redirect_uri" value="${redirect_uri}"/>
                                 <c:param name="client_id" value="${client_id}"/>
                                 <c:param name="state" value="${state}"/>
+                                <c:param name="nonce" value="${nonce}"/>
+                                <c:param name="prompt" value="${prompt}"/>
                                 <c:param name="scope" value="${scope}"/>
                                 <c:param name="response_type" value="${response_type}"/>
                             </c:url>
@@ -123,6 +125,8 @@
                                         <c:param name="redirect_uri" value="${redirect_uri}"/>
                                         <c:param name="client_id" value="${client_id}"/>
                                         <c:param name="state" value="${state}"/>
+                                        <c:param name="nonce" value="${nonce}"/>
+                                        <c:param name="prompt" value="${prompt}"/>
                                         <c:param name="scope" value="${scope}"/>
                                         <c:param name="response_type" value="${response_type}"/>
                                     </c:url>

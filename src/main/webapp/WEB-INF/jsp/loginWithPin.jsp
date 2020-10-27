@@ -6,7 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<t:wrapper titleKey="public.login.subheading.sign.in">
+<t:wrapper titleKey="public.login.subheading.sign.in.with.security.code">
     <article class="content__body">
         <c:set var="hasError" value="${error != null}" />
         <c:if test="${hasError}">

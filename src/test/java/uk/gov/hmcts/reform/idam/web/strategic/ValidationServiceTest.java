@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +12,7 @@ import uk.gov.hmcts.reform.idam.web.util.TestConstants;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -20,9 +20,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
-/**
- * @author Ivano
- */
 @RunWith(MockitoJUnitRunner.class)
 public class ValidationServiceTest {
 
@@ -41,27 +38,23 @@ public class ValidationServiceTest {
      * @verifies return false if the passwords is null or empty
      * @see ValidationService#validatePassword(String, String, java.util.Map)
      */
-    @Test public void validatePassword_shouldReturnFalseIfThePasswordsIsNullOrEmpty() throws Exception {
+    @Test
+    public void validatePassword_shouldReturnFalseIfThePasswordsIsNullOrEmpty() throws Exception {
 
         Map<String, Object> model = new HashMap<>();
         assertFalse(validationService.validatePassword(null, TestConstants.USER_PASSWORD, model));
 
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_MESSAGE), Matchers.is(TestConstants.ERROR_PASSWORD_NOT_EMPTY)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_ONE), Matchers.is(TestConstants.ERROR_ENTER_PASSWORD)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_TWO), Matchers.is(TestConstants.BLANK)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.PASSWORD_TWO), Matchers.is(TestConstants.USER_PASSWORD)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR), is(TestConstants.ERROR)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_ONE), is(TestConstants.ERROR_ENTER_PASSWORD)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_TWO), is(TestConstants.ERROR_PASSWORD_SHOULD_MATCH)));
 
         model = new HashMap<>();
         assertFalse(validationService.validatePassword(TestConstants.USER_PASSWORD, "", model));
 
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_MESSAGE), Matchers.is(TestConstants.ERROR_PASSWORD_NOT_EMPTY)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_ONE), Matchers.is(TestConstants.BLANK)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_TWO), Matchers.is(TestConstants.ERROR_ENTER_PASSWORD)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.PASSWORD_ONE), Matchers.is(TestConstants.USER_PASSWORD)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR), is(TestConstants.ERROR)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_ONE), is(TestConstants.BLANK)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_TWO), is(TestConstants.ERROR_ENTER_PASSWORD)));
+        assertThat(model, hasEntry(is(TestConstants.PASSWORD_ONE), is(TestConstants.USER_PASSWORD)));
 
 
     }
@@ -70,48 +63,41 @@ public class ValidationServiceTest {
      * @verifies return false if the passwords don't match
      * @see ValidationService#validatePassword(String, String, java.util.Map)
      */
-    @Test public void validatePassword_shouldReturnFalseIfThePasswordsDontMatch() throws Exception {
+    @Test
+    public void validatePassword_shouldReturnFalseIfThePasswordsDontMatch() throws Exception {
 
         Map<String, Object> model = new HashMap<>();
 
         assertFalse(validationService.validatePassword(TestConstants.PASSWORD_ONE, TestConstants.PASSWORD_TWO, model));
 
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_MESSAGE), is("public.common.error.password.not.same")));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_ONE), Matchers.is(TestConstants.BLANK)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_TWO), is("public.common.error.password.should.match")));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.PASSWORD_ONE), Matchers.is(TestConstants.PASSWORD_ONE)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR), is(TestConstants.ERROR)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_ONE), is(TestConstants.BLANK)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_TWO), is("public.common.error.password.should.match")));
+        assertThat(model, hasEntry(is(TestConstants.PASSWORD_ONE), is(TestConstants.PASSWORD_ONE)));
     }
 
     /**
      * @verifies return false if the password does not comply with the length requirement
      * @see ValidationService#validatePassword(String, String, java.util.Map)
      */
-    @Test public void validatePassword_shouldReturnFalseIfThePasswordDoesNotComplyWithTheLengthRequirement() throws Exception {
+    @Test
+    public void validatePassword_shouldReturnFalseIfThePasswordDoesNotComplyWithTheLengthRequirement() throws Exception {
 
         Map<String, Object> model = new HashMap<>();
 
         assertFalse(validationService.validatePassword(TestConstants.SHORT_PASSWORD, TestConstants.SHORT_PASSWORD, model));
 
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_MESSAGE), Matchers.is(TestConstants.ERROR_INVALID_PASSWORD)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_ONE), Matchers.is(TestConstants.ERROR_PASSWORD_DETAILS)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_TWO), Matchers.is(TestConstants.BLANK)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.PASSWORD_ONE), Matchers.is(TestConstants.SHORT_PASSWORD)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR), is(TestConstants.ERROR)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_ONE), is(TestConstants.ERROR_PASSWORD_DETAILS)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_TWO), is(TestConstants.BLANK)));
 
         model = new HashMap<>();
 
         assertFalse(validationService.validatePassword(TestConstants.LONG_PASSWORD, TestConstants.LONG_PASSWORD, model));
 
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_MESSAGE), Matchers.is(TestConstants.ERROR_INVALID_PASSWORD)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_ONE), Matchers.is(TestConstants.ERROR_PASSWORD_DETAILS)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_TWO), Matchers.is(TestConstants.BLANK)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.PASSWORD_ONE), Matchers.is(TestConstants.LONG_PASSWORD)));
-
+        assertThat(model, hasEntry(is(TestConstants.ERROR), is(TestConstants.ERROR)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_ONE), is(TestConstants.ERROR_PASSWORD_DETAILS)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_TWO), is(TestConstants.BLANK)));
     }
 
     /**
@@ -124,11 +110,14 @@ public class ValidationServiceTest {
 
         assertFalse(validationService.validatePassword(null, null, model));
 
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR), Matchers.is(TestConstants.ERROR)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_TITLE), Matchers.is(TestConstants.ERROR_CAPITAL)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_MESSAGE), Matchers.is(TestConstants.ERROR_PASSWORD_NOT_EMPTY)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_ONE), Matchers.is(TestConstants.ERROR_ENTER_PASSWORD)));
-        assertThat(model, Matchers.hasEntry(Matchers.is(TestConstants.ERROR_LABEL_TWO), Matchers.is(TestConstants.ERROR_ENTER_PASSWORD)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR), is(TestConstants.ERROR)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_ONE), is(TestConstants.ERROR_ENTER_PASSWORD)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_TWO), is(TestConstants.ERROR_ENTER_PASSWORD)));
+
+        assertFalse(validationService.validatePassword("password", null, model));
+
+        assertThat(model, hasEntry(is(TestConstants.ERROR), is(TestConstants.ERROR)));
+        assertThat(model, hasEntry(is(TestConstants.ERROR_LABEL_TWO), is(TestConstants.ERROR_ENTER_PASSWORD)));
     }
 
     /**

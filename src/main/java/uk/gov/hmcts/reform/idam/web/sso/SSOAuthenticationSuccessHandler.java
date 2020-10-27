@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.idam.web.sso;
 import feign.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -34,6 +35,7 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static uk.gov.hmcts.reform.idam.web.helper.ErrorHelper.restException;
 
 @Slf4j
+@ConditionalOnProperty("features.federated-s-s-o")
 public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
@@ -146,6 +148,8 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         );
 
         params.remove("login_hint");
+        // ignore prompt as we don't want a federated user that is successfully authenticated to land on the login page
+        params.remove("prompt");
 
         Response response = oidcApi.oauth2AuthorizePost(
             StringUtils.join(cookies, ";"),
