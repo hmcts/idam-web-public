@@ -33,7 +33,7 @@ allprojects {
 
   def idamBomVersion = '2.5.1'
   //TODO: Remove once spring boot have updated versions to match
-  ext['tomcat.version'] = '9.0.37'
+  ext['tomcat.version'] = '9.0.39'
   ext['log4j2.version'] = '2.13.3'
   ext['spring.boot.version'] = '2.2.10.RELEASE'
 
