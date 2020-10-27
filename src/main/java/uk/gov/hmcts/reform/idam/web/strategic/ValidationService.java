@@ -17,6 +17,7 @@ import java.util.Objects;
 @Component
 public class ValidationService {
 
+    public static final String ERROR_TITLE = "Error";
 
     private final ObjectMapper mapper;
 
@@ -45,34 +46,34 @@ public class ValidationService {
     public boolean validatePassword(final String password1, final String password2, Map<String, Object> model) {
 
         if (StringUtils.isEmpty(password1) && StringUtils.isEmpty(password2)) {
-            ErrorHelper.showError("Error", "public.common.error.password.not.empty", "public.common.error.enter.password", "public.common.error.enter.password", model);
+            ErrorHelper.showError(ERROR_TITLE, "public.common.error.password.not.empty", "public.common.error.enter.password", "public.common.error.enter.password", model);
             return false;
         }
         if (StringUtils.isEmpty(password1)) {
-            ErrorHelper.showError("Error", "public.common.error.password.not.empty", "public.common.error.enter.password", "", model);
+            ErrorHelper.showError(ERROR_TITLE, "public.common.error.password.not.empty", "public.common.error.enter.password", "", model);
             model.put("password2", password2);
             return false;
         }
         if (StringUtils.isEmpty(password2)) {
-            ErrorHelper.showError("Error", "public.common.error.password.not.empty", "", "public.common.error.enter.password", model);
+            ErrorHelper.showError(ERROR_TITLE, "public.common.error.password.not.empty", "", "public.common.error.enter.password", model);
             model.put("password1", password1);
             return false;
         }
 
         if (!password1.equals(password2)) {
-            ErrorHelper.showError("Error", "public.common.error.password.not.same", "", "public.common.error.password.should.match", model);
+            ErrorHelper.showError(ERROR_TITLE, "public.common.error.password.not.same", "", "public.common.error.password.should.match", model);
             model.put("password1", password1);
             return false;
         }
 
         if (password1.length() < passwordMinLength || password1.length() > passwordMaxLength) {
-            ErrorHelper.showError("Error", "public.common.error.invalid.password", "public.common.error.password.details", "", model);
+            ErrorHelper.showError(ERROR_TITLE, "public.common.error.invalid.password", "public.common.error.password.details", "", model);
             model.put("password1", password1);
             return false;
         }
 
         if (containsIllegalCharacters(password1)) {
-            ErrorHelper.showError("Error", "public.common.error.invalid.password.illegal-characters", "public.common.error.password.details", "", model);
+            ErrorHelper.showError(ERROR_TITLE, "public.common.error.invalid.password.illegal-characters", "public.common.error.password.details", "", model);
             model.put("password1", password1);
             return false;
         }

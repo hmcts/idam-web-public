@@ -148,6 +148,8 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         );
 
         params.remove("login_hint");
+        // ignore prompt as we don't want a federated user that is successfully authenticated to land on the login page
+        params.remove("prompt");
 
         Response response = oidcApi.oauth2AuthorizePost(
             StringUtils.join(cookies, ";"),

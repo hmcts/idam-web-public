@@ -227,6 +227,8 @@
                     <p><spring:message code="public.privacypolicy.text_0155" /></p>
 
                     <p><spring:message code="public.privacypolicy.text_0156" /></p>
+
+                    <p><spring:message code="public.privacypolicy.text_0244" /></p>
                 </div>
 
                 <div id="tabs-4" aria-labelledby="ui-id-2" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">

@@ -2,6 +2,11 @@ const randomData = require('./shared/random_data');
 const TestData = require('./config/test_data');
 const Welsh = require('./shared/welsh_constants');
 const assert = require('assert');
+const jwt_decode = require('jwt-decode');
+const deepEqualInAnyOrder = require('deep-equal-in-any-order');
+const chai = require('chai');
+chai.use(deepEqualInAnyOrder);
+const {expect} = chai;
 
 Feature('I am able to login with MFA');
 
@@ -39,7 +44,7 @@ BeforeSuite(async (I) => {
     const serviceSuperRole = response.name;
     const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
     roleNames.push(serviceRoles);
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token, "openid profile roles create-user manage-user");
     serviceNames.push(serviceName);
 
     await I.createUserWithRoles(mfaUserEmail, randomUserFirstName, [serviceAdminRole, "IDAM_ADMIN_USER"]);
@@ -63,7 +68,8 @@ AfterSuite(async (I) => {
 });
 
 Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
+    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTGybVUdoLV7g";
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h1');
@@ -71,8 +77,6 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
-    I.saveScreenshot('mfa-verification.png');
-    I.seeVisualDiff('mfa-verification.png', {tolerance: 6, prepareBaseImage: false});
     I.waitForText('Verification required', 10, 'h1');
     I.wait(5);
     const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
@@ -83,11 +87,31 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
+
+    let pageSource = await I.grabSource();
+    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+
+    let jwtDecode = await jwt_decode(accessToken);
+
+    assert.equal("access_token", jwtDecode.tokenName);
+    assert.equal(nonce, jwtDecode.nonce);
+
+    //Webpublic OIDC userinfo
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
+    expect(oidcUserInfo.uid).to.not.equal(null);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([serviceAdminRole, 'IDAM_ADMIN_USER']);
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
+    expect(oidcUserInfo.family_name).to.equal('User');
+
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in Welsh', async (I) => {
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}${Welsh.urlForceCy}`;
+    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTGybVUdoLV7g";
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=openid profile roles manage-user create-user${Welsh.urlForceCy}`;
 
     I.amOnPage(loginUrl);
     I.waitForText(Welsh.signInOrCreateAccount, 20, 'h1');
@@ -107,6 +131,25 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
+
+    let pageSource = await I.grabSource();
+    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+
+    let jwtDecode = await jwt_decode(accessToken);
+
+    assert.equal("access_token", jwtDecode.tokenName);
+    assert.equal(nonce, jwtDecode.nonce);
+
+    //Webpublic OIDC userinfo
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
+    expect(oidcUserInfo.uid).to.not.equal(null);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([serviceAdminRole, 'IDAM_ADMIN_USER']);
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
+    expect(oidcUserInfo.family_name).to.equal('User');
+
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
