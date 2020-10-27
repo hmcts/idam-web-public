@@ -39,6 +39,12 @@ public class ErrorHelper {
         model.put(ERROR_LABEL_TWO, errorLabelTwo);
     }
 
+    public static void showError(String errorLabelOne, String errorLabelTwo, Map<String, Object> model) {
+        model.put(ERROR, ERROR);
+        model.put(ERROR_LABEL_ONE, errorLabelOne);
+        model.put(ERROR_LABEL_TWO, errorLabelTwo);
+    }
+
     public static HttpStatusCodeException restException(@Nullable String message,
                                                         HttpStatus status, HttpHeaders headers,
                                                         String error, String description) {

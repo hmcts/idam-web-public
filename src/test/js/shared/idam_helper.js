@@ -82,6 +82,21 @@ class IdamHelper extends Helper {
         })
     }
 
+    getWebPublicOidcAuthorize(serviceName, serviceRedirect, oauth2Scope, nonce, cookie) {
+        return fetch(`${TestData.WEB_PUBLIC_URL}/o/authorize?redirect_uri=${serviceRedirect}&client_id=${serviceName}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${oauth2Scope}&prompt=`, {
+            agent: agent,
+            method: 'GET',
+            headers: {'Cookie': `Idam.Session=${cookie}`},
+            redirect: 'manual'
+        }).then(response => {
+            return response.headers.get('Location');
+        })
+            .catch(err => {
+                console.log(err);
+                let browser = this.helpers['Puppeteer'].browser;
+                browser.close();
+            });
+    }
 
     createService(serviceName, roleId, token, scope = '', ssoProviders = '') {
         let data;
@@ -143,6 +158,35 @@ class IdamHelper extends Helper {
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
             activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
+            selfRegistrationAllowed: true
+        };
+        return fetch(`${TestData.IDAM_API}/services`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token},
+        }).then(res => res.json())
+            .then((json) => {
+                return json;
+            })
+            .catch(err => err);
+    }
+
+    createNewServiceWithRoles(serviceName, serviceRoles, betaRole, token, scope) {
+        if (scope == null) {
+            scope = ''
+        }
+        const data = {
+            label: serviceName,
+            description: serviceName,
+            oauth2ClientId: serviceName,
+            oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+            oauth2RedirectUris: [`http://www.${serviceName}.com`],
+            oauth2Scope: scope,
+            onboardingEndpoint: '/autotest',
+            onboardingRoles: [betaRole],
+            allowedRoles: serviceRoles,
+            activationRedirectUrl: `http://www.${serviceName}.com`,
             selfRegistrationAllowed: true
         };
         return fetch(`${TestData.IDAM_API}/services`, {
@@ -267,38 +311,27 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createPolicyToBlockUser(name, userEmail, api_auth_token) {
+    createPolicyForApplicationMfaTest(name, redirectUri, api_auth_token) {
         const data = {
             "name": name,
-            "applicationName": "HmctsPolicySet",
-            "description": "Blocks specific user",
             "active": true,
-            "actionValues": {
-                "GET": false,
-                "POST": false,
-                "DELETE": false,
-                "PATCH": false,
-                "PUT": false,
-                "OPTIONS": false,
-                "HEAD": false
-            },
+            "applicationName": "HmctsPolicySet",
             "resourceTypeUuid": "HmctsUrlResourceType",
             "resources": [
-                "*://*",
-                "*://*:*/*",
-                "*://*:*/*?*",
-                "*://*?*"
+                `${redirectUri}`
+            ],
+            "actionValues": {},
+            "resourceAttributes": [
+                {
+                    "type": "Static",
+                    "propertyName": "mfaRequired",
+                    "propertyValues": [
+                        "true"
+                    ]
+                }
             ],
             "subject": {
-                "type": "AND",
-                "subjects": [
-                    {
-                        "type": "Identity",
-                        "subjectValues": [
-                            `id=${userEmail},ou=user,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
-                        ]
-                    }
-                ]
+                "type": "AuthenticatedUsers"
             }
         };
         return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
@@ -311,110 +344,6 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createPolicyForMfaTest(name, roleName, api_auth_token) {
-        const data = {
-            "name": name,
-            "applicationName": "HmctsPolicySet",
-            "description": "Require MFA for test user",
-            "active": true,
-            "actionValues": {
-                "GET": false,
-                "POST": false,
-                "DELETE": false,
-                "PATCH": false,
-                "PUT": false,
-                "OPTIONS": false,
-                "HEAD": false
-            },
-            "resourceTypeUuid": "HmctsUrlResourceType",
-            "resources": [
-                "*://*",
-                "*://*:*/*",
-                "*://*:*/*?*",
-                "*://*?*"
-            ],
-            "resourceAttributes": [{
-                "type": "Static",
-                "propertyName": "mfaRequired",
-                "propertyValues": ["true"]
-            }],
-            "subject": {
-                "type": "Identity",
-                "subjectValues": [
-                    `id=${roleName},ou=group,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
-                ]
-            },
-            "condition": {
-                "type": "NOT",
-                "condition": {
-                    "type": "AuthLevel",
-                    "authLevel": 1
-                }
-            }
-        };
-        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
-        })
-            .then(res => res.json())
-            .catch(err => err);
-    }
-
-    createPolicyForMfaBlockTest(name, roleName, api_auth_token) {
-        const data = {
-            "name": name,
-            "applicationName": "HmctsPolicySet",
-            "description": "Require MFA for test user",
-            "active": true,
-            "actionValues": {
-                "GET": false,
-                "POST": false,
-                "DELETE": false,
-                "PATCH": false,
-                "PUT": false,
-                "OPTIONS": false,
-                "HEAD": false
-            },
-            "resourceTypeUuid": "HmctsUrlResourceType",
-            "resources": [
-                "*://*",
-                "*://*:*/*",
-                "*://*:*/*?*",
-                "*://*?*"
-            ],
-            "resourceAttributes": [{
-                "type": "Static",
-                "propertyName": "blocked",
-                "propertyValues": ["true"]
-            }],
-            "subject": {
-                "type": "Identity",
-                "subjectValues": [
-                    `id=${roleName},ou=group,o=hmcts,ou=services,dc=reform,dc=hmcts,dc=net`
-                ]
-            },
-            "condition": {
-                "type": "NOT",
-                "condition": {
-                    "type": "IPv4",
-                    "startIp": "0.0.0.1",
-                    "endIp": "0.0.0.10",
-                    "ipRange": [],
-                    "dnsName": []
-                }
-            }
-        };
-        return fetch(`${TestData.IDAM_API}/api/v1/policies`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
-        })
-            .then(res => res.json())
-            .catch(err => err);
-    }
 
     deletePolicy(name, api_auth_token) {
         return fetch(`${TestData.IDAM_API}/api/v1/policies/${name}`, {
