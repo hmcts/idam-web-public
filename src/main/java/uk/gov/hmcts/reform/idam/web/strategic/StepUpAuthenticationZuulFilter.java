@@ -3,12 +3,11 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import com.netflix.zuul.exception.ZuulException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.http.HttpHeaders;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
@@ -18,8 +17,6 @@ import javax.annotation.Nonnull;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -31,6 +28,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
     public static final String ZUUL_PROCESSING_ERROR = "Cannot process authentication response";
+    public static final String OIDC_AUTHORIZE_ENDPOINT = "/o/authorize";
 
     private final SPIService spiService;
     private final String idamSessionCookieName;
@@ -66,7 +64,7 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
 
     @Override
-    public Object run() throws ZuulException {
+    public Object run() {
         final RequestContext ctx = RequestContext.getCurrentContext();
         final HttpServletRequest request = ctx.getRequest();
 
@@ -74,36 +72,28 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
         final String tokenId = getSessionToken(request);
 
-        final URI loginRedirectUri;
-        try {
-            final URIBuilder redirectUriBuilder = new URIBuilder().setPath("/login");
-            copyRequestParameters(redirectUriBuilder, request);
-            loginRedirectUri = redirectUriBuilder.build();
-        } catch (final URISyntaxException e) {
-            throw zuulError("Cannot generate loginRedirectUri");
-        }
-
         try {
             final String originIp = ObjectUtils.defaultIfNull(request.getHeader(X_FORWARDED_FOR), request.getRemoteAddr());
             final String redirectUri = request.getParameter(MvcKeys.REDIRECT_URI);
             final ApiAuthResult authenticationResult = spiService.authenticate(tokenId, redirectUri, originIp);
             if (!authenticationResult.isSuccess()) {
-                throw zuulError("Authentication failed: " + authenticationResult.getErrorCode().name());
+                return unauthorizedResponse("AuthTree check for session token failed", ctx);
             }
-            // redirect to the login page for re-authentication
+
             if (authenticationResult.requiresMfa()) {
-                ctx.setResponseStatusCode(HttpServletResponse.SC_MOVED_TEMPORARILY);
-                ctx.getResponse().setHeader(HttpHeaders.LOCATION, loginRedirectUri.toString());
-                ctx.setSendZuulResponse(false);
-                return null;
+                dropCookie(idamSessionCookieName, ctx);
             }
-            // continue as usual
+
+            // continue as usual (delegate to idam-api)
             ctx.setSendZuulResponse(true);
             return null;
         } catch (final JsonProcessingException e) {
-            log.error(ZUUL_PROCESSING_ERROR, e);
-            throw zuulError(ZUUL_PROCESSING_ERROR);
+            return unauthorizedResponse(ZUUL_PROCESSING_ERROR, ctx);
         }
+    }
+
+    protected void dropCookie(@Nonnull final String cookieName, @Nonnull final RequestContext context) {
+        context.addZuulRequestHeader(HttpHeaders.COOKIE, cookieName + "=");
     }
 
     protected String getSessionToken(@Nonnull final HttpServletRequest request) {
@@ -115,7 +105,7 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
     }
 
     protected boolean isAuthorizeRequest(@Nonnull final HttpServletRequest request) {
-        return request.getRequestURI().contains("/o/authorize") &&
+        return request.getRequestURI().contains(OIDC_AUTHORIZE_ENDPOINT) &&
             ("post".equalsIgnoreCase(request.getMethod()) || "get".equalsIgnoreCase(request.getMethod()));
     }
 
@@ -133,9 +123,11 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
         });
     }
 
-    @Nonnull
-    protected ZuulException zuulError(@Nonnull final String errorCause) {
-        return new ZuulException("StepUp authentication failed", HttpServletResponse.SC_UNAUTHORIZED, errorCause);
+    protected Object unauthorizedResponse(@Nonnull final String errorCause, @Nonnull final RequestContext context) {
+        log.error("StepUp authentication failed: {}", errorCause);
+        context.setResponseStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+        context.setSendZuulResponse(false);
+        return null;
     }
 
     @Nonnull
