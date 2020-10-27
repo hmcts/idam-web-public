@@ -1,4 +1,3 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
@@ -144,6 +143,35 @@ class IdamHelper extends Helper {
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
             activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
+            selfRegistrationAllowed: true
+        };
+        return fetch(`${TestData.IDAM_API}/services`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token},
+        }).then(res => res.json())
+            .then((json) => {
+                return json;
+            })
+            .catch(err => err);
+    }
+
+    createNewServiceWithRoles(serviceName, serviceRoles, betaRole, token, scope) {
+        if (scope == null) {
+            scope = ''
+        }
+        const data = {
+            label: serviceName,
+            description: serviceName,
+            oauth2ClientId: serviceName,
+            oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+            oauth2RedirectUris: [`http://www.${serviceName}.com`],
+            oauth2Scope: scope,
+            onboardingEndpoint: '/autotest',
+            onboardingRoles: [betaRole],
+            allowedRoles: serviceRoles,
+            activationRedirectUrl: `http://www.${serviceName}.com`,
             selfRegistrationAllowed: true
         };
         return fetch(`${TestData.IDAM_API}/services`, {
