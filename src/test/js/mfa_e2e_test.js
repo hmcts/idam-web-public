@@ -14,12 +14,10 @@ const scope="openid profile roles manage-user create-user";
 let token;
 let mfaUserEmail;
 let mfaDisabledUserEmail;
-let blockUserEmail;
 let randomUserFirstName;
 let mfaTurnedOnServiceRole;
 let mfaTurnedOffServiceRole;
-let successMfaPolicyName;
-let blockPolicyName;
+let mfaApplicationPolicyName;
 let mfaTurnedOnService;
 let mfaTurnedOffService;
 
@@ -27,33 +25,26 @@ BeforeSuite(async (I) => {
     randomUserFirstName = randomData.getRandomUserName();
     mfaUserEmail = randomData.getRandomEmailAddress();
     mfaDisabledUserEmail = randomData.getRandomEmailAddress();
-    blockUserEmail = randomData.getRandomEmailAddress();
-    blockPolicyName = `SIDM_TEST_POLICY_BLOCK_${randomData.getRandomString()}`;
 
     token = await I.getAuthToken();
 
-    const mfaTurnedOnServiceBetaRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_beta", 'beta description', '', token);
-    mfaTurnedOnServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_admin", 'admin description', mfaTurnedOnServiceBetaRole.id, token);
-    const mfaTurnedOnServiceRoleIds = [mfaTurnedOnServiceBetaRole.id, mfaTurnedOnServiceRole.id];
-    mfaTurnedOnService = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), mfaTurnedOnServiceRoleIds, mfaTurnedOnServiceBetaRole.id, token, "openid profile roles create-user manage-user");
+    mfaTurnedOnServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_admin", 'admin description', '', token);
+    mfaTurnedOnService = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.id], '', token, "openid profile roles create-user manage-user");
 
     mfaTurnedOffServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest", 'admin description', '', token);
-    const mfaTurnedOffServiceRoleIds = [mfaTurnedOffServiceRole.id];
-    mfaTurnedOffService = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), mfaTurnedOffServiceRoleIds, '', token, "openid profile roles create-user manage-user");
+    mfaTurnedOffService = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.id], '', token, "openid profile roles create-user manage-user");
 
     await I.createUserWithRoles(mfaUserEmail, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     await I.createUserWithRoles(mfaDisabledUserEmail, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
-    await I.createUserWithRoles(blockUserEmail, randomUserFirstName, [mfaTurnedOnServiceBetaRole.name]);
 
-    await I.createPolicyForMfaBlockTest(blockPolicyName, mfaTurnedOnServiceBetaRole.name, token);
-    await I.createPolicyForApplicationMfaTest(mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, token);
+    mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService.oauth2ClientId}`;
+    await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService.activationRedirectUrl, token);
 });
 
 AfterSuite(async (I) => {
     return Promise.all([
         I.deleteAllTestData(randomData.TEST_BASE_PREFIX),
-        I.deletePolicy(successMfaPolicyName, token),
-        I.deletePolicy(blockPolicyName, token)
+        I.deletePolicy(mfaApplicationPolicyName, token),
     ]);
 });
 
@@ -143,17 +134,6 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
-
-Scenario('@functional @mfaLogin I am not able to login with MFA for the block policy ', async (I) => {
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}`;
-
-    I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
-    I.fillField('#username', blockUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
-    I.click('Sign in');
-    I.waitForText('Policies check failed', 10, 'h2');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts should redirect user to the sign in page', async (I) => {
@@ -282,7 +262,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with clie
     const idamSessionCookie = await I.grabCookie('Idam.Session');
     const cookie = idamSessionCookie.value;
 
-    // try authorizing with the Idam session cookie for the client turned ON
+    // try authorizing with the Idam session cookie for the client MFA turned ON
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, scope, nonce, cookie);
     console.log("Location: " + location);
     location.includes(`/login?client_id=${mfaTurnedOnService.oauth2ClientId}&redirect_uri=${mfaTurnedOnService.activationRedirectUrl}`);
