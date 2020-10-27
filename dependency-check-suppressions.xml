@@ -369,4 +369,10 @@
         <cve>CVE-2007-1651</cve>
         <cve>CVE-2007-1652</cve>
     </suppress>
+
+    <!-- This vulnerability exists in all tomcat versions. Needs to be removed when a fix is issued. -->
+    <suppress>
+        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed-.+:9\.0\..*$</gav>
+        <cve>CVE-2020-13943</cve>
+    </suppress>
 </suppressions>
