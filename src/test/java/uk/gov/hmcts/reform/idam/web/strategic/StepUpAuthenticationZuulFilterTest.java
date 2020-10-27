@@ -63,8 +63,10 @@ public class StepUpAuthenticationZuulFilterTest {
     private Object isAuthorizeRequestParams() {
         return new Object[]{
             new Object[]{"http://localhost:1234/o/authorize", "POST", true},
-            new Object[]{"http://localhost:1234/o/authorize", "GET", false},
+            new Object[]{"http://localhost:1234/o/authorize", "GET", true},
+            new Object[]{"http://localhost:1234/o/authorize", "PUT", false},
             new Object[]{"http://localhost:1234/login?param=1", "POST", false},
+            new Object[]{"http://localhost:1234/login?param=1", "GET", false},
         };
     }
 

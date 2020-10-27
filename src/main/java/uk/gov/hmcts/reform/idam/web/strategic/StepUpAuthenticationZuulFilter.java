@@ -107,7 +107,8 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
     }
 
     protected boolean isAuthorizeRequest(@Nonnull final HttpServletRequest request) {
-        return request.getRequestURI().contains("/o/authorize") && "post".equalsIgnoreCase(request.getMethod());
+        return request.getRequestURI().contains("/o/authorize") &&
+            ("post".equalsIgnoreCase(request.getMethod()) || "get".equalsIgnoreCase(request.getMethod()));
     }
 
     protected boolean hasSessionCookie(@Nonnull final HttpServletRequest request) {
