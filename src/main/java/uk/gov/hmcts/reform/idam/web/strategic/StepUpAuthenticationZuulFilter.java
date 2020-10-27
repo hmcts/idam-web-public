@@ -5,7 +5,6 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -111,16 +110,6 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
     protected boolean hasSessionCookie(@Nonnull final HttpServletRequest request) {
         return Arrays.stream(getCookiesFromRequest(request)).anyMatch(cookie -> idamSessionCookieName.equals(cookie.getName()));
-    }
-
-    protected void copyRequestParameters(@Nonnull final URIBuilder uriBuilder, @Nonnull final HttpServletRequest originalRequest) {
-        originalRequest.getParameterMap().forEach((key, values) -> {
-            if (values != null) {
-                for (final String value : values) {
-                    uriBuilder.addParameter(key, value);
-                }
-            }
-        });
     }
 
     protected Object unauthorizedResponse(@Nonnull final String errorCause, @Nonnull final RequestContext context) {
