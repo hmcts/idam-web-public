@@ -6,6 +6,7 @@ import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -24,6 +25,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 
 @Slf4j
 @Component
+@ConditionalOnProperty("features.step-up-authentication")
 public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
     public static final String ZUUL_PROCESSING_ERROR = "Cannot process authentication response";
@@ -31,12 +33,10 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
     private final SPIService spiService;
     private final String idamSessionCookieName;
-    private final boolean useStepUpAuthentication;
 
     @Autowired
     public StepUpAuthenticationZuulFilter(@Nonnull final ConfigurationProperties configurationProperties, @Nonnull final SPIService spiService) {
         this.idamSessionCookieName = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
-        this.useStepUpAuthentication = configurationProperties.getFeatures().isStepUpAuthentication();
         this.spiService = spiService;
     }
 
@@ -60,7 +60,7 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
     @Override
     public boolean shouldFilter() {
         final HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
-        return useStepUpAuthentication && isAuthorizeRequest(request) && hasSessionCookie(request);
+        return isAuthorizeRequest(request) && hasSessionCookie(request);
     }
 
 

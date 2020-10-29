@@ -28,16 +28,12 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 public class StepUpAuthenticationZuulFilterTest {
 
     private StepUpAuthenticationZuulFilter filter;
-    private FeaturesConfigurationProperties featuresProperties;
 
     @Before
     public void setUp() {
         final ConfigurationProperties config = new ConfigurationProperties();
         final StrategicConfigurationProperties strategicProperties = new StrategicConfigurationProperties();
         final StrategicConfigurationProperties.Session session = new StrategicConfigurationProperties.Session();
-        this.featuresProperties = spy(new FeaturesConfigurationProperties());
-        featuresProperties.setStepUpAuthentication(true);
-        config.setFeatures(featuresProperties);
         session.setIdamSessionCookie("Idam.Session");
         strategicProperties.setSession(session);
         config.setStrategic(strategicProperties);
