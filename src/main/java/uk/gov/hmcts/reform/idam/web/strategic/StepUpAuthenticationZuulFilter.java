@@ -6,6 +6,7 @@ import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -24,6 +25,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 
 @Slf4j
 @Component
+@ConditionalOnProperty("features.step-up-authentication")
 public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
     public static final String ZUUL_PROCESSING_ERROR = "Cannot process authentication response";
