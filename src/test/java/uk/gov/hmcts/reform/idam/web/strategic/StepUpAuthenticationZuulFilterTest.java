@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
-import uk.gov.hmcts.reform.idam.web.config.properties.FeaturesConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.sso.SSOZuulFilter;
 
