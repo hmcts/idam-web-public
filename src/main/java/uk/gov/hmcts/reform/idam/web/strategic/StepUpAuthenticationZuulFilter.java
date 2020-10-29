@@ -31,10 +31,12 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
     private final SPIService spiService;
     private final String idamSessionCookieName;
+    private final boolean useStepUpAuthentication;
 
     @Autowired
     public StepUpAuthenticationZuulFilter(@Nonnull final ConfigurationProperties configurationProperties, @Nonnull final SPIService spiService) {
         this.idamSessionCookieName = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
+        this.useStepUpAuthentication = configurationProperties.getFeatures().isStepUpAuthentication();
         this.spiService = spiService;
     }
 
@@ -58,7 +60,7 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
     @Override
     public boolean shouldFilter() {
         final HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
-        return isAuthorizeRequest(request) && hasSessionCookie(request);
+        return useStepUpAuthentication && isAuthorizeRequest(request) && hasSessionCookie(request);
     }
 
 
