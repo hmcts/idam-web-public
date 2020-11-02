@@ -12,19 +12,15 @@ import uk.gov.hmcts.reform.idam.web.sso.SSOZuulFilter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
 @RunWith(JUnitParamsRunner.class)
@@ -104,20 +100,6 @@ public class StepUpAuthenticationZuulFilterTest {
     }
 
     @Test
-    public void unauthorizedResponse() {
-        final RequestContext context = spy(new RequestContext());
-        final HttpServletResponse response = mock(HttpServletResponse.class);
-        context.setResponse(response);
-
-        final Object zuulResponse = filter.unauthorizedResponse("cause", context);
-
-        assertNull(zuulResponse);
-        assertFalse(context.sendZuulResponse());
-        verify(context, times(1)).setResponseStatusCode(eq(HttpServletResponse.SC_UNAUTHORIZED));
-        verify(context, times(1)).setSendZuulResponse(eq(false));
-    }
-
-    @Test
     public void getSessionToken() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final String sessionCookieValue = "test";
@@ -130,5 +112,20 @@ public class StepUpAuthenticationZuulFilterTest {
         final String sessionToken = filter.getSessionToken(request);
 
         assertEquals(sessionCookieValue, sessionToken);
+    }
+
+    @Test
+    public void dropCookie() {
+        final String cookieName = "test";
+        final RequestContext context = new RequestContext();
+        filter.dropCookie(cookieName, context);
+        final Map.Entry<String, String> cookie = context.getZuulRequestHeaders()
+            .entrySet()
+            .stream()
+            .filter(h -> "cookie".equalsIgnoreCase(h.getKey()))
+            .findFirst()
+            .orElseThrow();
+
+        assertEquals(cookieName + "=", cookie.getValue());
     }
 }
