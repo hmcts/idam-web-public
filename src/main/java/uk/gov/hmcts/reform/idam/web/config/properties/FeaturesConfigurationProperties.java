@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class FeaturesConfigurationProperties {
     private boolean federatedSSO;
+    private boolean stepUpAuthentication;
 }
