@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.idam.web.sso.SSOZuulFilter;
 import javax.annotation.Nonnull;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -77,20 +76,17 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
             final String originIp = ObjectUtils.defaultIfNull(request.getHeader(X_FORWARDED_FOR), request.getRemoteAddr());
             final String redirectUri = request.getParameter(MvcKeys.REDIRECT_URI);
             final ApiAuthResult authenticationResult = spiService.authenticate(tokenId, redirectUri, originIp);
-            if (!authenticationResult.isSuccess()) {
-                return unauthorizedResponse("AuthTree check for session token failed", ctx);
-            }
 
             if (authenticationResult.requiresMfa()) {
                 dropCookie(idamSessionCookieName, ctx);
             }
 
-            // continue as usual (delegate to idam-api)
-            ctx.setSendZuulResponse(true);
-            return null;
         } catch (final JsonProcessingException e) {
-            return unauthorizedResponse(ZUUL_PROCESSING_ERROR, ctx);
+            log.error(ZUUL_PROCESSING_ERROR, e);
         }
+        // continue as usual (delegate to idam-api)
+        ctx.setSendZuulResponse(true);
+        return null;
     }
 
     protected void dropCookie(@Nonnull final String cookieName, @Nonnull final RequestContext context) {
@@ -112,13 +108,6 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
     protected boolean hasSessionCookie(@Nonnull final HttpServletRequest request) {
         return Arrays.stream(getCookiesFromRequest(request)).anyMatch(cookie -> idamSessionCookieName.equals(cookie.getName()));
-    }
-
-    protected Object unauthorizedResponse(@Nonnull final String errorCause, @Nonnull final RequestContext context) {
-        log.error("StepUp authentication failed: {}", errorCause);
-        context.setResponseStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
-        context.setSendZuulResponse(false);
-        return null;
     }
 
     @Nonnull
