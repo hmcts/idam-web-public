@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.zuul.context.RequestContext;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.sso.SSOZuulFilter;
@@ -16,17 +18,23 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
 @RunWith(JUnitParamsRunner.class)
 public class StepUpAuthenticationZuulFilterTest {
 
     private StepUpAuthenticationZuulFilter filter;
+    private SPIService spiService;
 
     @Before
     public void setUp() {
@@ -36,7 +44,8 @@ public class StepUpAuthenticationZuulFilterTest {
         session.setIdamSessionCookie("Idam.Session");
         strategicProperties.setSession(session);
         config.setStrategic(strategicProperties);
-        this.filter = spy(new StepUpAuthenticationZuulFilter(config, null));
+        this.spiService = mock(SPIService.class);
+        this.filter = spy(new StepUpAuthenticationZuulFilter(config, this.spiService));
     }
 
     @Test
@@ -127,5 +136,59 @@ public class StepUpAuthenticationZuulFilterTest {
             .orElseThrow();
 
         assertEquals(cookieName + "=", cookie.getValue());
+    }
+
+    @Test
+    public void run_shouldDelegateOnUnauthorized() throws JsonProcessingException {
+        final String sessionToken = "sessionToken";
+        doReturn(sessionToken).when(filter).getSessionToken(any());
+
+        final RequestContext context = new RequestContext();
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        context.setRequest(request);
+        RequestContext.testSetCurrentContext(context);
+
+        final ApiAuthResult authResult = ApiAuthResult.builder().httpStatus(HttpStatus.UNAUTHORIZED).build();
+        doReturn(authResult).when(spiService).authenticate(eq(sessionToken), any(), any());
+
+        assertNull(filter.run());
+        assertTrue(RequestContext.getCurrentContext().sendZuulResponse());
+    }
+
+    @Test
+    public void run_shouldDelegateOnJsonException() throws JsonProcessingException {
+        final String sessionToken = "sessionToken";
+        doReturn(sessionToken).when(filter).getSessionToken(any());
+
+        final RequestContext context = new RequestContext();
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        context.setRequest(request);
+        RequestContext.testSetCurrentContext(context);
+
+        doThrow(mock(JsonProcessingException.class)).when(spiService).authenticate(eq(sessionToken), any(), any());
+
+        assertNull(filter.run());
+        assertTrue(RequestContext.getCurrentContext().sendZuulResponse());
+    }
+
+    @Test
+    public void run_shouldCallDropCookieIfMfaRequired() throws JsonProcessingException {
+        final String sessionToken = "sessionToken";
+        doReturn(sessionToken).when(filter).getSessionToken(any());
+
+        final RequestContext context = new RequestContext();
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        context.setRequest(request);
+        RequestContext.testSetCurrentContext(context);
+
+        final ApiAuthResult authResult =
+            ApiAuthResult.builder()
+                .policiesAction(EvaluatePoliciesAction.MFA_REQUIRED)
+                .build();
+        doReturn(authResult).when(spiService).authenticate(eq(sessionToken), any(), any());
+
+        assertNull(filter.run());
+        assertTrue(RequestContext.getCurrentContext().sendZuulResponse());
+        verify(filter, times(1)).dropCookie(any(), any());
     }
 }
