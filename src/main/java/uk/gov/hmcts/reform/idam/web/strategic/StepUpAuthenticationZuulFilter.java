@@ -62,7 +62,6 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
         return isAuthorizeRequest(request) && hasSessionCookie(request);
     }
 
-
     @Override
     public Object run() {
         final RequestContext ctx = RequestContext.getCurrentContext();
