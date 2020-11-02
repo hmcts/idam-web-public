@@ -329,6 +329,7 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(HAS_OTP_CHECK_FAILED, request.isHasOtpCheckFailed());
+        model.addAttribute(HAS_TOO_MANY_ATTEMPTS_OTP, request.isHasTooManyAttemptsOtp());
 
         if (request.isHasOtpCheckFailed()) {
             // redirecting from otp check
@@ -618,6 +619,7 @@ public class AppController {
 
                 // if 3x failed
                 if (ErrorResponse.CodeEnum.TOO_MANY_ATTEMPTS_OTP.equals(error.getCode())) {
+                    model.addAttribute(HAS_TOO_MANY_ATTEMPTS_OTP, true);
                     return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
                 }
 

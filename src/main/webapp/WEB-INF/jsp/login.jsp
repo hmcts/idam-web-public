@@ -129,10 +129,21 @@
                             <script>
                                 sendEvent('Authorization', 'Error', 'User verification code check has failed');
                             </script>
-                            <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                                <spring:message code="public.login.error.verificationcheck.title"/>
-                            </h2>
-                            <p class="text"><spring:message code="public.login.error.verificationcheck.instruction"/></p>
+                            <c:choose>
+                                <c:when test="${hasTooManyAttemptsOtp}">
+                                    <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
+                                        <spring:message code="public.login.error.verification.problem.title"/>
+                                    </h2>
+                                    <p class="text"><spring:message code="public.login.error.verification.expired.instruction.1"/></p>
+                                    <p class="text"><spring:message code="public.login.error.verification.expired.instruction.2"/></p>
+                                </c:when>
+                                <c:otherwise>
+                                    <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
+                                        <spring:message code="public.login.error.verificationcheck.title"/>
+                                    </h2>
+                                    <p class="text"><spring:message code="public.login.error.verificationcheck.instruction"/></p>
+                                </c:otherwise>
+                            </c:choose>
                         </c:when>
                         <c:otherwise>
                             <script>
