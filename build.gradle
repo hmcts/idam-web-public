@@ -252,4 +252,3 @@ test.finalizedBy jacocoTestReport
 bootRun {
   systemProperties = System.properties
 }
-
