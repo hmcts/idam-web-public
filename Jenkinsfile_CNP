@@ -48,7 +48,6 @@ withPipeline(type, product, component) {
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
-    
     before('smoketest-aks:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
