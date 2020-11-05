@@ -19,6 +19,8 @@ import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_LOGIN_HINTS;
 @Component
 public class SSOZuulFilter extends ZuulFilter {
 
+    public static final int FILTER_ORDER = 0;
+
     private final ConfigurationProperties configurationProperties;
     private final SSOService ssoService;
 
@@ -35,7 +37,7 @@ public class SSOZuulFilter extends ZuulFilter {
 
     @Override
     public int filterOrder() {
-        return 0;
+        return FILTER_ORDER;
     }
 
     @Override

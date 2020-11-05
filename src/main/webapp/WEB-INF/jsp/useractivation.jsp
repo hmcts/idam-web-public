@@ -19,7 +19,8 @@
                         <spring:message code="public.common.error.password.heading" text="default"/>
                     </h2>
                     <ul class="error-summary-list">
-                        <li><a href="#password1"><spring:message code="${errorMessage}" text=""/></a></li>
+                      <c:if test="${!empty errorLabelOne}"><li><a href="users/activate#password1"><spring:message code="${errorLabelOne}" text=""/></a></li></c:if>
+                      <c:if test="${!empty errorLabelTwo}"><li><a href="users/activate#password2"><spring:message code="${errorLabelTwo}" text=""/></a></li></c:if>
                     </ul>
                 </div>
             </c:if>

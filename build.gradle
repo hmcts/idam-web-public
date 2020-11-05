@@ -31,9 +31,9 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.3.9'
+  def idamBomVersion = '2.5.1'
   //TODO: Remove once spring boot have updated versions to match
-  ext['tomcat.version'] = '9.0.37'
+  ext['tomcat.version'] = '9.0.39'
   ext['log4j2.version'] = '2.13.3'
   ext['spring.boot.version'] = '2.2.10.RELEASE'
 
@@ -116,6 +116,7 @@ allprojects {
 
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
+    testCompile('pl.pragmatists:JUnitParams:1.1.1')
 
     testImplementation group: 'org.mockito', name: 'mockito-core'
     testImplementation group: 'org.springframework', name: 'spring-test'

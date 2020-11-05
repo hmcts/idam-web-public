@@ -149,6 +149,7 @@ public class TestConstants {
     public static final String ERROR_CAPITAL = "Error";
     public static final String ERROR_PASSWORD_DETAILS = "public.common.error.password.details";
     public static final String ERROR_ENTER_PASSWORD = "public.common.error.enter.password";
+    public static final String ERROR_PASSWORD_SHOULD_MATCH = "public.common.error.password.should.match";
     public static final String HAS_LOGIN_FAILED = "hasLoginFailed";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
