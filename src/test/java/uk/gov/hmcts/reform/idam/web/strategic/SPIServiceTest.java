@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
+import com.netflix.zuul.constants.ZuulHeaders;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -66,8 +67,10 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_SP
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_URI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.GOOGLE_WEB_ADDRESS;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HEALTH_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IDAM_AUTH_ID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MFA_OTP;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.OAUTH2_AUTHORIZE_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
@@ -669,5 +672,28 @@ public class SPIServiceTest {
             .willReturn(ResponseEntity.ok().build());
         ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
         assertTrue(result.getCookies().isEmpty());
+    }
+
+    @Test
+    public void submitOtpeAuthentication_shouldMakeTheRightRequest() throws Exception {
+
+        given(restTemplate.exchange(
+            eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
+            eq(HttpMethod.POST),
+            any(HttpEntity.class), eq(Void.class)))
+            .willReturn(ResponseEntity.ok().build());
+
+        spiService.submitOtpeAuthentication(IDAM_AUTH_ID, USER_IP_ADDRESS, MFA_OTP);
+
+        verify(restTemplate).exchange(eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT), eq(HttpMethod.POST), captor.capture(), eq(Void.class));
+
+        HttpEntity<?> entity = captor.getValue();
+        assertTrue(entity.getBody() instanceof MultiValueMap);
+
+        MultiValueMap<String, String> requestForm = (MultiValueMap<String, String>) entity.getBody();
+        assertEquals(IDAM_AUTH_ID, requestForm.get("authId").get(0));
+
+        assertEquals(USER_IP_ADDRESS, entity.getHeaders().getFirst(ZuulHeaders.X_FORWARDED_FOR));
+
     }
 }
