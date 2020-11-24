@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -368,6 +369,24 @@ public class UserControllerTest {
     }
 
     /**
+     * @verifies return redirect to error page with already activated error if validate password returns conflict
+     * @see UserController#activateUser(String, String, String, String, Map)
+     */
+    @Test
+    public void activateUser_shouldReturnRedirectToErrorPageWithAlreadyActivatedErrorIfValidatePasswordReturnsConflict() throws Exception {
+        ActivationResult activationResult = new ActivationResult();
+        activationResult.setRedirectUri(REDIRECT_URI);
+        activationResult.setStaleUserActivated(true);
+
+        given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willThrow(new HttpClientErrorException(HttpStatus.CONFLICT, "Conflict", null, null));
+
+        mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR_MSG, ALREADY_ACTIVATED_KEY))
+            .andExpect(view().name(ERROR_VIEW_NAME));
+    }
+
+    /**
      * @verifies return users view
      * @see UserController#users(Map)
      */
@@ -552,4 +571,5 @@ public class UserControllerTest {
             .andExpect(model().attribute(REDIRECTURI, REDIRECTURI))
             .andExpect(view().name(RESET_PASSWORD_SUCCESS_VIEW));
     }
+
 }
