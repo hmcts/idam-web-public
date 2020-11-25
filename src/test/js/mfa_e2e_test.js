@@ -281,7 +281,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with clie
     const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
-    I.click('Submit');
+    I.click('Continue');
     I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
