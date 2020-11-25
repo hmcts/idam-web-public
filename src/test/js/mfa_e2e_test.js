@@ -188,7 +188,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     // previously generated otp should be invalidated
     I.fillField('code', otpCode);
     I.click('Continue');
-    I.waitForText('Verification code incorrect, try again', 5, '.error-message');
+    I.waitForText('Enter a correct verification code', 5, '.error-message');
     I.fillField('code', otpCodeLatest);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
