@@ -64,7 +64,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
-    I.click('Submit');
+    I.click('Continue');
     I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -151,28 +151,28 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
 
     // empty field
     I.fillField('code', '');
-    I.click('Submit');
-    I.waitForText('Enter a verification code', 5, '.error-message');
+    I.click('Continue');
+    I.waitForText('Enter a correct verification code', 5, '.error-message');
     // other than digits
     I.fillField('code', '663h8w7g');
-    I.click('Submit');
-    I.see('Enter numbers only');
+    I.click('Continue');
+    I.see('Enter a correct verification code');
     // not 8 digit otp
     I.fillField('code', `1${otpCode}`);
-    I.click('Submit');
-    I.see('Enter a valid verification code');
+    I.click('Continue');
+    I.see('Enter a correct verification code');
     // invalid otp
     I.fillField('code', '12345678');
-    I.click('Submit');
-    I.see('Verification code incorrect, try again');
+    I.click('Continue');
+    I.see('Enter a correct verification code');
     // invalid otp
     I.fillField('code', '74646474');
-    I.click('Submit');
-    I.see('Verification code incorrect, try again');
+    I.click('Continue');
+    I.see('Enter a correct verification code');
 
     // invalid otp
     I.fillField('code', '94837292');
-    I.click('Submit');
+    I.click('Continue');
     // after 3 incorrect attempts redirect user back to the sign in page
     I.seeInCurrentUrl("/login");
     I.see('Verification code check failed');
@@ -187,11 +187,11 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
 
     // previously generated otp should be invalidated
     I.fillField('code', otpCode);
-    I.click('Submit');
+    I.click('Continue');
     I.waitForText('Verification code incorrect, try again', 5, '.error-message');
     I.fillField('code', otpCodeLatest);
     I.interceptRequestsAfterSignin();
-    I.click('Submit');
+    I.click('Continue');
     I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
