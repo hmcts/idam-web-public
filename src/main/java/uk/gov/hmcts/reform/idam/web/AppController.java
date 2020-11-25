@@ -616,15 +616,7 @@ public class AppController {
                     return new ModelAndView(VERIFICATION_VIEW, model.asMap());
                 }
 
-                // if 3x failed
-                if (ErrorResponse.CodeEnum.TOO_MANY_ATTEMPTS_OTP.equals(error.getCode())) {
-                    return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
-                }
-
-                // if expired
-                bindingResult.reject("Expired OTP");
-                model.addAttribute(HAS_OTP_SESSION_EXPIRED, true);
-                return new ModelAndView(VERIFICATION_VIEW, model.asMap());
+               return redirectToExpiredCode(model);
             }
 
             return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
@@ -639,6 +631,10 @@ public class AppController {
         model.addAttribute("authorizeCommand", request);
         model.addAttribute(USERNAME, null);
         return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
+    }
+
+    private ModelAndView redirectToExpiredCode(Model model) {
+        return new ModelAndView("redirect:/" + EXPIRED_CODE_VIEW, model.asMap());
     }
 
 
@@ -937,5 +933,18 @@ public class AppController {
         model.put(ERROR_MSG, GENERIC_ERROR_KEY);
         model.put(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
         return ERRORPAGE_VIEW;
+    }
+
+    @GetMapping(path = "/expiredcode")
+    public String expiredCodeError(@RequestParam("client_id") String clientId,
+                                   @RequestParam("redirect_uri") String redirectUri,
+                                   @RequestParam(required = false) String state,
+                                   @RequestParam(required = false) String scope,
+                                   Model model) {
+        model.addAttribute(CLIENTID, clientId);
+        model.addAttribute(REDIRECTURI, redirectUri);
+        model.addAttribute(STATE, state);
+        model.addAttribute(SCOPE, scope);
+        return EXPIRED_CODE_VIEW;
     }
 }
