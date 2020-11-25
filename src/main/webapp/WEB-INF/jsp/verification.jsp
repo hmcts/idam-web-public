@@ -24,44 +24,38 @@
                      tabindex="-1">
 
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                        <c:choose>
-                            <c:when test="${hasOtpCheckFailed}">
-                                <spring:message code="public.login.error.verification.failed.title"/>
-                            </c:when>
-                            <c:when test="${hasOtpSessionExpired}">
-                                <spring:message code="public.login.error.verification.expired.title"/>
-                            </c:when>
-                            <c:otherwise>
-                                <spring:message code="public.login.error.other.title"/>
-                            </c:otherwise>
-                        </c:choose>
+                          <c:choose>
+                                <c:when test="${hasOtpSessionExpired}">
+                                    <spring:message code="public.login.error.verification.expired.title"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <spring:message code="public.login.error.verification.problem.title"/>
+                                </c:otherwise>
+                          </c:choose>
                     </h2>
                     <c:choose>
                         <c:when test="${isCodeEmpty}">
                             <script>
                                 sendEvent('Authorization', 'Error', 'One time password is empty');
                             </script>
-                            <p><spring:message code="public.common.error.please.fix.following"/></p>
                             <ul class="error-summary-list">
-                                <li><a href="#code"><spring:message code="public.login.error.verification.field.code.empty"/></a></li>
+                                <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:when>
                         <c:when test="${isCodePatternInvalid}">
                             <script>
                                 sendEvent('Authorization', 'Error', 'One time password has invalid pattern');
                             </script>
-                            <p><spring:message code="public.common.error.please.fix.following"/></p>
                             <ul class="error-summary-list">
-                                <li><a href="#code"><spring:message code="public.login.error.verification.field.code.pattern"/></a></li>
+                                <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:when>
                         <c:when test="${isCodeLengthInvalid}">
                             <script>
                                 sendEvent('Authorization', 'Error', 'One time password has invalid length');
                             </script>
-                            <p><spring:message code="public.common.error.please.fix.following"/></p>
                             <ul class="error-summary-list">
-                                <li><a href="#code"><spring:message code="public.login.error.verification.field.code.length"/></a></li>
+                                <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:when>
                         <c:when test="${hasOtpSessionExpired}">
@@ -90,9 +84,8 @@
                             <script>
                                 sendEvent('Authorization', 'Error', 'One time password is incorrect');
                             </script>
-                            <p><spring:message code="public.common.error.please.fix.following"/></p>
                             <ul class="error-summary-list">
-                                <li><a href="#code"><spring:message code="public.login.error.verification.field.code.failed"/></a></li>
+                                <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:otherwise>
                     </c:choose>
@@ -111,15 +104,6 @@
                     <c:if test="${hasBindError}">
                         <span class="error-message">
                             <c:choose>
-                                <c:when test="${isCodeEmpty}">
-                                    <spring:message code="public.login.error.verification.field.code.empty"/>
-                                </c:when>
-                                <c:when test="${isCodePatternInvalid}">
-                                    <spring:message code="public.login.error.verification.field.code.pattern"/>
-                                </c:when>
-                                <c:when test="${isCodeLengthInvalid}">
-                                    <spring:message code="public.login.error.verification.field.code.length"/>
-                                </c:when>
                                 <c:when test="${hasOtpSessionExpired}">
                                     <c:url value="/login" var="loginUrl">
                                         <c:param name="redirect_uri" value="${redirect_uri}"/>
@@ -133,7 +117,7 @@
                                     <spring:message code="public.login.error.verification.field.code.expired" htmlEscape="false" arguments="${loginUrl}"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <spring:message code="public.login.error.verification.field.code.failed"/>
+                                    <spring:message code="public.login.error.verification.field.code.incorrect"/>
                                 </c:otherwise>
                             </c:choose>
                         </span>
