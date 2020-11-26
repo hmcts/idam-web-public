@@ -174,9 +174,12 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.fillField('code', '94837292');
     I.click('Continue');
     // after 3 incorrect attempts redirect user back to the sign in page
+    I.seeInCurrentUrl("/expiredcode");
+    I.see('We’ve been unable to sign you in because your verification code has expired.');
+    I.see('You’ll need to start again.');
+    I.click('Continue');
+
     I.seeInCurrentUrl("/login");
-    I.see('Verification code check failed');
-    I.see('Your verification code check has failed, please retry');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
@@ -278,7 +281,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with clie
     const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
-    I.click('Submit');
+    I.click('Continue');
     I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
