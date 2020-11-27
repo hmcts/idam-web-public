@@ -2548,7 +2548,6 @@ public class AppControllerTest {
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
-            .param(AZURE_LOGIN_ENABLED, "true")
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().isOk())
             .andExpect(view().name(EXPIRED_CODE_VIEW));
