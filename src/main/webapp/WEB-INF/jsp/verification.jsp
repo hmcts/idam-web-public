@@ -95,6 +95,7 @@
             <h1 class="heading-large"><spring:message code="public.verification.subheading.verification.required"/></h1>
             <div class="form-section">
                 <p><spring:message code="public.verification.p"/></p>
+                <p><spring:message code="public.verification.check.inbox.instruction"/></p>
                 <div class="form-group ${hasBindError? 'form-group-error' : ''}">
                     <label for="code">
                         <span class="form-label">
