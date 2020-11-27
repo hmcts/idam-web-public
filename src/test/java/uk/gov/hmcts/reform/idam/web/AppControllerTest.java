@@ -2540,4 +2540,16 @@ public class AppControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("mockRedirect"));
     }
+
+    @Test
+    public void expiredCode_shouldReturnExpiredCodePage() throws Exception {
+        mockMvc.perform(get("/expiredcode")
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(status().isOk())
+            .andExpect(view().name(EXPIRED_CODE_VIEW));
+    }
 }
