@@ -94,40 +94,42 @@
 
             <h1 class="heading-large"><spring:message code="public.verification.subheading.verification.required"/></h1>
             <div class="form-section">
-                <p><spring:message code="public.verification.p"/></p>
-                <p><spring:message code="public.verification.check.inbox.instruction"/></p>
-                <div class="form-group ${hasBindError? 'form-group-error' : ''}">
-                    <label for="code">
-                        <span class="form-label">
-                            <spring:message code="public.verification.code.label"/>
-                        </span>
-                    </label>
-                    <c:if test="${hasBindError}">
-                        <span class="error-message">
-                            <c:choose>
-                                <c:when test="${hasOtpSessionExpired}">
-                                    <c:url value="/login" var="loginUrl">
-                                        <c:param name="redirect_uri" value="${redirect_uri}"/>
-                                        <c:param name="client_id" value="${client_id}"/>
-                                        <c:param name="state" value="${state}"/>
-                                        <c:param name="nonce" value="${nonce}"/>
-                                        <c:param name="prompt" value="${prompt}"/>
-                                        <c:param name="scope" value="${scope}"/>
-                                        <c:param name="response_type" value="${response_type}"/>
-                                    </c:url>
-                                    <spring:message code="public.login.error.verification.field.code.expired" htmlEscape="false" arguments="${loginUrl}"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <spring:message code="public.login.error.verification.field.code.incorrect"/>
-                                </c:otherwise>
-                            </c:choose>
-                        </span>
-                    </c:if>
-                    <form:input
-                        class="form-control${hasBindError? ' form-control-error' : ''}"
-                        id="code" name="code" path="code" type="code" value="" autocomplete="off"/>
+                <div class="column-two-thirds" style="padding: 0;">
+                    <p><spring:message code="public.verification.p"/></p>
+                    <p><spring:message code="public.verification.check.inbox.instruction"/></p>
+                    <div class="form-group ${hasBindError? 'form-group-error' : ''}">
+                        <label for="code">
+                            <span class="form-label">
+                                <spring:message code="public.verification.code.label"/>
+                            </span>
+                        </label>
+                        <c:if test="${hasBindError}">
+                            <span class="error-message">
+                                <c:choose>
+                                    <c:when test="${hasOtpSessionExpired}">
+                                        <c:url value="/login" var="loginUrl">
+                                            <c:param name="redirect_uri" value="${redirect_uri}"/>
+                                            <c:param name="client_id" value="${client_id}"/>
+                                            <c:param name="state" value="${state}"/>
+                                            <c:param name="nonce" value="${nonce}"/>
+                                            <c:param name="prompt" value="${prompt}"/>
+                                            <c:param name="scope" value="${scope}"/>
+                                            <c:param name="response_type" value="${response_type}"/>
+                                        </c:url>
+                                        <spring:message code="public.login.error.verification.field.code.expired" htmlEscape="false" arguments="${loginUrl}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <spring:message code="public.login.error.verification.field.code.incorrect"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
+                        </c:if>
+                        <form:input
+                            class="form-control${hasBindError? ' form-control-error' : ''}"
+                            id="code" name="code" path="code" type="text" style="width:120px" value="" autocomplete="off"/>
+                    </div>
+                    <input class="button" type="submit" value="<spring:message code="public.verification.form.submit" />">
                 </div>
-                <input class="button" type="submit" value="<spring:message code="public.verification.form.submit" />">
             </div>
         </form:form>
     </article>
