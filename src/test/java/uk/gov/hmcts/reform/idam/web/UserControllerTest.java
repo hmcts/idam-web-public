@@ -571,5 +571,4 @@ public class UserControllerTest {
             .andExpect(model().attribute(REDIRECTURI, REDIRECTURI))
             .andExpect(view().name(RESET_PASSWORD_SUCCESS_VIEW));
     }
-
 }
