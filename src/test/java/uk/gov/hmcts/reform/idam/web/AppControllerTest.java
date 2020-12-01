@@ -84,6 +84,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_CODE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHENTICATE_SESSION_COOKE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
@@ -2106,7 +2107,7 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CODE_PARAMETER, "12345678"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrlPattern("/login*"));
+            .andExpect(redirectedUrlPattern("/expiredcode*"));
 
         verify(spiService).submitOtpeAuthentication(eq("authId"),
             eq(USER_IP_ADDRESS),
@@ -2134,8 +2135,7 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
             .param(CODE_PARAMETER, "12345678"))
-            .andExpect(view().name(VERIFICATION_VIEW))
-            .andExpect(model().attribute(MvcKeys.HAS_OTP_SESSION_EXPIRED, true));
+            .andExpect(view().name("redirect:/" + EXPIRED_CODE_VIEW));
 
         verify(spiService).submitOtpeAuthentication(eq("authId"),
             eq(USER_IP_ADDRESS),
@@ -2539,5 +2539,17 @@ public class AppControllerTest {
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("mockRedirect"));
+    }
+
+    @Test
+    public void expiredCode_shouldReturnExpiredCodePage() throws Exception {
+        mockMvc.perform(get("/expiredcode")
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .andExpect(status().isOk())
+            .andExpect(view().name(EXPIRED_CODE_VIEW));
     }
 }

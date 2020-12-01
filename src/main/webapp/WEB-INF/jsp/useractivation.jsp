@@ -56,8 +56,8 @@
                 <input class="form-control ${hasPassword2Error ? "form-control-error" : ""}" type="password" id="password2" name="password2" value="${fn:escapeXml(password2)}" autocomplete="off">
             </div>
 
-            <input class="button" type="submit" value="<spring:message code="public.common.button.continue.text"/>" id="activate">
-
+            <input class="button" type="submit" value="<spring:message code="public.common.button.continue.text"/>" id="activate"
+                onclick="setTimeout(function () {document.getElementById('activate').disabled = true;document.getElementById('activate').style.opacity='0.5';}, 0);">
             <input type="hidden" id="token" name="token" value="${fn:escapeXml(token)}">
             <input type="hidden" id="code" name="code" value="${fn:escapeXml(code)}">
         </form:form>
