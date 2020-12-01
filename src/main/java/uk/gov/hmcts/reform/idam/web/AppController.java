@@ -940,11 +940,15 @@ public class AppController {
                                    @RequestParam("redirect_uri") String redirectUri,
                                    @RequestParam(required = false) String state,
                                    @RequestParam(required = false) String scope,
+                                   @RequestParam(required = false) String nonce,
+                                   @RequestParam(required = false) String prompt,
                                    Model model) {
         model.addAttribute(CLIENTID, clientId);
         model.addAttribute(REDIRECTURI, redirectUri);
         model.addAttribute(STATE, state);
         model.addAttribute(SCOPE, scope);
+        model.addAttribute(NONCE, nonce);
+        model.addAttribute(PROMPT, prompt);
         return EXPIRED_CODE_VIEW;
     }
 }
