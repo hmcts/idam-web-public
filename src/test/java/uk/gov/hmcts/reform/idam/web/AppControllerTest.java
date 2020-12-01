@@ -133,6 +133,8 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_END
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGOUT_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NONCE_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NONCE_VALUE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE;
@@ -144,6 +146,8 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_USER_NOT_LONGER_VALID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_FIX_THE_FOLLOWING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_TRY_AGAIN;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PROMPT_PARAMETER;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PROMPT_VALUE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESETPASSWORD_VIEW_NAME;
@@ -2548,7 +2552,9 @@ public class AppControllerTest {
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
-            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(NONCE_PARAMETER, NONCE_VALUE)
+            .param(PROMPT_PARAMETER, PROMPT_VALUE))
             .andExpect(status().isOk())
             .andExpect(view().name(EXPIRED_CODE_VIEW));
     }

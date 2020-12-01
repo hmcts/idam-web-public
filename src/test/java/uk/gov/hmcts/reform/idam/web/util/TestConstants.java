@@ -119,6 +119,8 @@ public class TestConstants {
     public static final String JWT_PARAMETER = "jwt";
     public static final String STATE_PARAMETER = "state";
     public static final String SCOPE_PARAMETER = "scope";
+    public static final String NONCE_PARAMETER = "nonce";
+    public static final String PROMPT_PARAMETER = "prompt";
     public static final String CLIENT_ID_PARAMETER = "client_id";
     public static final String CLIENTID_PARAMETER = "clientId";
     public static final String USERNAME_PARAMETER = "username";
@@ -176,6 +178,8 @@ public class TestConstants {
     public static final String STATE = "state test";
     public static final String CLIENT_ID = "clientId";
     public static final String REDIRECTURI = "redirectUri";
+    public static final String NONCE_VALUE = "eshfwrhr09123rksdfnsad";
+    public static final String PROMPT_VALUE = "login";
     public static final String CUSTOM_SCOPE = "manage-roles";
     public static final String INSECURE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT";
     public static final String AUTHENTICATE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT; Path=/; Secure; HttpOnly";

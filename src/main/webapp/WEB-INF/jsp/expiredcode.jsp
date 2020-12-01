@@ -28,6 +28,8 @@
                     <c:param name="client_id" value="${clientId}" />
                     <c:param name="state" value="${state}" />
                     <c:param name="scope" value="${scope}" />
+                    <c:param name="nonce" value="${nonce}" />
+                    <c:param name="prompt" value="${prompt}" />
                 </c:url>
                 <a href="${loginUrl}" class="button">
                     <spring:message code="public.common.button.continue.text" />
