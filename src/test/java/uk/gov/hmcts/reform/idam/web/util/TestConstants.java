@@ -11,6 +11,8 @@ public class TestConstants {
     public static final String RESET_PASSWORD_CODE = "7bd1a1a6-a2ec-41d6-aca4-8a2effce6a8f";
     public static final String AUTHORIZATION_TOKEN = "626df426ab324782b0f969b3302adb04626df426ab324782b0f969b3302adb04";
     public static final String LOGIN_PIN_CODE = "e2c0afac-fd92-4e9a-b1e9-03944384a083";
+    public static final String IDAM_AUTH_ID = "hMtHw35_Rk4rNXvGZhdqz-g1OUM.*AAJTSQACMDIAAlNLABwyR1RLOGRJaVFIM2drZ0MxY1pHbVZCV24rN1U9AAR0eXBlAANDVFMAAlMxAAIwMQ";
+    public static final String MFA_OTP = "12345678";
 
 
     //endpoints
@@ -117,6 +119,8 @@ public class TestConstants {
     public static final String JWT_PARAMETER = "jwt";
     public static final String STATE_PARAMETER = "state";
     public static final String SCOPE_PARAMETER = "scope";
+    public static final String NONCE_PARAMETER = "nonce";
+    public static final String PROMPT_PARAMETER = "prompt";
     public static final String CLIENT_ID_PARAMETER = "client_id";
     public static final String CLIENTID_PARAMETER = "clientId";
     public static final String USERNAME_PARAMETER = "username";
@@ -174,6 +178,8 @@ public class TestConstants {
     public static final String STATE = "state test";
     public static final String CLIENT_ID = "clientId";
     public static final String REDIRECTURI = "redirectUri";
+    public static final String NONCE_VALUE = "eshfwrhr09123rksdfnsad";
+    public static final String PROMPT_VALUE = "login";
     public static final String CUSTOM_SCOPE = "manage-roles";
     public static final String INSECURE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT";
     public static final String AUTHENTICATE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT; Path=/; Secure; HttpOnly";

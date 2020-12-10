@@ -15,6 +15,10 @@ public class VerificationRequest {
 
     private String state;
 
+    private String nonce;
+
+    private String prompt;
+
     private String response_type;
 
     private String client_id;

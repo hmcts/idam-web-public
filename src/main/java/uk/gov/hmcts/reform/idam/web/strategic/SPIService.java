@@ -128,15 +128,30 @@ public class SPIService {
     }
 
     public ApiAuthResult authenticate(final String username, final String password, final String redirectUri, final String ipAddress) throws JsonProcessingException {
+        return authenticate(username, password, null, redirectUri, ipAddress);
+    }
+
+    public ApiAuthResult authenticate(final String tokenId, final String redirectUri, final String ipAddress) throws JsonProcessingException {
+        return authenticate(null, null, tokenId, redirectUri, ipAddress);
+    }
+
+    protected ApiAuthResult authenticate(final String username, final String password, final String tokenId, final String redirectUri, final String ipAddress) throws JsonProcessingException {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(4);
-        form.add("username", username);
-        form.add("password", password);
+        if (username != null) {
+            form.add("username", username);
+        }
+        if (password != null) {
+            form.add("password", password);
+        }
         form.add("redirectUri", redirectUri);
         form.add("originIp", ipAddress);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(X_FORWARDED_FOR, ipAddress);
+        if (tokenId != null) {
+            headers.add(HttpHeaders.COOKIE, configurationProperties.getStrategic().getSession().getIdamSessionCookie() + "=" + tokenId);
+        }
 
         final ApiAuthResult.ApiAuthResultBuilder resultBuilder = ApiAuthResult.builder();
 
@@ -175,11 +190,11 @@ public class SPIService {
      * @should not send state and scope parameters in form if they are not send as parameter in the service
      * @should return null if api response code is not 302
      */
-    public String authorize(final Map<String, String> params, final List<String> cookie) {
+    public String authorize(final Map<String, String> params, final List<String> cookies) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        if (cookie != null) {
-            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookie, ";"));
+        if (cookies != null) {
+            headers.add(HttpHeaders.COOKIE, StringUtils.join(cookies, ";"));
         }
         addUriHeaders(headers);
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(14);

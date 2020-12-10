@@ -62,8 +62,8 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
 Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam', async (I) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in', 20, 'h2');
-    I.waitForText('Login with your eJudiciary account', 20);
-    I.click('Login with your eJudiciary account');
+    I.waitForText('Log in with your eJudiciary account', 20);
+    I.click('Log in with your eJudiciary account');
     I.waitInUrl('/oauth2/authorize', 180);
     I.waitForText('Sign in', 20);
     I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
