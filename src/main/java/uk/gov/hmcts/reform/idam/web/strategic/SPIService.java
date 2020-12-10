@@ -150,7 +150,7 @@ public class SPIService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(X_FORWARDED_FOR, ipAddress);
         if (tokenId != null) {
-            headers.add(configurationProperties.getStrategic().getSession().getIdamSessionCookie(), tokenId);
+            headers.add(HttpHeaders.COOKIE, configurationProperties.getStrategic().getSession().getIdamSessionCookie() + "=" + tokenId);
         }
 
         final ApiAuthResult.ApiAuthResultBuilder resultBuilder = ApiAuthResult.builder();

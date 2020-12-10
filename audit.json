@@ -150,6 +150,7 @@
   "90011_Charset Mismatch (Header Versus Meta Content-Type Charset)_https://idam-web-public.aat.platform.hmcts.net/sitemap.xml?ui_locales=en_GET": "ignore",
   "90011_Charset Mismatch (Header Versus Meta Content-Type Charset)_https://idam-web-public.aat.platform.hmcts.net/sitemap.xml_GET": "ignore",
   "90011_Charset Mismatch (Header Versus Meta Content-Type Charset)_https://idam-web-public.aat.platform.hmcts.net/terms-and-conditions_GET": "ignore",
+  "90017_XSLT Injection_https://idam-web-public.aat.platform.hmcts.net/sitemap.xml?ui_locales=%3Cxsl%3Avalue-of+select%3D%22system-property%28%27xsl%3Avendor%27%29%22%2F%3E_GET": "ignore",
   "90027_Cookie Slack Detector_https://idam-web-public.aat.platform.hmcts.net/_GET": "ignore",
   "90027_Cookie Slack Detector_https://idam-web-public.aat.platform.hmcts.net/assets/images/apple-touch-icon-152x152.png_GET": "ignore",
   "90027_Cookie Slack Detector_https://idam-web-public.aat.platform.hmcts.net/assets/images/apple-touch-icon-167x167.png_GET": "ignore",

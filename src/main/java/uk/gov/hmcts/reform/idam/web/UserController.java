@@ -251,6 +251,7 @@ public class UserController {
      * @should return useractivation view and invalid passowrd error in model if HttpClientErrorException occurs and http status is 400 and password is not blacklisted
      * @should return expiredtoken view if HttpClientErrorException occurs and http status is 400 and token is invalid
      * @should return redirect expiredtoken page if selfRegisterUser service throws HttpClientErrorException and Http code is 404
+     * @should return redirect to error page with already activated error if validate password returns conflict
      */
     @PostMapping("/activate")
     public ModelAndView activateUser(@RequestParam("token") String token, @RequestParam("code") String code,
@@ -278,6 +279,11 @@ public class UserController {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 // don't expose the token in the error page
                 return new ModelAndView("redirect:expiredtoken", (Map<String, ?>) null);
+            } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                log.error("An error occurred validating user activation token in activate: {}", token);
+                log.error("Response body: {}", e.getResponseBodyAsString(), e);
+                model.put(ERROR_MSG, ALREADY_ACTIVATED_KEY);
+                return new ModelAndView(ERRORPAGE_VIEW, model);
             }
 
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {

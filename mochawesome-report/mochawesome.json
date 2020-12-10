@@ -1,0 +1,173 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 0,
+    "passes": 0,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-11-26T14:14:04.928Z",
+    "end": "2020-11-26T14:14:11.114Z",
+    "duration": 6186,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 1,
+    "hasOther": true,
+    "skipped": 1,
+    "hasSkipped": true,
+    "passPercentClass": "danger",
+    "pendingPercentClass": "danger"
+  },
+  "suites": {
+    "uuid": "290a8126-546c-4738-a022-904b07cc061b",
+    "title": "",
+    "fullFile": "",
+    "file": "",
+    "beforeHooks": [],
+    "afterHooks": [],
+    "tests": [],
+    "suites": [
+      {
+        "uuid": "008b55b1-2e79-48f6-9ba9-38fa260fcdbe",
+        "title": "Users can create account, sign in and reset password",
+        "fullFile": "/Users/shravanmechineni/Projects/MOJ/git/idam-web-public/src/test/js/cross_browser_test.js",
+        "file": "/src/test/js/cross_browser_test.js",
+        "beforeHooks": [
+          {
+            "title": "\"before all\" hook: codeceptjs.beforeSuite",
+            "fullTitle": "Users can create account, sign in and reset password \"before all\" hook: codeceptjs.beforeSuite",
+            "timedOut": false,
+            "duration": 2,
+            "pass": false,
+            "fail": false,
+            "pending": false,
+            "code": "scenario.suiteSetup(suite)",
+            "err": {},
+            "isRoot": false,
+            "uuid": "53d12dc2-9ff3-4d9b-bfa9-60249a5960a7",
+            "isHook": true,
+            "skipped": false
+          },
+          {
+            "title": "\"before all\" hook: BeforeSuite",
+            "fullTitle": "Users can create account, sign in and reset password \"before all\" hook: BeforeSuite",
+            "timedOut": false,
+            "duration": 4685,
+            "pass": false,
+            "fail": false,
+            "pending": false,
+            "code": "randomUserFirstName = randomData.getRandomUserName();\nrandomUserLastName = randomData.getRandomUserName();\ncitizenEmail = 'citizen.' + randomData.getRandomEmailAddress();\nlet token = await I.getAuthToken();\nlet response;\nresponse = await I.createRole(randomData.getRandomRoleName() + \"_beta\", 'beta description', '', token);\nconst serviceBetaRole = response.name;\nresponse = await I.createRole(randomData.getRandomRoleName() + \"_admin\", 'admin description', serviceBetaRole, token);\nconst serviceAdminRole = response.name;\nresponse = await I.createRole(randomData.getRandomRoleName() + \"_super\", 'super description', serviceAdminRole, token);\nconst serviceSuperRole = response.name;\nconst serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];\nroleNames.push(serviceRoles);\nawait I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);\nserviceNames.push(serviceName);\nuserFirstNames.push(randomUserFirstName);",
+            "err": {},
+            "isRoot": false,
+            "uuid": "5730dda0-4e00-47d3-8780-0bc1f3dd5423",
+            "isHook": true,
+            "skipped": false
+          },
+          {
+            "title": "\"before each\" hook: codeceptjs.before for \"@crossbrowser Idam Web public cross browser tests\"",
+            "fullTitle": "Users can create account, sign in and reset password \"before each\" hook: codeceptjs.before for \"@crossbrowser Idam Web public cross browser tests\"",
+            "timedOut": false,
+            "duration": 80,
+            "state": "failed",
+            "pass": false,
+            "fail": true,
+            "pending": false,
+            "code": "scenario.setup(suite)",
+            "err": {
+              "message": "Error: Can't connect to WebDriver.\nError: failed serving request POST /wd/hub/session: Unauthorized\n\nPlease make sure Selenium Server (ChromeDriver or PhantomJS) is running and accessible",
+              "estack": "Can't connect to WebDriver.\nError: failed serving request POST /wd/hub/session: Unauthorized\n\nPlease make sure Selenium Server (ChromeDriver or PhantomJS) is running and accessible"
+            },
+            "isRoot": false,
+            "uuid": "7360e73a-7432-4369-90fd-b7d91e37d808",
+            "isHook": true,
+            "skipped": false
+          }
+        ],
+        "afterHooks": [
+          {
+            "title": "\"after all\" hook: AfterSuite",
+            "fullTitle": "Users can create account, sign in and reset password \"after all\" hook: AfterSuite",
+            "timedOut": false,
+            "duration": 1406,
+            "pass": false,
+            "fail": false,
+            "pending": false,
+            "code": "return I.deleteAllTestData(randomData.TEST_BASE_PREFIX)",
+            "err": {},
+            "isRoot": false,
+            "uuid": "8939f311-15d4-4f24-99e7-3327b1b8e63e",
+            "isHook": true,
+            "skipped": false
+          },
+          {
+            "title": "\"after all\" hook: codeceptjs.afterSuite",
+            "fullTitle": "Users can create account, sign in and reset password \"after all\" hook: codeceptjs.afterSuite",
+            "timedOut": false,
+            "duration": 0,
+            "pass": false,
+            "fail": false,
+            "pending": false,
+            "code": "scenario.suiteTeardown(suite)",
+            "err": {},
+            "isRoot": false,
+            "uuid": "80c853e4-ca99-4d5f-9880-3a8981cc30be",
+            "isHook": true,
+            "skipped": false
+          },
+          {
+            "title": "\"after each\" hook: finalize codeceptjs",
+            "fullTitle": "Users can create account, sign in and reset password \"after each\" hook: finalize codeceptjs",
+            "timedOut": false,
+            "duration": 1,
+            "pass": false,
+            "fail": false,
+            "pending": false,
+            "code": "scenario.teardown(suite)",
+            "err": {},
+            "isRoot": false,
+            "uuid": "e3b09c84-95af-4572-91bc-22cabc40a2b2",
+            "isHook": true,
+            "skipped": false
+          }
+        ],
+        "tests": [
+          {
+            "title": "@crossbrowser Idam Web public cross browser tests",
+            "fullTitle": "Users can create account, sign in and reset password: @crossbrowser Idam Web public cross browser tests",
+            "timedOut": false,
+            "duration": 0,
+            "pass": false,
+            "fail": false,
+            "pending": false,
+            "code": "const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;\n    // create account\n    I.amOnPage(selfRegUrl);\n    I.waitInUrl('users/selfRegister', 180);\n    I.waitForText('Create an account or sign in', 20, 'h1');\n    I.see('Create an account');\n    I.fillField('firstName', randomUserFirstName);\n    I.fillField('lastName', randomUserLastName);\n    I.fillField('email', citizenEmail);\n    I.click(\"Continue\");\n    I.waitForText('Check your email', 20, 'h1');\n    I.wait(5);\n    const userActivationUrl = await I.extractUrl(citizenEmail);\n    I.amOnPage(userActivationUrl);\n    I.waitForText('Create a password', 20, 'h1');\n    I.seeTitleEquals('User Activation - HMCTS Access');\n    I.fillField('#password1', TestData.PASSWORD);\n    I.fillField('#password2', TestData.PASSWORD);\n    I.click('Continue');\n    I.waitForText('Account created', 20, 'h1');\n    // login\n    I.amOnPage(loginPage);\n    I.waitForText('Sign in', 20, 'h1');\n    I.fillField('#username', citizenEmail);\n    I.fillField('#password', TestData.PASSWORD);\n    I.click('Sign in');\n    I.wait(5);\n    I.dontSee('Sign in');\n    //Reset password\n    I.amOnPage(loginPage);\n    I.waitForText('Sign in or create an account', 20, 'h1');\n    I.click('Forgotten password?');\n    I.waitForText('Reset your password', 20, 'h1');\n    I.fillField('#email', citizenEmail);\n    I.click('Submit');\n    I.waitForText('Check your email', 20, 'h1');\n    I.wait(5);\n    const resetPasswordUrl = await I.extractUrl(citizenEmail);\n    I.amOnPage(resetPasswordUrl);\n    I.waitForText('Create a new password', 20, 'h1');\n    I.seeTitleEquals('Reset Password - HMCTS Access');\n    I.fillField('#password1', 'Passw0rd1234');\n    I.fillField('#password2', 'Passw0rd1234');\n    I.click('Continue');\n    I.waitForText('Your password has been changed', 20, 'h1');\n    I.see('You can now sign in with your new password.');",
+            "err": {},
+            "isRoot": false,
+            "uuid": "0114e82c-fd61-4e5a-adbc-8127991e4aa5",
+            "isHook": false,
+            "skipped": true
+          }
+        ],
+        "suites": [],
+        "passes": [],
+        "failures": [],
+        "pending": [],
+        "skipped": [
+          "0114e82c-fd61-4e5a-adbc-8127991e4aa5"
+        ],
+        "duration": null,
+        "root": false,
+        "rootEmpty": false,
+        "_timeout": 0
+      }
+    ],
+    "passes": [],
+    "failures": [],
+    "pending": [],
+    "skipped": [],
+    "duration": 0,
+    "root": true,
+    "rootEmpty": true,
+    "_timeout": 0
+  },
+  "copyrightYear": 2020
+}
