@@ -20,12 +20,6 @@ data "azurerm_virtual_network" "idam" {
   resource_group_name = "core-infra-${var.env}"
 }
 
-data "azurerm_subnet" "redis" {
-  name                 = element(data.azurerm_virtual_network.idam.subnets, 3)
-  virtual_network_name = data.azurerm_virtual_network.idam.name
-  resource_group_name  = "core-infra-${var.env}"
-}
-
 data "azurerm_key_vault" "idam" {
   name                = local.vault_name
   resource_group_name = "idam-${var.env}"
