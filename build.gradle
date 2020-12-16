@@ -35,6 +35,7 @@ allprojects {
   ext['log4j2.version'] = '2.13.3'
   ext['spring.boot.version'] = '2.2.12.RELEASE'
   ext['jackson.version'] = '2.12.0'
+  ext['guava.version'] = '30.0'
 
   dependencyManagement {
     imports {
