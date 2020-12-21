@@ -30,6 +30,11 @@ const URLSearchParams = require('url').URLSearchParams;
 
 class IdamHelper extends Helper {
 
+    async createNewPage() {
+        const { browser } = this.helpers['Puppeteer'];
+        return await browser.newPage();
+    }
+
     async createServiceData(serviceName) {
         const token = await this.getAuthToken();
         this.createService(serviceName, '', token, '', []);
