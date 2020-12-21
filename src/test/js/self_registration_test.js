@@ -371,7 +371,7 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
 
 });
 
-Scenario('@functional @selfregister @debug I can create a password only once using the activation link opened in multiple tabs', async (I) => {
+Scenario('@functional @selfregister I can create a password only once using the activation link opened in multiple tabs', async (I) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
 
