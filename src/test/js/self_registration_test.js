@@ -2,6 +2,8 @@ const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 const assert = require('assert');
 const Welsh = require('./shared/welsh_constants');
+const chai = require('chai');
+const {expect} = chai;
 
 Feature('Self Registration');
 
@@ -367,4 +369,46 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
     const emailResponse = await I.getEmail(staleUserEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
+});
+
+Scenario('@functional @selfregister I can create a password only once using the activation link opened in multiple tabs', async (I) => {
+
+    const email = 'test_citizen.' + randomData.getRandomEmailAddress();
+
+    I.amOnPage(selfRegUrl);
+    I.waitInUrl('users/selfRegister', 180);
+    I.waitForText('Create an account or sign in', 20, 'h1');
+    I.see('Create an account');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', email);
+    I.click("Continue");
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
+    const userActivationUrl = await I.extractUrl(email);
+
+    // open activation link in 1st tab
+    const page1 = await I.createNewPage();
+    await page1.goto(userActivationUrl);
+
+    // open same activation link in 2nd tab and activate the account
+    const page2 = await I.createNewPage();
+    await page2.goto(userActivationUrl);
+    await page2.type('#password1', TestData.PASSWORD);
+    await page2.type('#password2', TestData.PASSWORD);
+    await page2.click('#activate');
+    await page2.waitFor('h1.heading-large');
+    const accountCreatedMessage = "Account created";
+    const page2Message = await page2.$eval('h1.heading-large', el => el.textContent.trim());
+    expect(page2Message).to.equal(accountCreatedMessage);
+    await page2.close();
+
+    // Try to activate the account again using the link already opened in 1st tab
+    await page1.type('#password1', TestData.PASSWORD);
+    await page1.type('#password2', TestData.PASSWORD);
+    await page1.click('#activate');
+    await page1.waitFor('h1.heading-large');
+    const accountAlreadyActivatedMessage = 'Your account is already activated.';
+    const page1Message = await page1.$eval('h1.heading-large', el => el.textContent.trim());
+    expect(page1Message).to.equal(accountAlreadyActivatedMessage);
 });
