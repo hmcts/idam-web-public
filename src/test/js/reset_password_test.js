@@ -8,6 +8,7 @@ let randomUserFirstName;
 let citizenEmail;
 let otherCitizenEmail;
 let plusCitizenEmail;
+let apostropheCitizenEmail;
 let staleUserEmail;
 let userFirstNames = [];
 let roleNames = [];
@@ -47,6 +48,8 @@ BeforeSuite(async (I) => {
     userFirstNames.push(randomUserFirstName + 'Other');
     await I.createUserWithRoles(plusCitizenEmail, randomUserFirstName + 'Plus', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Plus');
+    await I.createUserWithRoles(apostropheCitizenEmail, randomUserFirstName + 'Apostrophe', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Apostrophe');
     await I.createUserWithRoles(staleUserEmail, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
