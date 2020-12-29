@@ -1,74 +1,50 @@
-const LATEST_MAC = 'macOS 10.15';
-const LATEST_WINDOWS = 'Windows 10';
-
 const supportedBrowsers = {
-    microsoftIE11: {
-        ie11: {
-            browserName: 'internet explorer',
-            platformName: LATEST_WINDOWS,
-            browserVersion: 'latest',
-            'sauce:options': {
-                name: 'IE11',
-                screenResolution: '1400x1050'
-            }
-        }
-    },
-    microsoftEdge: {
+    microsoft: {
         edge: {
             browserName: 'MicrosoftEdge',
-            platformName: LATEST_WINDOWS,
-            browserVersion: 'latest',
-            'sauce:options': {
-                name: 'Edge_Win10'
-            }
-        }
-    },
-    safari: {
-        safari_mac_latest: {
-            browserName: 'safari',
-            platformName: 'macOS 10.14',
-            browserVersion: 'latest',
-            'sauce:options': {
-                name: 'MAC_SAFARI_LATEST',
-                seleniumVersion: '3.141.59',
-                screenResolution: '1400x1050'
-            }
+            name: 'Edge',
+            platform: 'Windows 10',
+            ignoreZoomSetting: true,
+            nativeEvents: false,
+            ignoreProtectedModeSettings: true,
+            version: '17.17134'
         }
     },
     chrome: {
         chrome_win_latest: {
             browserName: 'chrome',
-            platformName: LATEST_WINDOWS,
-            browserVersion: 'latest',
-            'sauce:options': {
-                name: 'WIN_CHROME_LATEST'
-            }
+            name: 'WIN_CHROME_LATEST',
+            platform: 'Windows 10',
+            version: 'latest'
         },
         chrome_mac_latest: {
             browserName: 'chrome',
-            platformName: LATEST_MAC,
-            browserVersion: 'latest',
-            'sauce:options': {
-                name: 'MAC_CHROME_LATEST'
-            }
+            name: 'MAC_CHROME_LATEST',
+            platform: 'macOS 10.13',
+            version: 'latest'
         }
     },
     firefox: {
         firefox_win_latest: {
             browserName: 'firefox',
-            platformName: LATEST_WINDOWS,
-            browserVersion: 'latest',
-            'sauce:options': {
-                name: 'WIN_FIREFOX_LATEST'
-            }
+            name: 'WIN_FIREFOX_LATEST',
+            platform: 'Windows 10',
+            version: 'latest'
         },
         firefox_mac_latest: {
             browserName: 'firefox',
-            platformName: LATEST_MAC,
-            browserVersion: 'latest',
-            'sauce:options': {
-                name: 'MAC_FIREFOX_LATEST'
-            }
+            name: 'MAC_FIREFOX_LATEST',
+            platform: 'macOS 10.13',
+            version: 'latest'
+        }
+    },
+    safari: {
+        safari11: {
+            browserName: 'safari',
+            name: 'SAFARI_11',
+            platform: 'macOS 10.14',
+            version: 'latest',
+            avoidProxy: true
         }
     }
 };
