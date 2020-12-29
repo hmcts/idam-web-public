@@ -8,6 +8,7 @@ let randomUserFirstName;
 let citizenEmail;
 let otherCitizenEmail;
 let plusCitizenEmail;
+let apostropheCitizenEmail;
 let staleUserEmail;
 let userFirstNames = [];
 let roleNames = [];
@@ -23,6 +24,7 @@ BeforeSuite(async (I) => {
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
     plusCitizenEmail = `plus.extra+${randomData.getRandomEmailAddress()}`;
+    apostropheCitizenEmail = "apostrophe.o'test" + randomData.getRandomEmailAddress();
     staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
     specialCharacterPassword = 'New&&&$$$%%%<>234';
 
@@ -46,6 +48,8 @@ BeforeSuite(async (I) => {
     userFirstNames.push(randomUserFirstName + 'Other');
     await I.createUserWithRoles(plusCitizenEmail, randomUserFirstName + 'Plus', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Plus');
+    await I.createUserWithRoles(apostropheCitizenEmail, randomUserFirstName + 'Apostrophe', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Apostrophe');
     await I.createUserWithRoles(staleUserEmail, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
@@ -137,6 +141,36 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', plusCitizenEmail);
+    I.fillField('#password', 'Passw0rd1234');
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
+
+Scenario('@functional @resetpass As a citizen user with an apostrophe email I can reset my password', async (I) => {
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password', 20, 'h1');
+    I.fillField('#email', apostropheCitizenEmail);
+    I.click('Submit');
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
+    const resetPasswordUrl = await I.extractUrl(apostropheCitizenEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a new password', 20, 'h1');
+    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.fillField('#password1', 'Passw0rd1234');
+    I.fillField('#password2', 'Passw0rd1234');
+    I.click('Continue');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.');
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', apostropheCitizenEmail);
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
