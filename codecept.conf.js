@@ -1,5 +1,11 @@
 const TestData = require('./src/test/js/config/test_data')
 
+if (process.env.PROXY_SERVER){
+    chromeArgs = ["--proxy-server=" + process.env.PROXY_SERVER]
+} else {
+    chromeArgs = []
+}
+
 exports.config = {
     name: 'idam-web-public',
     tests: './src/test/js/**/*_test.js',
@@ -16,7 +22,7 @@ exports.config = {
             windowSize: "1280x960",
             getPageTimeout: 20000,
             chrome: {
-                //args: ["--proxy-server=" + process.env.PROXY_SERVER],
+                args: chromeArgs,
                 ignoreHTTPSErrors: true
             }
         },

@@ -11,7 +11,8 @@ properties([
         booleanParam(name: 'enableNonAATSecurityScan', defaultValue: false, description: 'Enables security scan on non-aat environments (won\'t honour the ZapScanner exclusions list atm)'),
         booleanParam(name: 'skipMutationTests', defaultValue: false, description: 'Tick the checkbox for skip'),
         booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox for skip'),
-        booleanParam(name: 'skipCrossBrowserTests', defaultValue: false, description: 'Tick the checkbox for skip')
+        booleanParam(name: 'skipCrossBrowserTests', defaultValue: false, description: 'Tick the checkbox for skip'),
+        booleanParam(name: 'USE_PROXY_SERVER', defaultValue: true, description: 'use proxy server for tests (proxyout.reform.hmcts.net:8080)'),
     ])
 ])
 
@@ -44,6 +45,10 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
     env.IDAMAPI = params.API_URL_TO_TEST
+
+    if (params.USE_PROXY_SERVER) {
+        env.PROXY_SERVER = 'http://proxyout.reform.hmcts.net:8080'
+    }
 
     loadVaultSecrets(secrets)
 
