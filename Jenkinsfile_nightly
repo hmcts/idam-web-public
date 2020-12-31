@@ -12,7 +12,7 @@ properties([
         booleanParam(name: 'skipMutationTests', defaultValue: false, description: 'Tick the checkbox for skip'),
         booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox for skip'),
         booleanParam(name: 'skipCrossBrowserTests', defaultValue: false, description: 'Tick the checkbox for skip'),
-        booleanParam(name: 'USE_PROXY_SERVER', defaultValue: true, description: 'use proxy server for tests (proxyout.reform.hmcts.net:8080)'),
+        booleanParam(name: 'USE_PROXY_SERVER', defaultValue: false, description: 'use proxy server for tests, required (true) for sandbox envt only'),
     ])
 ])
 
