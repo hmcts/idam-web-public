@@ -7,7 +7,6 @@ const {expect} = chai;
 
 Feature('I am able to uplift a user');
 
-let adminEmail;
 let randomUserFirstName;
 let randomUserLastName;
 let citizenEmail;
@@ -26,26 +25,23 @@ const serviceName = randomData.getRandomServiceName();
 BeforeSuite(async (I) => {
     randomUserLastName = randomData.getRandomUserName() + 'pinępinç';
     randomUserFirstName = randomData.getRandomUserName() + 'ępinçłpin';
-    adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     existingCitizenEmail = 'existingcitizen.' + randomData.getRandomEmailAddress();
     upliftAccountCreationStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     upliftLoginStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
 
     const token = await I.getAuthToken();
-    let response;
-    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
-    serviceBetaRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
-    const serviceAdminRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
-    const serviceSuperRole = response.name;
-    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
-    roleNames.push(serviceRoles);
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    serviceBetaRole = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
+    let serviceAdminRole = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole.id, token);
+    let serviceSuperRole = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole.id, token);
+
+    let serviceRoleNames = [serviceBetaRole.name, serviceAdminRole.name, serviceSuperRole.name];
+    let serviceRoleIds = [serviceBetaRole.id, serviceAdminRole.id, serviceSuperRole.id];
+    roleNames.push(serviceRoleNames);
+
+    await I.createServiceWithRoles(serviceName, serviceRoleIds, serviceBetaRole.id, token);
     serviceNames.push(serviceName);
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
-    userFirstNames.push(randomUserFirstName + 'Admin');
+
     await I.createUserWithRoles(existingCitizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 

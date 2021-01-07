@@ -3,7 +3,6 @@ const randomData = require('./shared/random_data');
 
 Feature('I am able to reset my password');
 
-let adminEmail;
 let randomUserFirstName;
 let citizenEmail;
 let otherCitizenEmail;
@@ -11,7 +10,6 @@ let plusCitizenEmail;
 let apostropheCitizenEmail;
 let staleUserEmail;
 let userFirstNames = [];
-let roleNames = [];
 let serviceNames = [];
 let specialCharacterPassword;
 
@@ -20,7 +18,6 @@ const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERV
 
 BeforeSuite(async (I) => {
     randomUserFirstName = randomData.getRandomUserName();
-    adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
     plusCitizenEmail = `plus.extra+${randomData.getRandomEmailAddress()}`;
@@ -28,20 +25,9 @@ BeforeSuite(async (I) => {
     staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
     specialCharacterPassword = 'New&&&$$$%%%<>234';
 
-    const token = await I.getAuthToken();
-    let response;
-    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
-    const serviceBetaRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
-    const serviceAdminRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
-    const serviceSuperRole = response.name;
-    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
-    roleNames.push(serviceRoles);
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    await I.createServiceData(serviceName);
     serviceNames.push(serviceName);
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
-    userFirstNames.push(randomUserFirstName + 'Admin');
+
     await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
     await I.createUserWithRoles(otherCitizenEmail, randomUserFirstName + 'Other', ["citizen"]);
