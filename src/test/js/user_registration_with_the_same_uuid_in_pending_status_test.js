@@ -41,7 +41,7 @@ BeforeSuite(async (I) => {
     let serviceRoleIds = [assignableRole.id, userRegRole.id];
     roleNames.push(serviceRoleNames);
 
-    await I.createServiceWithRoles(serviceName, serviceRoleIds, '', token, 'create-user manage-user');
+    await I.createServiceWithRoles(serviceName, serviceRoleIds, '', apiAuthToken, 'create-user manage-user');
     serviceNames.push(serviceName);
 
     await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [userRegRole.name]);

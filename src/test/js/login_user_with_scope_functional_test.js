@@ -70,11 +70,11 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     await I.grantRoleToUser(citizenUserDynamicRole.name, accessToken);
 
     let userInfo = await I.getUserInfo(accessToken);
-    expect(userInfo.roles).to.deep.equal([citizenUserDynamicRole.id]);
+    expect(userInfo.roles).to.deep.equal([citizenUserDynamicRole.name]);
 
     I.resetRequestInterception();
 
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
+});
 
 Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on PIN user login', async (I) => {
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
@@ -99,7 +99,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     await I.grantRoleToUser(pinUserDynamicRole.name, accessToken);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
-    expect(userInfo.roles).to.deep.equalInAnyOrder([pinUserRole, citizenRole, pinUserDynamicRole.id]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([pinUserRole, citizenRole, pinUserDynamicRole.name]);
 
     I.resetRequestInterception();
 });

@@ -216,7 +216,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftAccountCreationStaleUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.equal(userId);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen', serviceBetaRole]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen', serviceBetaRole.name]);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'StaleUser' + " User");
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'StaleUser');
     expect(oidcUserInfo.family_name).to.equal('User');
@@ -277,7 +277,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftLoginStaleUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.equal(userId);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen', serviceBetaRole]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([pinUserRole, 'citizen', serviceBetaRole.name]);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'StaleUser' + " User");
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'StaleUser');
     expect(oidcUserInfo.family_name).to.equal('User');
