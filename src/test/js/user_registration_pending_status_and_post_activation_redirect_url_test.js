@@ -79,7 +79,7 @@ Scenario('@functional user registration pending status and post activation redir
     expect(responseAfterActivation.forename).to.equal(randomUserFirstName);
     expect(responseAfterActivation.surname).to.equal(randomUserLastName);
     expect(responseAfterActivation.email).to.equal(userEmail);
-    expect(responseAfterActivation.roles).to.eql([assignableRole.id]);
+    expect(responseAfterActivation.roles).to.eql([assignableRole.name]);
 
     I.resetRequestInterception();
 });

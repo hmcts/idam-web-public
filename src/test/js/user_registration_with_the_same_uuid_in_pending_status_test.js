@@ -83,7 +83,7 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     expect(responseAfterCurrentUserActivation.forename).to.equal(currentUserFirstName);
     expect(responseAfterCurrentUserActivation.surname).to.equal(currentUserLastName);
     expect(responseAfterCurrentUserActivation.email).to.equal(currentUserEmail);
-    expect(responseAfterCurrentUserActivation.roles).to.eql([assignableRole.id]);
+    expect(responseAfterCurrentUserActivation.roles).to.eql([assignableRole.name]);
 
     const previousUserUrl = await I.extractUrl(previousUserEmail);
 
