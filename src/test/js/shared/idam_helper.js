@@ -1,6 +1,7 @@
 let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
+const uuid = require('uuid');
 
 let agentToUse;
 if (process.env.PROXY_SERVER) {
