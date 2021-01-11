@@ -1,6 +1,7 @@
 let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
+const uuid = require('uuid');
 
 let agentToUse;
 if (process.env.PROXY_SERVER) {
@@ -250,13 +251,13 @@ class IdamHelper extends Helper {
     }
 
     createRole(roleName, roleDescription, assignableRoles, api_auth_token) {
-
+        const roleId = uuid.v4();
         const data = {
             assignableRoles: [assignableRoles],
             conflictingRoles: [],
             description: roleDescription,
             name: roleName,
-            id: roleName,
+            id: roleId,
         };
 
         return fetch(`${TestData.IDAM_API}/roles`, {
