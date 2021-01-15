@@ -83,7 +83,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
     expect(oidcUserInfo.family_name).to.equal('User');
@@ -128,7 +128,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
     expect(oidcUserInfo.family_name).to.equal('User');
@@ -214,7 +214,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
     expect(oidcUserInfo.family_name).to.equal('User');
@@ -253,13 +253,13 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     expect(userInfo.forename).to.equal(randomUserFirstName + 'mfadisabled');
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
-    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, 'idam-mfa-disabled']);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, 'idam-mfa-disabled']);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaDisabledUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, 'idam-mfa-disabled']);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, 'idam-mfa-disabled']);
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'mfadisabled' + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'mfadisabled');
@@ -324,13 +324,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with clie
     expect(userInfo.forename).to.equal(randomUserFirstName);
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
-    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
