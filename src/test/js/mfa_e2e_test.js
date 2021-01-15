@@ -103,7 +103,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.waitForText(Welsh.verificationRequired, 10, 'h1');
     const otpEmailBody = await I.getEmailFromNotify(mfaUserEmail);
     assert.equal(otpEmailBody.body.startsWith('Ysgrifennwyd'), true);
-    const otpCode = await I.extractOtpFromEmailBody(otpEmailBody);
+    const otpCode = await I.extractOtpFromNotifyEmail(otpEmailBody);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
