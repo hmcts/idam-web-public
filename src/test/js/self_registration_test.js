@@ -86,8 +86,6 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
     I.click("Continue");
 
     I.waitForText('Check your email', 20, 'h1');
-
-    I.wait(5);
     const emailResponse = await I.getEmail(citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
@@ -108,10 +106,8 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmail);
     I.click(Welsh.continueBtn);
-
     I.waitForText(Welsh.checkYourEmail, 20, 'h1');
 
-    I.wait(5);
     const emailResponse = await I.getEmail(citizenEmail);
     assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
 
@@ -133,7 +129,6 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const userActivationUrl = await I.extractUrl(email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
@@ -171,7 +166,6 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.fillField('email', email);
     I.click(Welsh.continueBtn);
     I.waitForText(Welsh.checkYourEmail, 20, 'h1');
-    I.wait(5);
     const userActivationUrl = await I.extractUrl(email);
     I.amOnPage(userActivationUrl);
     I.waitForText(Welsh.createAPassword, 20, 'h1');
@@ -209,7 +203,6 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const userActivationUrl = await I.extractUrl(email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
@@ -248,7 +241,6 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
 
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const userActivationUrl = await I.extractUrl(randomUserEmailAddress);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
@@ -365,7 +357,6 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
 
     I.waitForText('Check your email', 20, 'h1');
 
-    I.wait(5);
     const emailResponse = await I.getEmail(staleUserEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
@@ -384,7 +375,6 @@ Scenario('@functional @selfregister I can create a password only once using the 
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const userActivationUrl = await I.extractUrl(email);
 
     // open activation link in 1st tab

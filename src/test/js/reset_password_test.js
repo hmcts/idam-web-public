@@ -53,7 +53,6 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -84,7 +83,6 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
     I.fillField('#email', citizenEmail.toUpperCase());
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -114,7 +112,6 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.fillField('#email', plusCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(plusCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -144,7 +141,6 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     I.fillField('#email', apostropheCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(apostropheCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -174,7 +170,6 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.fillField('#email', otherCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(otherCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -215,7 +210,6 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
@@ -248,7 +242,6 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.fillField('#email', staleUserEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     const resetPasswordUrl = await I.extractUrl(staleUserEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a password', 20, 'h1');

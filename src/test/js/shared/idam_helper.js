@@ -2,6 +2,8 @@ let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
 const uuid = require('uuid');
+const maxNotifyPages = 3;  //max notify results pages to search
+const maxRetries = 5;  //max reties on each notify results page
 
 let agentToUse;
 if (process.env.PROXY_SERVER) {
@@ -32,7 +34,7 @@ const URLSearchParams = require('url').URLSearchParams;
 class IdamHelper extends Helper {
 
     async createNewPage() {
-        const { browser } = this.helpers['Puppeteer'];
+        const {browser} = this.helpers['Puppeteer'];
         return await browser.newPage();
     }
 
@@ -361,40 +363,19 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    getEmail(searchEmail) {
-        return (
-            notifyClient
-                .getNotifications("email", null)
-                .then(response => {
-                    console.log("Searching " + response.body.notifications.length + " emails(s) from sending queue");
-                    return this.searchForEmailInResults(response.body.notifications, searchEmail);
-                })
-                .then(emailResponse => {
-                    if (emailResponse) {
-                        return emailResponse;
-                    } else {
-                        return (
-                            notifyClient.getNotifications("email", "failed")
-                                .then(failedResponse => {
-                                    console.log("Searching " + failedResponse.body.notifications.length + " emails(s) from failure queues");
-                                    return this.searchForEmailInResults(failedResponse.body.notifications, searchEmail);
-                                })
-                                .then(failedEmailResponse => {
-                                    if (failedEmailResponse) {
-                                        return failedEmailResponse;
-                                    } else {
-                                        throw new Error('No emails found for ' + searchEmail);
-                                    }
-                                })
-                        );
-                    }
-                })
-        );
-    }
-
-    async extractUrl(searchEmail) {
-        const emailResponse = await this.getEmail(searchEmail);
-        return this.extractUrlFromBody(emailResponse);
+    async getEmail(searchEmail) {
+        let notificationsResponse = await notifyClient.getNotifications("email", null);
+        let emailResponse = this.searchForEmailInResults(notificationsResponse.body.notifications, searchEmail);
+        let i = 0;
+        while (i < maxNotifyPages && !emailResponse && notificationsResponse.body.links.next) {
+            console.log("Searching notify emails, next page " + notificationsResponse.body.links.next);
+            let olderThanId = notificationsResponse.body.links.next.match('[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}');
+            console.log("olderThanId = " + olderThanId);
+            notificationsResponse = await notifyClient.getNotifications("email", null, null, olderThanId);
+            emailResponse = this.searchForEmailInResults(notificationsResponse.body.notifications, searchEmail);
+            i++;
+        }
+        return emailResponse;
     }
 
     searchForEmailInResults(notifications, searchEmail) {
@@ -408,27 +389,56 @@ class IdamHelper extends Helper {
         return result;
     }
 
-    extractUrlFromBody(emailResponse) {
-        if (emailResponse) {
-            const regex = "(https.+)"
-            const url = emailResponse.body.match(regex);
-            if (url[0]) {
-                return url[0].replace(/https:\/\/idam-web-public[^\/]+/i, TestData.WEB_PUBLIC_URL).replace(")", "");
+    async extractUrl(searchEmail) {
+        let emailResponse;
+        let url;
+        let i = 0;
+        while (i < maxRetries && !emailResponse) {
+            emailResponse = await this.getEmail(searchEmail);
+            if (emailResponse) {
+                url = this.extractUrlFromBody(emailResponse);
             }
+            i++;
+        }
+
+        if (!url) {
+            throw new Error('Url not found in Notify for ' + searchEmail);
+        }
+        return url;
+    }
+
+    extractUrlFromBody(emailResponse) {
+        const regex = "(https.+)"
+        const url = emailResponse.body.match(regex);
+        if (url[0]) {
+            return url[0].replace(/https:\/\/idam-web-public[^\/]+/i, TestData.WEB_PUBLIC_URL).replace(")", "");
         }
     }
 
     async extractOtpFromEmail(searchEmail) {
-        return this.extractOtpFromEmailBody(await this.getEmail(searchEmail))
+        let emailResponse;
+        let otp;
+        let i = 0;
+        while (i < maxRetries && !emailResponse) {
+            emailResponse = await this.getEmail(searchEmail);
+            if (emailResponse) {
+                otp = this.extractOtpFromEmailBody(emailResponse);
+            }
+            i++;
+        }
+
+        if (!otp) {
+            throw new Error('otp not found in Notify for ' + searchEmail);
+        }
+        return otp;
+
     }
 
-    async extractOtpFromEmailBody(emailResponse) {
-        if(emailResponse) {
-            const regex = "[0-9]{8}";
-            const url = emailResponse.body.match(regex);
-            if (url[0]) {
-                return url[0];
-            }
+    extractOtpFromEmailBody(emailResponse) {
+        const regex = "[0-9]{8}";
+        const url = emailResponse.body.match(regex);
+        if (url[0]) {
+            return url[0];
         }
     }
 

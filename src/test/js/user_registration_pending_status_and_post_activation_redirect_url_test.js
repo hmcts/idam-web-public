@@ -52,8 +52,6 @@ AfterSuite(async (I) => {
 });
 
 Scenario('@functional user registration pending status and post activation redirect url test', async (I) => {
-    I.wait(5);
-
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);

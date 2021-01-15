@@ -128,7 +128,6 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.scrollPageToBottom();
     I.click('Continue');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
     let url = await I.extractUrl(citizenEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
@@ -178,7 +177,6 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.fillField('#username', upliftAccountCreationStaleUserEmail.toUpperCase());
     I.scrollPageToBottom();
     I.click('Continue');
-    I.wait(5);
     I.waitForText('You need to reset your password', 20, 'h2');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.', 20);
     const reRegistrationUrl = await I.extractUrl(upliftAccountCreationStaleUserEmail);
@@ -239,7 +237,6 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.fillField('#username', upliftLoginStaleUserEmail.toUpperCase());
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(5);
     I.waitForText('You need to reset your password', 20, 'h2');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.', 20);
     const reRegistrationUrl = await I.extractUrl(upliftLoginStaleUserEmail);
