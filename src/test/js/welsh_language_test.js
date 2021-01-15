@@ -94,7 +94,7 @@ Scenario('@functional @welshLanguage I can reset my password in Welsh', async (I
     I.fillField('#email', citizenEmail);
     I.click(Welsh.submitBtn);
     I.waitForText(Welsh.checkYourEmail, 20, 'h1');
-    const userPwdResetUrl = await I.extractUrl(citizenEmail);
+    const userPwdResetUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
     I.amOnPage(userPwdResetUrl);
     I.waitForText(Welsh.createANewPassword, 20, 'h1');
     I.fillField('#password1', specialCharacterPassword);

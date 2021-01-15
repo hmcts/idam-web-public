@@ -31,7 +31,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    const resetPasswordUrl = await I.extractUrl(citizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
     const activationParams = resetPasswordUrl.match(/passwordReset\?(.*)/)[1];
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/passwordReset?${activationParams}`);
     I.waitForText('Create a new password', 20, 'h1');

@@ -86,7 +86,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
     I.click("Continue");
 
     I.waitForText('Check your email', 20, 'h1');
-    const emailResponse = await I.getEmail(citizenEmail);
+    const emailResponse = await I.getEmailFromNotify(citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
 });
@@ -108,7 +108,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
     I.click(Welsh.continueBtn);
     I.waitForText(Welsh.checkYourEmail, 20, 'h1');
 
-    const emailResponse = await I.getEmail(citizenEmail);
+    const emailResponse = await I.getEmailFromNotify(citizenEmail);
     assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
 
 });
@@ -129,7 +129,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    const userActivationUrl = await I.extractUrl(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -166,7 +166,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.fillField('email', email);
     I.click(Welsh.continueBtn);
     I.waitForText(Welsh.checkYourEmail, 20, 'h1');
-    const userActivationUrl = await I.extractUrl(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
     I.amOnPage(userActivationUrl);
     I.waitForText(Welsh.createAPassword, 20, 'h1');
     I.seeTitleEquals(Welsh.userActivationTitle);
@@ -203,7 +203,7 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    const userActivationUrl = await I.extractUrl(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -241,7 +241,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
 
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    const userActivationUrl = await I.extractUrl(randomUserEmailAddress);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(randomUserEmailAddress);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -277,7 +277,7 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    const userActivationUrl = await I.extractUrl(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -312,7 +312,7 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    const userActivationUrl = await I.extractUrl(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -357,7 +357,7 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
 
     I.waitForText('Check your email', 20, 'h1');
 
-    const emailResponse = await I.getEmail(staleUserEmail);
+    const emailResponse = await I.getEmailFromNotify(staleUserEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
 });
@@ -375,7 +375,7 @@ Scenario('@functional @selfregister I can create a password only once using the 
     I.fillField('email', email);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    const userActivationUrl = await I.extractUrl(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
 
     // open activation link in 1st tab
     const page1 = await I.createNewPage();

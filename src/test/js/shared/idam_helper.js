@@ -363,22 +363,21 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    async getEmail(searchEmail) {
+    async getEmailFromNotify(searchEmail) {
         let notificationsResponse = await notifyClient.getNotifications("email", null);
-        let emailResponse = this.searchForEmailInResults(notificationsResponse.body.notifications, searchEmail);
+        let emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
         let i = 0;
         while (i < maxNotifyPages && !emailResponse && notificationsResponse.body.links.next) {
             console.log("Searching notify emails, next page " + notificationsResponse.body.links.next);
             let olderThanId = notificationsResponse.body.links.next.match('[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}');
-            console.log("olderThanId = " + olderThanId);
             notificationsResponse = await notifyClient.getNotifications("email", null, null, olderThanId);
-            emailResponse = this.searchForEmailInResults(notificationsResponse.body.notifications, searchEmail);
+            emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
             i++;
         }
         return emailResponse;
     }
 
-    searchForEmailInResults(notifications, searchEmail) {
+    searchForEmailInNotifyResults(notifications, searchEmail) {
         const result = notifications.find(currentItem => {
             // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
             if (currentItem.email_address === searchEmail) {
@@ -389,14 +388,18 @@ class IdamHelper extends Helper {
         return result;
     }
 
-    async extractUrl(searchEmail) {
+    async extractUrlFromNotifyEmail(searchEmail) {
         let emailResponse;
         let url;
         let i = 0;
         while (i < maxRetries && !emailResponse) {
-            emailResponse = await this.getEmail(searchEmail);
+            emailResponse = await this.getEmailFromNotify(searchEmail);
             if (emailResponse) {
-                url = this.extractUrlFromBody(emailResponse);
+                const regex = "(https.+)";
+                const urlMatch = emailResponse.body.match(regex);
+                if (urlMatch[0]) {
+                    url = urlMatch[0].replace(/https:\/\/idam-web-public[^\/]+/i, TestData.WEB_PUBLIC_URL).replace(")", "");
+                }
             }
             i++;
         }
@@ -407,22 +410,18 @@ class IdamHelper extends Helper {
         return url;
     }
 
-    extractUrlFromBody(emailResponse) {
-        const regex = "(https.+)"
-        const url = emailResponse.body.match(regex);
-        if (url[0]) {
-            return url[0].replace(/https:\/\/idam-web-public[^\/]+/i, TestData.WEB_PUBLIC_URL).replace(")", "");
-        }
-    }
-
-    async extractOtpFromEmail(searchEmail) {
+    async extractOtpFromNotifyEmail(searchEmail) {
         let emailResponse;
         let otp;
         let i = 0;
         while (i < maxRetries && !emailResponse) {
-            emailResponse = await this.getEmail(searchEmail);
+            emailResponse = await this.getEmailFromNotify(searchEmail);
             if (emailResponse) {
-                otp = this.extractOtpFromEmailBody(emailResponse);
+                const regex = "[0-9]{8}";
+                let otpMatch = emailResponse.body.match(regex);
+                if (otpMatch[0]) {
+                    otp = otpMatch[0];
+                }
             }
             i++;
         }
@@ -431,21 +430,6 @@ class IdamHelper extends Helper {
             throw new Error('otp not found in Notify for ' + searchEmail);
         }
         return otp;
-
-    }
-
-    extractOtpFromEmailBody(emailResponse) {
-        const regex = "[0-9]{8}";
-        const url = emailResponse.body.match(regex);
-        if (url[0]) {
-            return url[0];
-        }
-    }
-
-    async getCurrentUrl() {
-        const helper = this.helpers['Puppeteer'];
-        console.log("Page is " + helper.page.url());
-        return helper.page.url();
     }
 
     interceptRequestsAfterSignin() {

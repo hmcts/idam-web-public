@@ -128,7 +128,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.scrollPageToBottom();
     I.click('Continue');
     I.waitForText('Check your email', 20, 'h1');
-    let url = await I.extractUrl(citizenEmail);
+    let url = await I.extractUrlFromNotifyEmail(citizenEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
@@ -179,7 +179,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.click('Continue');
     I.waitForText('You need to reset your password', 20, 'h2');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.', 20);
-    const reRegistrationUrl = await I.extractUrl(upliftAccountCreationStaleUserEmail);
+    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftAccountCreationStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.fillField('#password1', TestData.PASSWORD);
@@ -239,7 +239,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.click('Sign in');
     I.waitForText('You need to reset your password', 20, 'h2');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.', 20);
-    const reRegistrationUrl = await I.extractUrl(upliftLoginStaleUserEmail);
+    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftLoginStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.fillField('#password1', TestData.PASSWORD);

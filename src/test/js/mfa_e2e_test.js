@@ -59,7 +59,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required', 10, 'h1');
-    const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
@@ -101,7 +101,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.click(Welsh.signIn);
     I.seeInCurrentUrl("/verification");
     I.waitForText(Welsh.verificationRequired, 10, 'h1');
-    const otpEmailBody = await I.getEmail(mfaUserEmail);
+    const otpEmailBody = await I.getEmailFromNotify(mfaUserEmail);
     assert.equal(otpEmailBody.body.startsWith('Ysgrifennwyd'), true);
     const otpCode = await I.extractOtpFromEmailBody(otpEmailBody);
 
@@ -145,7 +145,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.click('Sign in');
     I.waitInUrl("/verification", 20);
     I.waitForText('Verification required', 2, 'h1');
-    const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     // empty field
     I.fillField('code', '');
@@ -184,7 +184,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.waitInUrl('/verification', 20);
     I.waitForText('Verification required', 2, 'h1');
 
-    const otpCodeLatest = await I.extractOtpFromEmail(mfaUserEmail);
+    const otpCodeLatest = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     // previously generated otp should be invalidated
     I.fillField('code', otpCode);
@@ -295,7 +295,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with clie
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required', 10, 'h1');
-    const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.click('Continue');

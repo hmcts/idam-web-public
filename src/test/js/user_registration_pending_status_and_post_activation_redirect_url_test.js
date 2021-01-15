@@ -56,7 +56,7 @@ Scenario('@functional user registration pending status and post activation redir
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
-    const url = await I.extractUrl(userEmail);
+    const url = await I.extractUrlFromNotifyEmail(userEmail);
 
     I.amOnPage(url);
     I.waitForText('Create a password', 20, 'h1');

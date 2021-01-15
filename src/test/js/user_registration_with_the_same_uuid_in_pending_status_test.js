@@ -64,7 +64,7 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
-    const currentUserUrl = await I.extractUrl(currentUserEmail);
+    const currentUserUrl = await I.extractUrlFromNotifyEmail(currentUserEmail);
 
     I.amOnPage(currentUserUrl);
     I.waitForText('Create a password', 20, 'h1');
@@ -83,7 +83,7 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     expect(responseAfterCurrentUserActivation.email).to.equal(currentUserEmail);
     expect(responseAfterCurrentUserActivation.roles).to.eql([assignableRole.name]);
 
-    const previousUserUrl = await I.extractUrl(previousUserEmail);
+    const previousUserUrl = await I.extractUrlFromNotifyEmail(previousUserEmail);
 
     I.amOnPage(previousUserUrl);
     I.waitForText('Create a password', 20, 'h1');
