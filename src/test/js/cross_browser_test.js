@@ -42,8 +42,7 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
     I.fillField('email', citizenEmail);
     I.click("Continue");
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
-    const userActivationUrl = await I.extractUrl(citizenEmail);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password', 20, 'h1');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -69,8 +68,7 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
     I.fillField('#email', citizenEmail);
     I.click('Submit');
     I.waitForText('Check your email', 20, 'h1');
-    I.wait(5);
-    const resetPasswordUrl = await I.extractUrl(citizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password', 20, 'h1');
     I.seeTitleEquals('Reset Password - HMCTS Access');
