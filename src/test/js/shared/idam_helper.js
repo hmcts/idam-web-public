@@ -2,8 +2,8 @@ let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
 const uuid = require('uuid');
-const maxNotifyPages = 3;  //max notify results pages to search
-const maxRetries = 5;  //max reties on each notify results page
+const MAX_NOTIFY_PAGES = 3;  //max notify results pages to search
+const MAX_RETRIES = 5;  //max retries on each notify results page
 
 let agentToUse;
 if (process.env.PROXY_SERVER) {
@@ -366,10 +366,12 @@ class IdamHelper extends Helper {
     async getEmailFromNotify(searchEmail) {
         let notificationsResponse = await notifyClient.getNotifications("email", null);
         let emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
-        let i = 0;
-        while (i < maxNotifyPages && !emailResponse && notificationsResponse.body.links.next) {
+        let i = 1;
+        while (i < MAX_NOTIFY_PAGES && !emailResponse && notificationsResponse.body.links.next) {
             console.log("Searching notify emails, next page " + notificationsResponse.body.links.next);
-            let olderThanId = notificationsResponse.body.links.next.match('[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}');
+            let nextPageLink = notificationsResponse.body.links.next;
+            let nextPageLinkUrl = new URL(nextPageLink);
+            let olderThanId = nextPageLinkUrl.searchParams.get("older_than");
             notificationsResponse = await notifyClient.getNotifications("email", null, null, olderThanId);
             emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
             i++;
@@ -388,46 +390,43 @@ class IdamHelper extends Helper {
         return result;
     }
 
-    async extractUrlFromNotifyEmail(searchEmail) {
-        let emailResponse;
-        let url;
-        let i = 0;
+    async getEmailFromNotifyWithMaxRetries(searchEmail, maxRetries) {
+        let emailResponse = await this.getEmailFromNotify(searchEmail);
+        let i = 1;
         while (i < maxRetries && !emailResponse) {
+            console.log(`Retrying email in notify for ${i} time`);
+            this.sleep(1000);
             emailResponse = await this.getEmailFromNotify(searchEmail);
-            if (emailResponse) {
-                const regex = "(https.+)";
-                const urlMatch = emailResponse.body.match(regex);
-                if (urlMatch[0]) {
-                    url = urlMatch[0].replace(/https:\/\/idam-web-public[^\/]+/i, TestData.WEB_PUBLIC_URL).replace(")", "");
-                }
-            }
             i++;
         }
+        if (!emailResponse) {
+            throw new Error('Email not found in Notify for ' + searchEmail);
+        }
+        return emailResponse;
+    }
 
-        if (!url) {
-            throw new Error('Url not found in Notify for ' + searchEmail);
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async extractUrlFromNotifyEmail(searchEmail) {
+        let url;
+        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(searchEmail, MAX_RETRIES);
+        const regex = "(https.+)";
+        const urlMatch = emailResponse.body.match(regex);
+        if (urlMatch[0]) {
+            url = urlMatch[0].replace(/https:\/\/idam-web-public[^\/]+/i, TestData.WEB_PUBLIC_URL).replace(")", "");
         }
         return url;
     }
 
     async extractOtpFromNotifyEmail(searchEmail) {
-        let emailResponse;
         let otp;
-        let i = 0;
-        while (i < maxRetries && !emailResponse) {
-            emailResponse = await this.getEmailFromNotify(searchEmail);
-            if (emailResponse) {
-                const regex = "[0-9]{8}";
-                let otpMatch = emailResponse.body.match(regex);
-                if (otpMatch[0]) {
-                    otp = otpMatch[0];
-                }
-            }
-            i++;
-        }
-
-        if (!otp) {
-            throw new Error('otp not found in Notify for ' + searchEmail);
+        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(searchEmail, MAX_RETRIES);
+        const regex = "[0-9]{8}";
+        let otpMatch = emailResponse.body.match(regex);
+        if (otpMatch[0]) {
+            otp = otpMatch[0];
         }
         return otp;
     }
