@@ -25,6 +25,7 @@ let notifyClient;
 const NotifyClient = require('notifications-node-client').NotifyClient;
 if (TestData.NOTIFY_API_KEY) {
     notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
+    console.log("Notify API starts with " + TestData.NOTIFY_API_KEY.substring(1,25));
 } else {
     console.log("Notify client API key is not defined");
 }
@@ -365,11 +366,6 @@ class IdamHelper extends Helper {
 
     async getEmailFromNotify(searchEmail) {
         let notificationsResponse = await notifyClient.getNotifications("email", null);
-        if (notificationsResponse && notificationsResponse.body && notificationsResponse.body.notifications) {
-            console.log("got something");
-        } else {
-            console.log("no responses");
-        }
         let emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
         let i = 1;
         while (i < MAX_NOTIFY_PAGES && !emailResponse && notificationsResponse.body.links.next) {
