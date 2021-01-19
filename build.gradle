@@ -161,12 +161,12 @@ allprojects {
 
   task pa11yInstall(type: Exec) {
     workingDir '.'
-    commandLine 'npm', 'install', 'pa11y'
+    commandLine 'yarn', 'add', 'pa11y'
   }
 
   task notifyClientInstall(type: Exec) {
     workingDir '.'
-    commandLine 'npm', 'install', 'notifications-node-client'
+    commandLine 'yarn', 'add', 'notifications-node-client'
   }
 
   task codeceptSmoke(type: Exec, dependsOn: ':yarnInstall') {
@@ -199,9 +199,9 @@ allprojects {
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 
-  task pa11y(type: Exec, dependsOn: 'pa11yInstall') {
+  task pa11y(type: Exec, dependsOn: [':yarnInstall', 'pa11yInstall']) {
     workingDir '.'
-    commandLine './node_modules/.bin/pa11y', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
+    commandLine 'node_modules/pa11y/bin/pa11y.js', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
   }
 }
 
