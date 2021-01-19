@@ -19,7 +19,7 @@ let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     userId = uuid.v4();
     randomUserLastName = randomData.getRandomUserName();
     randomUserFirstName = randomData.getRandomUserName();
@@ -47,11 +47,11 @@ BeforeSuite(async (I) => {
     await I.registerUserWithId(accessToken, userEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name)
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional user registration pending status and post activation redirect url test', async (I) => {
+Scenario('@functional user registration pending status and post activation redirect url test', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);

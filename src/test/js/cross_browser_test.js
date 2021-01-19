@@ -13,7 +13,7 @@ const serviceName = randomData.getRandomServiceName();
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
     randomUserLastName = randomData.getRandomUserName();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
@@ -24,11 +24,11 @@ BeforeSuite(async (I) => {
     userFirstNames.push(randomUserFirstName);
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
      return I.deleteAllTestData(randomData.TEST_BASE_PREFIX)
 });
 
-Scenario('@crossbrowser Idam Web public cross browser tests', async (I) => {
+Scenario('@crossbrowser Idam Web public cross browser tests', async ({ I }) => {
 
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 

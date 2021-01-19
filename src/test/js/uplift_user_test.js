@@ -22,7 +22,7 @@ let serviceBetaRole;
 
 const serviceName = randomData.getRandomServiceName();
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     randomUserLastName = randomData.getRandomUserName() + 'pinępinç';
     randomUserFirstName = randomData.getRandomUserName() + 'ępinçłpin';
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
@@ -58,15 +58,15 @@ BeforeSuite(async (I) => {
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-After((I) => {
+After(({ I }) => {
     I.resetRequestInterception();
 });
 
-Scenario('@functional @loginWithPin As a Defendant, I should be able to login with the pin received from the Claimant', async (I) => {
+Scenario('@functional @loginWithPin As a Defendant, I should be able to login with the pin received from the Claimant', async ({ I }) => {
     let pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/pin?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
     I.waitForText('Enter security code', 30, 'h1');
@@ -85,7 +85,7 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     expect(userInfo.roles).to.eql(['letter-holder']);
 });
 
-Scenario('@functional @uplift @upliftvalid User Validation errors', (I) => {
+Scenario('@functional @uplift @upliftvalid User Validation errors', ({ I }) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in', 30, 'h1');
     I.click("Continue");
@@ -119,7 +119,7 @@ Scenario('@functional @uplift @upliftvalid User Validation errors', (I) => {
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 
-Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async (I) => {
+Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async ({ I }) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in', 30, 'h1');
     I.fillField('#firstName', randomUserFirstName);
@@ -141,7 +141,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.see('You can now sign in to your account.');
 });
 
-Scenario('@functional @uplift @upliftLogin uplift a user via login journey', async (I) => {
+Scenario('@functional @uplift @upliftLogin uplift a user via login journey', async ({ I }) => {
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
@@ -160,7 +160,7 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
 });
 
 
-Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user registration for stale user uplift account creation', async (I) => {
+Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user registration for stale user uplift account creation', async ({ I }) => {
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
 
@@ -222,7 +222,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.resetRequestInterception();
 });
 
-Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift account creation', async (I) => {
+Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift account creation', async ({ I }) => {
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
 

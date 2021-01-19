@@ -18,7 +18,7 @@ let specialCharacterPassword;
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
     randomUserLastName = randomData.getRandomUserName();
     await I.createServiceData(serviceName);
@@ -31,11 +31,11 @@ BeforeSuite(async (I) => {
     await I.retireStaleUser(staleUserEmail)
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @selfregister User Validation errors', (I) => {
+Scenario('@functional @selfregister User Validation errors', ({ I }) => {
 
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
@@ -72,7 +72,7 @@ Scenario('@functional @selfregister User Validation errors', (I) => {
     I.see('Sign in');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @selfregister @welshLanguage Account already created (no language)', async (I) => {
+Scenario('@functional @selfregister @welshLanguage Account already created (no language)', async ({ I }) => {
 
     I.clearCookie(Welsh.localeCookie);
     I.amOnPage(selfRegUrl);
@@ -91,7 +91,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
 
 });
 
-Scenario('@functional @selfregister @welshLanguage Account already created (force Welsh)', async (I) => {
+Scenario('@functional @selfregister @welshLanguage Account already created (force Welsh)', async ({ I }) => {
 
     I.clearCookie(Welsh.localeCookie);
     I.amOnPage(selfRegUrl + Welsh.urlForceCy);
@@ -113,7 +113,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
 
 });
 
-Scenario('@functional @selfregister @welshLanguage I can self register (no language)', async (I) => {
+Scenario('@functional @selfregister @welshLanguage I can self register (no language)', async ({ I }) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
@@ -151,7 +151,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.resetRequestInterception();
 });
 
-Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)', async (I) => {
+Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)', async ({ I }) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
@@ -188,7 +188,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.resetRequestInterception();
 });
 
-Scenario('@functional @selfregister I can self register and cannot use activation link again', async (I) => {
+Scenario('@functional @selfregister I can self register and cannot use activation link again', async ({ I }) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
@@ -219,7 +219,7 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
 });
 
 
-Scenario('@functional @selfregister @prePopulatedScreen I can self register with pre-populated user account screen', async (I) => {
+Scenario('@functional @selfregister @prePopulatedScreen I can self register with pre-populated user account screen', async ({ I }) => {
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
     const randomUserEmailAddress = 'citizen.' + randomData.getRandomEmailAddress();
     const userAccountDetails = {
@@ -263,7 +263,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.resetRequestInterception();
 });
 
-Scenario('@functional @selfregister I can self register with repeated special characters in password', async (I) => {
+Scenario('@functional @selfregister I can self register with repeated special characters in password', async ({ I }) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
@@ -299,7 +299,7 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.resetRequestInterception();
 });
 
-Scenario('@functional @selfregister @passwordvalidation Validation displayed when I try to create my password with a blacklisted/invalid password', async (I) => {
+Scenario('@functional @selfregister @passwordvalidation Validation displayed when I try to create my password with a blacklisted/invalid password', async ({ I }) => {
 
     const email = 'test_citizen2.' + randomData.getRandomEmailAddress();
 
@@ -343,7 +343,7 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
     I.see("Your password is too easy to guess");
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @selfregister @staleuserregister stale user should get you already have an account email', async (I) => {
+Scenario('@functional @selfregister @staleuserregister stale user should get you already have an account email', async ({ I }) => {
 
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister', 180);
@@ -362,7 +362,7 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
 
 });
 
-Scenario('@functional @selfregister I can create a password only once using the activation link opened in multiple tabs', async (I) => {
+Scenario('@functional @selfregister I can create a password only once using the activation link opened in multiple tabs', async ({ I }) => {
 
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
 

@@ -508,7 +508,7 @@ class IdamHelper extends Helper {
                 'Authorization': 'Basic ' + this.getBase64(serviceName, clientSecret)
             }
         }).then(response => {
-            console.log(response)
+            //console.log(response)
             return response.json();
         }).then((json) => {
             console.log("Token: " + json.access_token);

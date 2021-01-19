@@ -16,7 +16,7 @@ let specialCharacterPassword;
 const serviceName = randomData.getRandomServiceName();
 const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
@@ -41,11 +41,11 @@ BeforeSuite(async (I) => {
     await I.retireStaleUser(staleUserEmail)
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @resetpass As a citizen user I can reset my password', async (I) => {
+Scenario('@functional @resetpass As a citizen user I can reset my password', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -75,7 +75,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
 });
  //NOTE: Retrying this scenario is problematic.
 
-Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset my password with diff case email address', async (I) => {
+Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset my password with diff case email address', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -104,7 +104,7 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
     I.resetRequestInterception();
 });
 
-Scenario('@functional @resetpass As a citizen user with a plus email I can reset my password', async (I) => {
+Scenario('@functional @resetpass As a citizen user with a plus email I can reset my password', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -133,7 +133,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.resetRequestInterception();
 });
 
-Scenario('@functional @resetpass As a citizen user with an apostrophe email I can reset my password', async (I) => {
+Scenario('@functional @resetpass As a citizen user with an apostrophe email I can reset my password', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -162,7 +162,7 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     I.resetRequestInterception();
 });
 
-Scenario('@functional @resetpass @passwordvalidation Validation displayed when I try to reset my password with a blacklisted/invalid password', async (I) => {
+Scenario('@functional @resetpass @passwordvalidation Validation displayed when I try to reset my password with a blacklisted/invalid password', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -202,7 +202,7 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @resetpass As a citizen user I can reset my password with repeated special characters', async (I) => {
+Scenario('@functional @resetpass As a citizen user I can reset my password with repeated special characters', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -234,7 +234,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
 });
 
 
-Scenario('@functional @staleuserresetpass As a stale user, I can reset my password', async (I) => {
+Scenario('@functional @staleuserresetpass As a stale user, I can reset my password', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
