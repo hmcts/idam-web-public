@@ -45,7 +45,7 @@ AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @resetpass As a citizen user I can reset my password', async ({ I }) => {
+Scenario('@functional @resetpass2 As a citizen user I can reset my password', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
@@ -104,7 +104,7 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
     I.resetRequestInterception();
 });
 
-Scenario('@functional @resetpass2 As a citizen user with a plus email I can reset my password', async ({ I }) => {
+Scenario('@functional @resetpass As a citizen user with a plus email I can reset my password', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.click('Forgotten password?');
