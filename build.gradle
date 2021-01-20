@@ -159,11 +159,6 @@ allprojects {
     commandLine 'yarn', 'install'
   }
 
-  task pa11yInstall(type: Exec) {
-    workingDir '.'
-    commandLine 'yarn', 'add', 'pa11y'
-  }
-
   task notifyClientInstall(type: Exec) {
     workingDir '.'
     commandLine 'yarn', 'add', 'notifications-node-client'
@@ -176,7 +171,7 @@ allprojects {
 
   task codeceptFunctional(type: Exec, dependsOn :'yarnInstall') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@resetpass2', '--verbose', '--reporter', 'mocha-multi'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
 
   task smokeSauce(dependsOn: ':codeceptSmokeSauce') {
@@ -194,12 +189,12 @@ allprojects {
     description = 'Executes non-destructive smoke tests against a running instance'
   }
 
-  task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
+  task codeceptFunctionalSauce(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 
-  task pa11y(type: Exec, dependsOn: [':yarnInstall', 'pa11yInstall']) {
+  task pa11y(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/pa11y/bin/pa11y.js', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
   }
