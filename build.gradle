@@ -68,7 +68,10 @@ allprojects {
   }
 
   dependencies {
-    implementation group: 'uk.gov.hmcts.reform.idam', name: 'idam-api-spec'
+    implementation (group: 'uk.gov.hmcts.reform.idam', name: 'idam-api-spec') {
+      exclude module: 'springfox-swagger2'
+      exclude module: 'springfox-swagger-ui'
+    }
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
