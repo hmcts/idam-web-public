@@ -10,7 +10,7 @@ let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     const randomUserLastName = randomData.getRandomUserName();
     const randomUserFirstName = randomData.getRandomUserName();
     const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
@@ -38,11 +38,11 @@ BeforeSuite(async (I) => {
     userFirstNames.push(randomUserFirstName + 'User');
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional Register User Dynamically', async (I) => {
+Scenario('@functional Register User Dynamically', async ({ I }) => {
     let url = await I.extractUrlFromNotifyEmail(userEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);

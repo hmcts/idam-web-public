@@ -15,7 +15,7 @@ let randomUserLastName;
 let specialCharacterPassword;
 
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
     randomUserLastName = randomData.getRandomUserName();
     await I.createServiceData(serviceName);
@@ -25,11 +25,11 @@ BeforeSuite(async (I) => {
     specialCharacterPassword = 'New%%%&&&234';
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @welshLanguage There is a language switch that is working', async (I) => {
+Scenario('@functional @welshLanguage There is a language switch that is working', async ({ I }) => {
 
     const welshLinkValue = 'Cymraeg';
     const englishLinkValue = 'English';
@@ -47,7 +47,7 @@ Scenario('@functional @welshLanguage There is a language switch that is working'
     I.waitForText(welshLinkValue, 20);
 });
 
-Scenario('@functional @welshLanguage I can set the language with a cookie', async (I) => {
+Scenario('@functional @welshLanguage I can set the language with a cookie', async ({ I }) => {
 
     I.amOnPage(Welsh.pageUrl);
     I.setCookie({name: Welsh.localeCookie, value: 'cy'});
@@ -56,7 +56,7 @@ Scenario('@functional @welshLanguage I can set the language with a cookie', asyn
 });
 
 //TODO: add functional tag once the issue is fixed permanently.
-Scenario('@welshLanguage I can set the language with a header', async (I) => {
+Scenario('@welshLanguage I can set the language with a header', async ({ I }) => {
 
     I.amOnPage(Welsh.pageUrl);
     I.clearCookie(Welsh.localeCookie);
@@ -65,7 +65,7 @@ Scenario('@welshLanguage I can set the language with a header', async (I) => {
     I.waitForText(Welsh.accessDeniedWelsh, 20, 'h1');
 });
 
-Scenario('@functional @welshLanguage I can set the language with a parameter', async (I) => {
+Scenario('@functional @welshLanguage I can set the language with a parameter', async ({ I }) => {
 
     I.amOnPage(Welsh.pageUrl);
     I.clearCookie(Welsh.localeCookie);
@@ -73,7 +73,7 @@ Scenario('@functional @welshLanguage I can set the language with a parameter', a
     I.waitForText(Welsh.accessDeniedWelsh, 20, 'h1');
 });
 
-Scenario('@functional @welshLanguage I can set the language to English with an invalid parameter', async (I) => {
+Scenario('@functional @welshLanguage I can set the language to English with an invalid parameter', async ({ I }) => {
 
     I.amOnPage(Welsh.pageUrl);
     I.clearCookie(Welsh.localeCookie);
@@ -81,7 +81,7 @@ Scenario('@functional @welshLanguage I can set the language to English with an i
     I.waitForText('Access Denied', 20, 'h1');
 });
 
-Scenario('@functional @welshLanguage I can reset my password in Welsh', async (I) => {
+Scenario('@functional @welshLanguage I can reset my password in Welsh', async ({ I }) => {
 
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}${Welsh.urlForceCy}`;
 
