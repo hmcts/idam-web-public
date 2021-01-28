@@ -28,7 +28,7 @@ const setupConfig = {
     tests: './src/test/js/cross_browser_test.js',
     output: `${process.cwd()}/functional-output`,
     helpers: {
-        WebDriverIO: {
+        WebDriver: {
             url: process.env.TEST_URL,
             browser: 'chrome',
             waitForTimeout,
