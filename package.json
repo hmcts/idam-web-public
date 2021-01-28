@@ -4,7 +4,7 @@
   "repository": "git@github.com:hmcts/idam-web-public.git",
   "license": "MIT",
   "engines": {
-    "node": ">=12.20.1"
+    "node": ">=12.20.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
