@@ -21,7 +21,7 @@ let mfaApplicationPolicyName;
 let mfaTurnedOnService;
 let mfaTurnedOffService;
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
     mfaUserEmail = randomData.getRandomEmailAddress();
     mfaDisabledUserEmail = randomData.getRandomEmailAddress();
@@ -41,14 +41,14 @@ BeforeSuite(async (I) => {
     await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService.activationRedirectUrl, token);
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return Promise.all([
         I.deleteAllTestData(randomData.TEST_BASE_PREFIX),
         I.deletePolicy(mfaApplicationPolicyName, token),
     ]);
 });
 
-Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
+Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
 
@@ -90,7 +90,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in Welsh', async (I) => {
+Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in Welsh', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6wtIgsUVTGybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=openid profile roles manage-user create-user${Welsh.urlForceCy}`;
 
@@ -134,7 +134,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts otp expired message and continue button should be present', async (I) => {
+Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts otp expired message and continue button should be present', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTutbVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm5ed0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
 
@@ -219,7 +219,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I can login without mfa for the application with mfa turned on', async (I) => {
+Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I can login without mfa for the application with mfa turned on', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgtUVTGybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
 
@@ -265,7 +265,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     I.resetRequestInterception();
 });
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with client A MFA turned OFF and then step-up to client B with MFA turned ON', async (I) => {
+Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with client A MFA turned OFF and then step-up to client B with MFA turned ON', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService.activationRedirectUrl}&client_id=${mfaTurnedOffService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 

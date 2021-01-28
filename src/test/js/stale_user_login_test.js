@@ -12,7 +12,7 @@ let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
 
-BeforeSuite(async(I) => {
+BeforeSuite(async({ I }) => {
 
     randomUserFirstName = randomData.getRandomUserName();
     staleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
@@ -30,11 +30,11 @@ BeforeSuite(async(I) => {
     await I.retireStaleUser(staleUserEmailWelsh);
 });
 
-AfterSuite(async(I) => {
+AfterSuite(async({ I }) => {
     I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
+Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) => {
     const loginUrl = `${testData.WEB_PUBLIC_URL}/login?redirect_uri=${testData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
@@ -67,7 +67,7 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
 });
 
 
-Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh', async(I) => {
+Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh', async({ I }) => {
     const loginUrl = `${testData.WEB_PUBLIC_URL}/login?redirect_uri=${testData.SERVICE_REDIRECT_URI}&client_id=${serviceName}${Welsh.urlForceCy}`;
 
     I.amOnPage(loginUrl);

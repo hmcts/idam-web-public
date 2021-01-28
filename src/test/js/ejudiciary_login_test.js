@@ -9,18 +9,18 @@ let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     const token = await I.getAuthToken();
     await I.createService(serviceName, '', token, 'openid profile roles', [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
     serviceNames.push(serviceName);
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam through OIDC', async (I) => {
+Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam through OIDC', async ({ I }) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/authorize?login_hint=${TestData.EJUDICIARY_SSO_PROVIDER_KEY}&client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitInUrl('/login/oauth2/code/oidc', 180);
     I.waitForText('Sign in', 20);
@@ -59,7 +59,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam', async (I) => {
+Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam', async ({ I }) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in', 20, 'h2');
     I.waitForText('Log in with your eJudiciary account', 20);

@@ -23,7 +23,7 @@ const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVI
 
 let randomUserFirstName, citizenFirstName, citizenLastName, citizenEmail, respondentEmail;
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
     const randomText = randomData.getRandomString();
     citizenFirstName = citizenLastName = randomText;
@@ -48,11 +48,11 @@ BeforeSuite(async (I) => {
     userFirstNames.push(randomUserFirstName + 'Respondent');
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async (I) => {
+Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async ({ I }) => {
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h1');
     I.fillField('#username', citizenEmail);
@@ -76,7 +76,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 
 });
 
-Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on PIN user login', async (I) => {
+Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on PIN user login', async ({ I }) => {
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
     let code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);

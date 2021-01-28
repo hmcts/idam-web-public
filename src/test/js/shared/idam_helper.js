@@ -25,6 +25,7 @@ let notifyClient;
 const NotifyClient = require('notifications-node-client').NotifyClient;
 if (TestData.NOTIFY_API_KEY) {
     notifyClient = new NotifyClient(TestData.NOTIFY_API_KEY);
+    console.log("Notify API starts with " + TestData.NOTIFY_API_KEY.substring(1,25));
 } else {
     console.log("Notify client API key is not defined");
 }
@@ -508,7 +509,7 @@ class IdamHelper extends Helper {
                 'Authorization': 'Basic ' + this.getBase64(serviceName, clientSecret)
             }
         }).then(response => {
-            console.log(response)
+            //console.log(response)
             return response.json();
         }).then((json) => {
             console.log("Token: " + json.access_token);

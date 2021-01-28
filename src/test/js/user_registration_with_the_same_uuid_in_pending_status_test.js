@@ -23,7 +23,7 @@ let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     userId = uuid.v4();
     randomUserLastName = randomData.getRandomUserName();
     randomUserFirstName = randomData.getRandomUserName();
@@ -55,11 +55,11 @@ BeforeSuite(async (I) => {
     await I.registerUserWithId(accessToken, currentUserEmail, currentUserFirstName, currentUserLastName, userId, assignableRole.name)
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional multiple users can be registered with same uuid but the previous user will be assigned with auto generated uuid upon activation', async (I) => {
+Scenario('@functional multiple users can be registered with same uuid but the previous user will be assigned with auto generated uuid upon activation', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
