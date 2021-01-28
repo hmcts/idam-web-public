@@ -23,7 +23,6 @@ const supportedBrowsers = {
             platform: 'macOS 10.13',
             version: 'latest'
         }
-<<<<<<< HEAD
     },
     firefox: {
         firefox_win_latest: {
@@ -37,30 +36,6 @@ const supportedBrowsers = {
             name: 'MAC_FIREFOX_LATEST',
             platform: 'macOS 10.13',
             version: 'latest'
-        }
-    },
-    safari: {
-        safari11: {
-            browserName: 'safari',
-            name: 'SAFARI_11',
-            platform: 'macOS 10.14',
-            version: 'latest',
-            avoidProxy: true
-=======
-    },
-    firefox: {
-        firefox_win_latest: {
-            browserName: 'firefox',
-            name: 'WIN_FIREFOX_LATEST',
-            platform: 'Windows 10',
-            version: 'latest'
-        },
-        firefox_mac_latest: {
-            browserName: 'firefox',
-            name: 'MAC_FIREFOX_LATEST',
-            platform: 'macOS 10.13',
-            version: 'latest'
->>>>>>> 0b78939f864adf8756c96492072a3852b96ddf6f
         }
     }
 };
