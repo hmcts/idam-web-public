@@ -30,9 +30,6 @@ AfterSuite(async ({ I }) => {
 
 Scenario('@crossbrowser Idam Web public cross browser tests', async ({ I }) => {
 
-    console.log("user: " + process.env.SAUCE_USERNAME);
-    console.log("key: " + process.env.SAUCE_ACCESS_KEY);
-
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     // create account
