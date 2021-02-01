@@ -21,12 +21,10 @@
     "pa11y": "^5.3.0",
     "proxy-agent": "^4.0.1",
     "puppeteer": "^5.5.0",
-    "wdio-sauce-service": "^0.4.4",
-    "webdriverio": "^5.2.2"
+    "webdriverio": "^6.12.1"
   },
   "scripts": {
     "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c saucelabs.conf.js --steps --grep '@crossbrowser' --reporter mochawesome",
     "test:crossbrowser": "runSauceLabsTests.sh"
-  },
-  "dependencies": {}
+  }
 }

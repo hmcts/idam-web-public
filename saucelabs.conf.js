@@ -5,17 +5,24 @@ const tunnelName = process.env.TUNNEL_IDENTIFIER || 'reformtunnel';
 const waitForTimeout = 60000;
 const smartWait = 5000;
 
+const defaultSauceOptions = {
+  username: process.env.SAUCE_USERNAME,
+  accessKey: process.env.SAUCE_ACCESS_KEY,
+  tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
+  acceptSslCerts: true,
+  tags: ['idam-web-public']
+};
+
 const getBrowserConfig = browserGroup => {
     const browserConfig = [];
     for (const candidateBrowser in supportedBrowsers[browserGroup]) {
         if (candidateBrowser) {
-            const desiredCapability = supportedBrowsers[browserGroup][candidateBrowser];
-            desiredCapability.acceptSslCerts = true;
-            desiredCapability.tunnelIdentifier = tunnelName;
-            desiredCapability.tags = ['idam-web-public'];
+            console.log("Setting up " + browserGroup)
+            const candidateCapabilities = supportedBrowsers[browserGroup][candidateBrowser];
+            candidateCapabilities['sauce:options'] = merge(defaultSauceOptions, candidateCapabilities['sauce:options']);
             browserConfig.push({
-                browser: desiredCapability.browserName,
-                desiredCapabilities: desiredCapability
+                browser: candidateCapabilities.browserName,
+                capabilities: candidateCapabilities
             });
         } else {
             console.error('ERROR: supportedBrowsers.js is empty or incorrectly defined');
@@ -23,6 +30,10 @@ const getBrowserConfig = browserGroup => {
     }
     return browserConfig;
 };
+
+function merge(intoObject, fromObject) {
+  return Object.assign({}, intoObject, fromObject);
+}
 
 const setupConfig = {
     tests: './src/test/js/cross_browser_test.js',
@@ -37,12 +48,8 @@ const setupConfig = {
             host: 'ondemand.eu-central-1.saucelabs.com',
             port: 80,
             region: 'eu',
-            sauceConnect: true,
-            services: ['sauce'],
-            acceptSslCerts: true,
-            user: process.env.SAUCE_USERNAME,
-            key: process.env.SAUCE_ACCESS_KEY,
-            desiredCapabilities: {}
+            capabilities: {}
+
         },
         SauceLabsReportingHelper: {require: './src/test/js/shared/sauceLabsReportingHelper.js'},
         idam_helper: {require: './src/test/js/shared/idam_helper.js'}

@@ -189,7 +189,7 @@ allprojects {
     description = 'Executes non-destructive smoke tests against a running instance'
   }
 
-  task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':sauce']) {
+  task codeceptFunctionalSauce(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
