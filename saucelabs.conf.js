@@ -34,15 +34,15 @@ const setupConfig = {
             waitForTimeout,
             smartWait,
             cssSelectorsEnabled: 'true',
-            host: 'ondemand.eu-central-1.saucelabs.com',
-            port: 80,
+            // host: 'ondemand.eu-central-1.saucelabs.com',
+            // port: 80,
             // region: 'eu',
             // sauceConnect: true,
             // services: ['sauce'],
-            acceptSslCerts: true,
             // user: process.env.SAUCE_USERNAME,
             // key: process.env.SAUCE_ACCESS_KEY,
-            desiredCapabilities: {}
+            // acceptSslCerts: true,
+            // desiredCapabilities: {}
         },
         SauceLabsReportingHelper: {require: './src/test/js/shared/sauceLabsReportingHelper.js'},
         idam_helper: {require: './src/test/js/shared/idam_helper.js'}
@@ -50,17 +50,15 @@ const setupConfig = {
     plugins: {
         wdio: {
             enabled: true,
-            services: [
-                ['sauce', {
-                    sauceConnect: true,
-                    sauceConnectOpts: {
-                        // ...
-                    }
-                }]
-            ],
+            services: ['sauce'],
+            sauceConnect: true,
             region: 'eu',
+            host: 'ondemand.eu-central-1.saucelabs.com',
+            port: 80,
             user: process.env.SAUCE_USERNAME,
-            key: process.env.SAUCE_ACCESS_KEY
+            key: process.env.SAUCE_ACCESS_KEY,
+            acceptSslCerts: true,
+            desiredCapabilities: {}
         }
     },
     include: {I: './src/test/js/shared/custom_steps.js'},
