@@ -136,9 +136,8 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts otp expired message and continue button should be present', async (I) => {
-    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTutbVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm5ed0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
+Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts should redirect user to the sign in page', async (I) => {
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h1');
@@ -174,7 +173,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     // invalid otp
     I.fillField('code', '94837292');
     I.click('Continue');
-    // after 3 incorrect attempts, user should start the login/journey again.
+    // after 3 incorrect attempts redirect user back to the sign in page
     I.seeInCurrentUrl("/expiredcode");
     I.see('We’ve been unable to sign you in because your verification code has expired.');
     I.see('You’ll need to start again.');
@@ -199,26 +198,6 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    let accessToken = await I.getAccessToken(code, mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
-
-    let jwtDecode = await jwt_decode(accessToken);
-
-    assert.equal("access_token", jwtDecode.tokenName);
-    assert.equal(nonce, jwtDecode.nonce);
-    assert.equal(1, jwtDecode.auth_level);
-
-    //Webpublic OIDC userinfo
-    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
-    expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
-    expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
-    expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
-    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
-    expect(oidcUserInfo.family_name).to.equal('User');
-
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
