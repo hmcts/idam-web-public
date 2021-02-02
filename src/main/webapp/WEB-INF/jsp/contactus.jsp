@@ -18,8 +18,7 @@
             <li><spring:message code="public.contactus.text_0005" /> </li>
             <li><spring:message code="public.contactus.text_0006" /></li>
             <li><spring:message code="public.contactus.text_0007" /></li>
-            <li><spring:message code="public.contactus.text_0008" /></li>
-            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0009" /></a> </li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0008" /></a> </li>
         </ul>
 
         <h2 class="heading-medium"><spring:message code="public.contactus.text_0010" /></h2>
@@ -53,8 +52,7 @@
             <li><spring:message code="public.contactus.text_0028" /> </li>
             <li><spring:message code="public.contactus.text_0029" /></li>
             <li><spring:message code="public.contactus.text_0030" /></li>
-            <li><spring:message code="public.contactus.text_0031" /></li>
-            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0032" /></a> </li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0031" /></a> </li>
         </ul>
 
         <h2 class="heading-medium"><spring:message code="public.contactus.text_0033" /></h2>
