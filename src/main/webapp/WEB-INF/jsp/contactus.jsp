@@ -34,7 +34,8 @@
         <ul class="list">
             <li><spring:message code="public.contactus.text_0016" /></li>
             <li><spring:message code="public.contactus.text_0017" /></li>
-            <li><spring:message code="public.contactus.text_0018" /></li>
+            <li><spring:message code="public.contactus.text_0018.1" /></li>
+            <li><spring:message code="public.contactus.text_0018.2" /></li>
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0019" /></a> </li>
         </ul>
 
