@@ -8,6 +8,7 @@ let randomUserFirstName;
 let staleUserEmail;
 let staleUserEmailWelsh;
 let userFirstNames = [];
+let roleNames = [];
 let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
@@ -17,10 +18,18 @@ BeforeSuite(async(I) => {
     randomUserFirstName = randomData.getRandomUserName();
     staleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     staleUserEmailWelsh = 'staleuser.' + randomData.getRandomEmailAddress();
-
-    await I.createServiceData(serviceName);
+    const token = await I.getAuthToken();
+    let response;
+    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
+    const serviceBetaRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
+    const serviceAdminRole = response.name;
+    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
+    const serviceSuperRole = response.name;
+    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
+    roleNames.push(serviceRoles);
+    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
     serviceNames.push(serviceName);
-
     await I.createUserWithRoles(staleUserEmail, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(staleUserEmail);
