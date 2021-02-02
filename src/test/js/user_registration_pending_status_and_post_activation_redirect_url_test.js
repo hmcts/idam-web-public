@@ -10,9 +10,10 @@ let adminEmail;
 let randomUserFirstName;
 let randomUserLastName;
 let userEmail;
+let apiAuthToken;
 let accessToken;
 let userId;
-let assignableRole;
+let serviceRoles;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
@@ -26,25 +27,24 @@ BeforeSuite(async (I) => {
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     userEmail = 'user.' + randomData.getRandomEmailAddress();
 
-    const apiAuthToken = await I.getAuthToken();
-    assignableRole = await I.createRole(randomData.getRandomRoleName() + "_assignable", 'assignable role', '', apiAuthToken);
-    let userRegRole = await I.createRole(randomData.getRandomRoleName() + "_usrReg", 'user reg role', assignableRole.id, apiAuthToken);
-
-    let serviceRoleNames = [assignableRole.name, userRegRole.name];
-    let serviceRoleIds = [assignableRole.id, userRegRole.id];
-    roleNames.push(serviceRoleNames);
-
-    await I.createServiceWithRoles(serviceName, serviceRoleIds, '', apiAuthToken, 'create-user manage-user');
+    apiAuthToken = await I.getAuthToken();
+    let response;
+    response = await I.createRole(serviceName + "_assignable", 'assignable role', '', apiAuthToken);
+    const assignableRole = response.name;
+    response = await I.createRole(serviceName + "_usrReg", 'user reg role', serviceName + "_assignable", apiAuthToken);
+    const userRegRole = response.name;
+    serviceRoles = [userRegRole, assignableRole];
+    roleNames.push(serviceRoles);
+    await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", apiAuthToken, 'create-user manage-user');
     serviceNames.push(serviceName);
-
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [userRegRole.name]);
+    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceName + "_usrReg"]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, TestData.PASSWORD);
     const code = await I.getAuthorizeCode(serviceName, TestData.SERVICE_REDIRECT_URI, 'create-user manage-user', base64);
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 
-    await I.registerUserWithId(accessToken, userEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name)
+    await I.registerUserWithId(accessToken, userEmail, randomUserFirstName, randomUserLastName, userId, serviceName + "_assignable")
 });
 
 AfterSuite(async (I) => {
@@ -79,7 +79,7 @@ Scenario('@functional user registration pending status and post activation redir
     expect(responseAfterActivation.forename).to.equal(randomUserFirstName);
     expect(responseAfterActivation.surname).to.equal(randomUserLastName);
     expect(responseAfterActivation.email).to.equal(userEmail);
-    expect(responseAfterActivation.roles).to.eql([assignableRole.name]);
+    expect(responseAfterActivation.roles).to.eql([serviceName + "_assignable"]);
 
     I.resetRequestInterception();
 });

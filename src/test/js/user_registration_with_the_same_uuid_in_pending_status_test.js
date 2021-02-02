@@ -16,7 +16,7 @@ let currentUserFirstName;
 let apiAuthToken;
 let accessToken;
 let userId;
-let assignableRole;
+let serviceRoles;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
@@ -34,25 +34,24 @@ BeforeSuite(async (I) => {
     currentUserEmail = 'user.' + randomData.getRandomEmailAddress();
 
     apiAuthToken = await I.getAuthToken();
-    assignableRole = await I.createRole(randomData.getRandomRoleName()  + "_assignable", 'assignable role', '', apiAuthToken);
-    let userRegRole = await I.createRole(randomData.getRandomRoleName()  + "_usrReg", 'user reg role', assignableRole.id, apiAuthToken);
-
-    let serviceRoleNames = [assignableRole.name, userRegRole.name];
-    let serviceRoleIds = [assignableRole.id, userRegRole.id];
-    roleNames.push(serviceRoleNames);
-
-    await I.createServiceWithRoles(serviceName, serviceRoleIds, '', apiAuthToken, 'create-user manage-user');
+    let response;
+    response = await I.createRole(serviceName + "_assignable", 'assignable role', '', apiAuthToken);
+    const assignableRole = response.name;
+    response = await I.createRole(serviceName + "_usrReg", 'user reg role', serviceName + "_assignable", apiAuthToken);
+    const userRegRole = response.name;
+    serviceRoles = [userRegRole, assignableRole];
+    roleNames.push(serviceRoles);
+    await I.createServiceWithRoles(serviceName, serviceRoles, serviceName + "_beta", apiAuthToken, 'create-user manage-user');
     serviceNames.push(serviceName);
-
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [userRegRole.name]);
+    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceName + "_usrReg"]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, TestData.PASSWORD);
     const code = await I.getAuthorizeCode(serviceName, TestData.SERVICE_REDIRECT_URI, 'create-user manage-user', base64);
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 
-    await I.registerUserWithId(accessToken, previousUserEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name);
-    await I.registerUserWithId(accessToken, currentUserEmail, currentUserFirstName, currentUserLastName, userId, assignableRole.name)
+    await I.registerUserWithId(accessToken, previousUserEmail, randomUserFirstName, randomUserLastName, userId, serviceName + "_assignable");
+    await I.registerUserWithId(accessToken, currentUserEmail, currentUserFirstName, currentUserLastName, userId, serviceName + "_assignable")
 });
 
 AfterSuite(async (I) => {
@@ -83,7 +82,7 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     expect(responseAfterCurrentUserActivation.forename).to.equal(currentUserFirstName);
     expect(responseAfterCurrentUserActivation.surname).to.equal(currentUserLastName);
     expect(responseAfterCurrentUserActivation.email).to.equal(currentUserEmail);
-    expect(responseAfterCurrentUserActivation.roles).to.eql([assignableRole.name]);
+    expect(responseAfterCurrentUserActivation.roles).to.eql([serviceName + "_assignable"]);
 
     const previousUserUrl = await I.extractUrl(previousUserEmail);
 
