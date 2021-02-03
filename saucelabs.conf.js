@@ -1,6 +1,4 @@
 const supportedBrowsers = require('./src/test/js/config/supportedBrowsers.js');
-const browser = process.env.SAUCE_BROWSER || 'chrome';
-const tunnelName = process.env.TUNNEL_IDENTIFIER || 'reformtunnel';
 
 const waitForTimeout = 60000;
 const smartWait = 5000;
@@ -17,7 +15,6 @@ const getBrowserConfig = browserGroup => {
     const browserConfig = [];
     for (const candidateBrowser in supportedBrowsers[browserGroup]) {
         if (candidateBrowser) {
-            console.log("Setting up " + browserGroup)
             const candidateCapabilities = supportedBrowsers[browserGroup][candidateBrowser];
             candidateCapabilities['sauce:options'] = merge(defaultSauceOptions, candidateCapabilities['sauce:options']);
             browserConfig.push({
