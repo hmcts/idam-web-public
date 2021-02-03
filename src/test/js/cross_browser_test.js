@@ -34,47 +34,46 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async ({ I }) => {
 
     // create account
     I.amOnPage(selfRegUrl);
-    I.waitInUrl('users/selfRegister', 180);
-    I.waitForText('Create an account or sign in', 20, 'h1');
+    I.waitInUrl('users/selfRegister');
+    I.waitForText('Create an account or sign in');
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmail);
     I.click("Continue");
-    I.waitForText('Check your email', 20, 'h1');
+    I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
     I.amOnPage(userActivationUrl);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 20, 'h1');
+    I.waitForText('Account created');
 
     // login
     I.amOnPage(loginPage);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', citizenEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.wait(5);
-    I.dontSee('Sign in');
+    I.waitForInvisible('#username', 20);
 
     //Reset password
     I.amOnPage(loginPage);
-    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.waitForText('Sign in or create an account');
     I.click('Forgotten password?');
-    I.waitForText('Reset your password', 20, 'h1');
+    I.waitForText('Reset your password');
     I.fillField('#email', citizenEmail);
     I.click('Submit');
-    I.waitForText('Check your email', 20, 'h1');
+    I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
     I.amOnPage(resetPasswordUrl);
-    I.waitForText('Create a new password', 20, 'h1');
+    I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', 'Passw0rd1234');
     I.fillField('#password2', 'Passw0rd1234');
     I.click('Continue');
-    I.waitForText('Your password has been changed', 20, 'h1');
+    I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
 });
