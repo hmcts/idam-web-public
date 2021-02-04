@@ -22,13 +22,13 @@
     "puppeteer": "^2.0.0",
     "wdio-sauce-service": "^0.4.4",
     "webdriverio": "^4.14.2",
-    "jwt-decode": "^3.0.0"
+    "jwt-decode": "^3.1.2"
   },
   "scripts": {
     "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c saucelabs.conf.js --steps --grep '@crossbrowser' --reporter mochawesome",
     "test:crossbrowser": "runSauceLabsTests.sh"
   },
   "dependencies": {
-    "jwt-decode": "^3.0.0"
+    "jwt-decode": "^3.1.2"
   }
 }
