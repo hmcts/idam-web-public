@@ -59,14 +59,14 @@ Scenario('@functional user registration pending status and post activation redir
     const url = await I.extractUrlFromNotifyEmail(userEmail);
 
     I.amOnPage(url);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 20, 'h1');
+    I.waitForText('Account created');
     userFirstNames.push(randomUserFirstName);
-    I.waitForText('You can now sign in to your account.', 20);
-    I.waitForText('Continue', 20);
+    I.waitForText('You can now sign in to your account.');
+    I.waitForText('Continue');
     I.interceptRequestsAfterSignin();
     I.click('Continue');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
