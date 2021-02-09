@@ -54,7 +54,7 @@ AfterSuite(async ({ I }) => {
 
 Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async ({ I }) => {
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', citizenEmail);
     I.fillField('#password', TestData.PASSWORD);
 
@@ -83,7 +83,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&scope=${customScope}&jwt=${accessToken}`)
-    I.waitForText('Sign in or create an account', 30, 'h1');
+    I.waitForText('Sign in or create an account');
     I.fillField('#username', respondentEmail);
     I.fillField('#password', TestData.PASSWORD);
 

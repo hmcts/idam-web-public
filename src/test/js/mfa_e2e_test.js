@@ -53,12 +53,12 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
-    I.waitForText('Verification required', 10, 'h1');
+    I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
@@ -95,12 +95,12 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=openid profile roles manage-user create-user${Welsh.urlForceCy}`;
 
     I.amOnPage(loginUrl);
-    I.waitForText(Welsh.signInOrCreateAccount, 20, 'h1');
+    I.waitForText(Welsh.signInOrCreateAccount);
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click(Welsh.signIn);
     I.seeInCurrentUrl("/verification");
-    I.waitForText(Welsh.verificationRequired, 10, 'h1');
+    I.waitForText(Welsh.verificationRequired);
     const otpEmailBody = await I.getEmailFromNotify(mfaUserEmail);
     assert.equal(otpEmailBody.body.startsWith('Ysgrifennwyd'), true);
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
@@ -139,12 +139,12 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm5ed0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.waitInUrl("/verification", 20);
-    I.waitForText('Verification required', 2, 'h1');
+    I.waitInUrl("/verification");
+    I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     // empty field
@@ -181,15 +181,15 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.waitInUrl('/verification', 20);
-    I.waitForText('Verification required', 2, 'h1');
+    I.waitInUrl('/verification');
+    I.waitForText('Verification required');
 
     const otpCodeLatest = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     // previously generated otp should be invalidated
     I.fillField('code', otpCode);
     I.click('Continue');
-    I.waitForText('Enter a correct verification code', 5, '.error-message');
+    I.waitForText('Enter a correct verification code');
     I.fillField('code', otpCodeLatest);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
@@ -224,7 +224,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaDisabledUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
@@ -270,7 +270,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with clie
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService.activationRedirectUrl}&client_id=${mfaTurnedOffService.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
@@ -289,12 +289,12 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with clie
     location.includes(`/login?client_id=${mfaTurnedOnService.oauth2ClientId}&redirect_uri=${mfaTurnedOnService.activationRedirectUrl}`);
 
     I.amOnPage(location);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
-    I.waitForText('Verification required', 10, 'h1');
+    I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);

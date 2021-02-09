@@ -67,11 +67,11 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     const currentUserUrl = await I.extractUrlFromNotifyEmail(currentUserEmail);
 
     I.amOnPage(currentUserUrl);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 20, 'h1');
+    I.waitForText('Account created');
     userFirstNames.push(currentUserFirstName);
 
     const responseAfterCurrentUserActivation = await I.getUserById(userId, accessToken);
@@ -86,11 +86,11 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     const previousUserUrl = await I.extractUrlFromNotifyEmail(previousUserEmail);
 
     I.amOnPage(previousUserUrl);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 20, 'h1');
+    I.waitForText('Account created');
     userFirstNames.push(randomUserFirstName);
 
     const responseAfterPreviousUserActivation = await I.getUserByEmail(previousUserEmail);

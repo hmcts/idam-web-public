@@ -69,7 +69,7 @@ After(({ I }) => {
 Scenario('@functional @loginWithPin As a Defendant, I should be able to login with the pin received from the Claimant', async ({ I }) => {
     let pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/pin?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
-    I.waitForText('Enter security code', 30, 'h1');
+    I.waitForText('Enter security code');
     I.fillField('#pin', pinUser.pin);
 
     I.interceptRequestsAfterSignin();
@@ -87,9 +87,9 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
 
 Scenario('@functional @uplift @upliftvalid User Validation errors', ({ I }) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
-    I.waitForText('Create an account or sign in', 30, 'h1');
+    I.waitForText('Create an account or sign in');
     I.click("Continue");
-    I.waitForText('Information is missing or invalid', 20, 'h2');
+    I.waitForText('Information is missing or invalid');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
@@ -121,23 +121,23 @@ Scenario('@functional @uplift @upliftvalid User Validation errors', ({ I }) => {
 
 Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async ({ I }) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
-    I.waitForText('Create an account or sign in', 30, 'h1');
+    I.waitForText('Create an account or sign in');
     I.fillField('#firstName', randomUserFirstName);
     I.fillField('#lastName', randomUserLastName);
     I.fillField('#username', citizenEmail);
     I.scrollPageToBottom();
     I.click('Continue');
-    I.waitForText('Check your email', 20, 'h1');
+    I.waitForText('Check your email');
     let url = await I.extractUrlFromNotifyEmail(citizenEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
     I.amOnPage(url);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 60, 'h1');
+    I.waitForText('Account created');
     I.see('You can now sign in to your account.');
 });
 
@@ -147,7 +147,7 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
-    I.waitForText('Sign in to your account.', 30);
+    I.waitForText('Sign in to your account.');
     I.click('Sign in to your account.');
     I.seeInCurrentUrl(`register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}`);
     I.fillField('#username', existingCitizenEmail);
@@ -171,21 +171,21 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     const userId = response.id;
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
-    I.waitForText('Create an account or sign in', 30, 'h1');
+    I.waitForText('Create an account or sign in');
     I.fillField('#firstName', randomUserFirstName);
     I.fillField('#lastName', randomUserLastName);
     I.fillField('#username', upliftAccountCreationStaleUserEmail.toUpperCase());
     I.scrollPageToBottom();
     I.click('Continue');
-    I.waitForText('You need to reset your password', 20, 'h2');
-    I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.', 20);
+    I.waitForText('You need to reset your password');
+    I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftAccountCreationStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Your password has been changed', 20, 'h1');
+    I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
 
     const responseAfterAccountReActivation = await I.getUserByEmail(upliftAccountCreationStaleUserEmail);
@@ -198,7 +198,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     expect(responseAfterAccountReActivation.roles).to.eql(['citizen']);
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
-    I.waitForText('Sign in or create an account', 30, 'h1');
+    I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftAccountCreationStaleUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
@@ -233,19 +233,19 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     const userId = response.id;
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
-    I.waitForText('Sign in or create an account', 30, 'h1');
+    I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftLoginStaleUserEmail.toUpperCase());
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
-    I.waitForText('You need to reset your password', 20, 'h2');
-    I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.', 20);
+    I.waitForText('You need to reset your password');
+    I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftLoginStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Your password has been changed', 20, 'h1');
+    I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
 
     const responseAfterAccountReActivation = await I.getUserByEmail(upliftLoginStaleUserEmail);
@@ -258,7 +258,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     expect(responseAfterAccountReActivation.roles).to.eql(['citizen']);
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
-    I.waitForText('Sign in or create an account', 30, 'h1');
+    I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftLoginStaleUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
