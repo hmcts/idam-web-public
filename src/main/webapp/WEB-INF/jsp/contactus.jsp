@@ -21,11 +21,28 @@
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0008" /></a> </li>
         </ul>
 
+        <h2 class="heading-medium"><spring:message code="public.contactus.text_0003_1" /></h2>
+        <ul class="list">
+            <li><spring:message code="public.contactus.text_0004_1" /></li>
+            <li><spring:message code="public.contactus.text_0005_1" /> </li>
+            <li><spring:message code="public.contactus.text_0006_1" /></li>
+            <li><spring:message code="public.contactus.text_0007_1" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0008" /></a> </li>
+        </ul>
+
         <h2 class="heading-medium"><spring:message code="public.contactus.text_0010" /></h2>
         <ul class="list">
             <li><spring:message code="public.contactus.text_0011" /></li>
             <li><spring:message code="public.contactus.text_0012" /></li>
-            <li><spring:message code="public.contactus.text_0013" /></li>
+            <li><spring:message code="public.contactus.text_0013" htmlEscape="false" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0014" /></a> </li>
+        </ul>
+
+        <h2 class="heading-medium"><spring:message code="public.contactus.text_0010_1" /></h2>
+        <ul class="list">
+            <li><spring:message code="public.contactus.text_0011_1" /></li>
+            <li><spring:message code="public.contactus.text_0012_1" /></li>
+            <li><spring:message code="public.contactus.text_0013_1" htmlEscape="false" /></li>
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0014" /></a> </li>
         </ul>
 
@@ -33,7 +50,15 @@
         <ul class="list">
             <li><spring:message code="public.contactus.text_0016" /></li>
             <li><spring:message code="public.contactus.text_0017" /></li>
-            <li><spring:message code="public.contactus.text_0018" /></li>
+            <li><spring:message code="public.contactus.text_0018" htmlEscape="false" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0019" /></a> </li>
+        </ul>
+
+        <h2 class="heading-medium"><spring:message code="public.contactus.text_0015_1" /></h2>
+        <ul class="list">
+            <li><spring:message code="public.contactus.text_0016_1" /></li>
+            <li><spring:message code="public.contactus.text_0017_1" /></li>
+            <li><spring:message code="public.contactus.text_0018_1" htmlEscape="false" /></li>
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0019" /></a> </li>
         </ul>
 
@@ -43,6 +68,15 @@
             <li><spring:message code="public.contactus.text_0022" /></li>
             <li><spring:message code="public.contactus.text_0023" /></li>
             <li><spring:message code="public.contactus.text_0024" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0025" /></a> </li>
+        </ul>
+
+        <h2 class="heading-medium"><spring:message code="public.contactus.text_0020_1" /></h2>
+        <ul class="list">
+            <li><spring:message code="public.contactus.text_0021_1" /> </li>
+            <li><spring:message code="public.contactus.text_0022_1" /></li>
+            <li><spring:message code="public.contactus.text_0023_1" /></li>
+            <li><spring:message code="public.contactus.text_0024_1" /></li>
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0025" /></a> </li>
         </ul>
 
@@ -62,6 +96,16 @@
             <li><spring:message code="public.contactus.text_0036" /></li>
             <li><spring:message code="public.contactus.text_0037" /></li>
             <li><spring:message code="public.contactus.text_0038" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0039" /></a> </li>
+        </ul>
+
+        <h2 class="heading-medium"><spring:message code="public.contactus.text_0033_1" /></h2>
+        <ul class="list">
+            <li><spring:message code="public.contactus.text_0034_1" /></li>
+            <li><spring:message code="public.contactus.text_0035_1" /> </li>
+            <li><spring:message code="public.contactus.text_0036_1" /></li>
+            <li><spring:message code="public.contactus.text_0037_1" /></li>
+            <li><spring:message code="public.contactus.text_0038_1" /></li>
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0039" /></a> </li>
         </ul>
 
