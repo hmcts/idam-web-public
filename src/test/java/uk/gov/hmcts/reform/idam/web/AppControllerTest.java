@@ -28,6 +28,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
+import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
@@ -203,6 +204,9 @@ public class AppControllerTest {
 
     @MockBean
     private ValidationService validationService;
+
+    @Autowired
+    private ConfigurationProperties configurationProperties;
 
     /**
      * @verifies return index view
@@ -1961,10 +1965,25 @@ public class AppControllerTest {
      */
     @Test
     public void contactUsView_shouldReturnView() throws Exception {
+        configurationProperties.getFeatures().setExternalContactPage(false);
         mockMvc.perform(get("/contact-us"))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(view().name(CONTACT_US_VIEW));
+    }
+
+    /**
+     * @verifies return view
+     * @see AppController#contactUsView()
+     */
+    @Test
+    public void contactUsView_shouldReturnExternalContactPage() throws Exception {
+        configurationProperties.getFeatures().setExternalContactPage(true);
+        configurationProperties.setExternalContactPageUrl("path-to-gov-uk-page");
+        mockMvc.perform(get("/contact-us"))
+            .andDo(print())
+            .andExpect(status().is3xxRedirection())
+            .andExpect(view().name("redirect:path-to-gov-uk-page"));
     }
 
     /**
