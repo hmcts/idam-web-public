@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Data
 @Builder
+@ToString
 public class ApiAuthResult {
 
     private List<String> cookies;

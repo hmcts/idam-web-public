@@ -75,8 +75,9 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
             final String originIp = ObjectUtils.defaultIfNull(request.getHeader(X_FORWARDED_FOR), request.getRemoteAddr());
             final String redirectUri = request.getParameter(MvcKeys.REDIRECT_URI);
             final ApiAuthResult authenticationResult = spiService.authenticate(tokenId, redirectUri, originIp);
-
+            log.info("Received response " + authenticationResult.toString());
             if (authenticationResult.requiresMfa()) {
+                log.info("dropping session cookie");
                 dropCookie(idamSessionCookieName, ctx);
             }
 

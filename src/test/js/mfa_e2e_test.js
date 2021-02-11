@@ -263,6 +263,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with clie
 
     I.amOnPage(loginUrl);
     const idamSessionCookie = await I.grabCookie('Idam.Session');
+    console.log("session cookie before authorize " + idamSessionCookie);
     const cookie = idamSessionCookie.value;
 
     // try authorizing with the Idam session cookie for the client MFA turned ON
@@ -271,6 +272,10 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login with clie
     location.includes(`/login?client_id=${mfaTurnedOnService.oauth2ClientId}&redirect_uri=${mfaTurnedOnService.activationRedirectUrl}`);
 
     I.amOnPage(location);
+
+    const idamSessionCookie2 = await I.grabCookie('Idam.Session');
+    console.log("session cookie after redirect " + idamSessionCookie2);
+
     I.waitForText('Sign in', 20, 'h1');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
