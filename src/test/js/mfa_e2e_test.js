@@ -31,13 +31,13 @@ BeforeSuite(async (I) => {
     token = await I.getAuthToken();
 
     mfaTurnedOnServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_admin", 'admin description', '', token);
-    mfaTurnedOnService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.id], '', token, "openid profile roles create-user manage-user");
+    mfaTurnedOnService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.name], '', token, "openid profile roles create-user manage-user");
 
     mfaTurnedOffServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest", 'admin description', '', token);
-    mfaTurnedOffService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.id], '', token, "openid profile roles create-user manage-user");
+    mfaTurnedOffService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.name], '', token, "openid profile roles create-user manage-user");
 
-    mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.id], '', token, "openid profile roles create-user manage-user");
-    mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.id], '', token, "openid profile roles create-user manage-user");
+    mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.name], '', token, "openid profile roles create-user manage-user");
+    mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.name], '', token, "openid profile roles create-user manage-user");
 
     await I.createUserWithRoles(mfaUserEmail, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     await I.createUserWithRoles(mfaDisabledUserEmail, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
@@ -88,7 +88,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async (I) => {
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
     expect(oidcUserInfo.family_name).to.equal('User');
@@ -133,7 +133,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
     expect(oidcUserInfo.family_name).to.equal('User');
@@ -141,8 +141,9 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts should redirect user to the sign in page', async (I) => {
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}`;
+Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts otp expired message and continue button should be present', async (I) => {
+    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTutbVUdoLV7g";
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm5ed0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in', 20, 'h1');
@@ -178,7 +179,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     // invalid otp
     I.fillField('code', '94837292');
     I.click('Continue');
-    // after 3 incorrect attempts redirect user back to the sign in page
+    // after 3 incorrect attempts, user should start the login/journey again.
     I.seeInCurrentUrl("/expiredcode");
     I.see('We’ve been unable to sign you in because your verification code has expired.');
     I.see('You’ll need to start again.');
@@ -237,13 +238,13 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     expect(userInfo.forename).to.equal(randomUserFirstName + 'mfadisabled');
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
-    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, 'idam-mfa-disabled']);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, 'idam-mfa-disabled']);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaDisabledUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, 'idam-mfa-disabled']);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, 'idam-mfa-disabled']);
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'mfadisabled' + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'mfadisabled');
@@ -308,13 +309,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     expect(userInfo.forename).to.equal(randomUserFirstName);
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
-    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
@@ -385,13 +386,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     expect(userInfo.forename).to.equal(randomUserFirstName);
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
-    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.id, mfaTurnedOnServiceRole.id]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.name, mfaTurnedOnServiceRole.name]);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(mfaturnedOffServiceAccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.id, mfaTurnedOnServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.name, mfaTurnedOnServiceRole.name]);
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
@@ -462,13 +463,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     expect(userInfo.forename).to.equal(randomUserFirstName);
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
-    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.id, mfaTurnedOnServiceRole.id]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.name, mfaTurnedOnServiceRole.name]);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(mfaTurnedOnService2AccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.id, mfaTurnedOnServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.name, mfaTurnedOnServiceRole.name]);
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
@@ -531,13 +532,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     expect(userInfo.forename).to.equal(randomUserFirstName);
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
-    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(mfaTurnedOffService2AccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
@@ -602,13 +603,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     expect(userInfo.forename).to.equal(randomUserFirstName);
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
-    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.id, mfaTurnedOffServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
@@ -683,13 +684,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     expect(userInfo.forename).to.equal(randomUserFirstName);
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
-    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.id, mfaTurnedOnServiceRole.id]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.name, mfaTurnedOnServiceRole.name]);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(mfaturnedOffServiceAccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.not.equal(null);
-    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.id, mfaTurnedOnServiceRole.id]);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.name, mfaTurnedOnServiceRole.name]);
 
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
