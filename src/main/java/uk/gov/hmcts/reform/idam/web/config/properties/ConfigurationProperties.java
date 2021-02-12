@@ -15,4 +15,5 @@ public class ConfigurationProperties {
     private SSLConfigurationProperties ssl;
     private FeaturesConfigurationProperties features;
     private Map<String, String> ssoEmailDomains;
+    private String externalContactPageUrl;
 }
