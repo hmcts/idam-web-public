@@ -271,7 +271,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const idamSessionCookie = await I.grabCookie('Idam.Session');
     const cookie = idamSessionCookie.value;
 
-    // try authorizing to the mfa tuned on service with the Idam session cookie from mfa tuned off service
+    // try authorizing to the mfa turned on service with the Idam session cookie from mfa turned off service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
     console.log("Location: " + location);
     expect(location).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
@@ -359,7 +359,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const idamSessionCookie = await I.grabCookie('Idam.Session');
     const cookie = idamSessionCookie.value;
 
-    // try authorizing to the mfa tuned off service with the Idam session cookie from mfa tuned on service
+    // try authorizing to the mfa turned off service with the Idam session cookie from mfa turned on service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, scope, nonce, cookie);
     console.log("Location: " + location);
     expect(location).to.includes(`${mfaTurnedOffService1.activationRedirectUrl}/?code=`.toLowerCase());
@@ -436,7 +436,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const idamSessionCookie = await I.grabCookie('Idam.Session');
     const cookie = idamSessionCookie.value;
 
-    // try authorizing to the mfa tuned on service with the Idam session cookie from another mfa tuned on service
+    // try authorizing to the mfa turned on service with the Idam session cookie from another mfa turned on service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService2.oauth2ClientId, mfaTurnedOnService2.activationRedirectUrl, scope, nonce, cookie);
     console.log("Location: " + location);
     expect(location).to.includes(`${mfaTurnedOnService2.activationRedirectUrl}/?code=`.toLowerCase());
@@ -506,7 +506,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const idamSessionCookie = await I.grabCookie('Idam.Session');
     const cookie = idamSessionCookie.value;
 
-    // try authorizing to the mfa tuned on service with the Idam session cookie from mfa tuned off service
+    // try authorizing to the mfa turned on service with the Idam session cookie from mfa turned off service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService2.oauth2ClientId, mfaTurnedOffService2.activationRedirectUrl, scope, nonce, cookie);
     expect(location).to.includes(`${mfaTurnedOffService2.activationRedirectUrl}/?code=`.toLowerCase());
 
@@ -565,7 +565,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const idamSessionCookie = await I.grabCookie('Idam.Session');
     const cookie = "invalidcookie" + idamSessionCookie.value;
 
-    // try authorizing to the mfa tuned on service with the invalid Idam session cookie from mfa tuned off service
+    // try authorizing to the mfa turned on service with the invalid Idam session cookie from mfa turned off service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
     console.log("Location: " + location);
     expect(location).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
@@ -653,7 +653,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const idamSessionCookie = await I.grabCookie('Idam.Session');
     const cookie = "invalidcookie" + idamSessionCookie.value;
 
-    // try authorizing to the mfa tuned off service with the invalid Idam session cookie from mfa tuned on service
+    // try authorizing to the mfa turned off service with the invalid Idam session cookie from mfa turned on service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, scope, nonce, cookie);
     console.log("Location: " + location);
     expect(location).to.includes(`/login?client_id=${mfaTurnedOffService1.oauth2ClientId}&redirect_uri=${mfaTurnedOffService1.activationRedirectUrl}`);
