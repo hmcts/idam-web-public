@@ -3,14 +3,13 @@ const randomData = require('./shared/random_data');
 
 Feature('I am able to reset my password');
 
-let adminEmail;
 let randomUserFirstName;
 let citizenEmail;
 let otherCitizenEmail;
 let plusCitizenEmail;
+let apostropheCitizenEmail;
 let staleUserEmail;
 let userFirstNames = [];
-let roleNames = [];
 let serviceNames = [];
 let specialCharacterPassword;
 
@@ -19,33 +18,24 @@ const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERV
 
 BeforeSuite(async (I) => {
     randomUserFirstName = randomData.getRandomUserName();
-    adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
     plusCitizenEmail = `plus.extra+${randomData.getRandomEmailAddress()}`;
+    apostropheCitizenEmail = "apostrophe.o'test" + randomData.getRandomEmailAddress();
     staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
     specialCharacterPassword = 'New&&&$$$%%%<>234';
 
-    const token = await I.getAuthToken();
-    let response;
-    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
-    const serviceBetaRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
-    const serviceAdminRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
-    const serviceSuperRole = response.name;
-    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
-    roleNames.push(serviceRoles);
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    await I.createServiceData(serviceName);
     serviceNames.push(serviceName);
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
-    userFirstNames.push(randomUserFirstName + 'Admin');
+
     await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
     await I.createUserWithRoles(otherCitizenEmail, randomUserFirstName + 'Other', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Other');
     await I.createUserWithRoles(plusCitizenEmail, randomUserFirstName + 'Plus', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Plus');
+    await I.createUserWithRoles(apostropheCitizenEmail, randomUserFirstName + 'Apostrophe', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'Apostrophe');
     await I.createUserWithRoles(staleUserEmail, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
@@ -137,6 +127,36 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account', 20, 'h1');
     I.fillField('#username', plusCitizenEmail);
+    I.fillField('#password', 'Passw0rd1234');
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+    I.resetRequestInterception();
+});
+
+Scenario('@functional @resetpass As a citizen user with an apostrophe email I can reset my password', async (I) => {
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password', 20, 'h1');
+    I.fillField('#email', apostropheCitizenEmail);
+    I.click('Submit');
+    I.waitForText('Check your email', 20, 'h1');
+    I.wait(5);
+    const resetPasswordUrl = await I.extractUrl(apostropheCitizenEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a new password', 20, 'h1');
+    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.fillField('#password1', 'Passw0rd1234');
+    I.fillField('#password2', 'Passw0rd1234');
+    I.click('Continue');
+    I.waitForText('Your password has been changed', 20, 'h1');
+    I.see('You can now sign in with your new password.');
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account', 20, 'h1');
+    I.fillField('#username', apostropheCitizenEmail);
     I.fillField('#password', 'Passw0rd1234');
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
