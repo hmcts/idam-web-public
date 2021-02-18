@@ -6,4 +6,5 @@ import lombok.Data;
 public class FeaturesConfigurationProperties {
     private boolean federatedSSO;
     private boolean stepUpAuthentication;
+    private boolean externalContactPage;
 }
