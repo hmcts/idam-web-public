@@ -881,7 +881,11 @@ public class AppController {
      */
     @GetMapping("/contact-us")
     public String contactUsView() {
-        return CONTACT_US_VIEW;
+        if (configurationProperties.getFeatures().isExternalContactPage()) {
+            return "redirect:" + configurationProperties.getExternalContactPageUrl();
+        } else {
+            return CONTACT_US_VIEW;
+        }
     }
 
     /**

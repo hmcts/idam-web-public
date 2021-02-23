@@ -16,8 +16,8 @@ const customScope = 'manage-roles';
 const serviceName = randomData.getRandomServiceName();
 const citizenRole = 'citizen';
 const pinUserRolePrefix = 'letter-';
-const dynamicRoleNameForCitizenUser = randomData.getRandomRoleName();
-const dynamicRoleNameForPinUser = randomData.getRandomRoleName();
+let citizenUserDynamicRole;
+let pinUserDynamicRole;
 
 const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&scope=${customScope}`;
 
@@ -31,15 +31,19 @@ BeforeSuite(async (I) => {
     respondentEmail = 'respondent.' + randomData.getRandomEmailAddress();
 
     const token = await I.getAuthToken();
-    let response;
-    response = await I.createRole(dynamicRoleNameForCitizenUser, '', '', token);
-    roleNames.push(response.name);
-    response = await I.createRole(dynamicRoleNameForPinUser, '', '', token);
-    roleNames.push(response.name);
-    await I.createServiceWithRoles(serviceName, [dynamicRoleNameForCitizenUser, dynamicRoleNameForPinUser], '', token, customScope);
+    citizenUserDynamicRole = await I.createRole(randomData.getRandomRoleName(), '', '', token);
+    pinUserDynamicRole = await I.createRole(randomData.getRandomRoleName(), '', '', token);
+
+    let serviceRoleNames = [citizenUserDynamicRole.name, pinUserDynamicRole.name];
+    let serviceRoleIds = [citizenUserDynamicRole.id, pinUserDynamicRole.id];
+    roleNames.push(serviceRoleNames);
+
+    await I.createServiceWithRoles(serviceName, serviceRoleIds, '', token, customScope);
     serviceNames.push(serviceName);
+
     await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', []);
     userFirstNames.push(randomUserFirstName + 'Citizen');
+
     await I.createUserWithRoles(respondentEmail, randomUserFirstName + 'Respondent', []);
     userFirstNames.push(randomUserFirstName + 'Respondent');
 });
@@ -63,14 +67,14 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 
-    await I.grantRoleToUser(dynamicRoleNameForCitizenUser, accessToken);
+    await I.grantRoleToUser(citizenUserDynamicRole.name, accessToken);
 
     let userInfo = await I.getUserInfo(accessToken);
-    expect(userInfo.roles).to.deep.equal([dynamicRoleNameForCitizenUser]);
+    expect(userInfo.roles).to.deep.equal([citizenUserDynamicRole.name]);
 
     I.resetRequestInterception();
 
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
+});
 
 Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on PIN user login', async (I) => {
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
@@ -92,10 +96,10 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
 
-    await I.grantRoleToUser(dynamicRoleNameForPinUser, accessToken);
+    await I.grantRoleToUser(pinUserDynamicRole.name, accessToken);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
-    expect(userInfo.roles).to.deep.equalInAnyOrder([pinUserRole, citizenRole, dynamicRoleNameForPinUser]);
+    expect(userInfo.roles).to.deep.equalInAnyOrder([pinUserRole, citizenRole, pinUserDynamicRole.name]);
 
     I.resetRequestInterception();
 });

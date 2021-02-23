@@ -6,7 +6,6 @@ Feature('Users can create account, sign in and reset password');
 let randomUserFirstName;
 let citizenEmail;
 let userFirstNames = [];
-let roleNames = [];
 let serviceNames = [];
 let randomUserLastName;
 
@@ -19,18 +18,9 @@ BeforeSuite(async (I) => {
     randomUserLastName = randomData.getRandomUserName();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
-    let token = await I.getAuthToken();
-    let response;
-    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
-    const serviceBetaRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
-    const serviceAdminRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
-    const serviceSuperRole = response.name;
-    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
-    roleNames.push(serviceRoles);
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    await I.createServiceData(serviceName);
     serviceNames.push(serviceName);
+
     userFirstNames.push(randomUserFirstName);
 });
 
