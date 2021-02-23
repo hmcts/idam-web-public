@@ -36,6 +36,7 @@ allprojects {
   ext['spring.boot.version'] = '2.2.12.RELEASE'
   ext['jackson.version'] = '2.12.0'
   ext['guava.version'] = '30.0-jre'
+  ext['netty.version'] = '4.1.59.Final'
 
   dependencyManagement {
     imports {
@@ -116,12 +117,6 @@ allprojects {
     }
     implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
     implementation group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
-    implementation group: 'io.netty', name: 'netty-handler', version: '4.1.59.Final'
-    implementation group: 'io.netty', name: 'netty-transport', version: '4.1.59.Final'
-    implementation group: 'io.netty', name: 'netty-common', version: '4.1.59.Final'
-    implementation group: 'io.netty', name: 'netty-codec', version: '4.1.59.Final'
-    implementation group: 'io.netty', name: 'netty-resolver', version: '4.1.59.Final'
-    implementation group: 'io.netty', name: 'netty-buffer', version: '4.1.59.Final'
 
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
