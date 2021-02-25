@@ -562,8 +562,8 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.dontSee('error=');
 
     I.amOnPage(loginUrl);
-    const idamSessionCookie = await I.grabCookie('Idam.Session');
-    const cookie = "invalidcookie" + idamSessionCookie.value;
+    // const idamSessionCookie = await I.grabCookie('Idam.Session');
+    const cookie = "invalidcookie" + randomData.getRandomString();
 
     // try authorizing to the mfa turned on service with the invalid Idam session cookie from mfa turned off service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
@@ -618,7 +618,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.resetRequestInterception();
 });
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa turned on service and then login to a mfa turned off service with invalid cookie ', async (I) => {
+Scenario('@functional @mfaLogin @mfaStepUpLogin @debug As a user, I can login to a mfa turned on service and then login to a mfa turned off service with invalid cookie ', async (I) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
@@ -650,8 +650,8 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     assert.equal(1, mfaturnedOnServiceJwtDecode.auth_level);
 
     I.amOnPage(loginUrl);
-    const idamSessionCookie = await I.grabCookie('Idam.Session');
-    const cookie = "invalidcookie" + idamSessionCookie.value;
+    // const idamSessionCookie = await I.grabCookie('Idam.Session');
+    const cookie = "invalidcookie" + randomData.getRandomString();
 
     // try authorizing to the mfa turned off service with the invalid Idam session cookie from mfa turned on service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, scope, nonce, cookie);
