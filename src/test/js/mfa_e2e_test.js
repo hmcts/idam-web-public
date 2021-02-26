@@ -31,13 +31,13 @@ BeforeSuite(async ({ I }) => {
     token = await I.getAuthToken();
 
     mfaTurnedOnServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_admin", 'admin description', '', token);
-    mfaTurnedOnService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.name], '', token, "openid profile roles create-user manage-user");
+    mfaTurnedOnService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.name], '', token, scope);
 
     mfaTurnedOffServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest", 'admin description', '', token);
-    mfaTurnedOffService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.name], '', token, "openid profile roles create-user manage-user");
+    mfaTurnedOffService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.name], '', token, scope);
 
-    mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.name], '', token, "openid profile roles create-user manage-user");
-    mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.name], '', token, "openid profile roles create-user manage-user");
+    mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.name], '', token, scope);
+    mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.name], '', token, scope);
 
     await I.createUserWithRoles(mfaUserEmail, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     await I.createUserWithRoles(mfaDisabledUserEmail, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
@@ -55,7 +55,7 @@ AfterSuite(async ({ I }) => {
 
 Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -97,7 +97,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
 
 Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in Welsh', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6wtIgsUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=openid profile roles manage-user create-user${Welsh.urlForceCy}`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=${scope}${Welsh.urlForceCy}`;
 
     I.amOnPage(loginUrl);
     I.waitForText(Welsh.signInOrCreateAccount);
@@ -141,7 +141,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
 
 Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts otp expired message and continue button should be present', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTutbVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm5ed0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm5ed0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -206,7 +206,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
 
 Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I can login without mfa for the application with mfa turned on', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgtUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=openid profile roles manage-user create-user&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -543,27 +543,12 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.resetRequestInterception();
 });
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MFA turned off service and then step-up login to the MFA turned on service with invalid cookie', async ({ I }) => {
+Scenario('@functional @mfaLogin @debug As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.activationRedirectUrl}&client_id=${mfaTurnedOffService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
-
-    I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
-    I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
-    I.interceptRequestsAfterSignin();
-    I.click('Sign in');
-    I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    I.amOnPage(loginUrl);
-    const idamSessionCookie = await I.grabCookie('Idam.Session');
-    const cookie = "invalidcookie" + idamSessionCookie.value;
+    const cookie = "invalidcookie" + randomData.getRandomString();
 
     // try authorizing to the mfa turned on service with the invalid Idam session cookie from mfa turned off service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
-    console.log("Location: " + location);
     expect(location).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
 
     I.amOnPage(location);
@@ -577,6 +562,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
+    I.interceptRequestsAfterSignin();
     I.click('Continue');
     I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
     I.see('code=');
@@ -614,50 +600,19 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.resetRequestInterception();
 });
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa turned on service and then login to a mfa turned off service with invalid cookie ', async ({ I }) => {
+Scenario('@functional @mfaLogin @debug As a user, I can login to the mfa turned off service with invalid cookie ', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
-
-    I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
-    I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
-    I.interceptRequestsAfterSignin();
-    I.click('Sign in');
-    I.seeInCurrentUrl("/verification");
-    I.waitForText('Verification required', 10, 'h1');
-    I.wait(5);
-    const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
-
-    I.fillField('code', otpCode);
-    I.click('Continue');
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaturnedOnServicePageSource = await I.grabSource();
-    const mfaturnedOnServiceCode = mfaturnedOnServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOnServiceAccessToken = await I.getAccessToken(mfaturnedOnServiceCode, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
-
-    let mfaturnedOnServiceJwtDecode = await jwt_decode(mfaturnedOnServiceAccessToken);
-
-    assert.equal("access_token", mfaturnedOnServiceJwtDecode.tokenName);
-    assert.equal(nonce, mfaturnedOnServiceJwtDecode.nonce);
-    assert.equal(1, mfaturnedOnServiceJwtDecode.auth_level);
-
-    I.amOnPage(loginUrl);
-    const idamSessionCookie = await I.grabCookie('Idam.Session');
-    const cookie = "invalidcookie" + idamSessionCookie.value;
+    const cookie = "invalidcookie" + randomData.getRandomString();
 
     // try authorizing to the mfa turned off service with the invalid Idam session cookie from mfa turned on service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, scope, nonce, cookie);
-    console.log("Location: " + location);
     expect(location).to.includes(`/login?client_id=${mfaTurnedOffService1.oauth2ClientId}&redirect_uri=${mfaTurnedOffService1.activationRedirectUrl}`);
 
     I.amOnPage(location);
     I.waitForText('Sign in', 20, 'h1');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
+    I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());
     I.see('code=');
