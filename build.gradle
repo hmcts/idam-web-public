@@ -29,12 +29,7 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.5.1'
-
-  ext['spring.boot.version'] = '2.4.2'
-  ext['serenity.version'] = '2.3.13'
-  ext['guava.version'] = '30.1-jre'
-  ext['jackson.version'] = '2.11.4'
+  def idamBomVersion = '2.5.3'
 
   ext['netty.version'] = '4.1.59.Final'
 
