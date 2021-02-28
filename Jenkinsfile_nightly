@@ -64,10 +64,11 @@ withNightlyPipeline(type, product, component) {
         enableCrossBrowserTest()
         after('crossBrowserTest') {
             try {
-                withSauceConnect("reform_tunnel") {
-                    sh "./gradlew functionalSauce"
-                    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-                }
+//                withSauceConnect("reform_tunnel") {
+//                    sh "./gradlew functionalSauce"
+//                    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+//                }
+                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
             }
             finally {
                 steps.saucePublisher()
