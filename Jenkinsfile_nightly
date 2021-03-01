@@ -62,10 +62,6 @@ withNightlyPipeline(type, product, component) {
 
     if (!params.skipCrossBrowserTests) {
         enableCrossBrowserTest()
-        after('crossBrowserTest') {
-            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-            steps.saucePublisher()
-        }
     }
 
     if (!params.skipFullFunctionalTests) {
