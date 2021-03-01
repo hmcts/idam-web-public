@@ -333,7 +333,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required', 10, 'h1');
     I.wait(5);
-    const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.click('Continue');
@@ -410,7 +410,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required', 10, 'h1');
     I.wait(5);
-    const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.click('Continue');
@@ -559,7 +559,7 @@ Scenario('@functional @mfaLogin @debug As a user, I can login to the MFA turned 
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required', 10, 'h1');
     I.wait(5);
-    const otpCode = await I.extractOtpFromEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
