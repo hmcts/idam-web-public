@@ -192,7 +192,7 @@ allprojects {
 
   task crossbrowser(dependsOn: ':codeceptFunctionalSauce') {
     group = 'Delivery pipeline'
-    description = 'Executes croos browser tests saucelabs'
+    description = 'Execute cross browser tests on saucelabs'
   }
 
   task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
