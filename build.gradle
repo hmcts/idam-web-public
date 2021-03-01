@@ -191,13 +191,8 @@ allprojects {
 
   task crossbrowser(dependsOn: ':codeceptFunctionalSauce') {
     group = 'Delivery pipeline'
-    description = 'Executes non-destructive smoke tests against a running instance'
+    description = 'Executes cross browser tests on saucelabs'
   }
-
-//  task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
-//    group = 'Delivery pipeline'
-//    description = 'Executes non-destructive smoke tests against a running instance'
-//  }
 
   task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
     workingDir '.'

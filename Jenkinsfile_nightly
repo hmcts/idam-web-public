@@ -63,16 +63,8 @@ withNightlyPipeline(type, product, component) {
     if (!params.skipCrossBrowserTests) {
         enableCrossBrowserTest()
         after('crossBrowserTest') {
-            try {
-//                withSauceConnect("reform_tunnel") {
-//                    sh "./gradlew functionalSauce"
-//                    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-//                }
-                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-            }
-            finally {
-                steps.saucePublisher()
-            }
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+            steps.saucePublisher()
         }
     }
 
