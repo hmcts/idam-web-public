@@ -190,9 +190,9 @@ allprojects {
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js', '--steps', '--grep', '@smoke', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 
-  task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
+  task crossbrowser(dependsOn: ':codeceptFunctionalSauce') {
     group = 'Delivery pipeline'
-    description = 'Executes non-destructive smoke tests against a running instance'
+    description = 'Execute cross browser tests on saucelabs'
   }
 
   task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
