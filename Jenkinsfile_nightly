@@ -45,11 +45,6 @@ withNightlyPipeline(type, product, component) {
     enableFullFunctionalTest(200)
     enableCrossBrowserTest()
 
-    after('crossBrowserTest') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-        steps.saucePublisher()
-    }
-
     after('fullFunctionalTest') {
 
         publishHTML target: [
