@@ -38,7 +38,7 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
     const loginUrl = `${testData.WEB_PUBLIC_URL}/login?redirect_uri=${testData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h2');
+    I.waitForText('Sign in', 20);
     I.fillField('#username', staleUserEmail.toUpperCase());
     I.fillField('#password', testData.PASSWORD);
     I.click('Sign in');
@@ -52,10 +52,10 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
     I.fillField('#password2', testData.PASSWORD);
     I.click('Continue');
     I.waitForText('Your password has been changed', 20, 'h1');
-    I.see('You can now sign in with your new password.');
+    I.waitForText('You can now sign in with your new password.');
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h2');
+    I.waitForText('Sign in', 20);
     I.fillField('#username', staleUserEmail.toUpperCase());
     I.fillField('#password', testData.PASSWORD);
     I.interceptRequestsAfterSignin();
@@ -71,7 +71,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     const loginUrl = `${testData.WEB_PUBLIC_URL}/login?redirect_uri=${testData.SERVICE_REDIRECT_URI}&client_id=${serviceName}${Welsh.urlForceCy}`;
 
     I.amOnPage(loginUrl);
-    I.waitForText(Welsh.signIn, 20, 'h2');
+    I.waitForText(Welsh.signIn, 20);
     I.fillField('#username', staleUserEmailWelsh);
     I.fillField('#password', testData.PASSWORD);
     I.click(Welsh.signIn);
@@ -88,7 +88,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.waitForText(Welsh.youCanNowSignInWithYourNewPassword);
 
     I.amOnPage(loginUrl);
-    I.waitForText(Welsh.signIn, 20, 'h2');
+    I.waitForText(Welsh.signIn, 20);
     I.fillField('#username', staleUserEmailWelsh);
     I.fillField('#password', testData.PASSWORD);
     I.interceptRequestsAfterSignin();
