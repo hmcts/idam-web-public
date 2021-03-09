@@ -32,6 +32,7 @@ allprojects {
   targetCompatibility = 11
 
   def idamBomVersion = '2.5.1'
+  ext['tomcat.version'] = '9.0.43'
   ext['log4j2.version'] = '2.13.3'
   ext['spring.boot.version'] = '2.2.12.RELEASE'
   ext['jackson.version'] = '2.12.0'
