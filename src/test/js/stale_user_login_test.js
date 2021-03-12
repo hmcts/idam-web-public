@@ -60,6 +60,7 @@ Scenario('@functional @staleUserLogin Stale user login journey', async(I) => {
     I.fillField('#password', testData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(3);
     I.waitForText(testData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -93,6 +94,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.fillField('#password', testData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click(Welsh.signIn);
+    I.wait(3);
     I.waitForText(testData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
