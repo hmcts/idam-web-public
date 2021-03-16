@@ -32,6 +32,7 @@ allprojects {
   def idamBomVersion = '2.5.3'
 
   ext['netty.version'] = '4.1.59.Final'
+  ext['spring-security.version'] = '5.2.9.RELEASE'
 
   dependencyManagement {
     imports {
@@ -156,14 +157,9 @@ allprojects {
     commandLine 'yarn', 'install'
   }
 
-  task pa11yInstall(type: Exec) {
-    workingDir '.'
-    commandLine 'npm', 'install', 'pa11y'
-  }
-
   task notifyClientInstall(type: Exec) {
     workingDir '.'
-    commandLine 'npm', 'install', 'notifications-node-client'
+    commandLine 'yarn', 'add', 'notifications-node-client'
   }
 
   task codeceptSmoke(type: Exec, dependsOn: ':yarnInstall') {
@@ -171,7 +167,7 @@ allprojects {
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi'
   }
 
-  task codeceptFunctional(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
+  task codeceptFunctional(type: Exec, dependsOn :'yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
@@ -186,19 +182,19 @@ allprojects {
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js', '--steps', '--grep', '@smoke', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 
-  task functionalSauce(dependsOn: ':codeceptFunctionalSauce') {
+  task crossbrowser(dependsOn: ':codeceptFunctionalSauce') {
     group = 'Delivery pipeline'
-    description = 'Executes non-destructive smoke tests against a running instance'
+    description = 'Execute cross browser tests on saucelabs'
   }
 
-  task codeceptFunctionalSauce(type: Exec, dependsOn: [':yarnInstall', ':notifyClientInstall']) {
+  task codeceptFunctionalSauce(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 
-  task pa11y(type: Exec, dependsOn: 'pa11yInstall') {
+  task pa11y(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
-    commandLine './node_modules/.bin/pa11y', '--config', 'pa11y.conf.js', System.getenv('TEST_URL') ?: 'http://localhost'
+    commandLine 'node_modules/pa11y/bin/pa11y.js', '--config', 'pa11y.conf.js', System.getenv('TEST_URL') ?: 'http://localhost'
   }
 }
 
