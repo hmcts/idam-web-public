@@ -30,7 +30,7 @@ allprojects {
   targetCompatibility = 11
 
   def idamBomVersion = '2.5.3'
-
+  ext['tomcat.version'] = '9.0.43'
   ext['netty.version'] = '4.1.59.Final'
   ext['spring-security.version'] = '5.2.9.RELEASE'
 
