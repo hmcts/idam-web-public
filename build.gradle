@@ -115,7 +115,7 @@ allprojects {
     implementation (group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: '0.5') {
       exclude module: 'junit'
     }
-    implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.5.0'
+    implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
     implementation group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
 
     testCompileOnly("org.projectlombok:lombok")
