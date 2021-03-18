@@ -40,10 +40,10 @@ withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
     env.IDAMAPI = params.API_URL_TO_TEST
     loadVaultSecrets(secrets)
-    //enableSecurityScan()
+    enableSecurityScan()
     enableMutationTest()
     enableFullFunctionalTest(200)
-    //enableCrossBrowserTest()
+    enableCrossBrowserTest()
 
     before('fullFunctionalTest') {
         env.TESTS_FOR_ACCESSIBILITY = true
@@ -51,8 +51,8 @@ withNightlyPipeline(type, product, component) {
 
 
     after('fullFunctionalTest') {
-            //archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-           // steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+         //archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+           //steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
             env.TESTS_FOR_ACCESSIBILITY = false
 
         publishHTML target: [
