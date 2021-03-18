@@ -4,6 +4,8 @@ const fetch = require('node-fetch');
 const uuid = require('uuid');
 const MAX_NOTIFY_PAGES = 3;  //max notify results pages to search
 const MAX_RETRIES = 5;  //max retries on each notify results page
+const {runAccessibility} = require('./accessibility/runner');
+const testConfig = require('../config/test_data.js');
 
 let agentToUse;
 if (process.env.PROXY_SERVER) {
@@ -701,6 +703,16 @@ class IdamHelper extends Helper {
             console.log(err);
         });
     }
+    async runAccessibilityTest() {
+        if (!testConfig.TestForAccessibility) {
+            return;
+        }
+        const url = await this.helpers[Helper].grabCurrentUrl();
+        const {page} = await this.helpers[Helper];
+
+        runAccessibility(url, page);
+    }
+
 }
 
 module.exports = IdamHelper;

@@ -31,6 +31,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
+    await I.runAccessibilityTest();
     I.waitForText('Sign in');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
     I.fillField('#password', TestData.PASSWORD);
