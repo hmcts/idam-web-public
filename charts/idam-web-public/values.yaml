@@ -10,7 +10,6 @@ java:
   keyVaults:
     "idam-idam":
       resourceGroup: idam-idam
-      excludeEnvironmentSuffix: false
       secrets:
         - AppInsightsInstrumentationKey
         - redis-hostname
