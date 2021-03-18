@@ -144,7 +144,7 @@ allprojects {
     description = 'Executes non-destructive smoke tests against a running instance'
   }
 
-  task functional(dependsOn: [':codeceptFunctional', ':pa11y']) {
+  task functional(dependsOn: [':codeceptFunctional', ':pa11y', 'functional1']) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests against a running instance'
   }

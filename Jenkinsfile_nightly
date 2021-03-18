@@ -40,12 +40,20 @@ withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
     env.IDAMAPI = params.API_URL_TO_TEST
     loadVaultSecrets(secrets)
-    enableSecurityScan()
+    //enableSecurityScan()
     enableMutationTest()
     enableFullFunctionalTest(200)
-    enableCrossBrowserTest()
+    //enableCrossBrowserTest()
+
+    before('fullFunctionalTest') {
+        env.TESTS_FOR_ACCESSIBILITY = true
+    }
+
 
     after('fullFunctionalTest') {
+            //archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+           // steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+            env.TESTS_FOR_ACCESSIBILITY = false
 
         publishHTML target: [
             allowMissing : true,
@@ -55,5 +63,6 @@ withNightlyPipeline(type, product, component) {
             reportFiles : "idam-web-public-e2e-result.html",
             reportName : "IDAM Web Public E2E functional tests result"
         ]
+
     }
 }
