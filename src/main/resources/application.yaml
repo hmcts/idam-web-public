@@ -15,8 +15,6 @@ server:
     remote-ip-header: x-forwarded-for
     protocol-header: x-forwarded-proto
   max-http-header-size: 24KB
-  config:
-    import: "optional:configtree:/mnt/secrets/idam-idam/"
 
 zuul:
   routes:
@@ -75,6 +73,8 @@ spring:
             client-secret: placeholder
             client-authentication-method: basic
             scope: openid
+  config:
+    import: "optional:configtree:/mnt/secrets/idam-idam/"
 
 authentication:
   useOAuth2: true
