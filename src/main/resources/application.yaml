@@ -15,6 +15,8 @@ server:
     remote-ip-header: x-forwarded-for
     protocol-header: x-forwarded-proto
   max-http-header-size: 24KB
+  config:
+    import: "optional:configtree:/mnt/secrets/idam-idam/"
 
 zuul:
   routes:
@@ -38,7 +40,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info
+        include: health,info,prometheus
 
 ssl:
   verification:

@@ -11,12 +11,18 @@ java:
     "idam-idam":
       resourceGroup: idam-idam
       secrets:
-        - AppInsightsInstrumentationKey
-        - redis-hostname
-        - redis-key
-        - redis-port
-        - sso-client-id
-        - sso-client-secret
+        - name: AppInsightsInstrumentationKey
+          alias: AppInsightsInstrumentationKey
+        - name: redis-hostname
+          alias: redis-hostname
+        - name: redis-key
+          alias: redis-key
+        - name: redis-port
+          alias: redis-port
+        - name: sso-client-id
+          alias: sso-client-id
+        - name: sso-client-secret
+          alias: sso-client-secret
   environment:
     STRATEGIC_SERVICE_URL: http://idam-api
     MANAGEMENT_SECURITY_ENABLED: false
