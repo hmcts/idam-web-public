@@ -12,17 +12,17 @@ java:
       resourceGroup: idam-idam
       secrets:
         - name: AppInsightsInstrumentationKey
-          alias: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
         - name: redis-hostname
-          alias: redis-hostname
+          alias: spring.redis.host
         - name: redis-key
-          alias: redis-key
+          alias: spring.redis.password
         - name: redis-port
-          alias: redis-port
+          alias: spring.redis.port
         - name: sso-client-id
-          alias: sso-client-id
+          alias: spring.security.oauth2.client.registration.oidc.client-id
         - name: sso-client-secret
-          alias: sso-client-secret
+          alias: spring.security.oauth2.client.registration.oidc.client-secret
   environment:
     STRATEGIC_SERVICE_URL: http://idam-api
     MANAGEMENT_SECURITY_ENABLED: false
