@@ -707,8 +707,8 @@ class IdamHelper extends Helper {
         if (!testConfig.TestForAccessibility) {
             return;
         }
-        const url = await this.helpers[Helper].grabCurrentUrl();
-        const {page} = await this.helpers[Helper];
+        const url = await this.helpers['Puppeteer'].grabCurrentUrl();
+        const {page} = await this.helpers['Puppeteer'];
 
         runAccessibility(url, page);
     }
