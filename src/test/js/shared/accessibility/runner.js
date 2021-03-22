@@ -8,7 +8,7 @@ const result = {
 };
 
 const resultObj = {
-  appName: 'FPL',
+  appName: 'idam-web-public',
   passCount: 0,
   failCount: 0,
   tests: [],

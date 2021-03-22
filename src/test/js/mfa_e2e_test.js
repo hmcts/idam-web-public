@@ -150,13 +150,16 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.click('Sign in');
     I.waitInUrl("/verification");
     I.waitForText('Verification required');
+    await I.runAccessibilityTest();
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     // empty field
     I.fillField('code', '');
+    await I.runAccessibilityTest();
     I.click('Continue');
     I.waitForText('Enter a correct verification code', 5, '.error-message');
     // other than digits
+    await I.runAccessibilityTest();
     I.fillField('code', '663h8w7g');
     I.click('Continue');
     I.see('Enter a correct verification code');
@@ -180,6 +183,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.seeInCurrentUrl("/expiredcode");
     I.see('We’ve been unable to sign you in because your verification code has expired.');
     I.see('You’ll need to start again.');
+    await I.runAccessibilityTest();
     I.click('Continue');
 
     I.seeInCurrentUrl("/login");
@@ -258,6 +262,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
+    await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());

@@ -39,6 +39,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
+    await I.runAccessibilityTest();
     I.dontSee('error=');
 
     const pageSource = await I.grabSource();
