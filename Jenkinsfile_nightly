@@ -45,18 +45,6 @@ withNightlyPipeline(type, product, component) {
     enableFullFunctionalTest(200)
     enableCrossBrowserTest()
 
-    after('crossBrowserTest') {
-        try {
-            withSauceConnect("reform_tunnel") {
-                sh "./gradlew functionalSauce"
-                steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-            }
-        }
-        finally {
-            steps.saucePublisher()
-        }
-    }
-
     after('fullFunctionalTest') {
 
         publishHTML target: [

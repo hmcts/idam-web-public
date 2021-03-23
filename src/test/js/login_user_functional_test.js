@@ -8,43 +8,30 @@ Feature('Users can sign in');
 let randomUserFirstName;
 let citizenEmail;
 let userFirstNames = [];
-let roleNames = [];
 let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
-    const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
-    const token = await I.getAuthToken();
-    let response;
-    response = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
-    const serviceBetaRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole, token);
-    const serviceAdminRole = response.name;
-    response = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole, token);
-    const serviceSuperRole = response.name;
-    const serviceRoles = [serviceBetaRole, serviceAdminRole, serviceSuperRole];
-    roleNames.push(serviceRoles);
-    await I.createServiceWithRoles(serviceName, serviceRoles, serviceBetaRole, token);
+    await I.createServiceData(serviceName);
     serviceNames.push(serviceName);
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [serviceAdminRole, "IDAM_ADMIN_USER"]);
-    userFirstNames.push(randomUserFirstName + 'Admin');
+
     await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async (I) => {
+Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
