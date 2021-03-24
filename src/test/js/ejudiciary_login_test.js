@@ -69,6 +69,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
     I.waitInUrl('/oauth2/authorize');
     I.waitForText('Sign in');
     I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
+    await I.runAccessibilityTest();
     I.click('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
