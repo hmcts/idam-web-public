@@ -129,14 +129,6 @@ withPipeline(type, product, component) {
             reportName           : "IdAM Web Public Code Coverage Report"
         ]
 
-        publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "build/reports/pmd",
-            reportFiles          : "main.html",
-            reportName           : "IdAM Web Public PMD Report"
-        ]
     }
 
     after('smoketest:idam-preview') {

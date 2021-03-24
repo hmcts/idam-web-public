@@ -38,7 +38,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info
+        include: health,info,prometheus
 
 ssl:
   verification:
@@ -73,6 +73,8 @@ spring:
             client-secret: placeholder
             client-authentication-method: basic
             scope: openid
+  config:
+    import: "optional:configtree:/mnt/secrets/idam-idam/"
 
 authentication:
   useOAuth2: true
