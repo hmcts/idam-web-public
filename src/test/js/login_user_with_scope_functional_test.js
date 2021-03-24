@@ -86,13 +86,12 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     I.waitForText('Sign in or create an account');
     I.fillField('#username', respondentEmail);
     I.fillField('#password', TestData.PASSWORD);
-    await I.runAccessibilityTest();
 
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
-    await I.runAccessibilityTest();
+
 
     let pageSource = await I.grabSource();
     code = pageSource.match(/\?code=([^&]*)(.*)/)[1];

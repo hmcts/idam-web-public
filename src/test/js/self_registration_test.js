@@ -110,6 +110,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
     assert(cookie.value, 'cy');
 
     I.see(Welsh.createAnAccount);
+    await I.runAccessibilityTest();
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmail);
@@ -119,7 +120,6 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
 
     const emailResponse = await I.getEmailFromNotify(citizenEmail);
     assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
-    await I.runAccessibilityTest();
 
 });
 
@@ -131,12 +131,15 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.clearCookie(Welsh.localeCookie);
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister');
+    await I.runAccessibilityTest();
     I.waitForText('Create an account or sign in');
+
 
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', email);
+    await I.runAccessibilityTest();
     I.click("Continue");
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
@@ -145,10 +148,13 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.seeTitleEquals('User Activation - HMCTS Access');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
+    await I.runAccessibilityTest();
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
+    await I.runAccessibilityTest();
     I.amOnPage(loginPage);
+    await I.runAccessibilityTest();
     I.seeInCurrentUrl("state=selfreg");
     I.waitForText('Sign in or create an account');
     I.fillField('#username', email);
