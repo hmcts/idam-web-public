@@ -181,9 +181,9 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.click('Continue');
     // after 3 incorrect attempts, user should start the login/journey again.
     I.seeInCurrentUrl("/expiredcode");
+    await I.runAccessibilityTest();
     I.see('We’ve been unable to sign you in because your verification code has expired.');
     I.see('You’ll need to start again.');
-    await I.runAccessibilityTest();
     I.click('Continue');
 
     I.seeInCurrentUrl("/login");
