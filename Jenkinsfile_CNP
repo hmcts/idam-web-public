@@ -62,7 +62,7 @@ withPipeline(type, product, component) {
     before('functionalTest-aks:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
-        env.TESTS_FOR_ACCESSIBILITY = true
+        //env.TESTS_FOR_ACCESSIBILITY = true
         env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
@@ -111,8 +111,8 @@ withPipeline(type, product, component) {
     after('functionalTest-aks:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-        env.TESTS_FOR_ACCESSIBILITY = false
+        //steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+        //env.TESTS_FOR_ACCESSIBILITY = false
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
@@ -160,8 +160,8 @@ withPipeline(type, product, component) {
     after('functionalTest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-        env.TESTS_FOR_ACCESSIBILITY = false
+        //steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+        //env.TESTS_FOR_ACCESSIBILITY = false
 
 
         publishHTML target: [
