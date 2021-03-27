@@ -23,7 +23,7 @@ let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     userId = uuid.v4();
     randomUserLastName = randomData.getRandomUserName();
     randomUserFirstName = randomData.getRandomUserName();
@@ -55,25 +55,23 @@ BeforeSuite(async (I) => {
     await I.registerUserWithId(accessToken, currentUserEmail, currentUserFirstName, currentUserLastName, userId, assignableRole.name)
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional multiple users can be registered with same uuid but the previous user will be assigned with auto generated uuid upon activation', async (I) => {
-    I.wait(5);
-
+Scenario('@functional multiple users can be registered with same uuid but the previous user will be assigned with auto generated uuid upon activation', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
-    const currentUserUrl = await I.extractUrl(currentUserEmail);
+    const currentUserUrl = await I.extractUrlFromNotifyEmail(currentUserEmail);
 
     I.amOnPage(currentUserUrl);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 20, 'h1');
+    I.waitForText('Account created');
     userFirstNames.push(currentUserFirstName);
 
     const responseAfterCurrentUserActivation = await I.getUserById(userId, accessToken);
@@ -85,14 +83,14 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     expect(responseAfterCurrentUserActivation.email).to.equal(currentUserEmail);
     expect(responseAfterCurrentUserActivation.roles).to.eql([assignableRole.name]);
 
-    const previousUserUrl = await I.extractUrl(previousUserEmail);
+    const previousUserUrl = await I.extractUrlFromNotifyEmail(previousUserEmail);
 
     I.amOnPage(previousUserUrl);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 20, 'h1');
+    I.waitForText('Account created');
     userFirstNames.push(randomUserFirstName);
 
     const responseAfterPreviousUserActivation = await I.getUserByEmail(previousUserEmail);

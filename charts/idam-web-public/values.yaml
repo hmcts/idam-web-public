@@ -10,15 +10,19 @@ java:
   keyVaults:
     "idam-idam":
       resourceGroup: idam-idam
-      excludeEnvironmentSuffix: false
-      secretRef: "kvcreds"
       secrets:
-        - AppInsightsInstrumentationKey
-        - redis-hostname
-        - redis-key
-        - redis-port
-        - sso-client-id
-        - sso-client-secret
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: redis-hostname
+          alias: spring.redis.host
+        - name: redis-key
+          alias: spring.redis.password
+        - name: redis-port
+          alias: spring.redis.port
+        - name: sso-client-id
+          alias: spring.security.oauth2.client.registration.oidc.client-id
+        - name: sso-client-secret
+          alias: spring.security.oauth2.client.registration.oidc.client-secret
   environment:
     STRATEGIC_SERVICE_URL: http://idam-api
     MANAGEMENT_SECURITY_ENABLED: false

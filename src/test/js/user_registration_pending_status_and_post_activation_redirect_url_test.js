@@ -19,7 +19,7 @@ let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
 
-BeforeSuite(async (I) => {
+BeforeSuite(async ({ I }) => {
     userId = uuid.v4();
     randomUserLastName = randomData.getRandomUserName();
     randomUserFirstName = randomData.getRandomUserName();
@@ -47,28 +47,26 @@ BeforeSuite(async (I) => {
     await I.registerUserWithId(accessToken, userEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name)
 });
 
-AfterSuite(async (I) => {
+AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
 });
 
-Scenario('@functional user registration pending status and post activation redirect url test', async (I) => {
-    I.wait(5);
-
+Scenario('@functional user registration pending status and post activation redirect url test', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
-    const url = await I.extractUrl(userEmail);
+    const url = await I.extractUrlFromNotifyEmail(userEmail);
 
     I.amOnPage(url);
-    I.waitForText('Create a password', 20, 'h1');
+    I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
-    I.waitForText('Account created', 20, 'h1');
+    I.waitForText('Account created');
     userFirstNames.push(randomUserFirstName);
-    I.waitForText('You can now sign in to your account.', 20);
-    I.waitForText('Continue', 20);
+    I.waitForText('You can now sign in to your account.');
+    I.waitForText('Continue');
     I.interceptRequestsAfterSignin();
     I.click('Continue');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);

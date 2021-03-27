@@ -10,66 +10,10 @@
         <cve>CVE-2015-0254</cve>
     </suppress>
 
-    <!-- Ignored. -->
+    <!-- False positive. See https://github.com/jeremylong/DependencyCheck/issues/1827 -->
     <suppress>
-        <notes><![CDATA[
-   file name: pmd-java-5.6.1.jar
-   ]]></notes>
-        <gav regex="true">^net\.sourceforge\.pmd:pmd-java:.*$</gav>
-        <cve>CVE-2019-7722</cve>
-    </suppress>
-
-    <!-- Ignored. -->
-    <suppress>
-        <notes><![CDATA[
-   file name: pmd-core-5.6.1.jar
-   ]]></notes>
-        <gav regex="true">^net\.sourceforge\.pmd:pmd-core:.*$</gav>
-        <cve>CVE-2019-7722</cve>
-    </suppress>
-
-    <!-- Ignored since we are not using Spring Framework 5.0.5 -->
-    <suppress>
-        <notes>suppress false positives - only relevant to spring.framework 5.0.5</notes>
         <gav regex="true">^org\.springframework\.security:spring-security.*$</gav>
         <cve>CVE-2018-1258</cve>
-    </suppress>
-
-    <!--
-    Suppress snakeyaml as it can only be exploited by devs
-    -->
-    <suppress>
-        <notes>
-            https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-18640
-            The Alias feature in SnakeYAML 1.18 allows entity expansion during a load operation, a related issue to CVE-2003-1564.
-        </notes>
-        <gav regex="true">^org\.yaml:snakeyaml:1\.25.*$</gav>
-        <cve>CVE-2017-18640</cve>
-    </suppress>
-
-    <!-- This vulnerability exists since 2007 and has no fix as it is a design flaw. -->
-    <suppress>
-        <gav regex="true">^com\.nimbusds:oauth2-oidc-sdk:.*$</gav>
-        <cve>CVE-2007-1651</cve>
-        <cve>CVE-2007-1652</cve>
-    </suppress>
-
-    <!-- This vulnerability can only be exploited from the local network -->
-    <suppress>
-        <gav regex="true">^org\.owasp\.encoder:encoder-jsp:.*$</gav>
-        <cve>CVE-2020-29242</cve>
-        <cve>CVE-2020-29243</cve>
-        <cve>CVE-2020-29244</cve>
-        <cve>CVE-2020-29245</cve>
-    </suppress>
-
-    <!-- This vulnerability can only be exploited from the local network -->
-    <suppress>
-        <gav regex="true">^com\.nimbusds:lang-tag:.*$</gav>
-        <cve>CVE-2020-29242</cve>
-        <cve>CVE-2020-29243</cve>
-        <cve>CVE-2020-29244</cve>
-        <cve>CVE-2020-29245</cve>
     </suppress>
 
 </suppressions>
