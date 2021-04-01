@@ -6,4 +6,4 @@ java:
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
   environment:
-    STRATEGIC_SERVICE_URL: http://idam-api-java
+    STRATEGIC_SERVICE_URL: http://idam-api
