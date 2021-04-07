@@ -6,6 +6,10 @@ version: 0.2.7
 maintainers:
   - name: Amido Reform SIDAM Team
     email: reform.idam@HMCTS.NET
+dependencies:
+  - name: java
+    version: ~3.4.4
+    repository: https://hmctspublic.azurecr.io/helm/v1/repo/
 keywords:
 - java
 - web
