@@ -541,7 +541,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.resetRequestInterception();
 });
 
-Scenario('@functional @mfaLogin @debug As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
+Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const cookie = "invalidcookie" + randomData.getRandomString();
 
@@ -597,7 +597,7 @@ Scenario('@functional @mfaLogin @debug As a user, I can login to the MFA turned 
     I.resetRequestInterception();
 });
 
-Scenario('@functional @mfaLogin @debug As a user, I can login to the mfa turned off service with invalid cookie ', async ({ I }) => {
+Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off service with invalid cookie ', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const cookie = "invalidcookie" + randomData.getRandomString();
 
