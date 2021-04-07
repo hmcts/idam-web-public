@@ -190,12 +190,12 @@ class IdamHelper extends Helper {
             description: serviceName,
             oauth2ClientId: serviceName,
             oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
-            oauth2RedirectUris: [`http://www.${serviceName}.com`],
+            oauth2RedirectUris: [`https://www.${serviceName}.com`],
             oauth2Scope: scope,
             onboardingEndpoint: '/autotest',
             onboardingRoles: [betaRole],
             allowedRoles: serviceRoles,
-            activationRedirectUrl: `http://www.${serviceName}.com`,
+            activationRedirectUrl: `https://www.${serviceName}.com`,
             selfRegistrationAllowed: true
         };
         return fetch(`${TestData.IDAM_API}/services`, {
