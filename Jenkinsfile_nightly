@@ -49,7 +49,6 @@ withNightlyPipeline(type, product, component) {
         env.TESTS_FOR_ACCESSIBILITY = true
     }
 
-
     after('fullFunctionalTest') {
          //archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'

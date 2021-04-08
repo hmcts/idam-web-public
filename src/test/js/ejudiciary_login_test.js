@@ -24,14 +24,12 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/authorize?login_hint=${TestData.EJUDICIARY_SSO_PROVIDER_KEY}&client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitInUrl('/login/oauth2/code/oidc');
     I.waitForText('Sign in');
-    await I.runAccessibilityTest();
     I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
     I.click('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
     I.click('Sign in');
-    I.waitForText('Stay signed in?')
-    await I.runAccessibilityTest();
+    I.waitForText('Stay signed in?');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
         I.click('No');
@@ -69,11 +67,9 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
     I.waitInUrl('/oauth2/authorize');
     I.waitForText('Sign in');
     I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
-    await I.runAccessibilityTest();
     I.click('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-    await I.runAccessibilityTest();
     I.click('Sign in');
 
     I.waitForText('Stay signed in?');

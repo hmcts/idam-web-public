@@ -92,7 +92,6 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
 
-
     let pageSource = await I.grabSource();
     code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
