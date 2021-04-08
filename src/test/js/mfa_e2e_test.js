@@ -157,7 +157,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.fillField('code', '');
     await I.runAccessibilityTest();
     I.click('Continue');
-    I.waitForText('Enter a correct verification code', 5, '.error-message');
+    I.waitForText('Enter a correct verification code');
     // other than digits
     await I.runAccessibilityTest();
     I.fillField('code', '663h8w7g');
@@ -330,14 +330,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
-    I.waitForText('Verification required', 10, 'h1');
-    I.wait(5);
+    I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
@@ -407,14 +406,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
-    I.waitForText('Verification required', 10, 'h1');
-    I.wait(5);
+    I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
@@ -484,7 +482,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.activationRedirectUrl}&client_id=${mfaTurnedOffService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
@@ -548,7 +546,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.resetRequestInterception();
 });
 
-Scenario('@functional @mfaLogin @debug As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
+Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const cookie = "invalidcookie" + randomData.getRandomString();
 
@@ -557,13 +555,12 @@ Scenario('@functional @mfaLogin @debug As a user, I can login to the MFA turned 
     expect(location).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
 
     I.amOnPage(location);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
-    I.waitForText('Verification required', 10, 'h1');
-    I.wait(5);
+    I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     I.fillField('code', otpCode);
@@ -605,7 +602,7 @@ Scenario('@functional @mfaLogin @debug As a user, I can login to the MFA turned 
     I.resetRequestInterception();
 });
 
-Scenario('@functional @mfaLogin @debug As a user, I can login to the mfa turned off service with invalid cookie ', async ({ I }) => {
+Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off service with invalid cookie ', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const cookie = "invalidcookie" + randomData.getRandomString();
 
@@ -614,7 +611,7 @@ Scenario('@functional @mfaLogin @debug As a user, I can login to the mfa turned 
     expect(location).to.includes(`/login?client_id=${mfaTurnedOffService1.oauth2ClientId}&redirect_uri=${mfaTurnedOffService1.activationRedirectUrl}`);
 
     I.amOnPage(location);
-    I.waitForText('Sign in', 20, 'h1');
+    I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', TestData.PASSWORD);
     I.interceptRequestsAfterSignin();
