@@ -48,10 +48,12 @@ Scenario('@functional Register User Dynamically', async ({ I }) => {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
     I.amOnPage(url);
+    await I.runAccessibilityTest();
     I.waitForText('Create a password');
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
+    await I.runAccessibilityTest();
 });

@@ -45,7 +45,14 @@ withNightlyPipeline(type, product, component) {
     enableFullFunctionalTest(200)
     enableCrossBrowserTest()
 
+    before('fullFunctionalTest') {
+        env.TESTS_FOR_ACCESSIBILITY = true
+    }
+
     after('fullFunctionalTest') {
+         //archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+            env.TESTS_FOR_ACCESSIBILITY = false
 
         publishHTML target: [
             allowMissing : true,
@@ -55,5 +62,6 @@ withNightlyPipeline(type, product, component) {
             reportFiles : "idam-web-public-e2e-result.html",
             reportName : "IDAM Web Public E2E functional tests result"
         ]
+
     }
 }

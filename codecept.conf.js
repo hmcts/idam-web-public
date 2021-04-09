@@ -28,7 +28,10 @@ exports.config = {
                    "screenshotFolder" : "./functional-output/output/",
                    "baseFolder": "./functional-output/screenshots/base/",
                    "diffFolder": "./functional-output/screenshots/diff/"
-         }
+         },
+        GenerateReportHelper: {
+            require: "./src/test/js/shared/generate_report_helper.js"
+        }
     },
     "include": {
       "I": "./src/test/js/shared/custom_steps.js"
