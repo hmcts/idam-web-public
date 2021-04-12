@@ -31,6 +31,7 @@ allprojects {
 
   def idamBomVersion = '2.5.4'
   ext['spring.boot.version'] = '2.4.4'
+  ext['netty.version'] = '4.1.63.Final'
 
   dependencyManagement {
     imports {
