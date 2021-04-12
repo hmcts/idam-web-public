@@ -152,7 +152,7 @@ allprojects {
     description = 'Executes non-destructive smoke tests against a running instance'
   }
 
-  task functional(dependsOn: [':codeceptFunctional', ':pa11y']) {
+  task functional(dependsOn: ':codeceptFunctional') {
     group = 'Delivery pipeline'
     description = 'Executes functional tests against a running instance'
   }
@@ -196,11 +196,7 @@ allprojects {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
-
-  task pa11y(type: Exec, dependsOn: ':yarnInstall') {
-    workingDir '.'
-    commandLine 'node_modules/pa11y/bin/pa11y.js', '--config', 'pa11y.conf.js', System.getenv('TEST_URL')
-  }
+  
 }
 
 project.tasks['sonarqube'].dependsOn test
