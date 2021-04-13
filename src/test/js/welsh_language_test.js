@@ -6,6 +6,8 @@ const Welsh = require('./shared/welsh_constants');
 Feature('Welsh Language');
 
 const serviceName = randomData.getRandomServiceName();
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
 let userFirstNames = [];
@@ -18,9 +20,9 @@ let specialCharacterPassword;
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
     randomUserLastName = randomData.getRandomUserName();
-    await I.createServiceData(serviceName);
+    await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
-    await I.createUserWithRoles(citizenEmail, randomUserFirstName, ["citizen"]);
+    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     specialCharacterPassword = 'New%%%&&&234';
 });

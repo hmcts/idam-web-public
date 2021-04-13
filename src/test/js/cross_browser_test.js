@@ -10,6 +10,8 @@ let serviceNames = [];
 let randomUserLastName;
 
 const serviceName = randomData.getRandomServiceName();
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
@@ -18,7 +20,7 @@ BeforeSuite(async ({ I }) => {
     randomUserLastName = randomData.getRandomUserName();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
-    await I.createServiceData(serviceName);
+    await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
 
     userFirstNames.push(randomUserFirstName);
@@ -29,8 +31,8 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario('@crossbrowser Idam Web public cross browser tests', async ({ I }) => {
-
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
+    const resetPassword = randomData.getRandomUserPassword();
 
     // create account
     I.amOnPage(selfRegUrl);
@@ -46,8 +48,8 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async ({ I }) => {
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
+    I.fillField('#password1', userPassword);
+    I.fillField('#password2', userPassword);
     I.click('Continue');
     I.waitForText('Account created');
 
@@ -55,7 +57,7 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async ({ I }) => {
     I.amOnPage(loginPage);
     I.waitForText('Sign in');
     I.fillField('#username', citizenEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.click('Sign in');
     I.waitForInvisible('#username', 20);
 
@@ -71,8 +73,8 @@ Scenario('@crossbrowser Idam Web public cross browser tests', async ({ I }) => {
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access');
-    I.fillField('#password1', 'Passw0rd1234');
-    I.fillField('#password2', 'Passw0rd1234');
+    I.fillField('#password1', resetPassword);
+    I.fillField('#password2', resetPassword);
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
