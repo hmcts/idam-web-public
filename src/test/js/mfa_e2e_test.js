@@ -11,6 +11,8 @@ const {expect} = chai;
 Feature('I am able to login with MFA');
 
 const scope="openid profile roles manage-user create-user";
+const userPassword=randomData.getRandomUserPassword();
+const serviceClientSecret = randomData.getRandomClientSecret();
 let token;
 let mfaUserEmail;
 let mfaDisabledUserEmail;
@@ -31,16 +33,16 @@ BeforeSuite(async ({ I }) => {
     token = await I.getAuthToken();
 
     mfaTurnedOnServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_admin", 'admin description', '', token);
-    mfaTurnedOnService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.name], '', token, scope);
+    mfaTurnedOnService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), serviceClientSecret,  [mfaTurnedOnServiceRole.name], '', token, scope);
 
     mfaTurnedOffServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest", 'admin description', '', token);
-    mfaTurnedOffService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.name], '', token, scope);
+    mfaTurnedOffService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
 
-    mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOnServiceRole.name], '', token, scope);
-    mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), [mfaTurnedOffServiceRole.name], '', token, scope);
+    mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), serviceClientSecret, [mfaTurnedOnServiceRole.name], '', token, scope);
+    mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
 
-    await I.createUserWithRoles(mfaUserEmail, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
-    await I.createUserWithRoles(mfaDisabledUserEmail, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
+    await I.createUserWithRoles(mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+    await I.createUserWithRoles(mfaDisabledUserEmail, userPassword, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
 
     mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService1.oauth2ClientId}`;
     await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService1.activationRedirectUrl, token);
@@ -60,7 +62,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
@@ -75,7 +77,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
 
     let pageSource = await I.grabSource();
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -102,7 +104,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.amOnPage(loginUrl);
     I.waitForText(Welsh.signInOrCreateAccount);
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.click(Welsh.signIn);
     I.seeInCurrentUrl("/verification");
     I.waitForText(Welsh.verificationRequired);
@@ -119,7 +121,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
 
     let pageSource = await I.grabSource();
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -146,7 +148,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.click('Sign in');
     I.waitInUrl("/verification");
     I.waitForText('Verification required');
@@ -184,7 +186,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
 
     I.seeInCurrentUrl("/login");
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.click('Sign in');
     I.waitInUrl('/verification');
     I.waitForText('Verification required');
@@ -211,7 +213,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaDisabledUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
@@ -220,7 +222,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -257,7 +259,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());
@@ -276,7 +278,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.amOnPage(location);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
@@ -290,7 +292,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -327,7 +329,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
@@ -342,7 +344,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
 
     const mfaturnedOnServicePageSource = await I.grabSource();
     const mfaturnedOnServiceCode = mfaturnedOnServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOnServiceAccessToken = await I.getAccessToken(mfaturnedOnServiceCode, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const mfaturnedOnServiceAccessToken = await I.getAccessToken(mfaturnedOnServiceCode, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnServiceJwtDecode = await jwt_decode(mfaturnedOnServiceAccessToken);
 
@@ -366,7 +368,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
 
     const mfaturnedOffServicePageSource = await I.grabSource();
     const mfaturnedOffServiceCode = mfaturnedOffServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOffServiceJwtDecode = await jwt_decode(mfaturnedOffServiceAccessToken);
 
@@ -403,7 +405,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
@@ -418,7 +420,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
 
     const mfaturnedOnService1PageSource = await I.grabSource();
     const mfaturnedOnService1Code = mfaturnedOnService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService1JwtDecode = await jwt_decode(mfaturnedOnService1AccessToken);
 
@@ -442,7 +444,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
 
     const mfaTurnedOnService2PageSource = await I.grabSource();
     const mfaTurnedOnService2Code = mfaTurnedOnService2PageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaTurnedOnService2AccessToken = await I.getAccessToken(mfaTurnedOnService2Code, mfaTurnedOnService2.oauth2ClientId, mfaTurnedOnService2.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const mfaTurnedOnService2AccessToken = await I.getAccessToken(mfaTurnedOnService2Code, mfaTurnedOnService2.oauth2ClientId, mfaTurnedOnService2.activationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService2JwtDecode = await jwt_decode(mfaTurnedOnService2AccessToken);
 
@@ -479,7 +481,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());
@@ -488,7 +490,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
 
     const mfaTurnedOffService1PageSource = await I.grabSource();
     const mfaTurnedOffService1Code = mfaTurnedOffService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaTurnedOffService1AccessToken = await I.getAccessToken(mfaTurnedOffService1Code, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const mfaTurnedOffService1AccessToken = await I.getAccessToken(mfaTurnedOffService1Code, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, serviceClientSecret);
 
     let mfaTurnedOffService1JwtDecode = await jwt_decode(mfaTurnedOffService1AccessToken);
 
@@ -511,7 +513,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
 
     const mfaTurnedOffService2PageSource = await I.grabSource();
     const mfaTurnedOffService2Code = mfaTurnedOffService2PageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaTurnedOffService2AccessToken = await I.getAccessToken(mfaTurnedOffService2Code, mfaTurnedOffService2.oauth2ClientId, mfaTurnedOffService2.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const mfaTurnedOffService2AccessToken = await I.getAccessToken(mfaTurnedOffService2Code, mfaTurnedOffService2.oauth2ClientId, mfaTurnedOffService2.activationRedirectUrl, serviceClientSecret);
 
     let mfaTurnedOffService2JwtDecode = await jwt_decode(mfaTurnedOffService2AccessToken);
 
@@ -552,7 +554,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on serv
     I.amOnPage(location);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
@@ -567,7 +569,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on serv
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -608,7 +610,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     I.amOnPage(location);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());
@@ -617,7 +619,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
 
     const mfaturnedOffServicePageSource = await I.grabSource();
     const mfaturnedOffServiceCode = mfaturnedOffServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, TestData.SERVICE_CLIENT_SECRET);
+    const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOffServiceJwtDecode = await jwt_decode(mfaturnedOffServiceAccessToken);
 
