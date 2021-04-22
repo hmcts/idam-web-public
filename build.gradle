@@ -79,6 +79,7 @@ allprojects {
       exclude module: 'springfox-swagger2'
       exclude module: 'springfox-swagger-ui'
     }
+    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
