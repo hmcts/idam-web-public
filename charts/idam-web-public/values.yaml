@@ -7,6 +7,7 @@ java:
   replicas: 3
   applicationPort: 8080
   aadIdentityName: idam
+  readinessPath: /health
   keyVaults:
     "idam-idam":
       resourceGroup: idam-idam

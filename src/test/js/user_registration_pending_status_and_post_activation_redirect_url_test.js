@@ -18,6 +18,8 @@ let roleNames = [];
 let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
     userId = uuid.v4();
@@ -34,15 +36,15 @@ BeforeSuite(async ({ I }) => {
     let serviceRoleIds = [assignableRole.id, userRegRole.id];
     roleNames.push(serviceRoleNames);
 
-    await I.createServiceWithRoles(serviceName, serviceRoleIds, '', apiAuthToken, 'create-user manage-user');
+    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, '', apiAuthToken, 'create-user manage-user');
     serviceNames.push(serviceName);
 
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [userRegRole.name]);
+    await I.createUserWithRoles(adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
-    const base64 = await I.getBase64(adminEmail, TestData.PASSWORD);
+    const base64 = await I.getBase64(adminEmail, userPassword);
     const code = await I.getAuthorizeCode(serviceName, TestData.SERVICE_REDIRECT_URI, 'create-user manage-user', base64);
-    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.registerUserWithId(accessToken, userEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name)
 });
@@ -60,8 +62,8 @@ Scenario('@functional user registration pending status and post activation redir
 
     I.amOnPage(url);
     I.waitForText('Create a password');
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
+    I.fillField('#password1', userPassword);
+    I.fillField('#password2', userPassword);
     I.click('Continue');
     I.waitForText('Account created');
     userFirstNames.push(randomUserFirstName);

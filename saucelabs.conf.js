@@ -8,7 +8,9 @@ const defaultSauceOptions = {
   accessKey: process.env.SAUCE_ACCESS_KEY,
   tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
   acceptSslCerts: true,
-  tags: ['idam-web-public']
+  tags: ['idam-web-public'],
+  extendedDebugging: true,
+  capturePerformance: true
 };
 
 const getBrowserConfig = browserGroup => {

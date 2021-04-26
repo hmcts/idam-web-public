@@ -61,7 +61,8 @@
             </div>
 
 
-            <input class="button" type="submit" value="<spring:message code="public.reset.password.form.submit"/>">
+            <input class="button" type="submit" value="<spring:message code="public.reset.password.form.submit"/>" id="reset-button"
+                   onclick="setTimeout(function () {document.getElementById('reset-button').disabled = true;document.getElementById('reset-button').style.opacity='0.5';}, 0);">
             <input type="hidden" id="token" name="token" value="${fn:escapeXml(param.token)}"/>
             <input type="hidden" id="code" name="code" value="${fn:escapeXml(param.code)}"/>
         </form:form>

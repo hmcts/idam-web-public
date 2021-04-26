@@ -14,6 +14,8 @@ let serviceNames = [];
 
 const customScope = 'manage-roles';
 const serviceName = randomData.getRandomServiceName();
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 const citizenRole = 'citizen';
 const pinUserRolePrefix = 'letter-';
 let citizenUserDynamicRole;
@@ -38,13 +40,13 @@ BeforeSuite(async ({ I }) => {
     let serviceRoleIds = [citizenUserDynamicRole.id, pinUserDynamicRole.id];
     roleNames.push(serviceRoleNames);
 
-    await I.createServiceWithRoles(serviceName, serviceRoleIds, '', token, customScope);
+    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, '', token, customScope);
     serviceNames.push(serviceName);
 
-    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', []);
+    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', []);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
-    await I.createUserWithRoles(respondentEmail, randomUserFirstName + 'Respondent', []);
+    await I.createUserWithRoles(respondentEmail, userPassword, randomUserFirstName + 'Respondent', []);
     userFirstNames.push(randomUserFirstName + 'Respondent');
 });
 
@@ -56,7 +58,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', citizenEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
 
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
@@ -65,7 +67,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 
     let pageSource = await I.grabSource();
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.grantRoleToUser(citizenUserDynamicRole.name, accessToken);
 
@@ -80,12 +82,12 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
     let code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
-    let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&scope=${customScope}&jwt=${accessToken}`)
     I.waitForText('Sign in or create an account');
     I.fillField('#username', respondentEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
 
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
@@ -94,7 +96,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 
     let pageSource = await I.grabSource();
     code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.grantRoleToUser(pinUserDynamicRole.name, accessToken);
 

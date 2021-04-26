@@ -11,15 +11,17 @@ let userFirstNames = [];
 let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
-    await I.createServiceData(serviceName);
+    await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
 
-    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
+    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 });
 
@@ -33,7 +35,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -42,7 +44,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     //Details api
     const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);

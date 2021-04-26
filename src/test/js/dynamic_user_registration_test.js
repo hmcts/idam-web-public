@@ -9,6 +9,8 @@ let roleNames = [];
 let serviceNames = [];
 
 const serviceName = randomData.getRandomServiceName();
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
     const randomUserLastName = randomData.getRandomUserName();
@@ -24,15 +26,15 @@ BeforeSuite(async ({ I }) => {
     let serviceRoleIds = [assignableRole.id, dynamicUserRegRole.id];
     roleNames.push(serviceRoleNames);
 
-    await I.createServiceWithRoles(serviceName, serviceRoleIds, '', token, 'create-user');
+    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, '', token, 'create-user');
     serviceNames.push(serviceName);
 
-    await I.createUserWithRoles(adminEmail, randomUserFirstName + 'Admin', [dynamicUserRegRole.name]);
+    await I.createUserWithRoles(adminEmail, userPassword, randomUserFirstName + 'Admin', [dynamicUserRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
-    const base64 = await I.getBase64(adminEmail, TestData.PASSWORD);
+    const base64 = await I.getBase64(adminEmail, userPassword);
     const code = await I.getAuthorizeCode(serviceName, TestData.SERVICE_REDIRECT_URI, 'create-user', base64);
-    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.registerUserWithRoles(accessToken, userEmail, randomUserFirstName + 'User', randomUserLastName, assignableRole.name);
     userFirstNames.push(randomUserFirstName + 'User');
@@ -49,8 +51,8 @@ Scenario('@functional Register User Dynamically', async ({ I }) => {
     }
     I.amOnPage(url);
     I.waitForText('Create a password');
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
+    I.fillField('#password1', userPassword);
+    I.fillField('#password2', userPassword);
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
