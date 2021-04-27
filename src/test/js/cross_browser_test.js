@@ -57,7 +57,7 @@ Scenario('@crossbrowser Citizen user self registration', async ({ I }) => {
     I.fillField('#password2', userPassword);
     I.click('Continue');
     I.waitForText('Account created');
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@crossbrowser Citizen user login', async ({ I }) => {
     I.amOnPage(loginPage);
@@ -66,7 +66,7 @@ Scenario('@crossbrowser Citizen user login', async ({ I }) => {
     I.fillField('#password', userPassword);
     I.click('Sign in');
     I.waitForInvisible('#username', 20);
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
     const resetPassword = randomData.getRandomUserPassword();
@@ -87,4 +87,4 @@ Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
