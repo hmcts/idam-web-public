@@ -53,6 +53,16 @@ const setupConfig = {
         SauceLabsReportingHelper: {require: './src/test/js/shared/sauceLabsReportingHelper.js'},
         idam_helper: {require: './src/test/js/shared/idam_helper.js'}
     },
+    plugins: {
+        retryFailedStep: {
+            enabled: true,
+            retries: 2
+        },
+        autoDelay: {
+            enabled: true,
+            delayAfter: 2000
+        }
+    },
     include: {I: './src/test/js/shared/custom_steps.js'},
 
     multiple: {
