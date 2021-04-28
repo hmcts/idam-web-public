@@ -21,17 +21,14 @@ const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERV
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName();
     randomUserLastName = randomData.getRandomUserName();
-    citizenUserSelfRegistrationEmail = 'citizenSelfreg' + randomData.getRandomEmailAddress();
     citizenUserLoginEmail = 'citizenLogin' + randomData.getRandomEmailAddress();
-    citizenUserPasswordResetEmail = 'citizenPasswordReset' + randomData.getRandomEmailAddress();
 
     await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
 
-    userFirstNames.push(randomUserFirstName + 'citizenSelfreg');
     await I.createUserWithRoles(citizenUserLoginEmail, userPassword, randomUserFirstName + 'citizenLogin', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'citizenSelfreg');
     userFirstNames.push(randomUserFirstName + 'citizenLogin');
-    await I.createUserWithRoles(citizenUserPasswordResetEmail, userPassword, randomUserFirstName + 'citizenPasswordReset', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'citizenPasswordReset');
 });
 
@@ -40,6 +37,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario('@crossbrowser Citizen user self registration', async ({ I }) => {
+    citizenUserSelfRegistrationEmail = 'citizenSelfreg' + randomData.getRandomEmailAddress();
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister');
     I.waitForText('Create an account or sign in');
@@ -69,6 +67,8 @@ Scenario('@crossbrowser Citizen user login', async ({ I }) => {
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
+    citizenUserPasswordResetEmail = 'citizenPasswordReset' + randomData.getRandomEmailAddress();
+    await I.createUserWithRoles(citizenUserPasswordResetEmail, userPassword, randomUserFirstName + 'citizenPasswordReset', ["citizen"]);
     const resetPassword = randomData.getRandomUserPassword();
 
     I.amOnPage(loginPage);
