@@ -64,7 +64,29 @@ const setupConfig = {
         }
     },
     include: {I: './src/test/js/shared/custom_steps.js'},
-
+    mocha: {
+        reporterOptions: {
+            'codeceptjs-cli-reporter': {
+                stdout: '-',
+                options: {
+                    steps: true
+                }
+            },
+            'mocha-junit-reporter': {
+                stdout: './functional-output/idam-web-public-mocha-stdout.log',
+                options: {
+                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/codeceptjs/idam-web-public-integration-result.xml'
+                }
+            },
+            'mochawesome': {
+                stdout: `./functional-output/idam-web-public-mochawesome-stdout.log`,
+                options: {
+                    reportDir: 'functional-output',
+                    inlineAssets: true,
+                }
+            }
+        }
+    },
     multiple: {
         microsoft: {
             browsers: getBrowserConfig('microsoft')
