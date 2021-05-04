@@ -29,21 +29,19 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.5.4'
+  def idamBomVersion = '2.6.0'
   ext['spring.boot.version'] = '2.4.4'
   ext['netty.version'] = '4.1.63.Final'
 
   dependencyManagement {
     imports {
-      mavenBom "uk.gov.hmcts.reform.idam:idam-bom:${idamBomVersion}"
+      mavenBom "com.github.hmcts:idam-bom:${idamBomVersion}"
     }
   }
 
   repositories {
     mavenCentral()
-    maven {
-      url "https://dl.bintray.com/hmcts/hmcts-maven"
-    }
+    maven { url 'https://jitpack.io' }
     jcenter()
   }
 
@@ -68,7 +66,7 @@ allprojects {
   }
 
   dependencies {
-    implementation (group: 'uk.gov.hmcts.reform.idam', name: 'idam-api-spec') {
+    implementation (group: 'com.github.hmcts', name: 'idam-api-spec') {
       exclude module: 'springfox-swagger2'
       exclude module: 'springfox-swagger-ui'
     }
