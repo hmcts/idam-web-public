@@ -4,7 +4,7 @@ java:
   releaseNameOverride: idam-web-public
   image: hmctspublic.azurecr.io/idam/web-public:preview
   ingressHost: "idam-web-public.service.core-compute-{{ .Values.global.environment }}.internal"
-  replicas: 3
+  replicas: 4
   applicationPort: 8080
   aadIdentityName: idam
   readinessPath: /health
@@ -31,8 +31,8 @@ java:
     SSL_VERIFICATION_ENABLED: true
     GA_TRACKING_ID: ''
 
-  cpuRequests: '2000m'
-  cpuLimits: '4000m'
+  cpuRequests: '1000m'
+  cpuLimits: '2500m'
   memoryRequests: '1024Mi'
   memoryLimits: '2048Mi'
 
