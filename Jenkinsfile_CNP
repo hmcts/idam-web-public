@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@SIDM_increase_FuncTest_timout")
+@Library("Infrastructure")
 
 def type = "java"
 
@@ -49,7 +49,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    before('smoketest-aks:idam-preview') {
+    before('smoketest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
         env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
@@ -59,7 +59,7 @@ withPipeline(type, product, component) {
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
 
-    before('functionalTest-aks:idam-preview') {
+    before('functionalTest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
         env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
@@ -69,7 +69,7 @@ withPipeline(type, product, component) {
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
 
-    before('smoketest-aks:idam-aat') {
+    before('smoketest:idam-aat') {
         env.NONPROD_ENVIRONMENT_NAME = 'aat'
         env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
         println """\
@@ -77,7 +77,7 @@ withPipeline(type, product, component) {
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
 
-    before('functionalTest-aks:idam-aat') {
+    before('functionalTest:idam-aat') {
         env.NONPROD_ENVIRONMENT_NAME = 'aat'
         env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
         println """\
@@ -99,7 +99,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    after('smoketest-aks:idam-preview') {
+    after('smoketest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
         println """\
@@ -107,7 +107,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    after('functionalTest-aks:idam-preview') {
+    after('functionalTest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
         println """\
