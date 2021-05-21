@@ -125,6 +125,9 @@ azure:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
 features:
+  external-cookie-link:
+    enabled: false
+    url: https://www.placeholder.com
   federated-s-s-o: ${federated.sso:true}
   step-up-authentication: ${step.up.authentication:true}
   external-contact-page: ${external.contact.page:false}
