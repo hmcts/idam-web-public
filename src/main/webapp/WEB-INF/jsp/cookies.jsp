@@ -47,56 +47,22 @@
 
                 <div id="tabs-2" aria-labelledby="ui-id-5" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content">
                     <h2 class="heading-large"><spring:message code="public.cookies.text_0018" /></h2>
-                    <h3 class="heading-medium"><spring:message code="public.cookies.text_0019" /></h3>
-                    <p><spring:message code="public.cookies.text_0020" /></p>
-                    <p><spring:message code="public.cookies.text_0021" /></p>
-                    <ul class="list list-bullet">
-                        <li><spring:message code="public.cookies.text_0022" /></li>
-                        <li><spring:message code="public.cookies.text_0023" /></li>
-                        <li><spring:message code="public.cookies.text_0024" /></li>
-                        <li><spring:message code="public.cookies.text_0025" /></li>
-                    </ul>
-                    <p><spring:message code="public.cookies.text_0026" /> <a href="https://www.google.com/policies/privacy/partners/"><spring:message code="public.cookies.text_0027" /></a><spring:message code="public.cookies.text_0028" /></p>
-                    <p><spring:message code="public.cookies.text_0029" /> <a href="https://tools.google.com/dlpage/gaoptout"><spring:message code="public.cookies.text_0030" /></a> <spring:message code="public.cookies.text_0031" /></p>
-                    <p><spring:message code="public.cookies.text_0032" /></p>
+                    <h3 class="heading-medium"><spring:message code="public.cookies.text_0044" /></h3>
+                    <p><spring:message code="public.cookies.text_0045" /></p>
                     <table>
                         <thead>
                         <tr>
-                            <th><spring:message code="public.cookies.text_0033" /></th>
-                            <th><spring:message code="public.cookies.text_0034" /></th>
-                            <th><spring:message code="public.cookies.text_0035" /></th>
+                            <th><spring:message code="public.cookies.text_0046" /></th>
+                            <th><spring:message code="public.cookies.text_0047" /></th>
+                            <th><spring:message code="public.cookies.text_0048" /></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <th><spring:message code="public.cookies.text_0036" /></th>
-                            <td><spring:message code="public.cookies.text_0037" /></td>
-                            <td><spring:message code="public.cookies.text_0038" /></td>
-                        </tr>
-                        <tr>
-                            <th><spring:message code="public.cookies.text_0039" /></th>
-                            <td><spring:message code="public.cookies.text_0040" /></td>
-                            <td><spring:message code="public.cookies.text_0041" /></td>
-                        </tr>
-                        <tr>
-                            <th><spring:message code="public.cookies.text_0042" /></th>
-                            <td><spring:message code="public.cookies.text_0043" /></td>
-                            <td><spring:message code="public.cookies.text_0044" /></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <p><spring:message code="public.cookies.text_0045" /> <a href="https://www.google.com/policies/privacy/partners/"><spring:message code="public.cookies.text_0046" /></a></p>
-                    <h3 class="heading-medium"><spring:message code="public.cookies.text_0047" /></h3>
-                    <p><spring:message code="public.cookies.text_0048" /></p>
-                    <table>
-                        <thead>
                         <tr>
                             <th><spring:message code="public.cookies.text_0049" /></th>
-                            <th><spring:message code="public.cookies.text_0050" /></th>
-                            <th><spring:message code="public.cookies.text_0051" /></th>
+                            <td><spring:message code="public.cookies.text_0050" /></td>
+                            <td><spring:message code="public.cookies.text_0051" /></td>
                         </tr>
-                        </thead>
-                        <tbody>
                         <tr>
                             <th><spring:message code="public.cookies.text_0052" /></th>
                             <td><spring:message code="public.cookies.text_0053" /></td>
