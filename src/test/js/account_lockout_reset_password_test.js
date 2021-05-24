@@ -7,12 +7,13 @@ let citizenEmail;
 let userFirstNames = [];
 let serviceNames = [];
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
-    const randomUserFirstName = randomData.getRandomUserName();
+    const randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
     await I.createServiceData(serviceName, serviceClientSecret);
@@ -23,7 +24,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @unlock My user account is unlocked when I reset my password - citizen', async ({ I }) => {

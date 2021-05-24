@@ -36,20 +36,15 @@ function shuffleArray(array) {
 }
 
 const testBasePrefix = "SIDMTESTWP_" + randomAlphabeticString();
-const testUserPrefix = testBasePrefix + "USER";
-const testRolePrefix = testBasePrefix + "ROLE_";
-const testServicePrefix = testBasePrefix + "SERVICE_";
 
 module.exports = {
     getRandomString: randomString,
+    getRandomAlphabeticString: randomAlphabeticString,
     TEST_BASE_PREFIX: testBasePrefix,
-    TEST_USER_PREFIX: testUserPrefix,
-    TEST_ROLE_PREFIX: testRolePrefix,
-    TEST_SERVICE_PREFIX: testServicePrefix,
-    getRandomUserName: () => testUserPrefix + randomAlphabeticString(),
-    getRandomRoleName: () => testRolePrefix + randomString(),
-    getRandomServiceName: () => testServicePrefix + randomString(),
     getRandomEmailAddress: () => randomString() + "@mailtest.gov.uk",
     getRandomUserPassword: () => generatePassword(12),
-    getRandomClientSecret: () => generatePassword(12)
+    getRandomClientSecret: () => generatePassword(12),
+    getRandomUserName: (testSuitePrefix) => testBasePrefix + testSuitePrefix + "USER" + randomAlphabeticString(),
+    getRandomRoleName: (testSuitePrefix) => testBasePrefix + testSuitePrefix + "ROLE_" + randomString(),
+    getRandomServiceName: (testSuitePrefix) => testBasePrefix + testSuitePrefix + "SERVICE_" + randomString(),
 };

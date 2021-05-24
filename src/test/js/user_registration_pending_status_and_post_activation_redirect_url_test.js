@@ -17,20 +17,21 @@ let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
     userId = uuid.v4();
-    randomUserLastName = randomData.getRandomUserName();
-    randomUserFirstName = randomData.getRandomUserName();
+    randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     userEmail = 'user.' + randomData.getRandomEmailAddress();
 
     const apiAuthToken = await I.getAuthToken();
-    assignableRole = await I.createRole(randomData.getRandomRoleName() + "_assignable", 'assignable role', '', apiAuthToken);
-    let userRegRole = await I.createRole(randomData.getRandomRoleName() + "_usrReg", 'user reg role', assignableRole.id, apiAuthToken);
+    assignableRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', '', apiAuthToken);
+    let userRegRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_usrReg", 'user reg role', assignableRole.id, apiAuthToken);
 
     let serviceRoleNames = [assignableRole.name, userRegRole.name];
     let serviceRoleIds = [assignableRole.id, userRegRole.id];
@@ -50,7 +51,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional user registration pending status and post activation redirect url test', async ({ I }) => {
