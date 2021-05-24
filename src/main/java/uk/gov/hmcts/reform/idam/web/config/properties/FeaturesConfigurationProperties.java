@@ -11,20 +11,20 @@ public class FeaturesConfigurationProperties {
 
     @Data
     public static class ExternalContactPageProperties {
-        private Boolean enabled;
+        private boolean enabled;
         private String url;
 
-        public Boolean isEnabled() {
+        public boolean isEnabled() {
             return enabled;
         }
     }
 
     @Data
     public static class ExternalCookiePageProperties {
-        private Boolean enabled;
+        private boolean enabled;
         private String url;
 
-        public Boolean isEnabled() {
+        public boolean isEnabled() {
             return enabled;
         }
     }

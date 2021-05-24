@@ -858,7 +858,7 @@ public class AppController {
     @GetMapping("/cookies")
     public String cookiesView() {
         if (configurationProperties.getFeatures().getExternalCookiePage().isEnabled()) {
-            return "redirect:" + configurationProperties.getFeatures().getExternalCookiePage().getUrl();
+            return REDIRECT_PREFIX + configurationProperties.getFeatures().getExternalCookiePage().getUrl();
         } else {
             return COOKIES_VIEW;
         }
@@ -886,7 +886,7 @@ public class AppController {
     @GetMapping("/contact-us")
     public String contactUsView() {
         if (configurationProperties.getFeatures().getExternalContactPage().isEnabled()) {
-            return "redirect:" + configurationProperties.getFeatures().getExternalContactPage().getUrl();
+            return REDIRECT_PREFIX + configurationProperties.getFeatures().getExternalContactPage().getUrl();
         } else {
             return CONTACT_US_VIEW;
         }
