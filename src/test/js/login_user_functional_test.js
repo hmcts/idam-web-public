@@ -32,9 +32,6 @@ AfterSuite(async ({ I }) => {
 
 Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
-
-    console.log("service name: " + serviceName);
-    console.log("user firtname: " + randomUserFirstName);
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
