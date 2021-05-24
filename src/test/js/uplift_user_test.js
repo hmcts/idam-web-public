@@ -20,22 +20,23 @@ let serviceNames = [];
 const pinUserRolePrefix = 'letter-';
 let serviceBetaRole;
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
-    randomUserLastName = randomData.getRandomUserName() + 'pinępinç';
-    randomUserFirstName = randomData.getRandomUserName() + 'ępinçłpin';
+    randomUserLastName = randomData.getRandomUserName(testSuitePrefix) + 'pinępinç';
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix) + 'ępinçłpin';
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     existingCitizenEmail = 'existingcitizen.' + randomData.getRandomEmailAddress();
     upliftAccountCreationStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     upliftLoginStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
 
     const token = await I.getAuthToken();
-    serviceBetaRole = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
-    let serviceAdminRole = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole.id, token);
-    let serviceSuperRole = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole.id, token);
+    serviceBetaRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_beta", 'beta description', '', token);
+    let serviceAdminRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description', serviceBetaRole.id, token);
+    let serviceSuperRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', serviceAdminRole.id, token);
 
     let serviceRoleNames = [serviceBetaRole.name, serviceAdminRole.name, serviceSuperRole.name];
     let serviceRoleIds = [serviceBetaRole.id, serviceAdminRole.id, serviceSuperRole.id];
@@ -61,7 +62,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 After(({ I }) => {

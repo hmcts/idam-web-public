@@ -13,7 +13,8 @@ let roleNames = [];
 let serviceNames = [];
 
 const customScope = 'manage-roles';
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 const citizenRole = 'citizen';
@@ -26,15 +27,15 @@ const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVI
 let randomUserFirstName, citizenFirstName, citizenLastName, citizenEmail, respondentEmail;
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     const randomText = randomData.getRandomString();
     citizenFirstName = citizenLastName = randomText;
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     respondentEmail = 'respondent.' + randomData.getRandomEmailAddress();
 
     const token = await I.getAuthToken();
-    citizenUserDynamicRole = await I.createRole(randomData.getRandomRoleName(), '', '', token);
-    pinUserDynamicRole = await I.createRole(randomData.getRandomRoleName(), '', '', token);
+    citizenUserDynamicRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix), '', '', token);
+    pinUserDynamicRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix), '', '', token);
 
     let serviceRoleNames = [citizenUserDynamicRole.name, pinUserDynamicRole.name];
     let serviceRoleIds = [citizenUserDynamicRole.id, pinUserDynamicRole.id];
@@ -51,7 +52,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async ({ I }) => {

@@ -696,6 +696,9 @@ class IdamHelper extends Helper {
             agent: agent,
             method: 'DELETE'
         }).then(response => {
+            if (response.status !== 200) {
+                console.log(`Error deleting test data with prefix ${testDataPrefix}, response: ${response.status}`);
+            }
             return response.json();
         }).catch(err => {
             console.log(err);
