@@ -150,9 +150,6 @@
     <jsp:doBody/>
 </main>
 
-<spring:eval expression="@environment.getProperty('features.external-cookie-link.enabled')" var="useExternalCookieLink" />
-<spring:eval expression="@environment.getProperty('features.external-cookie-link.url')" var="externalCookieLink" />
-
 <footer class="group js-footer" id="footer" role="contentinfo">
     <div class="footer-wrapper">
         <div class="footer-meta">
@@ -160,14 +157,7 @@
                 <h2 class="visuallyhidden"><spring:message code="public.template.footer.support.links" /></h2>
                 <c:set var="footerUrl" value="https://hmcts-access.service.gov.uk" />
                 <ul>
-                    <c:choose>
-                        <c:when test="${useExternalCookieLink}">
-                            <li><a href="${externalCookieLink}"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
-                        </c:when>
-                        <c:otherwise>
-                            <li><a href="${pageContext.request.contextPath}/cookies"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
-                        </c:otherwise>
-                    </c:choose>
+                    <li><a href="${pageContext.request.contextPath}/cookies"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/privacy-policy"><spring:message code="public.template.footer.support.link.privacy.policy" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/terms-and-conditions"><spring:message code="public.template.footer.support.link.terms.and.conditions" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" /></a></li>

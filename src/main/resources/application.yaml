@@ -125,18 +125,16 @@ azure:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
 features:
-  external-cookie-link:
+  external-cookie-page:
     enabled: false
     url: https://www.placeholder.com
+  external-contact-page:
+    enabled: false
+    url: path-to-gov-uk-page
   federated-s-s-o: ${federated.sso:true}
   step-up-authentication: ${step.up.authentication:true}
-  external-contact-page: ${external.contact.page:false}
 
 ssoEmailDomains:
   dummy: dummy
 # re-enable only when SSO feature is enabled for everyone
 #  ejudiciary.net: ejudiciary-aad
-
-external:
-  contactPage:
-    url: path-to-gov-uk-page

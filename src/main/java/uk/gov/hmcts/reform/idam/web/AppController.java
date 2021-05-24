@@ -857,7 +857,11 @@ public class AppController {
      */
     @GetMapping("/cookies")
     public String cookiesView() {
-        return COOKIES_VIEW;
+        if (configurationProperties.getFeatures().getExternalCookiePage().isEnabled()) {
+            return "redirect:" + configurationProperties.getFeatures().getExternalCookiePage().getUrl();
+        } else {
+            return COOKIES_VIEW;
+        }
     }
 
     /**
@@ -881,8 +885,8 @@ public class AppController {
      */
     @GetMapping("/contact-us")
     public String contactUsView() {
-        if (configurationProperties.getFeatures().isExternalContactPage()) {
-            return "redirect:" + configurationProperties.getExternalContactPageUrl();
+        if (configurationProperties.getFeatures().getExternalContactPage().isEnabled()) {
+            return "redirect:" + configurationProperties.getFeatures().getExternalContactPage().getUrl();
         } else {
             return CONTACT_US_VIEW;
         }
