@@ -7,7 +7,8 @@ Feature('eJudiciary login tests');
 
 let serviceNames = [];
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 
 BeforeSuite(async ({ I }) => {
@@ -18,7 +19,7 @@ BeforeSuite(async ({ I }) => {
 
 AfterSuite(async ({ I }) => {
     I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam through OIDC', async ({ I }) => {
