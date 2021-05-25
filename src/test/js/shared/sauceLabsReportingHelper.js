@@ -26,19 +26,15 @@ function updateSauceLabsResult(hasTestPassed, sessionId, test, error) {
 }
 
 module.exports = function() {
-// Setting test success on SauceLabs
+    // Setting test success on SauceLabs
     event.dispatcher.on(event.test.passed, (test) => {
-
         let sessionId = container.helpers('WebDriver').browser.sessionId;
         exec(updateSauceLabsResult(true, sessionId, test, null));
-
     });
 
     // Setting test failure on SauceLabs
     event.dispatcher.on(event.test.failed, (test, error) => {
-
         let sessionId = container.helpers('WebDriver').browser.sessionId;
         exec(updateSauceLabsResult(false, sessionId, test, error));
-
     });
 };

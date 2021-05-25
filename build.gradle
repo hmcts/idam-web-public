@@ -8,7 +8,7 @@ plugins {
   id 'org.sonarqube' version '2.6.2'
   id 'org.springframework.boot' version '2.4.4' apply false
   id 'com.gorylenko.gradle-git-properties' version '1.4.21'
-  id "info.solidsoft.pitest" version "1.4.6"
+  id "info.solidsoft.pitest" version "1.6.0"
 }
 
 gitProperties {
@@ -29,9 +29,13 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.6.0'
+  def idamBomVersion = '2.6.1'
   ext['spring.boot.version'] = '2.4.4'
   ext['netty.version'] = '4.1.63.Final'
+
+  configurations.all {
+    exclude group: "org.glassfish", module: "jakarta.el"
+  }
 
   dependencyManagement {
     imports {
@@ -112,8 +116,8 @@ allprojects {
     implementation group: 'com.microsoft.azure', name: 'applicationinsights-web'
     implementation group: 'com.microsoft.azure', name: 'applicationinsights-spring-boot-starter'
     implementation group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback'
-    implementation group: 'org.pitest', name: 'pitest', version: '1.4.6'
-    implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.4.6'
+    implementation group: 'org.pitest', name: 'pitest', version: '1.6.6'
+    implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.6.0'
     implementation group: 'org.owasp.encoder', name: 'encoder-jsp', version: '1.2.2'
     implementation (group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: '0.5') {
       exclude module: 'junit'
@@ -190,7 +194,7 @@ allprojects {
 
   task codeceptFunctionalSauce(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--reporter', 'mochawesome'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
   }
 
   task pa11y(type: Exec, dependsOn: ':yarnInstall') {
