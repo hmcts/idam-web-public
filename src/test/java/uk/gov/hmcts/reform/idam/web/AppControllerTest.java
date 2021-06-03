@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.config.properties.FeaturesConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
@@ -1937,6 +1938,23 @@ public class AppControllerTest {
 
     /**
      * @verifies return view
+     * @see AppController#cookiesView()
+     */
+    @Test
+    public void cookiesView_shouldReturnAnExternalUrlIfEnabled() throws Exception {
+        FeaturesConfigurationProperties.ExternalCookiePageProperties props
+            = new FeaturesConfigurationProperties.ExternalCookiePageProperties();
+        props.setEnabled(true);
+        props.setUrl("path-to-gov-uk-page");
+        configurationProperties.getFeatures().setExternalCookiePage(props);
+        mockMvc.perform(get("/cookies"))
+            .andDo(print())
+            .andExpect(status().is3xxRedirection())
+            .andExpect(view().name("redirect:path-to-gov-uk-page"));
+    }
+
+    /**
+     * @verifies return view
      * @see AppController#privacyPolicyView()
      */
     @Test
@@ -1965,7 +1983,10 @@ public class AppControllerTest {
      */
     @Test
     public void contactUsView_shouldReturnView() throws Exception {
-        configurationProperties.getFeatures().setExternalContactPage(false);
+        FeaturesConfigurationProperties.ExternalContactPageProperties props
+            = new FeaturesConfigurationProperties.ExternalContactPageProperties();
+        props.setEnabled(false);
+        configurationProperties.getFeatures().setExternalContactPage(props);
         mockMvc.perform(get("/contact-us"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -1978,8 +1999,11 @@ public class AppControllerTest {
      */
     @Test
     public void contactUsView_shouldReturnExternalContactPage() throws Exception {
-        configurationProperties.getFeatures().setExternalContactPage(true);
-        configurationProperties.setExternalContactPageUrl("path-to-gov-uk-page");
+        FeaturesConfigurationProperties.ExternalContactPageProperties props
+            = new FeaturesConfigurationProperties.ExternalContactPageProperties();
+        props.setEnabled(true);
+        props.setUrl("path-to-gov-uk-page");
+        configurationProperties.getFeatures().setExternalContactPage(props);
         mockMvc.perform(get("/contact-us"))
             .andDo(print())
             .andExpect(status().is3xxRedirection())
