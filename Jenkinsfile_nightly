@@ -40,7 +40,7 @@ withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
     env.IDAMAPI = params.API_URL_TO_TEST
     loadVaultSecrets(secrets)
-    enableSecurityScan()
+    // enableSecurityScan()
     enableMutationTest()
     enableFullFunctionalTest(200)
     enableCrossBrowserTest()
