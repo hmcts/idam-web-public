@@ -103,6 +103,22 @@
                         </tbody>
                     </table>
 
+                    <h3 class="heading-medium">Allow cookies that measure website use?</h3>
+                    <div class="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input type="radio" name="analytics" id="radio-analytics-on" value="true" class="govuk-radios__input">
+                            <label for="radio-analytics-on" class="govuk-label govuk-radios__label" id="radio-analytics-on-label">
+                                <span>Use cookies that measure my website use</span>
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input type="radio" name="analytics" id="radio-analytics-off" value="false" class="govuk-radios__input" checked="checked">
+                            <label for="radio-analytics-off" class="govuk-label govuk-radios__label" id="radio-analytics-off-label">
+                                <span>Do not use cookies that measure my website use</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <h3 class="heading-medium"><spring:message code="public.cookies.text_0044"/></h3>
                     <p><spring:message code="public.cookies.text_0045"/></p>
                     <table>
@@ -172,9 +188,27 @@
                         </tr>
                         </tbody>
                     </table>
-
                 </div>
 
+                <h3 class="heading-medium">Allow cookies that measure website application performance monitoring?</h3>
+                <div class="govuk-radios govuk-radios--inline u-margin-top-30">
+                    <div class="govuk-radios__item">
+                        <input type="radio" name="apm" id="radio-apm-on" value="true" class="govuk-radios__input">
+                        <label for="radio-apm-on" class="govuk-label govuk-radios__label" id="radio-apm-on-label">
+                            <span>Use cookies that measure website application performance monitoring</span>
+                        </label>
+                    </div>
+                    <div class="govuk-radios__item">
+                        <input type="radio" name="apm" id="radio-apm-off" value="false" class="govuk-radios__input" checked="checked">
+                        <label for="radio-apm-off" class="govuk-label govuk-radios__label" id="radio-apm-off-label">
+                            <span>Do not use cookies that measure website application performance monitoring</span>
+                        </label>
+                    </div>
+                </div>
+
+                <p id="save-cookie-preferences" class="govuk-body govuk-button-group"><a class="govuk-button" href="#">Save</a></p>
+
+                <script src="/assets/javascripts/cookie-manager.js"></script>
 
                 <div id="tabs-2" aria-labelledby="ui-id-5" role="tabpanel"
                      class="ui-tabs-panel ui-corner-bottom ui-widget-content">
