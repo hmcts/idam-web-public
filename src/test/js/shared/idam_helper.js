@@ -98,6 +98,7 @@ class IdamHelper extends Helper {
             headers: {'Cookie': `Idam.Session=${cookie}`},
             redirect: 'manual'
         }).then(response => {
+            console.log("Response " + response.status)
             return response.headers.get('Location');
         })
             .catch(err => {
