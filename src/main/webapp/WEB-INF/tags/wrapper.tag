@@ -112,7 +112,7 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-cookie-banner__content">
-                        <p>You’ve accepted additional cookies. You can <a class="govuk-link" href="#">change your cookie settings</a> at any time.</p>
+                        <p>You’ve accepted additional cookies. You can <a class="govuk-link" href="/cookies">change your cookie settings</a> at any time.</p>
                         <p id="cookie-accept-all-success-banner-hide" class="govuk-body govuk-button-group"><a class="govuk-button" href="#">Hide this message</a></p>
                     </div>
                 </div>

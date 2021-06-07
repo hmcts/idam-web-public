@@ -8,6 +8,15 @@
 <t:wrapper titleKey="public.template.footer.support.link.cookies">
     <article class="content__body">
         <a href="javascript:history.go(-1)" class="link-back"><spring:message code="public.cookies.text_0001"/></a>
+        <div class="govuk-visually-hidden" id="cookie-preference-success">
+            <div class="gem-c-success-alert govuk-notification-banner govuk-notification-banner--success" role="alert" tabindex="-1" aria-labelledby="govuk-notification-banner-title-64523f81" data-module="initial-focus">
+                <div class="govuk-notification-banner__content">
+                    <h3 class="govuk-notification-banner__heading">Your cookie settings were saved</h3>
+                    <p class="govuk-body">Government services may set additional cookies and, if so, will have their own cookie policy and banner.</p>
+                    <a class="govuk-link govuk-notification-banner__link cookie-settings__prev-page" href="/" data-module="gem-track-click" data-track-category="cookieSettings" data-track-action="Back to previous page" style="display: inline;">Go to homepage</a>
+                </div>
+            </div>
+        </div>
         <h1 class="heading-xlarge">
             <spring:message code="public.cookies.text_0002"/>
         </h1>
@@ -104,18 +113,16 @@
                     </table>
 
                     <h3 class="heading-medium">Allow cookies that measure website use?</h3>
-                    <div class="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input type="radio" name="analytics" id="radio-analytics-on" value="true" class="govuk-radios__input">
-                            <label for="radio-analytics-on" class="govuk-label govuk-radios__label" id="radio-analytics-on-label">
-                                <span>Use cookies that measure my website use</span>
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input type="radio" name="analytics" id="radio-analytics-off" value="false" class="govuk-radios__input" checked="checked">
-                            <label for="radio-analytics-off" class="govuk-label govuk-radios__label" id="radio-analytics-off-label">
-                                <span>Do not use cookies that measure my website use</span>
-                            </label>
+                    <div class="govuk-radios govuk-radios--inline u-margin-top-30">
+                        <div class="govuk-radios">
+                            <div class="multiple-choice">
+                                <input type="radio" name="analytics" id="radio-analytics-on" value="true">
+                                <label for="radio-analytics-on">Use cookies that measure my website use</label>
+                            </div>
+                            <div class="multiple-choice">
+                                <input type="radio" name="analytics" id="radio-analytics-off" value="false">
+                                <label for="radio-analytics-off">Do not use cookies that measure my website use</label>
+                            </div>
                         </div>
                     </div>
 
@@ -192,21 +199,29 @@
 
                 <h3 class="heading-medium">Allow cookies that measure website application performance monitoring?</h3>
                 <div class="govuk-radios govuk-radios--inline u-margin-top-30">
-                    <div class="govuk-radios__item">
-                        <input type="radio" name="apm" id="radio-apm-on" value="true" class="govuk-radios__input">
-                        <label for="radio-apm-on" class="govuk-label govuk-radios__label" id="radio-apm-on-label">
-                            <span>Use cookies that measure website application performance monitoring</span>
-                        </label>
+<%--                    <div class="govuk-radios__item">--%>
+<%--                        <input type="radio" name="apm" id="radio-apm-on" value="true" class="govuk-radios__input">--%>
+<%--                        <label for="radio-apm-on" class="govuk-label govuk-radios__label" id="radio-apm-on-label">--%>
+<%--                            <span>Use cookies that measure website application performance monitoring</span>--%>
+<%--                        </label>--%>
+<%--                    </div>--%>
+<%--                    <div class="govuk-radios__item">--%>
+<%--                        <input type="radio" name="apm" id="radio-apm-off" value="false" class="govuk-radios__input" checked="checked">--%>
+<%--                        <label for="radio-apm-off" class="govuk-label govuk-radios__label" id="radio-apm-off-label">--%>
+<%--                            <span>Do not use cookies that measure website application performance monitoring</span>--%>
+<%--                        </label>--%>
+<%--                    </div>--%>
+                    <div class="multiple-choice">
+                        <input type="radio" name="apm" id="radio-apm-on" value="true">
+                        <label for="radio-apm-on">Use cookies that measure website application performance monitoring</label>
                     </div>
-                    <div class="govuk-radios__item">
-                        <input type="radio" name="apm" id="radio-apm-off" value="false" class="govuk-radios__input" checked="checked">
-                        <label for="radio-apm-off" class="govuk-label govuk-radios__label" id="radio-apm-off-label">
-                            <span>Do not use cookies that measure website application performance monitoring</span>
-                        </label>
+                    <div class="multiple-choice">
+                        <input type="radio" name="apm" id="radio-apm-off" value="false">
+                        <label for="radio-apm-off">Do not use cookies that measure website application performance monitoring</label>
                     </div>
                 </div>
 
-                <p id="save-cookie-preferences" class="govuk-body govuk-button-group"><a class="govuk-button" href="#">Save</a></p>
+                <p id="save-cookie-preferences" class=""><a class="button" href="cookies#">Save</a></p>
 
                 <script src="/assets/javascripts/cookie-manager.js"></script>
 
