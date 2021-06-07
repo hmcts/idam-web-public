@@ -10,13 +10,14 @@ let staleUserEmailWelsh;
 let userFirstNames = [];
 let serviceNames = [];
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async({ I }) => {
 
-    randomUserFirstName = randomData.getRandomUserName();
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     staleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     staleUserEmailWelsh = 'staleuser.' + randomData.getRandomEmailAddress();
 
@@ -33,7 +34,7 @@ BeforeSuite(async({ I }) => {
 });
 
 AfterSuite(async({ I }) => {
-    I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) => {

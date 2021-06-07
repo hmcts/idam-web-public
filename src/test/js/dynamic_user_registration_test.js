@@ -8,19 +8,20 @@ let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
-    const randomUserLastName = randomData.getRandomUserName();
-    const randomUserFirstName = randomData.getRandomUserName();
+    const randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
+    const randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     userEmail = 'user.' + randomData.getRandomEmailAddress();
 
     const token = await I.getAuthToken();
-    let assignableRole = await I.createRole(randomData.getRandomRoleName() + "_assignable", 'assignable role', '', token);
-    let dynamicUserRegRole = await I.createRole(randomData.getRandomRoleName() + "_dynUsrReg", 'dynamic user reg role', assignableRole.id, token);
+    let assignableRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', '', token);
+    let dynamicUserRegRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_dynUsrReg", 'dynamic user reg role', assignableRole.id, token);
 
     let serviceRoleNames = [assignableRole.name, dynamicUserRegRole.name];
     let serviceRoleIds = [assignableRole.id, dynamicUserRegRole.id];
@@ -41,7 +42,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional Register User Dynamically', async ({ I }) => {

@@ -121,7 +121,7 @@ You can add similar callbacks to the below to override the environment values an
 ```groovy
 withPipeline(type, product, component) {
   ...
-  before('smoketest-aks:idam-preview') {
+  before('smoketest:idam-preview') {
     env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
     env.NONPROD_ENVIRONMENT_NAME = 'aat'
     env.PUBLIC_URL = 'https://idam-web-public-pr-207.service.core-compute-preview.internal'
