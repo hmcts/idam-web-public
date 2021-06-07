@@ -77,6 +77,7 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
             final ApiAuthResult authenticationResult = spiService.authenticate(tokenId, redirectUri, originIp);
 
             if (authenticationResult.requiresMfa()) {
+                log.info("StepUp dropping cookie");
                 dropCookie(idamSessionCookieName, ctx);
             }
 
