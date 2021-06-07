@@ -74,6 +74,19 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
         final String redirectUri = request.getParameter(MvcKeys.REDIRECT_URI);
         final ApiAuthResult authenticationResult = spiService.authenticate(tokenId, redirectUri, originIp);
 
+        if (authenticationResult.getErrorCode() != null) {
+            log.info("StepUp auth result contains error {}, is success = {}, mfa required = {}, policies = {}",
+                authenticationResult.getErrorCode(),
+                authenticationResult.isSuccess(),
+                authenticationResult.requiresMfa(),
+                authenticationResult.getPoliciesAction());
+        } else {
+            log.info("StepUp auth result contains no error, is success = {}, mfa required = {}, policies = {}",
+                authenticationResult.isSuccess(),
+                authenticationResult.requiresMfa(),
+                authenticationResult.getPoliciesAction());
+        }
+
         if (authenticationResult.requiresMfa()) {
             dropCookie(idamSessionCookieName, ctx);
         }

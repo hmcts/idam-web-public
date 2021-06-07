@@ -191,6 +191,7 @@ public class SPIService {
         } catch (JsonProcessingException e) {
             // The API might return the auth tree response instead of an ErrorResponse,
             // but we don't need the details from that type of response.
+            log.info("Ignore JSON Processing Exception", e);
             return ErrorResponse.CodeEnum.ERROR;
         }
     }
