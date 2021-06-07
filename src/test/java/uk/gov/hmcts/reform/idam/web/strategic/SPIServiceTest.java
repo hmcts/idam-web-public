@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.netflix.zuul.constants.ZuulHeaders;
 import org.hamcrest.CoreMatchers;
@@ -13,6 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +27,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.idam.api.internal.model.ActivationResult;
 import uk.gov.hmcts.reform.idam.api.internal.model.ArrayOfServices;
+import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.ResetPasswordRequest;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
@@ -35,6 +38,7 @@ import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.health.HealthCheckStatus;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -119,6 +123,9 @@ public class SPIServiceTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConfigurationProperties configurationProperties;
+
+    @Spy
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @InjectMocks
     private SPIService spiService;
@@ -672,6 +679,73 @@ public class SPIServiceTest {
             .willReturn(ResponseEntity.ok().build());
         ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
         assertTrue(result.getCookies().isEmpty());
+    }
+
+    /**
+     * @see SPIService#authenticate(String, String, String, String)
+     */
+    @Test
+    public void authenticate_shouldReturnErrorResponseCodeOnFailure() throws JsonProcessingException {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setCode(ErrorResponse.CodeEnum.INVALID_SESSION);
+        String errorBody = objectMapper.writeValueAsString(errorResponse);
+
+        given(
+            restTemplate.exchange(
+                eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                eq(Object.class)))
+            .willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, "failure", errorBody.getBytes(), Charset.defaultCharset()));
+        ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
+        assertThat(result.getCookies(), is(nullValue()));
+        assertThat(result.getPoliciesAction(), is(nullValue()));
+        assertThat(result.getErrorCode(), is(ErrorResponse.CodeEnum.INVALID_SESSION));
+        assertThat(result.getHttpStatus(), is(HttpStatus.FORBIDDEN));
+    }
+
+    /**
+     * @see SPIService#authenticate(String, String, String, String)
+     */
+    @Test
+    public void authenticate_shouldReturnDefaultErrorResponseCodeOnParseError() throws JsonProcessingException {
+        String errorBody = "unparsable";
+
+        given(
+            restTemplate.exchange(
+                eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                eq(Object.class)))
+            .willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, "failure", errorBody.getBytes(), Charset.defaultCharset()));
+        ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
+        assertThat(result.getCookies(), is(nullValue()));
+        assertThat(result.getPoliciesAction(), is(nullValue()));
+        assertThat(result.getErrorCode(), is(ErrorResponse.CodeEnum.ERROR));
+        assertThat(result.getHttpStatus(), is(HttpStatus.FORBIDDEN));
+    }
+
+    /**
+     * @see SPIService#authenticate(String, String, String, String)
+     */
+    @Test
+    public void authenticate_shouldReturnDefaultErrorResponseCodeOnFailureWithNoCode() throws JsonProcessingException {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setCode(null);
+        String errorBody = objectMapper.writeValueAsString(errorResponse);
+
+        given(
+            restTemplate.exchange(
+                eq(API_URL + SLASH + AUTHENTICATE_ENDPOINT),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                eq(Object.class)))
+            .willThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, "failure", errorBody.getBytes(), Charset.defaultCharset()));
+        ApiAuthResult result = spiService.authenticate(USER_NAME, PASSWORD_ONE, REDIRECT_URI, USER_IP_ADDRESS);
+        assertThat(result.getCookies(), is(nullValue()));
+        assertThat(result.getPoliciesAction(), is(nullValue()));
+        assertThat(result.getErrorCode(), is(ErrorResponse.CodeEnum.ERROR));
+        assertThat(result.getHttpStatus(), is(HttpStatus.FORBIDDEN));
     }
 
     @Test
