@@ -156,22 +156,6 @@ public class StepUpAuthenticationZuulFilterTest {
     }
 
     @Test
-    public void run_shouldDelegateOnJsonException() throws JsonProcessingException {
-        final String sessionToken = "sessionToken";
-        doReturn(sessionToken).when(filter).getSessionToken(any());
-
-        final RequestContext context = new RequestContext();
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        context.setRequest(request);
-        RequestContext.testSetCurrentContext(context);
-
-        doThrow(mock(JsonProcessingException.class)).when(spiService).authenticate(eq(sessionToken), any(), any());
-
-        assertNull(filter.run());
-        assertTrue(RequestContext.getCurrentContext().sendZuulResponse());
-    }
-
-    @Test
     public void run_shouldCallDropCookieIfMfaRequired() throws JsonProcessingException {
         final String sessionToken = "sessionToken";
         doReturn(sessionToken).when(filter).getSessionToken(any());

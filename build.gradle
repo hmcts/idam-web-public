@@ -29,7 +29,7 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.6.1'
+  def idamBomVersion = '2.6.2'
   ext['spring.boot.version'] = '2.4.4'
   ext['netty.version'] = '4.1.63.Final'
 
@@ -216,6 +216,7 @@ sonarqube {
   properties {
     property "sonar.projectName", "SIDAM-WEB-PUBLIC"
     property "sonar.exclusions", "**/uk/gov/hmcts/reform/idam/web/config/properties/*.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/IdamWebMvcConfiguration.java," +
       "**/uk/gov/hmcts/reform/idam/web/model/*.java," +
       "**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys.java," +
       "**/uk/gov/hmcts/reform/idam/web/Application.java," +
