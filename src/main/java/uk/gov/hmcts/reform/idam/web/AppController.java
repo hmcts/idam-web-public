@@ -456,15 +456,17 @@ public class AppController {
                         staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
                         return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, staleUserResetPasswordParams);
                     default:
+                        log.info("/login: Login failed ({}) for user - {}", errorCode, obfuscateEmailAddress(request.getUsername()));
                         model.addAttribute(HAS_LOGIN_FAILED, true);
                         bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
                 }
             } else {
+                log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
                 model.addAttribute(HAS_LOGIN_FAILED, true);
                 bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
             }
-        } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException he) {
-            log.info("/login: Login failed for user - {}", obfuscateEmailAddress(request.getUsername()));
+        } catch (HttpClientErrorException | HttpServerErrorException he) {
+            log.info("/login: Login failed ({}) for user - {}", he.getRawStatusCode(), obfuscateEmailAddress(request.getUsername()));
             model.addAttribute(HAS_LOGIN_FAILED, true);
             bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
         }
