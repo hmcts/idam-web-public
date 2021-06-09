@@ -27,7 +27,7 @@ if [ "$DEBUG" == "true" ]; then
         -config api.addrs.addr.name=".*" \
         -config api.addrs.addr.regex=true
 else
-    zap-x.sh -d -host $ZAP_HOST -port $ZAP_PORT -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true /dev/null 2>&1 &
+    zap-x.sh -d -host $ZAP_HOST -port $ZAP_PORT -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config rules.cookie.ignorelist=_ga,_gid,_gat,dtCookie,dtLatC,dtPC,dtSa,rxVisitor,rxvt -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true /dev/null 2>&1 &
 fi
 
 # Wait for ZAP to start
@@ -53,10 +53,9 @@ zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT active-scan --scanners all --rec
 zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT report -o activescan.html -f html
 echo 'Changing owner from $(id -u):$(id -g) to $(id -u):$(id -u)'
 chown -R $(id -u):$(id -u) activescan.html
-cp *.html functional-output/
-zap-cli -p $ZAP_PORT alerts -l Informational
-zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT alerts -l High --exit-code False
 curl --fail http://${ZAP_HOST}:${ZAP_PORT}/OTHER/core/other/jsonreport/?formMethod=GET --output report.json
+cp *.html functional-output/
+zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT alerts -l High --exit-code False
 
 # INFO: in order to add more exclusions for low-level issues, please do the following:
 # - Extract the JSON output of the security scan from the build (an array of objects, each beginning with "task":"OWASP Zaproxy")
