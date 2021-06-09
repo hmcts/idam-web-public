@@ -94,9 +94,6 @@ public class SPIService {
      */
     public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, final String state, final String scope) {
         ResponseEntity<String> response;
-        long startTime = System.currentTimeMillis();
-
-        log.warn("Uplift started");
 
         HttpEntity<MultiValueMap<String, String>> entity;
 
@@ -116,7 +113,6 @@ public class SPIService {
 
         response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getUplift(), HttpMethod.POST, entity,
             String.class);
-        log.warn("Uplift ended at {}", System.currentTimeMillis() - startTime);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return response.getBody();
