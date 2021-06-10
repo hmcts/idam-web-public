@@ -98,7 +98,7 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-cookie-banner__content">
-                        <p class="govuk-body">You’ve rejected additional cookies. You can <a href="/cookies">change your cookie settings</a> at any time.</p>
+                        <p class="govuk-body">You’ve rejected additional cookies. You can <a href="/cookie-preferences">change your cookie settings</a> at any time.</p>
                         <p id="cookie-reject-all-success-banner-hide" class="govuk-body govuk-button-group"><a class="govuk-button" href="#">Hide this message</a></p>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-cookie-banner__content">
-                        <p>You’ve accepted additional cookies. You can <a class="govuk-link" href="/cookies">change your cookie settings</a> at any time.</p>
+                        <p>You’ve accepted additional cookies. You can <a class="govuk-link" href="/cookie-preferences">change your cookie settings</a> at any time.</p>
                         <p id="cookie-accept-all-success-banner-hide" class="govuk-body govuk-button-group"><a class="govuk-button" href="#">Hide this message</a></p>
                     </div>
                 </div>
@@ -225,6 +225,7 @@
                 <c:set var="footerUrl" value="https://hmcts-access.service.gov.uk" />
                 <ul>
                     <li><a href="${pageContext.request.contextPath}/cookies"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
+                    <li><a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.template.footer.support.link.cookie.preferences" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/privacy-policy"><spring:message code="public.template.footer.support.link.privacy.policy" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/terms-and-conditions"><spring:message code="public.template.footer.support.link.terms.and.conditions" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" /></a></li>

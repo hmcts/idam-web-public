@@ -73,20 +73,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.AZURE_LOGIN_ENABLED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STALE_USER_RESET_PASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_CODE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHENTICATE_SESSION_COOKE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
@@ -1922,6 +1909,18 @@ public class AppControllerTest {
         mockMvc.perform(get(TACTICAL_RESET_ENDPOINT))
             .andExpect(status().isOk())
             .andExpect(view().name(TACTICAL_RESET_PWD_VIEW));
+    }
+
+    /**
+     * @verifies return view
+     * @see AppController#cookiePreferencesView()
+     */
+    @Test
+    public void cookiePreferencesView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/cookie-preferences"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(COOKIE_PREFERENCES_VIEW));
     }
 
     /**
