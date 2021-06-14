@@ -36,7 +36,6 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     I.waitForText('Sign in');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
     I.fillField('#password', userPassword);
-    I.fillField('#password', TestData.PASSWORD);
     await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
     I.click('Sign in');

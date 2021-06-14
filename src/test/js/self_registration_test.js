@@ -158,7 +158,6 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.waitForText('Sign in or create an account');
     I.fillField('#username', email);
     I.fillField('#password', userPassword);
-    I.fillField('#password', TestData.PASSWORD);
     await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
     I.click('Sign in');

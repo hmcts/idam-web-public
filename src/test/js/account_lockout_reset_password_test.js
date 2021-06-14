@@ -45,8 +45,6 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', password);
     I.fillField('#password2', password);
-    I.fillField('#password1', 'Passw0rd1234');
-    I.fillField('#password2', 'Passw0rd1234');
     await I.runAccessibilityTest();
     I.click('Continue');
     I.waitForText('Your password has been changed');
@@ -66,4 +64,3 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.dontSee('error=');
     I.resetRequestInterception();
 });
-// NOTE: Retrying this scenario is problematic.
