@@ -143,11 +143,9 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
-    await I.runAccessibilityTest();
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
+    await I.runAccessibilityTest();
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
