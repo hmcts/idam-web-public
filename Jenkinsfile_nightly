@@ -45,7 +45,13 @@ withNightlyPipeline(type, product, component) {
     enableFullFunctionalTest(200)
     enableCrossBrowserTest()
 
+    before('fullFunctionalTest') {
+        env.TESTS_FOR_ACCESSIBILITY = true
+    }
+
     after('fullFunctionalTest') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+        env.TESTS_FOR_ACCESSIBILITY = false
 
         publishHTML target: [
             allowMissing : true,
