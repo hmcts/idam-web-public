@@ -5,7 +5,10 @@ const Welsh = require('./shared/welsh_constants');
 
 Feature('Welsh Language');
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
 let userFirstNames = [];
@@ -16,17 +19,17 @@ let specialCharacterPassword;
 
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
-    randomUserLastName = randomData.getRandomUserName();
-    await I.createServiceData(serviceName);
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
+    await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
-    await I.createUserWithRoles(citizenEmail, randomUserFirstName, ["citizen"]);
+    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     specialCharacterPassword = 'New%%%&&&234';
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @welshLanguage There is a language switch that is working', async ({ I }) => {

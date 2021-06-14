@@ -10,29 +10,32 @@ let citizenEmail;
 let userFirstNames = [];
 let serviceNames = [];
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName =  randomData.getRandomServiceName(testSuitePrefix);
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
-    await I.createServiceData(serviceName);
+    await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
 
-    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
+    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
-
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
+    I.fillField('#password', userPassword);
     I.fillField('#password', TestData.PASSWORD);
     await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
@@ -43,7 +46,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     //Details api
     const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);

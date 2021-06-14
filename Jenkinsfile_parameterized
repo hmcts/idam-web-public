@@ -44,7 +44,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
             Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
   }
   
-  before('smoketest-aks:idam-preview') {
+  before('smoketest:idam-preview') {
     env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
     env.NONPROD_ENVIRONMENT_NAME = 'preview'
     env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
@@ -54,7 +54,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
             Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
   }
 
-  before('functionalTest-aks:idam-preview') {
+  before('functionalTest:idam-preview') {
     env.PREVIEW_ENVIRONMENT_NAME = 'preview'
     env.NONPROD_ENVIRONMENT_NAME = 'preview'
     env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
@@ -72,7 +72,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
             Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
   }
   
-  after('smoketest-aks:idam-preview') {
+  after('smoketest:idam-preview') {
     env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
     env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
     println """\
@@ -80,7 +80,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
             Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
   }
 
-  after('functionalTest-aks:idam-preview') {
+  after('functionalTest:idam-preview') {
     env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
     env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
     println """\
@@ -99,14 +99,6 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
         reportName           : "IdAM Web Public Code Coverage Report"
     ]
 
-    publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/pmd",
-        reportFiles          : "main.html",
-        reportName           : "IdAM Web Public PMD Report"
-    ]
   }
 
   after('smoketest:idam-preview') {

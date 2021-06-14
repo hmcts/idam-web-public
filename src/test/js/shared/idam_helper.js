@@ -41,9 +41,9 @@ class IdamHelper extends Helper {
         return await browser.newPage();
     }
 
-    async createServiceData(serviceName) {
+    async createServiceData(serviceName, serviceClientSecret) {
         const token = await this.getAuthToken();
-        this.createService(serviceName, '', token, '', []);
+        this.createService(serviceName, serviceClientSecret,'', token, '', []);
     }
 
     deleteService(service) {
@@ -109,7 +109,7 @@ class IdamHelper extends Helper {
             });
     }
 
-    createService(serviceName, roleId, token, scope = '', ssoProviders = '') {
+    createService(serviceName, serviceClientSecret, roleId, token, scope = '', ssoProviders = '') {
         let data;
 
         if (roleId === '') {
@@ -117,7 +117,7 @@ class IdamHelper extends Helper {
                 label: serviceName,
                 description: serviceName,
                 oauth2ClientId: serviceName,
-                oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+                oauth2ClientSecret: serviceClientSecret,
                 oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
                 oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
@@ -131,7 +131,7 @@ class IdamHelper extends Helper {
                 label: serviceName,
                 description: serviceName,
                 oauth2ClientId: serviceName,
-                oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+                oauth2ClientSecret: serviceClientSecret,
                 oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
                 oauth2Scope: scope,
                 onboardingEndpoint: '/autotest',
@@ -154,7 +154,7 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createServiceWithRoles(serviceName, serviceRoles, betaRole, token, scope) {
+    createServiceWithRoles(serviceName, serviceClientSecret, serviceRoles, betaRole, token, scope) {
         if (scope == null) {
             scope = ''
         }
@@ -162,7 +162,7 @@ class IdamHelper extends Helper {
             label: serviceName,
             description: serviceName,
             oauth2ClientId: serviceName,
-            oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+            oauth2ClientSecret: serviceClientSecret,
             oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
             oauth2Scope: scope,
             onboardingEndpoint: '/autotest',
@@ -183,7 +183,7 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createNewServiceWithRoles(serviceName, serviceRoles, betaRole, token, scope) {
+    createNewServiceWithRoles(serviceName, serviceClientSecret, serviceRoles, betaRole, token, scope) {
         if (scope == null) {
             scope = ''
         }
@@ -191,7 +191,7 @@ class IdamHelper extends Helper {
             label: serviceName,
             description: serviceName,
             oauth2ClientId: serviceName,
-            oauth2ClientSecret: TestData.SERVICE_CLIENT_SECRET,
+            oauth2ClientSecret: serviceClientSecret,
             oauth2RedirectUris: [`https://www.${serviceName}.com`],
             oauth2Scope: scope,
             onboardingEndpoint: '/autotest',
@@ -278,12 +278,12 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createUser(email, forename, role, serviceRole) {
+    createUser(email, password, forename, role, serviceRole) {
         console.log('Creating user with email: ', email);
         const data = {
             email: email,
             forename: forename,
-            password: TestData.PASSWORD,
+            password: password,
             roles: [{code: role}, {code: serviceRole}],
             surname: 'User',
             userGroup: {code: 'xxx_private_beta'},
@@ -300,12 +300,12 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createUserWithRoles(email, forename, userRoles) {
+    createUserWithRoles(email, password, forename, userRoles) {
         const codeUserRoles = userRoles.map(role => ({'code': role}));
         const data = {
             email: email,
             forename: forename,
-            password: TestData.PASSWORD,
+            password: password,
             roles: codeUserRoles,
             surname: 'User',
             userGroup: {code: 'xxx_private_beta'}
@@ -698,6 +698,9 @@ class IdamHelper extends Helper {
             agent: agent,
             method: 'DELETE'
         }).then(response => {
+            if (response.status !== 200) {
+                console.log(`Error deleting test data with prefix ${testDataPrefix}, response: ${response.status}`);
+            }
             return response.json();
         }).catch(err => {
             console.log(err);

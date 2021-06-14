@@ -7,7 +7,10 @@ const {expect} = chai;
 
 Feature('Self Registration');
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 let staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
 let randomUserFirstName;
@@ -19,20 +22,20 @@ let specialCharacterPassword;
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
-    randomUserLastName = randomData.getRandomUserName();
-    await I.createServiceData(serviceName);
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
+    await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
-    await I.createUserWithRoles(citizenEmail, randomUserFirstName, ["citizen"]);
+    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     specialCharacterPassword = 'New%%%&&&234';
-    await I.createUserWithRoles(staleUserEmail, randomUserFirstName + 'Stale', ["citizen"]);
+    await I.createUserWithRoles(staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @selfregister User Validation errors', async ({ I }) => {
@@ -143,6 +146,8 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.fillField('#password1', TestData.PASSWORD);
     I.fillField('#password2', TestData.PASSWORD);
     await I.runAccessibilityTest();
+    I.fillField('#password1', userPassword);
+    I.fillField('#password2', userPassword);
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
@@ -152,6 +157,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.seeInCurrentUrl("state=selfreg");
     I.waitForText('Sign in or create an account');
     I.fillField('#username', email);
+    I.fillField('#password', userPassword);
     I.fillField('#password', TestData.PASSWORD);
     await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
@@ -181,8 +187,8 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.amOnPage(userActivationUrl);
     I.waitForText(Welsh.createAPassword);
     I.seeTitleEquals(Welsh.userActivationTitle);
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
+    I.fillField('#password1', userPassword);
+    I.fillField('#password2', userPassword);
     I.click(Welsh.continueBtn);
     I.waitForText(Welsh.accountCreated);
     I.see(Welsh.youCanNowSignIn);
@@ -190,7 +196,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.seeInCurrentUrl("state=selfreg");
     I.waitForText(Welsh.signInOrCreateAccount);
     I.fillField('#username', email);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click(Welsh.signIn);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -217,8 +223,8 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
+    I.fillField('#password1', userPassword);
+    I.fillField('#password2', userPassword);
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
@@ -254,8 +260,8 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
+    I.fillField('#password1', userPassword);
+    I.fillField('#password2', userPassword);
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
@@ -263,7 +269,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.seeInCurrentUrl("state=selfreg");
     I.waitForText('Sign in or create an account');
     I.fillField('#username', randomUserEmailAddress);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -393,8 +399,8 @@ Scenario('@functional @selfregister I can create a password only once using the 
     // open same activation link in 2nd tab and activate the account
     const page2 = await I.createNewPage();
     await page2.goto(userActivationUrl);
-    await page2.type('#password1', TestData.PASSWORD);
-    await page2.type('#password2', TestData.PASSWORD);
+    await page2.type('#password1', userPassword);
+    await page2.type('#password2', userPassword);
     await page2.click('#activate');
     await page2.waitForSelector('h1.heading-large');
     const accountCreatedMessage = "Account created";
@@ -403,8 +409,8 @@ Scenario('@functional @selfregister I can create a password only once using the 
     await page2.close();
 
     // Try to activate the account again using the link already opened in 1st tab
-    await page1.type('#password1', TestData.PASSWORD);
-    await page1.type('#password2', TestData.PASSWORD);
+    await page1.type('#password1', userPassword);
+    await page1.type('#password2', userPassword);
     await page1.click('#activate');
     await page1.waitForSelector('h1.heading-large');
     const accountAlreadyActivatedMessage = 'Your account is already activated.';

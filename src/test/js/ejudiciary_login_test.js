@@ -7,17 +7,19 @@ Feature('eJudiciary login tests');
 
 let serviceNames = [];
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
+const serviceClientSecret = randomData.getRandomClientSecret();
 
 BeforeSuite(async ({ I }) => {
     const token = await I.getAuthToken();
-    await I.createService(serviceName, '', token, 'openid profile roles', [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
+    await I.createService(serviceName, serviceClientSecret, '', token, 'openid profile roles', [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
     serviceNames.push(serviceName);
 });
 
 AfterSuite(async ({ I }) => {
     I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam through OIDC', async ({ I }) => {
@@ -45,7 +47,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
 
         const pageSource = await I.grabSource();
         const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-        const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+        const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
         const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
         expect(userInfo.active).to.equal(true);
@@ -87,7 +89,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
 
         const pageSource = await I.grabSource();
         const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-        const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+        const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
         const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
         expect(userInfo.active).to.equal(true);

@@ -20,46 +20,49 @@ let serviceNames = [];
 const pinUserRolePrefix = 'letter-';
 let serviceBetaRole;
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
-    randomUserLastName = randomData.getRandomUserName() + 'pinępinç';
-    randomUserFirstName = randomData.getRandomUserName() + 'ępinçłpin';
+    randomUserLastName = randomData.getRandomUserName(testSuitePrefix) + 'pinępinç';
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix) + 'ępinçłpin';
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     existingCitizenEmail = 'existingcitizen.' + randomData.getRandomEmailAddress();
     upliftAccountCreationStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     upliftLoginStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
 
     const token = await I.getAuthToken();
-    serviceBetaRole = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
-    let serviceAdminRole = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole.id, token);
-    let serviceSuperRole = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole.id, token);
+    serviceBetaRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_beta", 'beta description', '', token);
+    let serviceAdminRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description', serviceBetaRole.id, token);
+    let serviceSuperRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', serviceAdminRole.id, token);
 
     let serviceRoleNames = [serviceBetaRole.name, serviceAdminRole.name, serviceSuperRole.name];
     let serviceRoleIds = [serviceBetaRole.id, serviceAdminRole.id, serviceSuperRole.id];
     roleNames.push(serviceRoleNames);
 
-    await I.createServiceWithRoles(serviceName, serviceRoleIds, serviceBetaRole.id, token);
+    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, serviceBetaRole.id, token);
     serviceNames.push(serviceName);
 
-    await I.createUserWithRoles(existingCitizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
+    await I.createUserWithRoles(existingCitizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
-    await I.createUserWithRoles(upliftAccountCreationStaleUserEmail, randomUserFirstName + 'StaleUser', ["citizen"]);
+    await I.createUserWithRoles(upliftAccountCreationStaleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(upliftAccountCreationStaleUserEmail);
 
-    await I.createUserWithRoles(upliftLoginStaleUserEmail, randomUserFirstName + 'StaleUser', ["citizen"]);
+    await I.createUserWithRoles(upliftLoginStaleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(upliftLoginStaleUserEmail);
 
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
-    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 After(({ I }) => {
@@ -79,7 +82,7 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
 
     let pageSource = await I.grabSource();
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
     expect(userInfo.roles).to.eql(['letter-holder']);
@@ -135,8 +138,8 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     }
     I.amOnPage(url);
     I.waitForText('Create a password');
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
+    I.fillField('#password1', userPassword);
+    I.fillField('#password2', userPassword);
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
@@ -146,14 +149,14 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
 Scenario('@functional @uplift @upliftLogin uplift a user via login journey', async ({ I }) => {
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
-    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Sign in to your account.');
     I.click('Sign in to your account.');
     I.seeInCurrentUrl(`register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}`);
     I.fillField('#username', existingCitizenEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -163,11 +166,12 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
 
 
 Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user registration for stale user uplift account creation', async ({ I }) => {
+    const newPassword = randomData.getRandomUserPassword();
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
 
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
-    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     const response = await I.getUserByEmail(upliftAccountCreationStaleUserEmail);
     const userId = response.id;
@@ -185,8 +189,8 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftAccountCreationStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
+    I.fillField('#password1', newPassword);
+    I.fillField('#password2', newPassword);
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
@@ -204,7 +208,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftAccountCreationStaleUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', newPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -213,7 +217,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
 
     const pageSource = await I.grabSource();
     const loginCode = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftAccountCreationStaleUserEmail.toUpperCase());
@@ -226,12 +230,13 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.resetRequestInterception();
 });
 
-Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift account creation', async ({ I }) => {
+Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift login', async ({ I }) => {
+    const newPassword = randomData.getRandomUserPassword();
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
 
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
-    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     const response = await I.getUserByEmail(upliftLoginStaleUserEmail);
     const userId = response.id;
@@ -239,15 +244,15 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftLoginStaleUserEmail.toUpperCase());
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', userPassword);
     I.click('Sign in');
     I.waitForText('You need to reset your password');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftLoginStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
-    I.fillField('#password1', TestData.PASSWORD);
-    I.fillField('#password2', TestData.PASSWORD);
+    I.fillField('#password1', newPassword);
+    I.fillField('#password2', newPassword);
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
@@ -264,7 +269,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftLoginStaleUserEmail);
-    I.fillField('#password', TestData.PASSWORD);
+    I.fillField('#password', newPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -273,7 +278,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
 
     const pageSource = await I.grabSource();
     const loginCode = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, TestData.SERVICE_CLIENT_SECRET);
+    const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftLoginStaleUserEmail.toUpperCase());

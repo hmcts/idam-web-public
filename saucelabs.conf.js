@@ -8,7 +8,9 @@ const defaultSauceOptions = {
   accessKey: process.env.SAUCE_ACCESS_KEY,
   tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
   acceptSslCerts: true,
-  tags: ['idam-web-public']
+  tags: ['idam-web-public'],
+  extendedDebugging: true,
+  capturePerformance: true
 };
 
 const getBrowserConfig = browserGroup => {
@@ -51,8 +53,40 @@ const setupConfig = {
         SauceLabsReportingHelper: {require: './src/test/js/shared/sauceLabsReportingHelper.js'},
         idam_helper: {require: './src/test/js/shared/idam_helper.js'}
     },
+    plugins: {
+        retryFailedStep: {
+            enabled: true,
+            retries: 2
+        },
+        autoDelay: {
+            enabled: true,
+            delayAfter: 2000
+        }
+    },
     include: {I: './src/test/js/shared/custom_steps.js'},
-
+    mocha: {
+        reporterOptions: {
+            'codeceptjs-cli-reporter': {
+                stdout: '-',
+                options: {
+                    steps: true
+                }
+            },
+            'mocha-junit-reporter': {
+                stdout: './functional-output/idam-web-public-mocha-stdout.log',
+                options: {
+                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/codeceptjs/idam-web-public-integration-result.xml'
+                }
+            },
+            'mochawesome': {
+                stdout: `./functional-output/idam-web-public-mochawesome-stdout.log`,
+                options: {
+                    reportDir: 'functional-output',
+                    inlineAssets: true,
+                }
+            }
+        }
+    },
     multiple: {
         microsoft: {
             browsers: getBrowserConfig('microsoft')

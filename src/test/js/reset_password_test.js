@@ -5,6 +5,8 @@ Feature('I am able to reset my password');
 
 let randomUserFirstName;
 let citizenEmail;
+let diffCaseCitizenEmail;
+let specialcharPwdResetCitizenEmail;
 let otherCitizenEmail;
 let plusCitizenEmail;
 let apostropheCitizenEmail;
@@ -13,39 +15,49 @@ let userFirstNames = [];
 let serviceNames = [];
 let specialCharacterPassword;
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
+const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword = randomData.getRandomUserPassword();
 const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
+    diffCaseCitizenEmail = 'diffcase.' + randomData.getRandomEmailAddress();
+    specialcharPwdResetCitizenEmail = 'specialcharpwd.' + randomData.getRandomEmailAddress();
     otherCitizenEmail = 'other.' + randomData.getRandomEmailAddress();
     plusCitizenEmail = `plus.extra+${randomData.getRandomEmailAddress()}`;
     apostropheCitizenEmail = "apostrophe.o'test" + randomData.getRandomEmailAddress();
     staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
     specialCharacterPassword = 'New&&&$$$%%%<>234';
 
-    await I.createServiceData(serviceName);
+    await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
 
-    await I.createUserWithRoles(citizenEmail, randomUserFirstName + 'Citizen', ["citizen"]);
+    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
-    await I.createUserWithRoles(otherCitizenEmail, randomUserFirstName + 'Other', ["citizen"]);
+    await I.createUserWithRoles(diffCaseCitizenEmail, userPassword, randomUserFirstName + 'diffcase', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'diffcase');
+    await I.createUserWithRoles(specialcharPwdResetCitizenEmail, userPassword, randomUserFirstName + 'specialcharpwd', ["citizen"]);
+    userFirstNames.push(randomUserFirstName + 'specialcharpwd');
+    await I.createUserWithRoles(otherCitizenEmail, userPassword, randomUserFirstName + 'Other', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Other');
-    await I.createUserWithRoles(plusCitizenEmail, randomUserFirstName + 'Plus', ["citizen"]);
+    await I.createUserWithRoles(plusCitizenEmail, userPassword, randomUserFirstName + 'Plus', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Plus');
-    await I.createUserWithRoles(apostropheCitizenEmail, randomUserFirstName + 'Apostrophe', ["citizen"]);
+    await I.createUserWithRoles(apostropheCitizenEmail, userPassword, randomUserFirstName + 'Apostrophe', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Apostrophe');
-    await I.createUserWithRoles(staleUserEmail, randomUserFirstName + 'Stale', ["citizen"]);
+    await I.createUserWithRoles(staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @resetpass As a citizen user I can reset my password', async ({ I }) => {
+    const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.click('Forgotten password?');
@@ -59,9 +71,8 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access');
-    I.fillField('#password1', 'Passw0rd1234');
-    I.fillField('#password2', 'Passw0rd1234');
-    await I.runAccessibilityTest();
+    I.fillField('#password1', resetPassword);
+    I.fillField('#password2', resetPassword);
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
@@ -69,7 +80,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', citizenEmail);
-    I.fillField('#password', 'Passw0rd1234');
+    I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -80,26 +91,27 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
  //NOTE: Retrying this scenario is problematic.
 
 Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset my password with diff case email address', async ({ I }) => {
+    const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.click('Forgotten password?');
     I.waitForText('Reset your password');
-    I.fillField('#email', citizenEmail.toUpperCase());
+    I.fillField('#email', diffCaseCitizenEmail.toUpperCase());
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(diffCaseCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access');
-    I.fillField('#password1', 'Passw0rd1234');
-    I.fillField('#password2', 'Passw0rd1234');
+    I.fillField('#password1', resetPassword);
+    I.fillField('#password2', resetPassword);
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.fillField('#username', citizenEmail);
-    I.fillField('#password', 'Passw0rd1234');
+    I.fillField('#username', diffCaseCitizenEmail);
+    I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -109,6 +121,7 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
 });
 
 Scenario('@functional @resetpass As a citizen user with a plus email I can reset my password', async ({ I }) => {
+    const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.click('Forgotten password?');
@@ -120,15 +133,15 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access');
-    I.fillField('#password1', 'Passw0rd1234');
-    I.fillField('#password2', 'Passw0rd1234');
+    I.fillField('#password1', resetPassword);
+    I.fillField('#password2', resetPassword);
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', plusCitizenEmail);
-    I.fillField('#password', 'Passw0rd1234');
+    I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -138,6 +151,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
 });
 
 Scenario('@functional @resetpass As a citizen user with an apostrophe email I can reset my password', async ({ I }) => {
+    const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.click('Forgotten password?');
@@ -149,15 +163,15 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access');
-    I.fillField('#password1', 'Passw0rd1234');
-    I.fillField('#password2', 'Passw0rd1234');
+    I.fillField('#password1', resetPassword);
+    I.fillField('#password2', resetPassword);
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', apostropheCitizenEmail);
-    I.fillField('#password', 'Passw0rd1234');
+    I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -214,10 +228,10 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.waitForText('Sign in or create an account');
     I.click('Forgotten password?');
     I.waitForText('Reset your password');
-    I.fillField('#email', citizenEmail);
+    I.fillField('#email', specialcharPwdResetCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(specialcharPwdResetCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.saveScreenshot('create-newpassword.png');
@@ -230,7 +244,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.fillField('#username', citizenEmail);
+    I.fillField('#username', specialcharPwdResetCitizenEmail);
     I.fillField('#password', specialCharacterPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
@@ -242,6 +256,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
 
 
 Scenario('@functional @staleuserresetpass As a stale user, I can reset my password', async ({ I }) => {
+    const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.click('Forgotten password?');
@@ -253,15 +268,15 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
-    I.fillField('#password1', 'Passw0rd1234');
-    I.fillField('#password2', 'Passw0rd1234');
+    I.fillField('#password1', resetPassword);
+    I.fillField('#password2', resetPassword);
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', staleUserEmail);
-    I.fillField('#password', 'Passw0rd1234');
+    I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
