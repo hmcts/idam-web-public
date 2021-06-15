@@ -137,6 +137,7 @@ function manageAPMCookie(cookieStatus) {
         deleteCookie('dtSa')
         deleteCookie('rxVisitor')
         deleteCookie('rxvt')
+        window.localStorage.clear();
     }
     apmPreferencesUpdated(cookieStatus)
 }
