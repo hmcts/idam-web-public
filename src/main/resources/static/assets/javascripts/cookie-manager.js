@@ -1,3 +1,7 @@
+// Taken from:
+// https://github.com/hmcts/cmc-cookies-manager/blob/master/shared-component/components/cookie-manager/cookies-manager.js
+// Manually added.
+
 $(document).ready(function(){
     checkCookie()
 });

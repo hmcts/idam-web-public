@@ -99,7 +99,7 @@
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-cookie-banner__content govuk-p-size-override">
                         <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0001"/></p>
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0002"/> <a href="/cookie-preferences"><spring:message code="public.cookie.banner.rejected.text_0003"/></a>
+                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.rejected.text_0003"/></a>
                             <spring:message code="public.cookie.banner.rejected.text_0004"/>
                         </p>
                         <p id="cookie-reject-all-success-banner-hide" class="govuk-body govuk-button-group">
@@ -118,7 +118,7 @@
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-cookie-banner__content govuk-p-size-override">
                         <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0001"/></p>
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0002"/> <a href="/cookie-preferences"><spring:message code="public.cookie.banner.accepted.text_0003"/></a>
+                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.accepted.text_0003"/></a>
                             <spring:message code="public.cookie.banner.accepted.text_0004"/>
                         </p>
                         <p id="cookie-accept-all-success-banner-hide" class="govuk-body govuk-button-group">
