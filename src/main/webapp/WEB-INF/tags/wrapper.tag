@@ -98,8 +98,13 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-cookie-banner__content">
-                        <p class="govuk-body">You’ve rejected additional cookies. You can <a href="/cookie-preferences">change your cookie settings</a> at any time.</p>
-                        <p id="cookie-reject-all-success-banner-hide" class="govuk-body govuk-button-group"><a class="govuk-button" href="#">Hide this message</a></p>
+                        <p style="font-size: 16px !important;" class="govuk-body"><spring:message code="public.cookie.banner.rejected.text_0001"/></p>
+                        <p style="font-size: 16px !important;" class="govuk-body"><spring:message code="public.cookie.banner.rejected.text_0002"/> <a href="/cookie-preferences"><spring:message code="public.cookie.banner.rejected.text_0003"/></a>
+                            <spring:message code="public.cookie.banner.rejected.text_0004"/>
+                        </p>
+                        <p style="font-size: 16px !important;" id="cookie-reject-all-success-banner-hide" class="govuk-body govuk-button-group">
+                            <a style="font-size: 16px !important;" class="govuk-button"><spring:message code="public.cookie.banner.rejected.text_0005"/></a>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -112,8 +117,13 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-cookie-banner__content">
-                        <p>You’ve accepted additional cookies. You can <a class="govuk-link" href="/cookie-preferences">change your cookie settings</a> at any time.</p>
-                        <p id="cookie-accept-all-success-banner-hide" class="govuk-body govuk-button-group"><a class="govuk-button" href="#">Hide this message</a></p>
+                        <p style="font-size: 16px !important;" class="govuk-body"><spring:message code="public.cookie.banner.accepted.text_0001"/></p>
+                        <p style="font-size: 16px !important;" class="govuk-body"><spring:message code="public.cookie.banner.accepted.text_0002"/> <a href="/cookie-preferences"><spring:message code="public.cookie.banner.accepted.text_0003"/></a>
+                            <spring:message code="public.cookie.banner.accepted.text_0004"/>
+                        </p>
+                        <p style="font-size: 16px !important;" id="cookie-accept-all-success-banner-hide" class="govuk-body govuk-button-group">
+                            <a style="font-size: 16px !important;" class="govuk-button"><spring:message code="public.cookie.banner.accepted.text_0005"/></a>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -125,21 +135,21 @@
             <div class="govuk-cookie-banner__message govuk-width-container">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-two-thirds">
-                        <h2 class="govuk-cookie-banner__heading govuk-heading-m">Cookies on hmcts-access.service.gov.uk</h2>
+                        <h2 style="font-size: 18px !important;" class="govuk-cookie-banner__heading govuk-heading-m"><spring:message code="public.cookie.banner.text_0001"/></h2>
                         <div class="govuk-cookie-banner__content">
-                            <p>We use some essential cookies to make this service work.</p>
-                            <p>We’d also like to use analytics cookies so we can understand how you use the service and make improvements.</p>
+                            <p style="font-size: 16px !important;"><spring:message code="public.cookie.banner.text_0002"/></p>
+                            <p style="font-size: 16px !important;"><spring:message code="public.cookie.banner.text_0003"/></p>
                         </div>
                     </div>
                 </div>
                 <div class="govuk-button-group">
-                    <button value="accept" type="button" name="cookies" class="govuk-button" data-module="govuk-button" id="cookie-accept-submit">
-                        Accept analytics cookies
+                    <button style="font-size: 16px !important;" value="accept" type="button" name="cookies" class="govuk-button" data-module="govuk-button" id="cookie-accept-submit">
+                        <spring:message code="public.cookie.banner.text_0004"/>
                     </button>
-                    <button value="reject" type="button" name="cookies" class="govuk-button" data-module="govuk-button" id="cookie-reject-submit">
-                        Reject analytics cookies
+                    <button style="font-size: 16px !important;" value="reject" type="button" name="cookies" class="govuk-button" data-module="govuk-button" id="cookie-reject-submit">
+                        <spring:message code="public.cookie.banner.text_0005"/>
                     </button>
-                    <a class="govuk-link" href="${pageContext.request.contextPath}/cookies">View cookies</a>
+                    <a style="font-size: 16px !important;" class="govuk-link" href="${pageContext.request.contextPath}/cookies"><spring:message code="public.cookie.banner.text_0006"/></a>
                 </div>
             </div>
         </div>
