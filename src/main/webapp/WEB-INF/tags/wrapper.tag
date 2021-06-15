@@ -93,7 +93,7 @@
 <header role="banner" id="global-header" class=" with-proposition ">
 
     <div class="govuk-visually-hidden govuk-cookie-banner " data-nosnippet role="region"
-         aria-label="Reject all cookies" id="reject-all-cookies-success">
+         aria-label="<spring:message code="public.cookie.banner.text_0005"/>" id="reject-all-cookies-success">
         <div class="govuk-cookie-banner__message govuk-width-container">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -112,7 +112,7 @@
     </div>
 
     <div class="govuk-visually-hidden govuk-cookie-banner " data-nosnippet role="region"
-         aria-label="Accept all cookies" id="accept-all-cookies-success">
+         aria-label="<spring:message code="public.cookie.banner.text_0004"/>" id="accept-all-cookies-success">
         <div class="govuk-cookie-banner__message govuk-width-container">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -131,7 +131,7 @@
     </div>
 
     <div id="cm_cookie_notification" class="govuk-visually-hidden">
-        <div class="govuk-cookie-banner " data-nosnippet role="region" aria-label="Cookies on hmcts-access.service.gov.uk">
+        <div class="govuk-cookie-banner " data-nosnippet role="region" aria-label="<spring:message code="public.cookie.banner.text_0001"/>">
             <div class="govuk-cookie-banner__message govuk-width-container">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-two-thirds">
