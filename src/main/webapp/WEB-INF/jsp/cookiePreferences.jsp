@@ -12,8 +12,8 @@
         <div class="govuk-visually-hidden" id="cookie-preference-success">
             <div class="gem-c-success-alert govuk-notification-banner govuk-notification-banner--success" role="alert" tabindex="-1" aria-labelledby="govuk-notification-banner-title-64523f81" data-module="initial-focus">
                 <div class="govuk-notification-banner__content">
-                    <h3 style="font-size: 18px !important;" class="govuk-notification-banner__heading"><spring:message code="public.cookie.preferences.saved.text_0001"/></h3>
-                    <p style="font-size: 16px !important;" class="govuk-body"><spring:message code="public.cookie.preferences.saved.text_0002"/></p>
+                    <h3 class="govuk-notification-banner__heading govuk-h-size-override"><spring:message code="public.cookie.preferences.saved.text_0001"/></h3>
+                    <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.preferences.saved.text_0002"/></p>
                 </div>
             </div>
         </div>
