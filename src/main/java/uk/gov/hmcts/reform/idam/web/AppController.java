@@ -839,7 +839,7 @@ public class AppController {
     private boolean checkUserAuthorised(String jwt, Map<String, Object> model) {
         Optional<User> user = spiService.getDetails(jwt);
 
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             model.put(ERROR_MSG, "error.page.not.authorized");
             model.put(ERROR_SUB_MSG, "public.error.page.please.contact.admin");
             return false;
