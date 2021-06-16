@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.idam.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -180,8 +179,8 @@ public class AppController {
      */
     @PostMapping("/login/uplift")
     public ModelAndView upliftRegister(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request,
-                                 BindingResult bindingResult,
-                                 final Map<String, Object> model) {
+                                       BindingResult bindingResult,
+                                       final Map<String, Object> model) {
 
         if (bindingResult.hasErrors()) {
             ErrorHelper.showLoginError("Information is missing or invalid",
@@ -618,7 +617,7 @@ public class AppController {
                     return new ModelAndView(VERIFICATION_VIEW, model.asMap());
                 }
 
-               return redirectToExpiredCode(model);
+                return redirectToExpiredCode(model);
             }
 
             return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
@@ -638,7 +637,6 @@ public class AppController {
     private ModelAndView redirectToExpiredCode(Model model) {
         return new ModelAndView("redirect:/" + EXPIRED_CODE_VIEW, model.asMap());
     }
-
 
 
     /**
@@ -841,7 +839,7 @@ public class AppController {
     private boolean checkUserAuthorised(String jwt, Map<String, Object> model) {
         Optional<User> user = spiService.getDetails(jwt);
 
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             model.put(ERROR_MSG, "error.page.not.authorized");
             model.put(ERROR_SUB_MSG, "public.error.page.please.contact.admin");
             return false;
@@ -857,9 +855,21 @@ public class AppController {
     /**
      * @should return view
      */
+    @GetMapping("/cookie-preferences")
+    public String cookiePreferencesView() {
+        return COOKIE_PREFERENCES_VIEW;
+    }
+
+    /**
+     * @should return view
+     */
     @GetMapping("/cookies")
     public String cookiesView() {
-        return COOKIES_VIEW;
+        if (configurationProperties.getFeatures().getExternalCookiePage().isEnabled()) {
+            return REDIRECT_PREFIX + configurationProperties.getFeatures().getExternalCookiePage().getUrl();
+        } else {
+            return COOKIES_VIEW;
+        }
     }
 
     /**
@@ -883,8 +893,8 @@ public class AppController {
      */
     @GetMapping("/contact-us")
     public String contactUsView() {
-        if (configurationProperties.getFeatures().isExternalContactPage()) {
-            return "redirect:" + configurationProperties.getExternalContactPageUrl();
+        if (configurationProperties.getFeatures().getExternalContactPage().isEnabled()) {
+            return REDIRECT_PREFIX + configurationProperties.getFeatures().getExternalContactPage().getUrl();
         } else {
             return CONTACT_US_VIEW;
         }
