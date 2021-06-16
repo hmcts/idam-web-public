@@ -234,8 +234,6 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(specialcharPwdResetCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
-    I.saveScreenshot('create-newpassword.png');
-    I.seeVisualDiff('create-newpassword.png', {tolerance: 6, prepareBaseImage: false});
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);
