@@ -40,10 +40,12 @@ Scenario('@functional @welshLanguage There is a language switch that is working'
     I.amOnPage(Welsh.pageUrlWithParamEnglish);
 
     I.waitForText('Access Denied');
+    await I.runAccessibilityTest();
     I.waitForText(welshLinkValue);
 
     I.click(welshLinkValue);
     I.waitForText(Welsh.accessDeniedWelsh);
+    await I.runAccessibilityTest();
     I.waitForText(englishLinkValue);
 
     I.click(englishLinkValue);
@@ -90,11 +92,13 @@ Scenario('@functional @welshLanguage I can reset my password in Welsh', async ({
 
     I.amOnPage(loginPage);
     I.waitForText(Welsh.signInOrCreateAccount);
+    await I.runAccessibilityTest();
     I.see(Welsh.forgottenPassword);
     I.click(Welsh.forgottenPassword);
     I.waitInUrl('reset/forgotpassword');
     I.waitForText(Welsh.resetYourPassword);
     I.fillField('#email', citizenEmail);
+    await I.runAccessibilityTest();
     I.click(Welsh.submitBtn);
     I.waitForText(Welsh.checkYourEmail);
     const userPwdResetUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
@@ -102,7 +106,9 @@ Scenario('@functional @welshLanguage I can reset my password in Welsh', async ({
     I.waitForText(Welsh.createANewPassword);
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);
+    await I.runAccessibilityTest();
     I.click(Welsh.continueBtn);
     I.waitInUrl('doResetPassword');
     I.waitForText(Welsh.passwordChanged);
+    await I.runAccessibilityTest();
 });

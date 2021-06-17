@@ -153,13 +153,16 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.click('Sign in');
     I.waitInUrl("/verification");
     I.waitForText('Verification required');
+    await I.runAccessibilityTest();
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     // empty field
     I.fillField('code', '');
+    await I.runAccessibilityTest();
     I.click('Continue');
     I.waitForText('Enter a correct verification code');
     // other than digits
+    await I.runAccessibilityTest();
     I.fillField('code', '663h8w7g');
     I.click('Continue');
     I.see('Enter a correct verification code');
@@ -181,6 +184,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.click('Continue');
     // after 3 incorrect attempts, user should start the login/journey again.
     I.seeInCurrentUrl("/expiredcode");
+    await I.runAccessibilityTest();
     I.see('We’ve been unable to sign you in because your verification code has expired.');
     I.see('You’ll need to start again.');
     I.click('Continue');

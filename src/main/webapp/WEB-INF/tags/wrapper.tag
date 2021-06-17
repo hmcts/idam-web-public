@@ -42,6 +42,13 @@
     <link href="/assets/stylesheets/govuk-template-ie8.css" media="screen" rel="stylesheet"/><![endif]-->
     <link href="/assets/stylesheets/govuk-template-print.css" media="print" rel="stylesheet"/>
 
+    <!--[if !IE 8]><!-->
+    <link rel="stylesheet" href="/assets/stylesheets/govuk-frontend-3.12.0.min.css">
+    <!--<![endif]-->
+    <!--[if IE 8]>
+    <link rel="stylesheet" href="/assets/stylesheets/govuk-frontend-ie8-3.12.0.min.css">
+    <![endif]-->
+
     <!--[if IE 8]>
     <link href="/assets/stylesheets/fonts-ie8.css" media="all" rel="stylesheet"/><![endif]-->
     <!--[if gte IE 9]><!-->
@@ -52,11 +59,11 @@
     <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/x-icon"/>
 
     <link rel="mask-icon" href="/assets/images/gov.uk_logotype_crown.svg" color="#0b0c0c">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon-180x180.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/apple-touch-icon-167x167.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/apple-touch-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/assets/images/apple-touch-icon-120x120.png">
-    <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/govuk-apple-touch-icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/govuk-apple-touch-icon-167x167.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/govuk-apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/images/govuk-apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" href="/assets/images/govuk-apple-touch-icon.png">
 
     <meta name="theme-color" content="#0b0c0c"/>
 
@@ -72,6 +79,10 @@
         $('body').find(':input.form-control-error:first').focus();
     });
 </script>
+<script src="/assets/javascripts/govuk-frontend-3.12.0.min.js"></script>
+<script>
+    window.GOVUKFrontend.initAll()
+</script>
 
 <div id="skiplink-container">
     <div>
@@ -80,6 +91,72 @@
 </div>
 
 <header role="banner" id="global-header" class=" with-proposition ">
+
+    <div class="govuk-visually-hidden govuk-cookie-banner " data-nosnippet role="region"
+         aria-label="<spring:message code="public.cookie.banner.text_0005"/>" id="reject-all-cookies-success">
+        <div class="govuk-cookie-banner__message govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <div class="govuk-cookie-banner__content govuk-p-size-override">
+                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0001"/></p>
+                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.rejected.text_0003"/></a>
+                            <spring:message code="public.cookie.banner.rejected.text_0004"/>
+                        </p>
+                        <p id="cookie-reject-all-success-banner-hide" class="govuk-body govuk-button-group">
+                            <a class="govuk-button govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0005"/></a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="govuk-visually-hidden govuk-cookie-banner " data-nosnippet role="region"
+         aria-label="<spring:message code="public.cookie.banner.text_0004"/>" id="accept-all-cookies-success">
+        <div class="govuk-cookie-banner__message govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <div class="govuk-cookie-banner__content govuk-p-size-override">
+                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0001"/></p>
+                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.accepted.text_0003"/></a>
+                            <spring:message code="public.cookie.banner.accepted.text_0004"/>
+                        </p>
+                        <p id="cookie-accept-all-success-banner-hide" class="govuk-body govuk-button-group">
+                            <a class="govuk-button govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0005"/></a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cm_cookie_notification" class="govuk-visually-hidden">
+        <div class="govuk-cookie-banner " data-nosnippet role="region" aria-label="<spring:message code="public.cookie.banner.text_0001"/>">
+            <div class="govuk-cookie-banner__message govuk-width-container">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+                        <h2 class="govuk-cookie-banner__heading govuk-heading-m govuk-h-size-override"><spring:message code="public.cookie.banner.text_0001"/></h2>
+                        <div class="govuk-cookie-banner__content govuk-p-size-override">
+                            <p><spring:message code="public.cookie.banner.text_0002"/></p>
+                            <p><spring:message code="public.cookie.banner.text_0003"/></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="govuk-button-group govuk-p-size-override">
+                    <button value="accept" type="button" name="cookies" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-accept-submit">
+                        <spring:message code="public.cookie.banner.text_0004"/>
+                    </button>
+                    <button value="reject" type="button" name="cookies" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-submit">
+                        <spring:message code="public.cookie.banner.text_0005"/>
+                    </button>
+                    <a class="govuk-link govuk-p-size-override" href="${pageContext.request.contextPath}/cookies"><spring:message code="public.cookie.banner.text_0006"/></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/javascripts/cookie-manager.js"></script>
+
     <div id="global-cookie-message">
         <p>
             <spring:message
@@ -158,6 +235,7 @@
                 <c:set var="footerUrl" value="https://hmcts-access.service.gov.uk" />
                 <ul>
                     <li><a href="${pageContext.request.contextPath}/cookies"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
+                    <li><a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.template.footer.support.link.cookie.preferences" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/privacy-policy"><spring:message code="public.template.footer.support.link.privacy.policy" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/terms-and-conditions"><spring:message code="public.template.footer.support.link.terms.and.conditions" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" /></a></li>

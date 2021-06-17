@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
+import uk.gov.hmcts.reform.idam.web.config.properties.FeaturesConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import uk.gov.hmcts.reform.idam.web.model.AuthorizeRequest;
 import uk.gov.hmcts.reform.idam.web.model.RegisterUserRequest;
@@ -72,20 +73,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.AZURE_LOGIN_ENABLED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STALE_USER_RESET_PASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_CODE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHENTICATE_SESSION_COOKE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
@@ -1925,6 +1913,18 @@ public class AppControllerTest {
 
     /**
      * @verifies return view
+     * @see AppController#cookiePreferencesView()
+     */
+    @Test
+    public void cookiePreferencesView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/cookie-preferences"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(COOKIE_PREFERENCES_VIEW));
+    }
+
+    /**
+     * @verifies return view
      * @see AppController#cookiesView()
      */
     @Test
@@ -1933,6 +1933,23 @@ public class AppControllerTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(view().name(COOKIES_VIEW));
+    }
+
+    /**
+     * @verifies return view
+     * @see AppController#cookiesView()
+     */
+    @Test
+    public void cookiesView_shouldReturnAnExternalUrlIfEnabled() throws Exception {
+        FeaturesConfigurationProperties.ExternalCookiePageProperties props
+            = new FeaturesConfigurationProperties.ExternalCookiePageProperties();
+        props.setEnabled(true);
+        props.setUrl("path-to-gov-uk-page");
+        configurationProperties.getFeatures().setExternalCookiePage(props);
+        mockMvc.perform(get("/cookies"))
+            .andDo(print())
+            .andExpect(status().is3xxRedirection())
+            .andExpect(view().name("redirect:path-to-gov-uk-page"));
     }
 
     /**
@@ -1965,7 +1982,10 @@ public class AppControllerTest {
      */
     @Test
     public void contactUsView_shouldReturnView() throws Exception {
-        configurationProperties.getFeatures().setExternalContactPage(false);
+        FeaturesConfigurationProperties.ExternalContactPageProperties props
+            = new FeaturesConfigurationProperties.ExternalContactPageProperties();
+        props.setEnabled(false);
+        configurationProperties.getFeatures().setExternalContactPage(props);
         mockMvc.perform(get("/contact-us"))
             .andDo(print())
             .andExpect(status().isOk())
@@ -1978,8 +1998,11 @@ public class AppControllerTest {
      */
     @Test
     public void contactUsView_shouldReturnExternalContactPage() throws Exception {
-        configurationProperties.getFeatures().setExternalContactPage(true);
-        configurationProperties.setExternalContactPageUrl("path-to-gov-uk-page");
+        FeaturesConfigurationProperties.ExternalContactPageProperties props
+            = new FeaturesConfigurationProperties.ExternalContactPageProperties();
+        props.setEnabled(true);
+        props.setUrl("path-to-gov-uk-page");
+        configurationProperties.getFeatures().setExternalContactPage(props);
         mockMvc.perform(get("/contact-us"))
             .andDo(print())
             .andExpect(status().is3xxRedirection())

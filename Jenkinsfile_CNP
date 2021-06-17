@@ -80,6 +80,7 @@ withPipeline(type, product, component) {
     before('functionalTest:idam-aat') {
         env.NONPROD_ENVIRONMENT_NAME = 'aat'
         env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
+        env.TESTS_FOR_ACCESSIBILITY = true
         println """\
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
@@ -169,6 +170,7 @@ withPipeline(type, product, component) {
     }
 
     after('functionalTest:idam-aat') {
+        env.TESTS_FOR_ACCESSIBILITY = false
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
 
