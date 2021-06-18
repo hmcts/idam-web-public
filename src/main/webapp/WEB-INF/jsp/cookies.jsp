@@ -119,6 +119,16 @@
                             <td><spring:message code="public.cookies.text_0050"/></td>
                             <td><spring:message code="public.cookies.text_0051"/></td>
                         </tr>
+                        <tr>
+                            <th><spring:message code="public.cookies.text_0228"/></th>
+                            <td><spring:message code="public.cookies.text_0229"/></td>
+                            <td><spring:message code="public.cookies.text_0230"/></td>
+                        </tr>
+                        <tr>
+                            <th><spring:message code="public.cookies.text_0231"/></th>
+                            <td><spring:message code="public.cookies.text_0232"/></td>
+                            <td><spring:message code="public.cookies.text_0233"/></td>
+                        </tr>
                         </tbody>
                     </table>
 
