@@ -149,7 +149,7 @@
                     <button value="reject" type="button" name="cookies" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-submit">
                         <spring:message code="public.cookie.banner.text_0005"/>
                     </button>
-                    <a class="govuk-link govuk-p-size-override" href="${pageContext.request.contextPath}/cookies"><spring:message code="public.cookie.banner.text_0006"/></a>
+                    <a class="govuk-link govuk-p-size-override" href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.text_0006"/></a>
                 </div>
             </div>
         </div>
