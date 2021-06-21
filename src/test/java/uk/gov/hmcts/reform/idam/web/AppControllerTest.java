@@ -1929,6 +1929,10 @@ public class AppControllerTest {
      */
     @Test
     public void cookiesView_shouldReturnView() throws Exception {
+        FeaturesConfigurationProperties.ExternalCookiePageProperties props
+            = new FeaturesConfigurationProperties.ExternalCookiePageProperties();
+        props.setEnabled(false);
+        configurationProperties.getFeatures().setExternalCookiePage(props);
         mockMvc.perform(get("/cookies"))
             .andDo(print())
             .andExpect(status().isOk())
