@@ -107,8 +107,7 @@ public class AppController {
      */
     @GetMapping("/")
     public String indexView(final Map<String, Object> model) {
-
-        return INDEX_VIEW;
+        return "redirect:" + LOGIN_VIEW;
     }
 
     /**
