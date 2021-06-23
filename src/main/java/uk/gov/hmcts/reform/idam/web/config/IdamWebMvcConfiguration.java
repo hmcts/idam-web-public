@@ -43,6 +43,8 @@ public class IdamWebMvcConfiguration implements WebMvcConfigurer {
         final CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setCookieName(IDAM_LOCALES_COOKIE_NAME);
         localeResolver.setCookieMaxAge(COOKIE_MAX_AGE_SECONDS);
+        localeResolver.setCookieSecure(true);
+        localeResolver.setCookieHttpOnly(true);
         return localeResolver;
     }
 
