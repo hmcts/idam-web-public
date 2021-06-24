@@ -129,7 +129,6 @@ Scenario('@functional @uplift @debug I am able to use a pin to create an account
     I.fillField('#lastName', randomUserLastName);
     I.fillField('#username', citizenEmail);
     await I.runAccessibilityTest();
-    I.scrollPageToBottom();
     I.click('Continue');
     I.waitForText('Check your email');
     let url = await I.extractUrlFromNotifyEmail(citizenEmail);
