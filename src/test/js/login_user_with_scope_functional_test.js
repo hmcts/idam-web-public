@@ -78,7 +78,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 
 });
 
-Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on PIN user login', async ({ I }) => {
+Scenario('@functional @loginuserwithscope @debug As a service, I can request a custom scope on PIN user login', async ({ I }) => {
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
     let code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);

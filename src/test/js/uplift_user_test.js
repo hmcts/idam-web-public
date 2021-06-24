@@ -121,7 +121,7 @@ Scenario('@functional @uplift @upliftvalid User Validation errors', ({ I }) => {
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 
-Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async ({ I }) => {
+Scenario('@functional @uplift @debug I am able to use a pin to create an account as an uplift user', async ({ I }) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in');
     I.fillField('#firstName', randomUserFirstName);
