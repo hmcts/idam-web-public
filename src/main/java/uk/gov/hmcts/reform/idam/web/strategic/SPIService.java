@@ -94,9 +94,6 @@ public class SPIService {
      */
     public String uplift(final String username, final String password, final String jwt, final String redirectUri, final String clientId, final String state, final String scope) {
         ResponseEntity<String> response;
-        long startTime = System.currentTimeMillis();
-
-        log.warn("Uplift started");
 
         HttpEntity<MultiValueMap<String, String>> entity;
 
@@ -116,7 +113,6 @@ public class SPIService {
 
         response = restTemplate.exchange(configurationProperties.getStrategic().getService().getUrl() + "/" + configurationProperties.getStrategic().getEndpoint().getUplift(), HttpMethod.POST, entity,
             String.class);
-        log.warn("Uplift ended at {}", System.currentTimeMillis() - startTime);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return response.getBody();
@@ -127,15 +123,15 @@ public class SPIService {
         }
     }
 
-    public ApiAuthResult authenticate(final String username, final String password, final String redirectUri, final String ipAddress) throws JsonProcessingException {
+    public ApiAuthResult authenticate(final String username, final String password, final String redirectUri, final String ipAddress) {
         return authenticate(username, password, null, redirectUri, ipAddress);
     }
 
-    public ApiAuthResult authenticate(final String tokenId, final String redirectUri, final String ipAddress) throws JsonProcessingException {
+    public ApiAuthResult authenticate(final String tokenId, final String redirectUri, final String ipAddress) {
         return authenticate(null, null, tokenId, redirectUri, ipAddress);
     }
 
-    protected ApiAuthResult authenticate(final String username, final String password, final String tokenId, final String redirectUri, final String ipAddress) throws JsonProcessingException {
+    protected ApiAuthResult authenticate(final String username, final String password, final String tokenId, final String redirectUri, final String ipAddress) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>(4);
         if (username != null) {
             form.add("username", username);
@@ -174,8 +170,7 @@ public class SPIService {
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             httpStatus = he.getStatusCode();
             if (httpStatus == HttpStatus.FORBIDDEN || httpStatus == HttpStatus.UNAUTHORIZED || httpStatus == HttpStatus.NOT_FOUND) {
-                ErrorResponse errorResponse = objectMapper.readValue(he.getResponseBodyAsString(), ErrorResponse.class);
-                resultBuilder.errorCode(errorResponse.getCode());
+                resultBuilder.errorCode(getErrorCode(he.getResponseBodyAsString()));
             } else {
                 throw he;
             }
@@ -183,6 +178,17 @@ public class SPIService {
 
         resultBuilder.httpStatus(httpStatus);
         return resultBuilder.build();
+    }
+
+    private ErrorResponse.CodeEnum getErrorCode(String errorBody) {
+        try {
+            ErrorResponse errorResponse = objectMapper.readValue(errorBody, ErrorResponse.class);
+            return errorResponse.getCode() != null ? errorResponse.getCode() : ErrorResponse.CodeEnum.ERROR;
+        } catch (JsonProcessingException e) {
+            // The API might return the auth tree response instead of an ErrorResponse,
+            // but we don't need the details from that type of response.
+            return ErrorResponse.CodeEnum.ERROR;
+        }
     }
 
     /**

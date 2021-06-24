@@ -104,8 +104,7 @@ public class UserController {
             model.put("code", code);
 
         } catch (HttpServerErrorException | HttpClientErrorException e) {
-            log.error("An error occurred validating user activation token: {}", token);
-            log.error("Response body: {}", e.getResponseBodyAsString(), e);
+            log.debug("An error occurred validating user activation token: {}", token, e);
             if (e.getStatusCode().equals(HttpStatus.CONFLICT)) {
                 model.put(ERROR_MSG, ALREADY_ACTIVATED_KEY);
             } else {
@@ -160,12 +159,11 @@ public class UserController {
         try {
             service = spiService.getServiceByClientId(clientId);
         } catch (HttpServerErrorException | HttpClientErrorException e) {
-            log.error("An error occurred getting service with clientId: {}", clientId);
-            log.error("Response body: {}", e.getResponseBodyAsString(), e);
+            log.error("An error occurred getting service with clientId: {}", clientId, e);
             model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
             return ERRORPAGE_VIEW;
         } catch (Exception e) {
-            log.error("An error occurred getting service with clientId: {}", clientId);
+            log.error("An error occurred getting service with clientId: {}", clientId, e);
             model.addAttribute(ERROR_MSG, GENERIC_ERROR_KEY);
             model.addAttribute(ERROR_SUB_MSG, GENERIC_SUB_ERROR_KEY);
             return ERRORPAGE_VIEW;
@@ -280,8 +278,7 @@ public class UserController {
                 // don't expose the token in the error page
                 return new ModelAndView("redirect:expiredtoken", (Map<String, ?>) null);
             } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
-                log.error("An error occurred validating user activation token in activate: {}", token);
-                log.error("Response body: {}", e.getResponseBodyAsString(), e);
+                log.debug("An error occurred validating user activation token in activate: {}", token, e);
                 model.put(ERROR_MSG, ALREADY_ACTIVATED_KEY);
                 return new ModelAndView(ERRORPAGE_VIEW, model);
             }

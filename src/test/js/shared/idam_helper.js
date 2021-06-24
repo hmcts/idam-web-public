@@ -4,6 +4,8 @@ const fetch = require('node-fetch');
 const uuid = require('uuid');
 const MAX_NOTIFY_PAGES = 3;  //max notify results pages to search
 const MAX_RETRIES = 5;  //max retries on each notify results page
+const {runAccessibility} = require('./accessibility/runner');
+const testConfig = require('../config/test_data.js');
 
 let agentToUse;
 if (process.env.PROXY_SERVER) {
@@ -696,11 +698,25 @@ class IdamHelper extends Helper {
             agent: agent,
             method: 'DELETE'
         }).then(response => {
+            if (response.status !== 200) {
+                console.log(`Error deleting test data with prefix ${testDataPrefix}, response: ${response.status}`);
+            }
             return response.json();
         }).catch(err => {
             console.log(err);
         });
     }
+
+    async runAccessibilityTest() {
+        if (!testConfig.TestForAccessibility) {
+            return;
+        }
+        const url = await this.helpers['Puppeteer'].grabCurrentUrl();
+        const {page} = await this.helpers['Puppeteer'];
+
+        runAccessibility(url, page);
+    }
+
 }
 
 module.exports = IdamHelper;

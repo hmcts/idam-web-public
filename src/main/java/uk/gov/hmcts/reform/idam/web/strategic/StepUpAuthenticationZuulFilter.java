@@ -70,19 +70,14 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
         log.info("StepUp filter triggered.");
 
         final String tokenId = getSessionToken(request);
+        final String originIp = ObjectUtils.defaultIfNull(request.getHeader(X_FORWARDED_FOR), request.getRemoteAddr());
+        final String redirectUri = request.getParameter(MvcKeys.REDIRECT_URI);
+        final ApiAuthResult authenticationResult = spiService.authenticate(tokenId, redirectUri, originIp);
 
-        try {
-            final String originIp = ObjectUtils.defaultIfNull(request.getHeader(X_FORWARDED_FOR), request.getRemoteAddr());
-            final String redirectUri = request.getParameter(MvcKeys.REDIRECT_URI);
-            final ApiAuthResult authenticationResult = spiService.authenticate(tokenId, redirectUri, originIp);
-
-            if (authenticationResult.requiresMfa()) {
-                dropCookie(idamSessionCookieName, ctx);
-            }
-
-        } catch (final JsonProcessingException e) {
-            log.error(ZUUL_PROCESSING_ERROR, e);
+        if (authenticationResult.requiresMfa()) {
+            dropCookie(idamSessionCookieName, ctx);
         }
+
         // continue as usual (delegate to idam-api)
         ctx.setSendZuulResponse(true);
         return null;

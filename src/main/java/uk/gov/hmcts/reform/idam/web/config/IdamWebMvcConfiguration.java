@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
+import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
+import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
@@ -28,10 +31,21 @@ public class IdamWebMvcConfiguration implements WebMvcConfigurer {
     private ConfigurationProperties configurationProperties;
 
     @Bean
+    public TomcatContextCustomizer sameSiteCookiesConfig() {
+        return context -> {
+            final Rfc6265CookieProcessor cookieProcessor = new Rfc6265CookieProcessor();
+            cookieProcessor.setSameSiteCookies(SameSiteCookies.STRICT.getValue());
+            context.setCookieProcessor(cookieProcessor);
+        };
+    }
+
+    @Bean
     public LocaleResolver localeResolver() {
         final CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setCookieName(IDAM_LOCALES_COOKIE_NAME);
         localeResolver.setCookieMaxAge(COOKIE_MAX_AGE_SECONDS);
+        localeResolver.setCookieSecure(true);
+        localeResolver.setCookieHttpOnly(true);
         return localeResolver;
     }
 

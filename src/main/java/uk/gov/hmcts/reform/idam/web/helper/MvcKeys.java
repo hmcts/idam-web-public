@@ -54,6 +54,7 @@ public class MvcKeys {
     public static final String TACTICAL_RESET_PWD_VIEW = "tacticalResetPassword";
     public static final String SELF_REGISTER_VIEW = "selfRegister";
     public static final String COOKIES_VIEW = "cookies";
+    public static final String COOKIE_PREFERENCES_VIEW = "cookiePreferences";
     public static final String PRIVACY_POLICY_VIEW = "privacypolicy";
     public static final String TERMS_AND_CONDITIONS_VIEW = "tandc";
     public static final String CONTACT_US_VIEW = "contactus";

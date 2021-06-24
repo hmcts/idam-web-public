@@ -15,13 +15,14 @@ let userFirstNames = [];
 let serviceNames = [];
 let specialCharacterPassword;
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     diffCaseCitizenEmail = 'diffcase.' + randomData.getRandomEmailAddress();
     specialcharPwdResetCitizenEmail = 'specialcharpwd.' + randomData.getRandomEmailAddress();
@@ -52,7 +53,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @resetpass As a citizen user I can reset my password', async ({ I }) => {
@@ -62,8 +63,10 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.click('Forgotten password?');
     I.waitForText('Reset your password');
     I.fillField('#email', citizenEmail);
+    await I.runAccessibilityTest();
     I.click('Submit');
     I.waitForText('Check your email');
+    await I.runAccessibilityTest();
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
@@ -73,6 +76,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
+    await I.runAccessibilityTest();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', citizenEmail);
@@ -193,11 +197,13 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.click('Continue');
     I.waitForText('There was a problem with the password you entered');
     I.see("Your password is too easy to guess");
+    await I.runAccessibilityTest();
     I.fillField('password1', `${randomUserFirstName}Other6mKjmC`);
     I.fillField('password2', `${randomUserFirstName}Other6mKjmC`);
     I.click('Continue');
     I.waitForText('There was a problem with the password you entered');
     I.see("Do not include your name or email in your password");
+    await I.runAccessibilityTest();
     I.fillField('password1', `${otherCitizenEmail}3ksTys`);
     I.fillField('password2', `${otherCitizenEmail}3ksTys`);
     I.click('Continue');
@@ -208,6 +214,7 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.click('Continue');
     I.waitForText('There was a problem with the password you entered');
     I.see('Your password didn\'t have all the required characters');
+    await I.runAccessibilityTest();
     I.fillField('password1', 'Lincoln1');
     I.fillField('password2', 'Lincoln1');
     I.click('Continue');
@@ -227,8 +234,6 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(specialcharPwdResetCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
-    I.saveScreenshot('create-newpassword.png');
-    I.seeVisualDiff('create-newpassword.png', {tolerance: 6, prepareBaseImage: false});
     I.seeTitleEquals('Reset Password - HMCTS Access');
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);

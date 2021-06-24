@@ -7,7 +7,8 @@ const {expect} = chai;
 
 Feature('Self Registration');
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
@@ -21,8 +22,8 @@ let specialCharacterPassword;
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
-    randomUserLastName = randomData.getRandomUserName();
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
     await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
     await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
@@ -34,20 +35,22 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
-Scenario('@functional @selfregister User Validation errors', ({ I }) => {
+Scenario('@functional @selfregister User Validation errors', async ({ I }) => {
 
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister');
     I.waitForText('Create an account or sign in');
     I.see('Create an account');
+    await I.runAccessibilityTest();
     I.click("Continue");
     I.waitForText('Information is missing or invalid');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
+    await I.runAccessibilityTest();
     I.fillField('firstName', 'Lucy');
     I.click('Continue');
     I.dontSee('You have not entered your first name');
@@ -61,6 +64,7 @@ Scenario('@functional @selfregister User Validation errors', ({ I }) => {
     I.fillField('email', '111');
     I.click('Continue');
     I.see('Your email address is invalid');
+    await I.runAccessibilityTest();
     I.fillField('firstName', 'L');
     I.fillField('lastName', '@@');
     I.click('Continue');
@@ -69,9 +73,11 @@ Scenario('@functional @selfregister User Validation errors', ({ I }) => {
     I.see('Your last name is invalid');
     I.see('Last name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Sign in to your account.');
+    await I.runAccessibilityTest();
     I.click('Sign in to your account.');
     I.waitForText('Sign in');
     I.see('Sign in');
+    await I.runAccessibilityTest();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @selfregister @welshLanguage Account already created (no language)', async ({ I }) => {
@@ -79,15 +85,16 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
     I.clearCookie(Welsh.localeCookie);
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister');
+    await I.runAccessibilityTest();
     I.waitForText('Create an account or sign in');
-
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmail);
+    await I.runAccessibilityTest();
     I.click("Continue");
-
     I.waitForText('Check your email');
+    await I.runAccessibilityTest();
     const emailResponse = await I.getEmailFromNotify(citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
@@ -104,12 +111,14 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
     assert(cookie.value, 'cy');
 
     I.see(Welsh.createAnAccount);
+    await I.runAccessibilityTest();
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmail);
+    await I.runAccessibilityTest();
     I.click(Welsh.continueBtn);
     I.waitForText(Welsh.checkYourEmail);
-
+    await I.runAccessibilityTest();
     const emailResponse = await I.getEmailFromNotify(citizenEmail);
     assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
 
@@ -124,7 +133,6 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister');
     I.waitForText('Create an account or sign in');
-
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
@@ -137,14 +145,18 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.seeTitleEquals('User Activation - HMCTS Access');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
+    await I.runAccessibilityTest();
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
+    await I.runAccessibilityTest();
     I.amOnPage(loginPage);
+    await I.runAccessibilityTest();
     I.seeInCurrentUrl("state=selfreg");
     I.waitForText('Sign in or create an account');
     I.fillField('#username', email);
     I.fillField('#password', userPassword);
+    await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);

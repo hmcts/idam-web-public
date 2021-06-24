@@ -20,22 +20,23 @@ let serviceNames = [];
 const pinUserRolePrefix = 'letter-';
 let serviceBetaRole;
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
-    randomUserLastName = randomData.getRandomUserName() + 'pinępinç';
-    randomUserFirstName = randomData.getRandomUserName() + 'ępinçłpin';
+    randomUserLastName = randomData.getRandomUserName(testSuitePrefix) + 'pinępinç';
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix) + 'ępinçłpin';
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     existingCitizenEmail = 'existingcitizen.' + randomData.getRandomEmailAddress();
     upliftAccountCreationStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     upliftLoginStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
 
     const token = await I.getAuthToken();
-    serviceBetaRole = await I.createRole(randomData.getRandomRoleName() + "_beta", 'beta description', '', token);
-    let serviceAdminRole = await I.createRole(randomData.getRandomRoleName() + "_admin", 'admin description', serviceBetaRole.id, token);
-    let serviceSuperRole = await I.createRole(randomData.getRandomRoleName() + "_super", 'super description', serviceAdminRole.id, token);
+    serviceBetaRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_beta", 'beta description', '', token);
+    let serviceAdminRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description', serviceBetaRole.id, token);
+    let serviceSuperRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', serviceAdminRole.id, token);
 
     let serviceRoleNames = [serviceBetaRole.name, serviceAdminRole.name, serviceSuperRole.name];
     let serviceRoleIds = [serviceBetaRole.id, serviceAdminRole.id, serviceSuperRole.id];
@@ -61,7 +62,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 After(({ I }) => {
@@ -73,7 +74,7 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/pin?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
     I.waitForText('Enter security code');
     I.fillField('#pin', pinUser.pin);
-
+    await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
     I.click('Continue');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
@@ -127,6 +128,7 @@ Scenario('@functional @uplift @debug I am able to use a pin to create an account
     I.fillField('#firstName', randomUserFirstName);
     I.fillField('#lastName', randomUserLastName);
     I.fillField('#username', citizenEmail);
+    await I.runAccessibilityTest();
     I.scrollPageToBottom();
     I.click('Continue');
     I.waitForText('Check your email');
@@ -141,6 +143,7 @@ Scenario('@functional @uplift @debug I am able to use a pin to create an account
     I.click('Continue');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
+    await I.runAccessibilityTest();
 });
 
 Scenario('@functional @uplift @upliftLogin uplift a user via login journey', async ({ I }) => {
@@ -182,6 +185,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.click('Continue');
     I.waitForText('You need to reset your password');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
+    await I.runAccessibilityTest();
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftAccountCreationStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
@@ -190,6 +194,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.click('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
+    await I.runAccessibilityTest();
 
     const responseAfterAccountReActivation = await I.getUserByEmail(upliftAccountCreationStaleUserEmail);
     expect(responseAfterAccountReActivation.id).to.equal(userId);

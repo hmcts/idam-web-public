@@ -11,7 +11,8 @@ let userFirstNames = [];
 let serviceNames = [];
 let randomUserLastName;
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
@@ -19,8 +20,8 @@ const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=$
 const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
-    randomUserLastName = randomData.getRandomUserName();
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
     citizenUserLoginEmail = 'citizenLogin' + randomData.getRandomEmailAddress();
 
     await I.createServiceData(serviceName, serviceClientSecret);
@@ -33,7 +34,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-     return I.deleteAllTestData(randomData.TEST_BASE_PREFIX)
+     return I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix)
 });
 
 Scenario('@crossbrowser Citizen user self registration', async ({ I }) => {

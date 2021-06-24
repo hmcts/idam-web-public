@@ -11,6 +11,7 @@ const {expect} = chai;
 Feature('I am able to login with MFA');
 
 const scope="openid profile roles manage-user create-user";
+const testSuitePrefix = randomData.getRandomAlphabeticString();
 const userPassword=randomData.getRandomUserPassword();
 const serviceClientSecret = randomData.getRandomClientSecret();
 let token;
@@ -26,20 +27,20 @@ let mfaTurnedOnService2;
 let mfaTurnedOffService2;
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     mfaUserEmail = randomData.getRandomEmailAddress();
     mfaDisabledUserEmail = randomData.getRandomEmailAddress();
 
     token = await I.getAuthToken();
 
-    mfaTurnedOnServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest_admin", 'admin description', '', token);
-    mfaTurnedOnService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), serviceClientSecret,  [mfaTurnedOnServiceRole.name], '', token, scope);
+    mfaTurnedOnServiceRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mfaotptest_admin", 'admin description', '', token);
+    mfaTurnedOnService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret,  [mfaTurnedOnServiceRole.name], '', token, scope);
 
-    mfaTurnedOffServiceRole = await I.createRole(randomData.getRandomRoleName() + "_mfaotptest", 'admin description', '', token);
-    mfaTurnedOffService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
+    mfaTurnedOffServiceRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mfaotptest", 'admin description', '', token);
+    mfaTurnedOffService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
 
-    mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), serviceClientSecret, [mfaTurnedOnServiceRole.name], '', token, scope);
-    mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
+    mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOnServiceRole.name], '', token, scope);
+    mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
 
     await I.createUserWithRoles(mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     await I.createUserWithRoles(mfaDisabledUserEmail, userPassword, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
@@ -50,7 +51,7 @@ BeforeSuite(async ({ I }) => {
 
 AfterSuite(async ({ I }) => {
     return Promise.all([
-        I.deleteAllTestData(randomData.TEST_BASE_PREFIX),
+        I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix),
         I.deletePolicy(mfaApplicationPolicyName, token),
     ]);
 });
@@ -152,13 +153,16 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.click('Sign in');
     I.waitInUrl("/verification");
     I.waitForText('Verification required');
+    await I.runAccessibilityTest();
     const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
 
     // empty field
     I.fillField('code', '');
+    await I.runAccessibilityTest();
     I.click('Continue');
     I.waitForText('Enter a correct verification code');
     // other than digits
+    await I.runAccessibilityTest();
     I.fillField('code', '663h8w7g');
     I.click('Continue');
     I.see('Enter a correct verification code');
@@ -180,6 +184,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.click('Continue');
     // after 3 incorrect attempts, user should start the login/journey again.
     I.seeInCurrentUrl("/expiredcode");
+    await I.runAccessibilityTest();
     I.see('We’ve been unable to sign you in because your verification code has expired.');
     I.see('You’ll need to start again.');
     I.click('Continue');

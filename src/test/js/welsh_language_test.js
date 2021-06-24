@@ -5,7 +5,8 @@ const Welsh = require('./shared/welsh_constants');
 
 Feature('Welsh Language');
 
-const serviceName = randomData.getRandomServiceName();
+const testSuitePrefix = randomData.getRandomAlphabeticString();
+const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
@@ -18,8 +19,8 @@ let specialCharacterPassword;
 
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName();
-    randomUserLastName = randomData.getRandomUserName();
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
     await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
     await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
@@ -28,7 +29,7 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX);
+    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @welshLanguage There is a language switch that is working', async ({ I }) => {
@@ -39,10 +40,12 @@ Scenario('@functional @welshLanguage There is a language switch that is working'
     I.amOnPage(Welsh.pageUrlWithParamEnglish);
 
     I.waitForText('Access Denied');
+    await I.runAccessibilityTest();
     I.waitForText(welshLinkValue);
 
     I.click(welshLinkValue);
     I.waitForText(Welsh.accessDeniedWelsh);
+    await I.runAccessibilityTest();
     I.waitForText(englishLinkValue);
 
     I.click(englishLinkValue);
@@ -89,11 +92,13 @@ Scenario('@functional @welshLanguage I can reset my password in Welsh', async ({
 
     I.amOnPage(loginPage);
     I.waitForText(Welsh.signInOrCreateAccount);
+    await I.runAccessibilityTest();
     I.see(Welsh.forgottenPassword);
     I.click(Welsh.forgottenPassword);
     I.waitInUrl('reset/forgotpassword');
     I.waitForText(Welsh.resetYourPassword);
     I.fillField('#email', citizenEmail);
+    await I.runAccessibilityTest();
     I.click(Welsh.submitBtn);
     I.waitForText(Welsh.checkYourEmail);
     const userPwdResetUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
@@ -101,7 +106,9 @@ Scenario('@functional @welshLanguage I can reset my password in Welsh', async ({
     I.waitForText(Welsh.createANewPassword);
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);
+    await I.runAccessibilityTest();
     I.click(Welsh.continueBtn);
     I.waitInUrl('doResetPassword');
     I.waitForText(Welsh.passwordChanged);
+    await I.runAccessibilityTest();
 });
