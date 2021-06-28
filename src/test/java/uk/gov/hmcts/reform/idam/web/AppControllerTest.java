@@ -204,8 +204,8 @@ public class AppControllerTest {
     public void indexView_shouldReturnIndexView() throws Exception {
         mockMvc.perform(get("/"))
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(view().name(INDEX_VIEW));
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("login"));
     }
 
     /**

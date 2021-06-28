@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.api.internal.model.Service;
@@ -106,9 +107,11 @@ public class AppController {
      * @should return index view
      */
     @GetMapping("/")
-    public String indexView(final Map<String, Object> model) {
-
-        return INDEX_VIEW;
+    public String indexView(RedirectAttributes redirectAttributes,
+                            HttpServletRequest request,
+                            final Map<String, Object> model) {
+        redirectAttributes.addAllAttributes(request.getParameterMap());
+        return "redirect:" + LOGIN_VIEW;
     }
 
     /**
