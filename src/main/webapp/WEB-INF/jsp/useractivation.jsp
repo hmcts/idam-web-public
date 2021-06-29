@@ -42,7 +42,7 @@
                         <span class="error-message"><spring:message code="${errorLabelOne}" text=""/></span>
                     </c:if>
                 </label>
-                <input class="form-control ${hasPassword1Error ? "form-control-error" : ""}" type="password" id="password1" name="password1" value="${fn:escapeXml(password1)}" autocomplete="off">
+                <input class="form-control ${hasPassword1Error ? "form-control-error" : ""}" type="password" id="password1" name="password1" autocomplete="off">
             </div>
 
             <c:set var="hasPassword2Error" value="${not empty errorLabelTwo}" />
@@ -53,7 +53,7 @@
                         <span class="error-message"><spring:message code="${errorLabelTwo}" text=""/></span>
                     </c:if>
                 </label>
-                <input class="form-control ${hasPassword2Error ? "form-control-error" : ""}" type="password" id="password2" name="password2" value="${fn:escapeXml(password2)}" autocomplete="off">
+                <input class="form-control ${hasPassword2Error ? "form-control-error" : ""}" type="password" id="password2" name="password2" autocomplete="off">
             </div>
 
             <input class="button" type="submit" value="<spring:message code="public.common.button.continue.text"/>" id="activate"
