@@ -29,6 +29,7 @@
             <div class="column-one-half column--bordered">
                 <form:form name="upliftUser"
                       class="form form-section"
+                      method="post"
                       novalidate=""
                       _lpchecked="1">
 
