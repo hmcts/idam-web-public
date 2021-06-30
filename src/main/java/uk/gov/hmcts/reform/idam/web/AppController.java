@@ -214,7 +214,11 @@ public class AppController {
                     return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
                 }
 
-                msg = "PIN user not longer valid";
+                if (ex.getStatusCode().equals(HttpStatus.CONFLICT)) {
+                    msg = "Your account is already activated";
+                } else {
+                    msg = "PIN user not longer valid";
+                }
             }
 
             ErrorHelper.showLoginError("Sorry, there was an error",
