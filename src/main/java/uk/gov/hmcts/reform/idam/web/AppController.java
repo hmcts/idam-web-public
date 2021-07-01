@@ -202,7 +202,7 @@ public class AppController {
             model.put(STATE, request.getState());
             return new ModelAndView(USERCREATED_VIEW, model);
         } catch (HttpClientErrorException ex) {
-            String msg = "Please try your action again.";
+            String msg = "Please try your action again. ";
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
 
                 if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
@@ -217,7 +217,7 @@ public class AppController {
                 if (ex.getStatusCode().equals(HttpStatus.CONFLICT)) {
                     msg = "Your account is already activated";
                 } else {
-                    msg += " PIN user not longer valid";
+                    msg += "PIN user not longer valid";
                 }
             }
 
