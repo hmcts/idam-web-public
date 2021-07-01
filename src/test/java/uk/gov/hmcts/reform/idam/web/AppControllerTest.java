@@ -466,7 +466,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put generic error data in model if register user service throws HttpClientErrorException an http status code different from 404
-     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map)
      */
     @Test
     public void upliftRegister_shouldPutGenericErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionAnHttpStatusCodeDifferentFrom404() throws Exception {

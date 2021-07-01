@@ -202,7 +202,7 @@ public class AppController {
             model.put(STATE, request.getState());
             return new ModelAndView(USERCREATED_VIEW, model);
         } catch (HttpClientErrorException ex) {
-            String msg = "";
+            String msg = "Please try your action again. ";
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
 
                 if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
@@ -214,13 +214,15 @@ public class AppController {
                     return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
                 }
 
-                msg = "PIN user not longer valid";
+                if (ex.getStatusCode().equals(HttpStatus.CONFLICT)) {
+                    msg = "Your account is already activated";
+                } else {
+                    msg += "PIN user not longer valid";
+                }
             }
 
             ErrorHelper.showLoginError("Sorry, there was an error",
-                String.format("Please try your action again. %s", msg),
-                request.getRedirect_uri(),
-                model);
+                msg, request.getRedirect_uri(), model);
             // We use spring:hasBindErrors so make sure the 'showLoginError' is rendered to the page
             // by adding a binding error
             bindingResult.reject("non-existent-error-code");
