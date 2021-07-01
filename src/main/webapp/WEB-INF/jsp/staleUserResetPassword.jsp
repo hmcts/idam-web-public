@@ -13,7 +13,7 @@
                  <spring:message code="public.reset.password.stale.users.warning.fix" />
              </p>
              <ul class="error-summary-list">
-                <li><a href="#password"><spring:message code="public.reset.password.stale.users.warning.reset"/></a></li>
+                 <u><spring:message code="public.reset.password.stale.users.warning.reset"/></u>
              </ul>
         </div>
         <div class="text">
