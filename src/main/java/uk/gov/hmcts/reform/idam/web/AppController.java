@@ -195,15 +195,11 @@ public class AppController {
 
         try {
             spiService.registerUser(request);
-            model.put(EMAIL, request.getUsername());
-            model.put(REDIRECTURI, request.getRedirect_uri());
-            model.put(CLIENTID, request.getClient_id());
-            model.put(JWT, request.getJwt());
-            model.put(STATE, request.getState());
-            return new ModelAndView(USERCREATED_VIEW, model);
         } catch (HttpClientErrorException ex) {
-            String msg = "Please try your action again. ";
+            String msg = "";
+
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+
                 if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
                     && ex.getResponseBodyAsString().contains(STALE_USER_REGISTRATION_SENT.toString())) {
                     model.remove("registerUserCommand");
@@ -213,21 +209,29 @@ public class AppController {
                     return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
                 }
 
-                msg += "PIN user no longer valid";
+                msg = "PIN user not longer valid";
             }
 
-            if (ex.getStatusCode().equals(HttpStatus.CONFLICT)) {
-                msg = "Your account is already active.";
+            if (!ex.getStatusCode().equals(HttpStatus.CONFLICT)) {
+                ErrorHelper.showLoginError("Sorry, there was an error",
+                    String.format("Please try your action again. %s", msg),
+                    request.getRedirect_uri(),
+                    model);
+                // We use spring:hasBindErrors so make sure the 'showLoginError' is rendered to the page
+                // by adding a binding error
+                bindingResult.reject("non-existent-error-code");
+
+                return new ModelAndView(UPLIFT_REGISTER_VIEW, model);
             }
-
-            ErrorHelper.showLoginError("Sorry, there was an error",
-                msg, request.getRedirect_uri(), model);
-            // We use spring:hasBindErrors so make sure the 'showLoginError' is rendered to the page
-            // by adding a binding error
-            bindingResult.reject("non-existent-error-code");
-
-            return new ModelAndView(UPLIFT_REGISTER_VIEW, model);
         }
+
+        model.put(EMAIL, request.getUsername());
+        model.put(REDIRECTURI, request.getRedirect_uri());
+        model.put(CLIENTID, request.getClient_id());
+        model.put(JWT, request.getJwt());
+        model.put(STATE, request.getState());
+
+        return new ModelAndView(USERCREATED_VIEW, model);
     }
 
     /**
