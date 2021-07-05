@@ -204,7 +204,6 @@ public class AppController {
         } catch (HttpClientErrorException ex) {
             String msg = "Please try your action again. ";
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-
                 if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
                     && ex.getResponseBodyAsString().contains(STALE_USER_REGISTRATION_SENT.toString())) {
                     model.remove("registerUserCommand");
@@ -214,11 +213,11 @@ public class AppController {
                     return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
                 }
 
-                if (ex.getStatusCode().equals(HttpStatus.CONFLICT)) {
-                    msg = "Your account is already activated";
-                } else {
-                    msg += "PIN user not longer valid";
-                }
+                msg += "PIN user no longer valid";
+            }
+
+            if (ex.getStatusCode().equals(HttpStatus.CONFLICT)) {
+                msg = "Your account is already active.";
             }
 
             ErrorHelper.showLoginError("Sorry, there was an error",
