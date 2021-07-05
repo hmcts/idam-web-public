@@ -213,7 +213,7 @@ public class AppController {
                     return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
                 }
 
-                msg += "PIN user not longer valid";
+                msg += "PIN user no longer valid";
             }
 
             if (ex.getStatusCode().equals(HttpStatus.CONFLICT)) {

@@ -136,7 +136,7 @@ public class TestConstants {
     public static final String INFORMATION_IS_MISSING_OR_INVALID = "Information is missing or invalid";
     public static final String PLEASE_FIX_THE_FOLLOWING = "Please fix the following";
     public static final String SORRY_THERE_WAS_AN_ERROR = "Sorry, there was an error";
-    public static final String PIN_USER_NOT_LONGER_VALID = "PIN user not longer valid";
+    public static final String PIN_USER_NOT_LONGER_VALID = "PIN user no longer valid";
     public static final String PLEASE_TRY_AGAIN = "Please try your action again. ";
     public static final String ACCOUNT_ALREADY_ACTIVE = "Your account is already active.";
     public static final String ERROR_MSG = "errorMsg";
