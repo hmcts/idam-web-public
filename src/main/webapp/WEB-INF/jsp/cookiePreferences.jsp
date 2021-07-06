@@ -206,7 +206,7 @@
                 </table>
 
                 <p></p>
-                <p><a href="/cookies"><spring:message
+                <p><a href="${pageContext.request.contextPath}/cookies" target="_blank"><spring:message
                     code="public.cookie.preferences.text_0090"/></a>
                     <spring:message code="public.cookie.preferences.text_0091"/></p>
 

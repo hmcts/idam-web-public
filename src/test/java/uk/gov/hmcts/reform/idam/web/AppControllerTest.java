@@ -135,6 +135,7 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_USER_NOT_LONGER_VALID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_FIX_THE_FOLLOWING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_TRY_AGAIN;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACCOUNT_ALREADY_ACTIVE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PROMPT_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PROMPT_VALUE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
@@ -204,8 +205,8 @@ public class AppControllerTest {
     public void indexView_shouldReturnIndexView() throws Exception {
         mockMvc.perform(get("/"))
             .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(view().name(INDEX_VIEW));
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("login"));
     }
 
     /**
@@ -437,6 +438,31 @@ public class AppControllerTest {
 
     }
 
+    /**
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
+     */
+    @Test
+    public void upliftRegister_shouldPutRightErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionWith409HttpStatusCode() throws Exception {
+        given(spiService.registerUser(eq(aRegisterUserRequest()))).willThrow(new HttpClientErrorException(HttpStatus.CONFLICT));
+
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
+            .param(JWT_PARAMETER, JWT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
+            .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(ERROR, ERROR))
+            .andExpect(model().attribute(ERROR_TITLE, SORRY_THERE_WAS_AN_ERROR))
+            .andExpect(model().attribute(ERROR_MESSAGE, ACCOUNT_ALREADY_ACTIVE))
+            .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
+            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
+
+    }
+
 
     /**
      * @verifies redirects to "reset/inactive-user" on registration 404 with STALE_USER_REGISTRATION_SENT error
@@ -466,7 +492,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put generic error data in model if register user service throws HttpClientErrorException an http status code different from 404
-     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map)
      */
     @Test
     public void upliftRegister_shouldPutGenericErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionAnHttpStatusCodeDifferentFrom404() throws Exception {
