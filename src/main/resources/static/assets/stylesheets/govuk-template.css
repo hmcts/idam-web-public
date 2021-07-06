@@ -1718,3 +1718,9 @@ input[type=number] {
     font-weight: bold;
     text-decoration: underline;
 }
+
+.error-summary .error-summary-list u {
+    color: #b10e1e;
+    font-weight: bold;
+    text-decoration: underline;
+}

@@ -28,7 +28,7 @@
         }
     </script>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><spring:message code="${titleKey}"/> <spring:message code="public.common.title"/></title>
 
     <link href="/assets/stylesheets/application.css" media="all" rel="stylesheet"/>
