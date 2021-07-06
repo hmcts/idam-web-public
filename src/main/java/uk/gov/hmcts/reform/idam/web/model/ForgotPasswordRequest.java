@@ -21,4 +21,6 @@ public class ForgotPasswordRequest {
     private String state;
 
     private String scope;
+
+    private String nonce;
 }

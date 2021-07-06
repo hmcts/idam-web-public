@@ -203,10 +203,10 @@ public class AppController {
                 if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
                     && ex.getResponseBodyAsString().contains(STALE_USER_REGISTRATION_SENT.toString())) {
                     model.remove("registerUserCommand");
-                    model.put("client_id", request.getClient_id());
-                    model.put("redirect_uri", request.getRedirect_uri());
-                    model.put("state", request.getState());
-                    model.put("nonce", request.getNonce());
+                    model.put(CLIENT_ID, request.getClient_id());
+                    model.put(REDIRECT_URI, request.getRedirect_uri());
+                    model.put(STATE, request.getState());
+                    model.put(NONCE, request.getNonce());
                     return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
                 }
 
@@ -683,10 +683,11 @@ public class AppController {
             if (StringUtils.isNotBlank(ex.getResponseBodyAsString())
                 && ex.getResponseBodyAsString().equalsIgnoreCase(STALE_USER_REGISTRATION_SENT.toString())) {
                 model.remove("upliftRequest");
-                model.put("client_id", request.getClient_id());
-                model.put("redirect_uri", request.getRedirect_uri());
-                model.put("state", request.getState());
-                model.put("scope", request.getScope());
+                model.put(CLIENT_ID, request.getClient_id());
+                model.put(REDIRECT_URI, request.getRedirect_uri());
+                model.put(STATE, request.getState());
+                model.put(NONCE, request.getNonce());
+                model.put(SCOPE, request.getScope());
                 return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
             } else {
                 log.error("Uplift process exception: {}", ex.getMessage(), ex);
@@ -769,6 +770,7 @@ public class AppController {
         model.put(CLIENTID, forgotPasswordRequest.getClientId());
         model.put(EMAIL, forgotPasswordRequest.getEmail());
         model.put(STATE, forgotPasswordRequest.getState());
+        model.put(NONCE, forgotPasswordRequest.getNonce());
         model.put(SCOPE, forgotPasswordRequest.getScope());
 
         try {
@@ -933,6 +935,7 @@ public class AppController {
     public String resetPasswordStaleUser(@RequestParam("client_id") String clientId,
                                          @RequestParam("redirect_uri") String redirectUri,
                                          @RequestParam(required = false) String state,
+                                         @RequestParam(required = false) String nonce,
                                          @RequestParam(required = false) String scope,
                                          Model model) {
         model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(clientId));
@@ -940,6 +943,7 @@ public class AppController {
         model.addAttribute(REDIRECTURI, redirectUri);
         model.addAttribute(STATE, state);
         model.addAttribute(SCOPE, scope);
+        model.addAttribute(NONCE, nonce);
         return STALE_USER_RESET_PASSWORD_VIEW;
     }
 

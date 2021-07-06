@@ -167,6 +167,7 @@
                             <c:param name="redirect_uri" value="${redirectUri}" />
                             <c:param name="client_id" value="${clientId}" />
                             <c:param name="state" value="${state}" />
+                            <c:param name="nonce" value="${nonce}" />
                             <c:param name="scope" value="${scope}" />
                         </c:url>
                         <a href="${loginUrl}"><spring:message code="public.register.sign.in" /></a>
