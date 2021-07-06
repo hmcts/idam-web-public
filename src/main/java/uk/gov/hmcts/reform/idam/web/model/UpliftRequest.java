@@ -31,6 +31,8 @@ public class UpliftRequest {
 
     private String scope;
 
+    private String nonce;
+
     @NotEmpty
     private String client_id;
 }

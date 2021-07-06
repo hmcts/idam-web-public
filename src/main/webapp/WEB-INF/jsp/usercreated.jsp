@@ -32,6 +32,7 @@
                             <c:param name="redirect_uri" value="${redirectUri}" />
                             <c:param name="client_id" value="${clientId}" />
                             <c:param name="state" value="${state}" />
+                            <c:param name="nonce" value="${nonce}" />
                             <c:param name="jwt" value="${jwt}" />
                         </c:url>
                         <a href="${loginUpliftUrl}"><spring:message  code="public.common.user.created.re.enter.details.enter.details.again"/></a>

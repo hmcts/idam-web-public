@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_ACTIVATION_LINK_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.NONCE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.REDIRECTURI;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SCOPE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.SELF_REGISTER_VIEW;
@@ -145,6 +146,7 @@ public class UserController {
         @RequestParam(name = "redirect_uri", required = false) String redirectUri,
         @RequestParam(name = "client_id", required = false) String clientId,
         @RequestParam(name = "state", required = false) String state,
+        @RequestParam(name = "nonce", required = false) String nonce,
         @RequestParam(name = "scope", required = false) String scope,
         Model model) {
 
@@ -174,6 +176,7 @@ public class UserController {
             model.addAttribute(REDIRECTURI, redirectUri);
             model.addAttribute(CLIENTID, clientId);
             model.addAttribute(STATE, state);
+            model.addAttribute(NONCE, nonce);
             model.addAttribute(SCOPE, scope);
             return SELF_REGISTER_VIEW;
         }

@@ -65,6 +65,7 @@
                             <c:param name="redirectUri" value="${param['redirect_uri']}" />
                             <c:param name="clientId" value="${param['client_id']}" />
                             <c:param name="state" value="${param['state']}" />
+                            <c:param name="nonce" value="${param['nonce']}" />
                             <c:param name="scope" value="${param['scope']}" />
                         </c:url>
                         <a href="${forgotPasswordUrl}">
@@ -85,6 +86,7 @@
                         <c:param name="client_id" value="${param['client_id']}" />
                         <c:param name="state" value="${param['state']}" />
                         <c:param name="scope" value="${param['scope']}" />
+                        <c:param name="nonce" value="${param['nonce']}" />
                         <c:param name="jwt" value="${param['jwt']}" />
                     </c:url>
                     <a href="${loginUpliftUrl}">

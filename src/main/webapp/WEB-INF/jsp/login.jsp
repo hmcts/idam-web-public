@@ -27,6 +27,7 @@
                 <c:param name="redirectUri" value="${redirect_uri}"/>
                 <c:param name="clientId" value="${client_id}"/>
                 <c:param name="state" value="${state}"/>
+                <c:param name="nonce" value="${nonce}"/>
                 <c:param name="scope" value="${scope}"/>
             </c:url>
 
@@ -249,6 +250,7 @@
                             <c:param name="redirect_uri" value="${redirect_uri}"/>
                             <c:param name="client_id" value="${client_id}"/>
                             <c:param name="state" value="${state}"/>
+                            <c:param name="nonce" value="${nonce}"/>
                             <c:param name="scope" value="${scope}"/>
                         </c:url>
                         <a href="${selfRegisterUrl}">

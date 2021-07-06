@@ -42,4 +42,6 @@ public class RegisterUserRequest {
     private String client_id;
 
     private String state;
+
+    private String nonce;
 }

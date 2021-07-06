@@ -135,7 +135,6 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_USER_NOT_LONGER_VALID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_FIX_THE_FOLLOWING;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_TRY_AGAIN;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACCOUNT_ALREADY_ACTIVE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PROMPT_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PROMPT_VALUE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
@@ -442,7 +441,7 @@ public class AppControllerTest {
      * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
      */
     @Test
-    public void upliftRegister_shouldPutRightErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionWith409HttpStatusCode() throws Exception {
+    public void upliftRegister_shouldPretendEverythingIsGoodIfRegisterUserServiceThrowsHttpClientErrorExceptionWith409HttpStatusCode() throws Exception {
         given(spiService.registerUser(eq(aRegisterUserRequest()))).willThrow(new HttpClientErrorException(HttpStatus.CONFLICT));
 
         mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
@@ -455,12 +454,8 @@ public class AppControllerTest {
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
-            .andExpect(model().attribute(ERROR, ERROR))
-            .andExpect(model().attribute(ERROR_TITLE, SORRY_THERE_WAS_AN_ERROR))
-            .andExpect(model().attribute(ERROR_MESSAGE, ACCOUNT_ALREADY_ACTIVE))
-            .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(view().name(UPLIFT_REGISTER_VIEW));
-
+            .andExpect(model().attribute(USER_EMAIL_PARAMETER, USER_EMAIL))
+            .andExpect(view().name(USER_CREATED_VIEW_NAME));
     }
 
 

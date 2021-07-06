@@ -138,7 +138,6 @@ public class TestConstants {
     public static final String SORRY_THERE_WAS_AN_ERROR = "Sorry, there was an error";
     public static final String PIN_USER_NOT_LONGER_VALID = "PIN user no longer valid";
     public static final String PLEASE_TRY_AGAIN = "Please try your action again. ";
-    public static final String ACCOUNT_ALREADY_ACTIVE = "Your account is already active.";
     public static final String ERROR_MSG = "errorMsg";
     public static final String GENERIC_ERROR_KEY = "public.error.page.generic.error";
     public static final String ALREADY_ACTIVATED_KEY = "public.error.page.already.activated.description";
