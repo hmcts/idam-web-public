@@ -206,6 +206,7 @@ public class AppController {
                     model.put("client_id", request.getClient_id());
                     model.put("redirect_uri", request.getRedirect_uri());
                     model.put("state", request.getState());
+                    model.put("nonce", request.getNonce());
                     return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, model);
                 }
 
@@ -230,6 +231,7 @@ public class AppController {
         model.put(CLIENTID, request.getClient_id());
         model.put(JWT, request.getJwt());
         model.put(STATE, request.getState());
+        model.put(NONCE, request.getNonce());
 
         return new ModelAndView(USERCREATED_VIEW, model);
     }
