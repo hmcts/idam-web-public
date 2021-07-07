@@ -437,6 +437,27 @@ public class AppControllerTest {
 
     }
 
+    /**
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
+     */
+    @Test
+    public void upliftRegister_shouldPretendEverythingIsGoodIfRegisterUserServiceThrowsHttpClientErrorExceptionWith409HttpStatusCode() throws Exception {
+        given(spiService.registerUser(eq(aRegisterUserRequest()))).willThrow(new HttpClientErrorException(HttpStatus.CONFLICT));
+
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
+            .param(JWT_PARAMETER, JWT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
+            .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(USER_EMAIL_PARAMETER, USER_EMAIL))
+            .andExpect(view().name(USER_CREATED_VIEW_NAME));
+    }
+
 
     /**
      * @verifies redirects to "reset/inactive-user" on registration 404 with STALE_USER_REGISTRATION_SENT error
