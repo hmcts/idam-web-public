@@ -141,7 +141,6 @@ function manageAPMCookie(cookieStatus) {
         deleteCookie('dtSa')
         deleteCookie('rxVisitor')
         deleteCookie('rxvt')
-        window.localStorage.clear();
     }
     apmPreferencesUpdated(cookieStatus)
 }
@@ -149,6 +148,7 @@ function manageAPMCookie(cookieStatus) {
 function deleteCookie(cookie_name) {
     deleteCookieWithoutDomain(cookie_name);
     deleteCookieFromCurrentAndUpperDomain(cookie_name);
+    removeFromLocalAndSessionStorage(cookie_name)
 }
 
 function deleteCookieWithoutDomain(cookie_name) {
@@ -161,11 +161,19 @@ function deleteCookieFromCurrentAndUpperDomain(cookie_name) {
     document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain='+ hostname +';path=/;';
     document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain='+ dotHostname +';path=/;';
 
-    let dots = hostname.split('.');
-    let upperDomain = dots[dots.length - 2] + '.' + dots[dots.length - 1];
+    //for live
+    let firstDot = hostname.indexOf('.');
+    let upperDomain = hostname.substring(firstDot);
     let dotUpperDomain = "." + upperDomain;
     document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain='+ upperDomain +';path=/;';
     document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain='+ dotUpperDomain +';path=/;';
+
+    //for sub-live
+    let dots = hostname.split('.');
+    let subLiveUpperDomain = dots[dots.length - 2] + '.' + dots[dots.length - 1];
+    let subLiveDotUpperDomain = "." + subLiveUpperDomain;
+    document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain='+ subLiveUpperDomain +';path=/;';
+    document.cookie = cookie_name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;domain='+ subLiveDotUpperDomain +';path=/;';
 }
 
 function apmPreferencesUpdated(cookieStatus) {
@@ -180,4 +188,9 @@ function apmPreferencesUpdated(cookieStatus) {
             dtrum.disable();
         }
     }
+}
+
+function removeFromLocalAndSessionStorage(cookie_name) {
+    window.localStorage.removeItem(cookie_name);
+    window.sessionStorage.removeItem(cookie_name);
 }
