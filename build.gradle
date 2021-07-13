@@ -29,10 +29,9 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.6.2'
+  def idamBomVersion = '2.6.4'
   ext['spring.boot.version'] = '2.4.6'
   ext['netty.version'] = '4.1.63.Final'
-  ext['json-smart.version'] = '2.3.1'
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
