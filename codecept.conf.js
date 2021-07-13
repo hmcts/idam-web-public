@@ -28,7 +28,7 @@ exports.config = {
         }
     },
     "include": {
-      "I": "./src/test/js/shared/custom_steps.js"
+        "I": "./src/test/js/shared/custom_steps.js"
     },
     mocha: {
         reporterOptions: {
