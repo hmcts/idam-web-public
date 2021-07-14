@@ -4,6 +4,7 @@ const deepEqualInAnyOrder = require('deep-equal-in-any-order');
 const chai = require('chai');
 chai.use(deepEqualInAnyOrder);
 const {expect} = chai;
+const assert = require('assert');
 
 Feature('I am able to uplift a user');
 
@@ -143,6 +144,23 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
     await I.runAccessibilityTest();
+});
+
+Scenario('@functional @uplift User should receive You already have an account email for Uplift via register using an existing email and in different case', async ({ I }) => {
+    const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
+    const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
+
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
+    I.waitForText('Create an account or sign in');
+    I.fillField('#firstName', randomUserFirstName);
+    I.fillField('#lastName', randomUserLastName);
+    console.log("email: " + existingCitizenEmail);
+    I.fillField('#username', existingCitizenEmail.toUpperCase());
+    I.click('.form input[type=submit]');
+    I.waitForText('Check your email');
+    const emailResponse = await I.getEmailFromNotify(existingCitizenEmail.toUpperCase());
+    expect(emailResponse.subject).to.equal('You already have an account');
 });
 
 Scenario('@functional @uplift @upliftLogin uplift a user via login journey', async ({ I }) => {
