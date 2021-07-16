@@ -30,7 +30,7 @@ allprojects {
   targetCompatibility = 11
 
   def idamBomVersion = '2.6.2'
-  ext['spring.boot.version'] = '2.4.6'
+  ext['spring.boot.version'] = '2.4.8'
   ext['netty.version'] = '4.1.63.Final'
   ext['json-smart.version'] = '2.3.1'
 
