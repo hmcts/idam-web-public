@@ -170,6 +170,7 @@
                         <c:param name="redirect_uri" value="${param['redirect_uri']}" />
                         <c:param name="client_id" value="${param['client_id']}" />
                         <c:param name="state" value="${param['state']}" />
+                        <c:param name="nonce" value="${param['nonce']}" />
                         <c:param name="scope" value="${param['scope']}" />
                         <c:param name="jwt" value="${param['jwt']}" />
                     </c:url>

@@ -11,7 +11,7 @@ exports.config = {
         Puppeteer: {
             // show: true,
             url: TestData.WEB_PUBLIC_URL,
-            waitForTimeout: 90000,
+            waitForTimeout: 60000,
             waitForAction: 3000,
             windowSize: "1280x960",
             getPageTimeout: 30000,

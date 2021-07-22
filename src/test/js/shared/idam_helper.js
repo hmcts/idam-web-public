@@ -147,11 +147,14 @@ class IdamHelper extends Helper {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token},
-        }).then(res => res.json())
-            .then((json) => {
-                return json;
-            })
-            .catch(err => err);
+        }).then(response => {
+            if (response.status !== 201) {
+                console.log(`Error creating service  ${serviceName}, response: ${response.status}`);
+            }
+            return response.json();
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     createServiceWithRoles(serviceName, serviceClientSecret, serviceRoles, betaRole, token, scope) {

@@ -44,6 +44,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -73,7 +74,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
+import static uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.AZURE_LOGIN_ENABLED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIE_PREFERENCES_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_CODE_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STALE_USER_RESET_PASSWORD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHENTICATE_SESSION_COOKE;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
@@ -107,7 +123,6 @@ import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_VI
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_WEB_ENDPOINT;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HAS_LOGIN_FAILED;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HAS_LOGIN_FAILED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.INDEX_VIEW;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.INFORMATION_IS_MISSING_OR_INVALID;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_LOCKED;
 import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_SUSPENDED;
@@ -437,6 +452,27 @@ public class AppControllerTest {
 
     }
 
+    /**
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
+     */
+    @Test
+    public void upliftRegister_shouldPretendEverythingIsGoodIfRegisterUserServiceThrowsHttpClientErrorExceptionWith409HttpStatusCode() throws Exception {
+        given(spiService.registerUser(eq(aRegisterUserRequest()))).willThrow(new HttpClientErrorException(HttpStatus.CONFLICT));
+
+        mockMvc.perform(post(UPLIFT_REGISTER_ENDPOINT).with(csrf())
+            .param(JWT_PARAMETER, JWT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
+            .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute(USER_EMAIL_PARAMETER, USER_EMAIL))
+            .andExpect(view().name(USER_CREATED_VIEW_NAME));
+    }
+
 
     /**
      * @verifies redirects to "reset/inactive-user" on registration 404 with STALE_USER_REGISTRATION_SENT error
@@ -466,7 +502,7 @@ public class AppControllerTest {
 
     /**
      * @verifies put generic error data in model if register user service throws HttpClientErrorException an http status code different from 404
-     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map
+     * @see #upliftRegister(RegisterUserRequest, BindingResult, Map)
      */
     @Test
     public void upliftRegister_shouldPutGenericErrorDataInModelIfRegisterUserServiceThrowsHttpClientErrorExceptionAnHttpStatusCodeDifferentFrom404() throws Exception {
@@ -898,6 +934,53 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
             .andExpect(view().name(UPLIFT_LOGIN_VIEW));
+
+        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE);
+    }
+
+
+    /**
+     * @verifies return to the registration page if there is an http exception
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
+     */
+    @Test
+    public void upliftLogin_shouldReturnToTheRegistrationPageIfThereIsAnHttpException() throws Exception {
+        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE))
+            .willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(JWT_PARAMETER, JWT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(STATE_PARAMETER, STATE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().isOk())
+            .andExpect(view().name(UPLIFT_LOGIN_VIEW));
+
+        verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE);
+    }
+
+    /**
+     * @verifies go to reset inactive if there is an http exception for stale user
+     * @see AppController#upliftLogin(UpliftRequest, BindingResult, Map, ModelMap)
+     */
+    @Test
+    public void upliftLogin_shouldGoToResetInactiveIfThereIsAnHttpExceptionForStaleUser() throws Exception {
+        given(spiService.uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE))
+            .willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "error", STALE_USER_REGISTRATION_SENT.toString().getBytes(), Charset.defaultCharset()));
+
+        mockMvc.perform(post(UPLIFT_LOGIN_ENDPOINT).with(csrf())
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(JWT_PARAMETER, JWT)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(STATE_PARAMETER, STATE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(view().name("redirect:/reset/inactive-user"));
 
         verify(spiService).uplift(USER_EMAIL, USER_PASSWORD, JWT, REDIRECT_URI, CLIENT_ID, STATE, CUSTOM_SCOPE);
     }
@@ -2604,4 +2687,5 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(EXPIRED_CODE_VIEW));
     }
+
 }
