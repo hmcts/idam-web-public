@@ -9,6 +9,10 @@ functional-output/
 .settings
 .springBeans
 
+### Fortify Client ###
+Fortify Scan/
+lib/FodUpload.jar
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
