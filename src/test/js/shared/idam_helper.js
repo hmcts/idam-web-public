@@ -526,6 +526,35 @@ class IdamHelper extends Helper {
         });
     }
 
+        getAccessTokenPasswordGrant(username, password, serviceName, serviceRedirect, clientSecret, scope) {
+            let searchParams = new URLSearchParams();
+            searchParams.set('grant_type', 'password');
+            searchParams.set('username', username);
+            searchParams.set('password', password);
+            searchParams.set('client_id', serviceName);
+            searchParams.set('client_secret', clientSecret);
+            searchParams.set('redirect_uri', serviceRedirect);
+            searchParams.set('scope', scope);
+
+            return fetch(`${TestData.IDAM_API}/o/token`, {
+                agent: agent,
+                method: 'POST',
+                body: searchParams,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then(response => {
+                //console.log(response)
+                return response.json();
+            }).then((json) => {
+                return json.access_token;
+            }).catch(err => {
+                console.log(err)
+                let browser = this.helpers['Puppeteer'].browser;
+                browser.close();
+            });
+        }
+
     getUserInfo(accessToken) {
         return fetch(`${TestData.IDAM_API}/details`, {
             agent: agent,
