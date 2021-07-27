@@ -42,16 +42,22 @@ BeforeSuite(async ({ I }) => {
     professionalRoleName = randomData.getRandomRoleName(testSuiteId);
     professionalRole = await I.createRole(professionalRoleName, 'professional description', '', token);
 
-    // Note that @mfaskip.local works with the testing-support mock of the ref data org/mfa endpoint
-    professionalUserMFASkipEmail = "professional" + testSuiteId + "@mfaskip.local";
+    isRefDataEnabled = await I.refDataEnabled()
+    if (isRefDataEnabled) {
+        professionalUserMFASkipEmail = "freg-test-user-idamskipmfa" + testSuiteId + "@prdfunctestuser.com";
+        professionalUserMFARequiredEmail = "freg-test-user-idamrequiremfa" + testSuiteId + "@prdfunctestuser.com";
+    } else {
+        // Note that @mfaskip.local works with the testing-support mock of the ref data org/mfa endpoint
+        professionalUserMFASkipEmail = "professional" + testSuiteId + "@mfaskip.local";
+        professionalUserMFARequiredEmail = randomData.getRandomEmailAddress();
+    }
+
     professionalUserMFASkipFirstName = randomData.getRandomUserName(testSuiteId);
     professionalUserMFASkip = await I.createUserWithRoles(professionalUserMFASkipEmail, userPassword, professionalUserMFASkipFirstName, [professionalRoleName]);
 
-    professionalUserMFARequiredEmail = randomData.getRandomEmailAddress();
     professionalUserMFARequiredFirstName = randomData.getRandomUserName(testSuiteId)
     professionalUserMFARequired = await I.createUserWithRoles(professionalUserMFARequiredEmail, userPassword, professionalUserMFARequiredFirstName, [professionalRoleName]);
 
-    isRefDataEnabled = await I.refDataEnabled()
     if (isRefDataEnabled) {
 
         // create ref data admin user
@@ -90,25 +96,10 @@ BeforeSuite(async ({ I }) => {
 });
 
 AfterSuite(async ({ I }) => {
-
-    if (orgMFADisabledId) {
-        // You cannot delete an organisation with members and there is currently
-        // no way to remove users from an organisation, so commenting out the
-        // delete until PRD resolve that.
-        // await I.deleteOrganisation(orgMFADisabledId, serviceToken, prdAuthToken);
-    }
-    if (orgMFAActiveId) {
-        // You cannot delete an organisation with members and there is currently
-        // no way to remove users from an organisation, so commenting out the
-        // delete until PRD resolve that.
-        // await I.deleteOrganisation(orgMFAActiveId, serviceToken, prdAuthToken);
-    }
-
     return Promise.all([
         I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuiteId),
         I.deletePolicy(mfaApplicationPolicyName, token),
     ]);
-
 });
 
 Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of an organisation that has MFA disabled', async ({ I }) => {

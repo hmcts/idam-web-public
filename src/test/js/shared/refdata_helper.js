@@ -32,7 +32,7 @@ class RefDataHelper extends Helper {
         let superuserPayload = {
             firstName: 'firstname',
             lastName: 'lastname',
-            email: 'superuser' + testCompanyNumber + '@test.local'
+            email: 'freg-test-user-idamorgsuper' + testCompanyNumber + '@prdfunctestuser.com'
         };
         let org = {
           name: 'idamtest_' + testCompanyNumber,
