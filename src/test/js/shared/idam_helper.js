@@ -544,7 +544,6 @@ class IdamHelper extends Helper {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }).then(response => {
-                //console.log(response)
                 return response.json();
             }).then((json) => {
                 return json.access_token;

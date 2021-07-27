@@ -52,15 +52,12 @@ BeforeSuite(async ({ I }) => {
     professionalUserMFARequired = await I.createUserWithRoles(professionalUserMFARequiredEmail, userPassword, professionalUserMFARequiredFirstName, [professionalRoleName]);
 
     isRefDataEnabled = await I.refDataEnabled()
-    console.log("ref data enabled: " + isRefDataEnabled);
     if (isRefDataEnabled) {
 
         // create ref data admin user
         prdAdminUserEmail = randomData.getRandomEmailAddress();
         prdAdminUser = await I.createUserWithRoles(prdAdminUserEmail, userPassword, randomData.getRandomUserName(testSuiteId), ['prd-admin']);
-        console.log("mfa admin user is: " + prdAdminUser);
         prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.label, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret, scope);
-        console.log("auth token: " + prdAuthToken);
 
         serviceToken = await I.getServiceAuthToken();
         
@@ -73,7 +70,7 @@ BeforeSuite(async ({ I }) => {
 
         // Add professional user to organisation with MFA disabled
         userAddDetails = await I.addUserToOrganisation(orgMFADisabledId, professionalUserMFASkipEmail, "caseworker", serviceToken, prdAuthToken);
-        console.log("Adding user to mfa disabled org: " + JSON.stringify(userAddDetails));
+        console.log("Added user to mfa disabled org: " + JSON.stringify(userAddDetails));
 
         // create organisation with MFA active
         let orgMFAActive = await I.getTestOrganisation(orgMFAActiveCompanyNumber);
@@ -84,10 +81,10 @@ BeforeSuite(async ({ I }) => {
 
         // Add professional user to organisation with MFA disabled
         userAddDetails = await I.addUserToOrganisation(orgMFAActiveId, professionalUserMFARequiredEmail, "caseworker", serviceToken, prdAuthToken);
-        console.log("Adding user to mfa active org: " + JSON.stringify(userAddDetails));
+        console.log("Added user to mfa active org: " + JSON.stringify(userAddDetails));
 
     } else {
-        console.log("ref data is disabled");
+        console.log("ref data integration is disabled");
     }
 
 });
@@ -95,10 +92,16 @@ BeforeSuite(async ({ I }) => {
 AfterSuite(async ({ I }) => {
 
     if (orgMFADisabledId) {
-        await I.deleteOrganisation(orgMFADisabledId, serviceToken, prdAuthToken);
+        // You cannot delete an organisation with members and there is currently
+        // no way to remove users from an organisation, so commenting out the
+        // delete until PRD resolve that.
+        // await I.deleteOrganisation(orgMFADisabledId, serviceToken, prdAuthToken);
     }
     if (orgMFAActiveId) {
-        await I.deleteOrganisation(orgMFAActiveId, serviceToken, prdAuthToken);
+        // You cannot delete an organisation with members and there is currently
+        // no way to remove users from an organisation, so commenting out the
+        // delete until PRD resolve that.
+        // await I.deleteOrganisation(orgMFAActiveId, serviceToken, prdAuthToken);
     }
 
     return Promise.all([
@@ -141,10 +144,8 @@ Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of
     assert.equal('User', oidcUserInfo.family_name);
 
     if (orgMFADisabledId) {
-        console.log("check for caseworker");
         expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([professionalRoleName, 'caseworker']);
     } else {
-        console.log("user will only have one role");
         assert.equal(professionalRoleName, oidcUserInfo.roles[0])
     }
 
@@ -191,10 +192,8 @@ Scenario('@functional @mfaOrgLogin I am able to login with MFA as a member of an
     assert.equal('User', oidcUserInfo.family_name);
 
     if (orgMFAActiveId) {
-        console.log("check for caseworker");
         expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([professionalRoleName, 'caseworker']);
     } else {
-        console.log("user will only have one role");
         assert.equal(professionalRoleName, oidcUserInfo.roles[0])
     }
 
