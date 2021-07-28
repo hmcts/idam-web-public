@@ -23,6 +23,9 @@ exports.config = {
         idam_helper: {
             "require": "./src/test/js/shared/idam_helper.js"
         },
+        refdata_helper: {
+            "require": "./src/test/js/shared/refdata_helper.js"
+        },
         GenerateReportHelper: {
             require: "./src/test/js/shared/generate_report_helper.js"
         }

@@ -10,5 +10,7 @@ module.exports = {
     EJUDICIARY_TEST_USER_USERNAME: 'SIDM_EJUD_TEST_A@ejudiciary.net',
     EJUDICIARY_TEST_USER_PASSWORD: process.env.EJUDICIARY_TEST_USER_PASSWORD,
     TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
-    TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true'
+    TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
+    RPE_AUTH_URL: process.env.RPE_AUTH_URL,
+    REF_DATA_URL: process.env.REF_DATA_URL
 };
