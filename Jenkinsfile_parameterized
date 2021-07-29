@@ -9,7 +9,9 @@ def secrets = [
     'idam-idam-${env}': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
-        secret('notify-api-key', 'NOTIFY_API_KEY')
+        secret('notify-api-key', 'NOTIFY_API_KEY'),
+        secret('test-rpe-auth-url', 'RPE_AUTH_URL'),
+        secret('test-ref-data-url', 'REF_DATA_URL ')
     ]
 ]
 
