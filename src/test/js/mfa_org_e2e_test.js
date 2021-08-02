@@ -144,7 +144,6 @@ Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of
     if (isRefDataEnabled) {
         expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([professionalRoleName, 'caseworker']);
     } else {
-        // assert.equal(professionalRoleName, oidcUserInfo.roles[0])
         expect(oidcUserInfo.roles[0]).to.equal(professionalRoleName);
     }
 
@@ -200,7 +199,7 @@ Scenario('@functional @mfaOrgLogin I am able to login with MFA as a member of an
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaOrgLogin I am able to login without MFA as an idam-mfa-disabled role user but a member of an organisation that has MFA active', async ({ I }) => {
+Scenario('@functional @mfaOrgLogin am able to login without MFA as an idam-mfa-disabled role user but a member of an organisation that has MFA active', async ({ I }) => {
 
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
@@ -234,7 +233,7 @@ Scenario('@functional @mfaOrgLogin I am able to login without MFA as an idam-mfa
     if (isRefDataEnabled) {
         expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([professionalRoleName, 'idam-mfa-disabled', 'caseworker']);
     } else {
-        expect(oidcUserInfo.roles[0]).to.equal(professionalRoleName, 'idam-mfa-disabled');
+        expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([professionalRoleName, 'idam-mfa-disabled']);
     }
 
     I.resetRequestInterception();

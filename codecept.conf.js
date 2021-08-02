@@ -9,7 +9,7 @@ exports.config = {
     bootstrap: false,
     helpers: {
         Puppeteer: {
-            // show: true,
+            show: true,
             url: TestData.WEB_PUBLIC_URL,
             waitForTimeout: 60000,
             waitForAction: 3000,
