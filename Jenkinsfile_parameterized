@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@SIDM_increase_FuncTest_timout")
+@Library('Infrastructure')
 
 def type = "java"
 def product = "idam"
