@@ -9,6 +9,7 @@ plugins {
   id 'org.springframework.boot' version '2.4.8' apply false
   id 'com.gorylenko.gradle-git-properties' version '1.4.21'
   id "info.solidsoft.pitest" version "1.6.0"
+  id 'application'
 }
 
 gitProperties {
@@ -22,6 +23,7 @@ allprojects {
   apply plugin: 'org.owasp.dependencycheck'
   apply plugin: 'war'
   apply plugin: 'org.springframework.boot'
+  apply plugin: 'application'
 
   group = 'uk.gov.hmcts.reform.idam'
   description = 'idam-web-public'
@@ -122,6 +124,8 @@ allprojects {
       exclude module: 'junit'
     }
 
+    testCompile 'com.github.hmcts:fortify-client:1.1.0.patch-1.1:all'
+    testCompile group: 'ch.qos.logback', name: 'logback-classic'
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
     testCompile('pl.pragmatists:JUnitParams:1.1.1') {
@@ -136,6 +140,12 @@ allprojects {
     }
     testImplementation group: 'org.springframework.security', name: 'spring-security-test'
     testImplementation group: 'junit', name: 'junit', version: '4.13.1'
+  }
+
+  task fortifyScan(type: JavaExec)  {
+    classpath += sourceSets.test.runtimeClasspath
+    main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
   }
 
   tasks.withType(JavaCompile) {
