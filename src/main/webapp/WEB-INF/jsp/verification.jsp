@@ -96,7 +96,7 @@
             <div class="form-section">
                 <div class="column-two-thirds" style="padding: 0;">
                     <p><spring:message code="public.verification.p"/></p>
-                    <p><spring:message code="public.verification.check.inbox.instruction"/></p>
+                    <p><spring:message htmlEscape="false" code="public.verification.check.inbox.instruction"/></p>
                     <div class="form-group ${hasBindError? 'form-group-error' : ''}">
                         <label for="code">
                             <span class="form-label">
