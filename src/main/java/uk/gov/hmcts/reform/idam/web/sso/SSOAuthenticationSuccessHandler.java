@@ -88,7 +88,8 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
             updateOrCreateUser(bearerToken);
         } catch (HttpStatusCodeException e) {
             if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
-                redirectStrategy.sendRedirect(request, response, "/error");
+                response.setStatus(403);
+                redirectStrategy.sendRedirect(request, response, "/login");
                 return;
             }
             throw e;
