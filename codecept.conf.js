@@ -12,9 +12,9 @@ exports.config = {
             // show: true,
             url: TestData.WEB_PUBLIC_URL,
             waitForTimeout: 60000,
-            waitForAction: 3000,
+            waitForAction: 500,
             windowSize: "1280x960",
-            getPageTimeout: 30000,
+            getPageTimeout: 20000,
             chrome: {
                 //args: ["--proxy-server=" + process.env.PROXY_SERVER],
                 ignoreHTTPSErrors: true
