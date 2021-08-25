@@ -34,11 +34,14 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
+def branchesToSync = ['demo', 'perftest', 'ithc']
+
 withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     enableSlackNotifications('#idam_tech')
     enableAksStagingDeployment()
     disableLegacyDeployment()
+    syncBranchesWithMaster(branchesToSync)
 
     // AKS Callbacks
     before('akschartsinstall') {
