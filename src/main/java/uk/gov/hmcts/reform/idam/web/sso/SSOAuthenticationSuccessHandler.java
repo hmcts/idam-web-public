@@ -84,7 +84,16 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         final String access_token = client.getAccessToken().getTokenValue();
         String bearerToken = "Bearer " + access_token;
 
-        updateOrCreateUser(bearerToken);
+        try {
+            updateOrCreateUser(bearerToken);
+        } catch (HttpStatusCodeException e) {
+            if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
+                response.setStatus(403);
+                redirectStrategy.sendRedirect(request, response, "/login");
+                return;
+            }
+            throw e;
+        }
 
         String sessionCookie = federationApi.federationAuthenticate(bearerToken)
             .headers().get(SET_COOKIE).stream()
