@@ -15,11 +15,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EJUDICIARY_AAD;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.MOJ;
 
 @Component
 public class SSOService {
 
-    public static final Map<String, String> SSO_LOGIN_HINTS = ImmutableMap.of(EJUDICIARY_AAD, "/oauth2/authorization/oidc");
+    public static final Map<String, String> SSO_LOGIN_HINTS =
+        ImmutableMap.of(EJUDICIARY_AAD, "/oauth2/authorization/oidc",
+            MOJ, "/oauth2/authorization/moj");
     public static final String LOGIN_HINT_PARAM = "login_hint";
     public static final String PROVIDER_ATTR = "provider";
 
@@ -100,7 +103,6 @@ public class SSOService {
             oidcParams.put(LOGIN_HINT_PARAM, new String[]{provider});
         }
         request.getSession().setAttribute("oidcParams", oidcParams);
-
 
         response.sendRedirect(SSO_LOGIN_HINTS.get(provider));
     }

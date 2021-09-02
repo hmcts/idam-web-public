@@ -35,5 +35,7 @@ public class AuthorizeRequest {
 
     private boolean azureLoginEnabled;
 
+    private boolean mojLoginEnabled;
+
     private boolean hasOtpCheckFailed;
 }

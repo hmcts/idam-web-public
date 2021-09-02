@@ -85,12 +85,12 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
      * If in future we have multiple providers this needs to be replaced with spring security 5s
      * JwtIssuerAuthenticationManagerResolver which supports multiple issuers
      */
-    @Bean
-    JwtDecoder jwtDecoder() {
-        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromOidcIssuerLocation(issuerUri);
-        OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>();
-        jwtDecoder.setJwtValidator(withAudience);
-
-        return jwtDecoder;
-    }
+//    @Bean
+//    JwtDecoder jwtDecoder() {
+//        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromOidcIssuerLocation(issuerUri);
+//        OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>();
+//        jwtDecoder.setJwtValidator(withAudience);
+//
+//        return jwtDecoder;
+//    }
 }
