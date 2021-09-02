@@ -84,14 +84,13 @@ public class SSOService {
 
         final String provider;
 
-        if (reuseExistingSession && ssoSessionExists) {
+        if (request.getParameter(LOGIN_HINT_PARAM) != null
+            && SSO_LOGIN_HINTS.containsKey(request.getParameter(LOGIN_HINT_PARAM).toLowerCase())) {
+            provider = request.getParameter(LOGIN_HINT_PARAM).toLowerCase();
+        } else if (reuseExistingSession && ssoSessionExists) {
             provider = existingSession.getAttribute(PROVIDER_ATTR).toString();
         } else {
-            if (loginEmail != null) {
-                provider = getSsoEmailDomains().get(extractEmailDomain(loginEmail));
-            } else {
-                provider = request.getParameter(LOGIN_HINT_PARAM).toLowerCase();
-            }
+            provider = getSsoEmailDomains().get(extractEmailDomain(loginEmail));
         }
 
         if (!ssoSessionExists) {
