@@ -15,12 +15,13 @@
             <div id="nav-links">
 
                 <ol class="nav-list ui-tabs-nav ui-corner-all ui-helper-reset ui-helper-clearfix ui-widget-header" role="tablist">
-                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-1" aria-labelledby="ui-id-1" aria-selected="false" aria-expanded="false"><a href="#tabs-1" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-1"><spring:message code="public.privacypolicy.text_0003" /></a></li>
-                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-4" aria-labelledby="ui-id-2" aria-selected="false" aria-expanded="false"><a href="#tabs-4" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-2"><spring:message code="public.privacypolicy.text_0004" /></a></li>
-                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-3" aria-labelledby="ui-id-3" aria-selected="false" aria-expanded="false"><a href="#tabs-3" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-3"><spring:message code="public.privacypolicy.text_0005" /></a></li>
-                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-5" aria-labelledby="ui-id-4" aria-selected="false" aria-expanded="false"><a href="#tabs-5" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-4"><spring:message code="public.privacypolicy.text_0006" /></a></li>
-                    <li role="tab" tabindex="0" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-2" aria-labelledby="ui-id-5" aria-selected="true" aria-expanded="true"><a href="#tabs-2" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-5"><spring:message code="public.privacypolicy.text_0007" /></a></li>
-                    <li role="tab" tabindex="0" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-2" aria-labelledby="ui-id-5" aria-selected="true" aria-expanded="true"><a href="#tabs-6" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-6"><spring:message code="public.privacypolicy.text_0008" /></a></li>
+                    <li role="tab" tabindex="0" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-1" aria-labelledby="ui-id-1" aria-selected="false" aria-expanded="false"><a href="privacy-policy#tabs-1" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-1"><spring:message code="public.privacypolicy.text_0003" /></a></li>
+                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-4" aria-labelledby="ui-id-2" aria-selected="false" aria-expanded="false"><a href="privacy-policy#tabs-4" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-2"><spring:message code="public.privacypolicy.text_0004" /></a></li>
+                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-3" aria-labelledby="ui-id-3" aria-selected="false" aria-expanded="false"><a href="privacy-policy#tabs-3" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-3"><spring:message code="public.privacypolicy.text_0005" /></a></li>
+                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-5" aria-labelledby="ui-id-4" aria-selected="false" aria-expanded="false"><a href="privacy-policy#tabs-5" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-4"><spring:message code="public.privacypolicy.text_0006" /></a></li>
+                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-2" aria-labelledby="ui-id-5" aria-selected="true" aria-expanded="true"><a href="privacy-policy#tabs-2" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-5"><spring:message code="public.privacypolicy.text_0007" /></a></li>
+                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-2" aria-labelledby="ui-id-5" aria-selected="true" aria-expanded="true"><a href="privacy-policy#tabs-6" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-6"><spring:message code="public.privacypolicy.text_0008" /></a></li>
+                    <li role="tab" tabindex="-1" class="ui-tabs-tab ui-corner-top ui-state-default ui-tab" aria-controls="tabs-7" aria-labelledby="ui-id-4" aria-selected="false" aria-expanded="false"><a href="privacy-policy#tabs-7" role="presentation" tabindex="-1" class="ui-tabs-anchor" id="ui-id-7"><spring:message code="public.privacypolicy.text_0245" /></a></li>
                 </ol>
                 <hr>
 
@@ -342,6 +343,72 @@
                     <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0237" /></h2>
                     <p><spring:message code="public.privacypolicy.text_0238" /> <a href="mailto:data.compliance@justice.gov.uk"><spring:message code="public.privacypolicy.text_0239" /></a><spring:message code="public.privacypolicy.text_0240" /></p>
                     <p><spring:message code="public.privacypolicy.text_0241" /> <a href="https://ico.org.uk/global/contact-us"><spring:message code="public.privacypolicy.text_0242" /></a> <spring:message code="public.privacypolicy.text_0243" /></p>
+                </div>
+                <div id="tabs-4" aria-labelledby="ui-id-2" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
+                    <h2 class="heading-large" id="probate"><spring:message code="public.privacypolicy.text_0157" /></h2>
+                    <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0158" /></h2>
+                    <p><spring:message code="public.privacypolicy.text_0159" /></p>
+                    <ul class="list list-bullet">
+                        <li><spring:message code="public.privacypolicy.text_0160" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0161" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0162" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0163" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0164" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0165" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0166" /></li>
+                    </ul>
+                    <p><spring:message code="public.privacypolicy.text_0167" /></p>
+                    <ul class="list list-bullet">
+                        <li><spring:message code="public.privacypolicy.text_0168" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0169" /></li>
+                    </ul>
+                    <p><spring:message code="public.privacypolicy.text_0170" /></p>
+                    <ul class="list list-bullet">
+                        <li><spring:message code="public.privacypolicy.text_0171" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0172" /></li>
+                    </ul>
+
+                    <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0173" /></h2>
+                    <p><spring:message code="public.privacypolicy.text_0174" /></p>
+
+                    <p><spring:message code="public.privacypolicy.text_0175" /></p>
+
+                    <p><spring:message code="public.privacypolicy.text_0176" /> <a href="/contact-us"><spring:message code="public.privacypolicy.text_0177" /></a></p>
+
+                    <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0178" /></h2>
+
+                    <p><spring:message code="public.privacypolicy.text_0179" /></p>
+
+                    <p><spring:message code="public.privacypolicy.text_0180" /></p>
+                </div>
+                <div id="tabs-7" aria-labelledby="ui-id-4" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
+
+                    <h2 class="heading-large"><spring:message code="public.privacypolicy.text_0246" /></h2>
+                    <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0247" /></h2>
+
+                    <p><spring:message code="public.privacypolicy.text_0248" /></p>
+                    <ul class="list list-bullet">
+                        <li><spring:message code="public.privacypolicy.text_0249" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0250" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0251" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0252" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0253" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0254" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0255" /></li>
+                        <li><spring:message code="public.privacypolicy.text_0256" /></li>
+                    </ul>
+
+                    <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0257" /></h2>
+
+                    <p><spring:message code="public.privacypolicy.text_0258" /></p>
+
+                    <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0259" /></h2>
+
+                    <p><spring:message code="public.privacypolicy.text_0260" /></p>
+
+                    <p><spring:message code="public.privacypolicy.text_0261" /></p>
+
+                    <p><spring:message code="public.privacypolicy.text_0262" /></p>
                 </div>
             </div>
         </div>
