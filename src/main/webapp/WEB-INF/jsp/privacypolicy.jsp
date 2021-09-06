@@ -231,7 +231,6 @@
 
                     <p><spring:message code="public.privacypolicy.text_0244" /></p>
                 </div>
-
                 <div id="tabs-4" aria-labelledby="ui-id-2" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
                     <h2 class="heading-large" id="probate"><spring:message code="public.privacypolicy.text_0157" /></h2>
                     <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0158" /></h2>
@@ -269,7 +268,6 @@
 
                     <p><spring:message code="public.privacypolicy.text_0180" /></p>
                 </div>
-
                 <div id="tabs-5" aria-labelledby="ui-id-4" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
 
                     <h2 class="heading-large"><spring:message code="public.privacypolicy.text_0181" /></h2>
@@ -343,43 +341,6 @@
                     <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0237" /></h2>
                     <p><spring:message code="public.privacypolicy.text_0238" /> <a href="mailto:data.compliance@justice.gov.uk"><spring:message code="public.privacypolicy.text_0239" /></a><spring:message code="public.privacypolicy.text_0240" /></p>
                     <p><spring:message code="public.privacypolicy.text_0241" /> <a href="https://ico.org.uk/global/contact-us"><spring:message code="public.privacypolicy.text_0242" /></a> <spring:message code="public.privacypolicy.text_0243" /></p>
-                </div>
-                <div id="tabs-4" aria-labelledby="ui-id-2" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
-                    <h2 class="heading-large" id="probate"><spring:message code="public.privacypolicy.text_0157" /></h2>
-                    <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0158" /></h2>
-                    <p><spring:message code="public.privacypolicy.text_0159" /></p>
-                    <ul class="list list-bullet">
-                        <li><spring:message code="public.privacypolicy.text_0160" /></li>
-                        <li><spring:message code="public.privacypolicy.text_0161" /></li>
-                        <li><spring:message code="public.privacypolicy.text_0162" /></li>
-                        <li><spring:message code="public.privacypolicy.text_0163" /></li>
-                        <li><spring:message code="public.privacypolicy.text_0164" /></li>
-                        <li><spring:message code="public.privacypolicy.text_0165" /></li>
-                        <li><spring:message code="public.privacypolicy.text_0166" /></li>
-                    </ul>
-                    <p><spring:message code="public.privacypolicy.text_0167" /></p>
-                    <ul class="list list-bullet">
-                        <li><spring:message code="public.privacypolicy.text_0168" /></li>
-                        <li><spring:message code="public.privacypolicy.text_0169" /></li>
-                    </ul>
-                    <p><spring:message code="public.privacypolicy.text_0170" /></p>
-                    <ul class="list list-bullet">
-                        <li><spring:message code="public.privacypolicy.text_0171" /></li>
-                        <li><spring:message code="public.privacypolicy.text_0172" /></li>
-                    </ul>
-
-                    <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0173" /></h2>
-                    <p><spring:message code="public.privacypolicy.text_0174" /></p>
-
-                    <p><spring:message code="public.privacypolicy.text_0175" /></p>
-
-                    <p><spring:message code="public.privacypolicy.text_0176" /> <a href="/contact-us"><spring:message code="public.privacypolicy.text_0177" /></a></p>
-
-                    <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0178" /></h2>
-
-                    <p><spring:message code="public.privacypolicy.text_0179" /></p>
-
-                    <p><spring:message code="public.privacypolicy.text_0180" /></p>
                 </div>
                 <div id="tabs-7" aria-labelledby="ui-id-4" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" aria-hidden="true">
 
