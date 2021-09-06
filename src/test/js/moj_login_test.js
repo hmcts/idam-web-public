@@ -34,8 +34,8 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
         I.click('Sign in');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
-        I.waitInUrl("/kmsi");
-        I.see("The reply URL specified in the request does not match the reply URLs configured for the application");
+        I.waitInUrl("/reprocess");
+        I.see("Sorry, but we’re having trouble signing you in.");
     } else {
         I.interceptRequestsAfterSignin();
         I.click('Sign in');
@@ -71,8 +71,8 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
         I.click('Sign in');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
-        I.waitInUrl("/kmsi");
-        I.see("The reply URL specified in the request does not match the reply URLs configured for the application");
+        I.waitInUrl("/reprocess");
+        I.see("Sorry, but we’re having trouble signing you in.");
     } else {
         I.interceptRequestsAfterSignin();
         I.click('Sign in');
