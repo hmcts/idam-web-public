@@ -90,105 +90,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.USERNAME;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.VERIFICATION_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ACTION_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.AUTHENTICATE_SESSION_COOKE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.BLANK;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENTID_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CLIENT_ID_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CODE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.CUSTOM_SCOPE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.DO_RESET_PASSWORD_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_BLACKLISTED_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CAPITAL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_CONTAINS_PERSONAL_INFO_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_ENTER_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_INVALID_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_ONE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_LABEL_TWO;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MESSAGE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_MSG;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_PASSWORD_DETAILS;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_PREVIOUSLY_USED_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_TITLE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERROR_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.ERR_LOCKED_FAILED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIREDTOKEN_REDIRECTED_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.EXPIRED_TOKEN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_COMMAND_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_SUCCESS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.FORGOT_PASSWORD_WEB_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HAS_LOGIN_FAILED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.HAS_LOGIN_FAILED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.INFORMATION_IS_MISSING_OR_INVALID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_LOCKED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.IS_ACCOUNT_SUSPENDED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.JWT_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_LOGOUT_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_PIN_CODE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_PIN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGIN_WITH_PIN_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.LOGOUT_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.MISSING;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NONCE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NONCE_VALUE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.NOT_FOUND_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_BLACKLISTED_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_ONE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_RESET_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PASSWORD_TWO;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PIN_USER_NOT_LONGER_VALID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_FIX_THE_FOLLOWING;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PLEASE_TRY_AGAIN;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PROMPT_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.PROMPT_VALUE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECTURI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.REDIRECT_URI;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESETPASSWORD_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_FORGOT_PASSWORD_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_INACTIVE_USER_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_CODE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_RESPONSE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_SUCCESS_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESET_PASSWORD_TOKEN;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESPONSE_TYPE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.RESPONSE_TYPE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SCOPE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SECURITY_CODE_INCORRECT_ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SELF_REGISTRATION_ENABLED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.SORRY_THERE_WAS_AN_ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.STATE_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_ACTIVATE_VIEW;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TACTICAL_RESET_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.TOKEN_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UNUSED;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_LOGIN_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.UPLIFT_REGISTER_ENDPOINT;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USERNAME_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_CREATED_VIEW_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL_INVALID;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_EMAIL_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_FIRST_NAME_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_IP_ADDRESS;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_LAST_NAME_PARAMETER;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.USER_PASSWORD;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VALID_SECURITY_CODE_ERROR;
-import static uk.gov.hmcts.reform.idam.web.util.TestConstants.VERIFICATION_ENDPOINT;
+import static uk.gov.hmcts.reform.idam.web.util.TestConstants.*;
 import static uk.gov.hmcts.reform.idam.web.util.TestHelper.anAuthorizedUser;
 
 @RunWith(SpringRunner.class)
@@ -232,6 +134,7 @@ public class AppControllerTest {
 
         Service service = new Service();
         service.selfRegistrationAllowed(true);
+        service.addSsoProvidersItem("moj");
 
         given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.of(service));
 
@@ -258,6 +161,7 @@ public class AppControllerTest {
 
         Service service = new Service();
         service.selfRegistrationAllowed(false);
+        service.addSsoProvidersItem("ejudiciary-aad");
 
         given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.of(service));
 
@@ -1528,7 +1432,9 @@ public class AppControllerTest {
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(AZURE_LOGIN_ENABLED, "true")
+            .param(MOJ_LOGIN_ENABLED, "true"))
             .andExpect(status().isOk())
             .andExpect(model().attribute("isUsernameEmpty", true))
             .andExpect(model().attribute("isPasswordEmpty", true))

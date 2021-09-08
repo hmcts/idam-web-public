@@ -130,7 +130,7 @@ public class TestConstants {
     public static final String AUTHORIZATION_PARAMETER = "authorization";
 	public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
     public static final String AZURE_LOGIN_ENABLED = "azureLoginEnabled";
-
+    public static final String MOJ_LOGIN_ENABLED = "mojLoginEnabled";
 
     //Errors
     public static final String INFORMATION_IS_MISSING_OR_INVALID = "Information is missing or invalid";
