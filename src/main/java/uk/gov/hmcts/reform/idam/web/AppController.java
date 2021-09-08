@@ -68,6 +68,7 @@ import static uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse.CodeEnum
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_LOGIN_HINTS;
 
 @Slf4j
 @Controller
@@ -323,9 +324,14 @@ public class AppController {
             service.ifPresent(theService -> {
                 model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
                 if (!CollectionUtils.isEmpty(theService.getSsoProviders())
-                    && theService.getSsoProviders().contains(EJUDICIARY_AAD)
+                    && theService.getSsoProviders().stream().anyMatch(SSO_LOGIN_HINTS::containsKey)
                     && configurationProperties.getFeatures().isFederatedSSO()) {
-                    model.addAttribute(AZURE_LOGIN_ENABLED, true);
+                    if (theService.getSsoProviders().contains(EJUDICIARY_AAD)) {
+                        model.addAttribute(AZURE_LOGIN_ENABLED, true);
+                    }
+                    if (theService.getSsoProviders().contains(MOJ)) {
+                        model.addAttribute(MOJ_LOGIN_ENABLED, true);
+                    }
                 }
             });
         }
@@ -371,8 +377,13 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
-        if (request.isAzureLoginEnabled() && configurationProperties.getFeatures().isFederatedSSO()) {
-            model.addAttribute(AZURE_LOGIN_ENABLED, true);
+        if (configurationProperties.getFeatures().isFederatedSSO()) {
+            if (request.isAzureLoginEnabled()) {
+                model.addAttribute(AZURE_LOGIN_ENABLED, true);
+            }
+            if (request.isMojLoginEnabled()) {
+                model.addAttribute(MOJ_LOGIN_ENABLED, true);
+            }
         }
 
         final boolean validationErrors = bindingResult.hasErrors();
