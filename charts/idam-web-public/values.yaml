@@ -24,6 +24,10 @@ java:
           alias: spring.security.oauth2.client.registration.oidc.client-id
         - name: sso-client-secret
           alias: spring.security.oauth2.client.registration.oidc.client-secret
+        - name: sso-client-id-moj
+          alias: spring.security.oauth2.client.registration.moj.client-id
+        - name: sso-client-secret-moj
+          alias: spring.security.oauth2.client.registration.moj.client-secret
   environment:
     STRATEGIC_SERVICE_URL: http://idam-api
     MANAGEMENT_SECURITY_ENABLED: false
