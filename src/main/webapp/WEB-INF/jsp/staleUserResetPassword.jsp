@@ -12,9 +12,13 @@
              <p>
                  <spring:message code="public.reset.password.stale.users.warning.fix" />
              </p>
-             <ul class="error-summary-list">
-                 <u><spring:message code="public.reset.password.stale.users.warning.reset"/></u>
-             </ul>
+            <div class="govuk-warning-text govuk-!-margin-0">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text govuk-p-size-override">
+                    <span class="govuk-warning-text__assistive">Warning</span>
+                    <spring:message code="public.reset.password.stale.users.warning.reset"/>
+                </strong>
+            </div>
         </div>
         <div class="text">
             <header class="page-header group">
