@@ -141,6 +141,21 @@ public class SSOAuthenticationSuccessHandlerTest {
     }
 
     @Test(expected = HttpStatusCodeException.class)
+    public void onAuthenticationSuccess_shouldThrowExceptionIfUpdateOrCreateThrowsError() throws IOException {
+        given(federationApi.updateFederatedUser(anyString()))
+            .willThrow(restException("", HttpStatus.INTERNAL_SERVER_ERROR, new HttpHeaders(), null));
+        underTest.onAuthenticationSuccess(request, response, authentication);
+    }
+
+    @Test
+    public void onAuthenticationSuccess_shouldRedirectToLoginOnForbidden() throws IOException {
+        given(federationApi.updateFederatedUser(anyString()))
+            .willThrow(restException("", HttpStatus.FORBIDDEN, new HttpHeaders(), null));
+        underTest.onAuthenticationSuccess(request, response, authentication);
+        verify(response, atLeastOnce()).sendRedirect(any());
+    }
+
+    @Test(expected = HttpStatusCodeException.class)
     public void onAuthenticationSuccess_shouldThrowExceptionIfLocationHeaderIsEmpty() throws IOException {
         Map<String, Collection<String>> headers = ImmutableMap.of(SET_COOKIE, List.of("Idam.Session=abcdefg"));
         final Map<String, String[]> paramMap = ImmutableMap.of("some_param", new String[] {"some_value"});
