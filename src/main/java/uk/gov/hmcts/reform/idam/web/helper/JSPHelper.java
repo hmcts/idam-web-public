@@ -80,9 +80,4 @@ public class JSPHelper {
         return LocaleContextHolder.getLocale();
     }
 
-    public static String getBaseUrl(final HttpServletRequest request) throws MalformedURLException {
-        URL requestURL = new URL(request.getRequestURL().toString());
-        String port = requestURL.getPort() == -1 ? "" : ":" + requestURL.getPort();
-        return requestURL.getProtocol() + "://" + requestURL.getHost() + port;
-    }
 }
