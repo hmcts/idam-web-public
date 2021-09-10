@@ -30,15 +30,17 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     I.click('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
+    I.click('Sign in');
+    I.waitForText('Stay signed in?');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
-        I.click('Sign in');
+        I.click('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/login");
         I.see("Sorry, but we’re having trouble signing you in.");
     } else {
         I.interceptRequestsAfterSignin();
-        I.click('Sign in');
+        I.click('No');
         I.waitForText(TestData.SERVICE_REDIRECT_URI);
         I.see('code=');
         I.dontSee('error=');
@@ -67,15 +69,17 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
     I.click('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
+    I.click('Sign in');
+    I.waitForText('Stay signed in?');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
-        I.click('Sign in');
+        I.click('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/login");
         I.see("Sorry, but we’re having trouble signing you in.");
     } else {
         I.interceptRequestsAfterSignin();
-        I.click('Sign in');
+        I.click('No');
         I.waitForText(TestData.SERVICE_REDIRECT_URI);
         I.see('code=');
         I.dontSee('error=');
