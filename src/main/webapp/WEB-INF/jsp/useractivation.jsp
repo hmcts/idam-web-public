@@ -9,7 +9,7 @@
 <t:wrapper titleKey="public.user.activation.title.text">
     <article class="content__body">
         <c:set var="hasError" value="${error != null}" />
-        <form:form name="useractivation" action="users/activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
+        <form:form name="useractivation" action="activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
             <c:if test="${hasError}">
                 <script>
                     sendEvent('User activation', 'Error', 'An error occurred for create password');

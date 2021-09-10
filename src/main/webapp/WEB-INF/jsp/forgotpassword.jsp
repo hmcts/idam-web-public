@@ -13,7 +13,7 @@
               novalidate=""
               method="post"
               _lpchecked="1"
-              action="/reset/doForgotPassword"
+              action="doForgotPassword"
               modelAttribute="forgotPasswordCommand">
 
             <spring:hasBindErrors name="forgotPasswordCommand">
