@@ -10,15 +10,21 @@ let serviceNames = [];
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword=randomData.getRandomUserPassword();
+let mojUserRole;
+let randomUserFirstName;
 
 BeforeSuite(async ({ I }) => {
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     const token = await I.getAuthToken();
-    await I.createService(serviceName, serviceClientSecret, '', token, 'openid profile roles', [TestData.MOJ_SSO_PROVIDER_KEY]);
+
+    mojUserRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mojlogintest", 'role description', '', token);
+    await I.createService(serviceName, serviceClientSecret, mojUserRole.id, token, 'openid profile roles', [TestData.MOJ_SSO_PROVIDER_KEY]);
     serviceNames.push(serviceName);
+    await I.createUserWithRoles(TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
 });
 
 AfterSuite(async ({ I }) => {
-    I.deleteUser(TestData.MOJ_TEST_USER_USERNAME);
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
@@ -36,8 +42,8 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
         I.click('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
-        I.waitInUrl("/login");
-        I.see("Sorry, but we’re having trouble signing you in.");
+        I.waitInUrl("/kmsi");
+        I.see("The reply URL specified in the request does not match the reply URLs configured for the application");
     } else {
         I.interceptRequestsAfterSignin();
         I.click('No');
@@ -53,6 +59,9 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
         expect(userInfo.active).to.equal(true);
         expect(userInfo.email).to.equal(TestData.MOJ_TEST_USER_USERNAME);
         expect(userInfo.id).to.not.equal(null);
+        expect(userInfo.forename).to.equal(randomUserFirstName);
+        expect(userInfo.surname).to.equal('User');
+        expect(userInfo.roles).to.eql([mojUserRole.name]);
     }
 
     I.resetRequestInterception();
@@ -75,8 +84,8 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
         I.click('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
-        I.waitInUrl("/login");
-        I.see("Sorry, but we’re having trouble signing you in.");
+        I.waitInUrl("/kmsi");
+        I.see("The reply URL specified in the request does not match the reply URLs configured for the application");
     } else {
         I.interceptRequestsAfterSignin();
         I.click('No');
@@ -92,6 +101,9 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
         expect(userInfo.active).to.equal(true);
         expect(userInfo.email).to.equal(TestData.MOJ_TEST_USER_USERNAME);
         expect(userInfo.id).to.not.equal(null);
+        expect(userInfo.forename).to.equal(randomUserFirstName);
+        expect(userInfo.surname).to.equal('User');
+        expect(userInfo.roles).to.eql([mojUserRole.name]);
     }
 
     I.resetRequestInterception();
