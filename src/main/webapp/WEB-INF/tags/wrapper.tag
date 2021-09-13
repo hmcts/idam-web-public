@@ -101,9 +101,9 @@
                         <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.rejected.text_0003"/></a>
                             <spring:message code="public.cookie.banner.rejected.text_0004"/>
                         </p>
-                        <p id="cookie-reject-all-success-banner-hide" class="govuk-body govuk-button-group">
-                            <a class="govuk-button govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0005"/></a>
-                        </p>
+                        <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-all-success-banner-hide">
+                            <spring:message code="public.cookie.banner.rejected.text_0005"/>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -120,9 +120,9 @@
                         <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.accepted.text_0003"/></a>
                             <spring:message code="public.cookie.banner.accepted.text_0004"/>
                         </p>
-                        <p id="cookie-accept-all-success-banner-hide" class="govuk-body govuk-button-group">
-                            <a class="govuk-button govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0005"/></a>
-                        </p>
+                        <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-accept-all-success-banner-hide">
+                            <spring:message code="public.cookie.banner.accepted.text_0005"/>
+                        </button>
                     </div>
                 </div>
             </div>
