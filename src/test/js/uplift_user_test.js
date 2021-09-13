@@ -200,7 +200,6 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.fillField('#username', upliftAccountCreationStaleUserEmail.toUpperCase());
     I.scrollPageToBottom();
     I.click('Continue');
-    I.waitForText('You need to reset your password');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     await I.runAccessibilityTest();
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftAccountCreationStaleUserEmail);
@@ -263,7 +262,6 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.fillField('#username', upliftLoginStaleUserEmail.toUpperCase());
     I.fillField('#password', userPassword);
     I.click('Sign in');
-    I.waitForText('You need to reset your password');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftLoginStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
