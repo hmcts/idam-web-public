@@ -32,7 +32,7 @@
                             <c:param name="nonce" value="${nonce}"/>
                             <c:param name="scope" value="${scope}"/>
                         </c:url>
-                        <a href="${selfRegisterUrl}"><spring:message code="public.common.create.account"/></a>
+                        <a href="${selfRegisterUrl}"><spring:message code="public.common.create.account"/></a>.
                     </p>
                 </c:when>
                 <c:otherwise>
