@@ -91,7 +91,7 @@
 
 <header role="banner" id="global-header" class=" with-proposition ">
 
-    <div class="govuk-visually-hidden govuk-cookie-banner " data-nosnippet role="region"
+    <div class="govuk-visually-hidden govuk-cookie-banner govuk-!-display-none " data-nosnippet role="region"
          aria-label="<spring:message code="public.cookie.banner.text_0005"/>" id="reject-all-cookies-success">
         <div class="govuk-cookie-banner__message govuk-width-container">
             <div class="govuk-grid-row">
@@ -110,7 +110,7 @@
         </div>
     </div>
 
-    <div class="govuk-visually-hidden govuk-cookie-banner " data-nosnippet role="region"
+    <div class="govuk-visually-hidden govuk-cookie-banner govuk-!-display-none " data-nosnippet role="region"
          aria-label="<spring:message code="public.cookie.banner.text_0004"/>" id="accept-all-cookies-success">
         <div class="govuk-cookie-banner__message govuk-width-container">
             <div class="govuk-grid-row">
