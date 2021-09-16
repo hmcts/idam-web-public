@@ -54,6 +54,7 @@ function setAcceptAllCookies() {
     document.getElementById("accept-all-cookies-success").classList.remove("govuk-!-display-none");
     document.getElementById("cm_cookie_notification").classList.add("govuk-visually-hidden");
     document.getElementById('cm_cookie_notification').classList.add('govuk-!-display-none');
+    document.getElementById('cookie-accept-all-success-banner-hide').focus();
     manageAPMCookie('true')
 }
 
@@ -64,6 +65,7 @@ function setRejectAllCookies() {
     document.getElementById("reject-all-cookies-success").classList.remove("govuk-!-display-none");
     document.getElementById("cm_cookie_notification").classList.add("govuk-visually-hidden");
     document.getElementById('cm_cookie_notification').classList.add('govuk-!-display-none');
+    document.getElementById('cookie-reject-all-success-banner-hide').focus();
     manageAnalyticsCookies('false')
     manageAPMCookie('false')
 }
