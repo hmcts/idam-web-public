@@ -184,7 +184,7 @@
                     </ul>
                 </div>
             </spring:hasBindErrors>
-            <h1 id="skiplinktarget" class="heading-large"><spring:message
+            <h1 class="heading-large"><spring:message
                 code="${selfRegistrationEnabled ? 'public.login.heading' : 'public.login.heading.no.self.register'}"/></h1>
             <c:if test="${selfRegistrationEnabled}">
                 <div class="grid-row">

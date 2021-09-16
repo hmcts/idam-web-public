@@ -7,7 +7,7 @@
 
 <t:wrapper titleKey="public.tactical.expired.title">
     <article class="content__body">
-        <h1 id="skiplinktarget" class="heading-large"><spring:message code="public.tactical.expired.heading" /></h1>
+        <h1 class="heading-large"><spring:message code="public.tactical.expired.heading" /></h1>
 
         <spring:message code="public.tactical.expired.text" htmlEscape="false"/>
 

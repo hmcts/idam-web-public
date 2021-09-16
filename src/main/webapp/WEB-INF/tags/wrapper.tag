@@ -156,6 +156,8 @@
 
     <script src="/assets/javascripts/cookie-manager.js"></script>
 
+    <script src="/assets/javascripts/skiplink-target.js"></script>
+
     <div id="global-cookie-message">
         <p>
             <spring:message

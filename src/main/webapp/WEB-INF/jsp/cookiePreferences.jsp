@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <h1 id="skiplinktarget" class="heading-xlarge">
+        <h1 class="heading-xlarge">
             <spring:message code="public.cookie.preferences.text_0001"/>
         </h1>
         <div id="tabs" class="ui-tabs ui-corner-all ui-widget ui-widget-content">

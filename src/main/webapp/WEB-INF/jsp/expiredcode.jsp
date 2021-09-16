@@ -9,7 +9,7 @@
 <t:wrapper titleKey="public.login.error.verification.problem.title">
     <article class="content__body">
         <header class="page-header group">
-            <h1 id="skiplinktarget" class="heading-large">
+            <h1 class="heading-large">
                 <spring:message code="public.login.error.verification.problem.title" />
             </h1>
         </header>

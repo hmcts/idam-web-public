@@ -25,7 +25,7 @@
                 </div>
             </c:if>
 
-            <h1 id="skiplinktarget" class="heading-large"><spring:message code="public.user.activation.heading.text" text=""/></h1>
+            <h1 class="heading-large"><spring:message code="public.user.activation.heading.text" text=""/></h1>
             <p><spring:message code="public.reset.password.new.password.rule.instruction" /></p>
             <ul class="list list-bullet">
                 <li><spring:message code="public.reset.password.new.password.rule.characters" /></li>

@@ -43,7 +43,7 @@
                 </div>
             </spring:hasBindErrors>
 
-            <h1 id="skiplinktarget" class="heading-large"><spring:message code="public.forgot.password.heading.text" text="default"/></h1>
+            <h1 class="heading-large"><spring:message code="public.forgot.password.heading.text" text="default"/></h1>
             <p class="body-text"><spring:message code="public.forgot.password.subheading.text" text="default"/></p>
 
             <spring:bind path="email">

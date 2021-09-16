@@ -24,7 +24,7 @@
                 </ul>
             </div>
         </c:if>
-        <h1 id="skiplinktarget" class="heading-large"><spring:message code="public.login.heading" /></h1>
+        <h1 class="heading-large"><spring:message code="public.login.heading" /></h1>
         <div class="grid-row">
             <div class="column-one-half column--bordered">
                 <form:form name="upliftUser"

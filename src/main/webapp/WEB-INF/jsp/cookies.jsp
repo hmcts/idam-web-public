@@ -8,7 +8,7 @@
 <t:wrapper titleKey="public.template.footer.support.link.cookies">
     <article class="content__body">
         <a href="javascript:history.go(-1)" class="link-back"><spring:message code="public.cookies.text_0001"/></a>
-        <h1 id="skiplinktarget" class="heading-xlarge">
+        <h1 class="heading-xlarge">
             <spring:message code="public.cookies.text_0002"/>
         </h1>
         <div id="tabs" class="ui-tabs ui-corner-all ui-widget ui-widget-content">

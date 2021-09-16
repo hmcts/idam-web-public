@@ -92,7 +92,7 @@
                 </div>
             </spring:hasBindErrors>
 
-            <h1 id="skiplinktarget" class="heading-large"><spring:message code="public.verification.subheading.verification.required"/></h1>
+            <h1 class="heading-large"><spring:message code="public.verification.subheading.verification.required"/></h1>
             <div class="form-section">
                 <div class="column-two-thirds" style="padding: 0;">
                     <p><spring:message code="public.verification.p"/></p>

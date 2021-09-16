@@ -8,7 +8,7 @@
 <t:wrapper titleKey="public.user.activation.expired.title">
     <article class="content__body">
         <header class="page-header group">
-            <h1 id="skiplinktarget" class="heading-large">
+            <h1 class="heading-large">
                 <spring:message code="public.user.link.expired.heading"/>
             </h1>
         </header>
