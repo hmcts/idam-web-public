@@ -224,8 +224,8 @@
 <main id="content" role="main">
     <div class="centered-content">
         <div class="govuk-phase-banner">
-            <p class="govuk-phase-banner__content">
-                <strong class="govuk-tag govuk-phase-banner__content__tag">
+            <p class="govuk-phase-banner__content govuk-p-size-override">
+                <strong class="govuk-tag govuk-phase-banner__content__tag govuk-p-size-override">
                     <spring:message code="public.template.header.phase.tag"/>
                 </strong>
                 <span class="govuk-phase-banner__text">
