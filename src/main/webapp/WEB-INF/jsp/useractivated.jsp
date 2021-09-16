@@ -8,7 +8,7 @@
 <t:wrapper titleKey="public.user.activated.heading">
     <article class="content__body">
         <header class="page-header group">
-            <h1 class="heading-large">
+            <h1 id="skiplinktarget" class="heading-large">
                 <spring:message code="public.user.activated.heading" />
             </h1>
         </header>

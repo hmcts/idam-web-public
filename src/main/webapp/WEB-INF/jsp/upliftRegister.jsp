@@ -63,7 +63,7 @@
             </div>
         </spring:hasBindErrors>
 
-        <h1 class="heading-large"><spring:message code="public.uplift.user.heading" /></h1>
+        <h1 id="skiplinktarget" class="heading-large"><spring:message code="public.uplift.user.heading" /></h1>
 
         <div class="grid-row">
             <div class="column-one-half column--bordered">

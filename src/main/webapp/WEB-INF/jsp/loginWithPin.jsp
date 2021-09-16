@@ -29,7 +29,7 @@
                 </ul>
             </div>
         </c:if>
-        <h1 class="heading-large">
+        <h1 id="skiplinktarget" class="heading-large">
             <spring:message code="public.login.with.pin.heading" />
         </h1>
         <p class="body-text text-secondary">

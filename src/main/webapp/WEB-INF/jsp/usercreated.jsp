@@ -8,7 +8,7 @@
 <t:wrapper titleKey="public.common.user.created.title.text">
     <article class="content__body">
         <div class="text">
-            <h1 class="heading-large">
+            <h1 id="skiplinktarget" class="heading-large">
                 <spring:message code="public.common.user.created.heading.text"/>
             </h1>
             <p>

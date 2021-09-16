@@ -7,7 +7,7 @@
 
 <t:wrapper titleKey="public.template.footer.support.link.terms.and.conditions">
     <article class="content__body">
-        <h1 class="heading-large"><spring:message code="public.tandc.text_0001" /></h1>
+        <h1 id="skiplinktarget" class="heading-large"><spring:message code="public.tandc.text_0001" /></h1>
         <p><spring:message code="public.tandc.text_0002" /> <a href="/privacy-policy"><spring:message code="public.tandc.text_0003" /></a><spring:message code="public.tandc.text_0004" /></p>
         <h2 class="heading-medium"><spring:message code="public.tandc.text_0005" /></h2>
         <p><spring:message code="public.tandc.text_0006" /></p>

@@ -8,7 +8,7 @@
 <t:wrapper titleKey="public.reset.password.success.title.text">
     <article class="content__body">
         <header class="page-header group">
-            <h1 class="heading-large">
+            <h1 id="skiplinktarget" class="heading-large">
                 <spring:message code="public.reset.password.success.heading.text"/>
             </h1>
         </header>

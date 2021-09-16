@@ -9,7 +9,7 @@
     <article class="content__body">
         <div class="text">
             <header class="page-header group">
-                <h1 class="heading-large">
+                <h1 id="skiplinktarget" class="heading-large">
                     <spring:message code="public.forgot.password.success.heading" />
                 </h1>
             </header>

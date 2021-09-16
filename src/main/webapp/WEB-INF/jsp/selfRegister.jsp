@@ -67,7 +67,7 @@
                 </div>
             </spring:hasBindErrors>
 
-            <h1 class="heading-large"><spring:message code="public.self.register.heading.text"/></h1>
+            <h1 id="skiplinktarget" class="heading-large"><spring:message code="public.self.register.heading.text"/></h1>
             <div class="grid-row">
                 <div class="column-one-half column--bordered">
                     <h2 class="heading-medium"><spring:message code="public.self.register.subheading.text"/></h2>

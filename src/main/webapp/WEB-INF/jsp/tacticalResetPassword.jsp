@@ -7,7 +7,7 @@
 
 <t:wrapper titleKey="public.tactical.reset.password.title">
     <article class="content__body">
-        <h1 class="heading-large"><spring:message code="public.tactical.reset.password.heading" /></h1>
+        <h1 id="skiplinktarget" class="heading-large"><spring:message code="public.tactical.reset.password.heading" /></h1>
 
         <spring:message code="public.tactical.reset.password.text" htmlEscape="false"/>
 

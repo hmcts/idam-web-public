@@ -8,7 +8,7 @@
 <t:wrapper titleKey="public.template.footer.support.link.contact.us">
     <article class="content__body">
         <a href="javascript:history.back()" class="link-back"><spring:message code="public.contactus.text_0001" /></a>
-        <h1 class="heading-large">
+        <h1 id="skiplinktarget" class="heading-large">
             <spring:message code="public.contactus.text_0002" />
         </h1>
 
