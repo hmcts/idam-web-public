@@ -40,6 +40,7 @@ function setCookiePreference() {
     }
     if (document.getElementById('cm_cookie_notification')) {
         document.getElementById("cm_cookie_notification").classList.add("govuk-visually-hidden");
+        document.getElementById('cm_cookie_notification').classList.add('govuk-!-display-none');
     }
 
     manageAnalyticsCookies(getAnalyticsSelectedValue.value)
@@ -52,6 +53,7 @@ function setAcceptAllCookies() {
     document.getElementById("accept-all-cookies-success").classList.remove("govuk-visually-hidden");
     document.getElementById("accept-all-cookies-success").classList.remove("govuk-!-display-none");
     document.getElementById("cm_cookie_notification").classList.add("govuk-visually-hidden");
+    document.getElementById('cm_cookie_notification').classList.add('govuk-!-display-none');
     manageAPMCookie('true')
 }
 
@@ -61,6 +63,7 @@ function setRejectAllCookies() {
     document.getElementById("reject-all-cookies-success").classList.remove("govuk-visually-hidden");
     document.getElementById("reject-all-cookies-success").classList.remove("govuk-!-display-none");
     document.getElementById("cm_cookie_notification").classList.add("govuk-visually-hidden");
+    document.getElementById('cm_cookie_notification').classList.add('govuk-!-display-none');
     manageAnalyticsCookies('false')
     manageAPMCookie('false')
 }
@@ -104,9 +107,11 @@ function checkCookie() {
     if (cookies_preferences_set == "") {
         setCookie('cookies_preferences_set', false, 365);
         document.getElementById("cm_cookie_notification").classList.remove("govuk-visually-hidden");
+        document.getElementById('cm_cookie_notification').classList.remove('govuk-!-display-none');
     }
     if (cookies_preferences_set == 'false') {
         document.getElementById("cm_cookie_notification").classList.remove("govuk-visually-hidden");
+        document.getElementById('cm_cookie_notification').classList.remove('govuk-!-display-none');
     }
     // setting the radio button value based on cookie value
     if (cookies_policy.split(',')[1].split(':')[1] == 'true')
