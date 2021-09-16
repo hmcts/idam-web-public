@@ -4,20 +4,27 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ tag description="Simple Wrapper Tag" pageEncoding="UTF-8" %>
-<%@attribute name="titleKey" required="true"%>
+<%@attribute name="titleKey" required="true" %>
 <!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
 <!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
     <!-- Google Analytics -->
     <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-    ga('create', '<spring:eval expression="@environment.getProperty(\'ga.tracking.id\')" />', 'auto');
+        ga('create', '<spring:eval expression="@environment.getProperty(\'ga.tracking.id\')" />', 'auto');
 
-    ga('send', 'pageview');
+        ga('send', 'pageview');
     </script>
     <!-- End Google Analytics -->
 
@@ -85,7 +92,7 @@
 
 <div id="skiplink-container">
     <div>
-        <a href="#content" class="skiplink"><spring:message code="public.template.skip.to.main.content" /></a>
+        <a href="#content" class="skiplink"><spring:message code="public.template.skip.to.main.content"/></a>
     </div>
 </div>
 
@@ -97,11 +104,16 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-cookie-banner__content govuk-p-size-override">
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0001"/></p>
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.rejected.text_0003"/></a>
+                        <p class="govuk-body govuk-p-size-override"><spring:message
+                            code="public.cookie.banner.rejected.text_0001"/></p>
+                        <p class="govuk-body govuk-p-size-override"><spring:message
+                            code="public.cookie.banner.rejected.text_0002"/> <a
+                            href="${pageContext.request.contextPath}/cookie-preferences"><spring:message
+                            code="public.cookie.banner.rejected.text_0003"/></a>
                             <spring:message code="public.cookie.banner.rejected.text_0004"/>
                         </p>
-                        <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-all-success-banner-hide">
+                        <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override"
+                                data-module="govuk-button" id="cookie-reject-all-success-banner-hide">
                             <spring:message code="public.cookie.banner.rejected.text_0005"/>
                         </button>
                     </div>
@@ -116,11 +128,16 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-cookie-banner__content govuk-p-size-override">
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0001"/></p>
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.accepted.text_0003"/></a>
+                        <p class="govuk-body govuk-p-size-override"><spring:message
+                            code="public.cookie.banner.accepted.text_0001"/></p>
+                        <p class="govuk-body govuk-p-size-override"><spring:message
+                            code="public.cookie.banner.accepted.text_0002"/> <a
+                            href="${pageContext.request.contextPath}/cookie-preferences"><spring:message
+                            code="public.cookie.banner.accepted.text_0003"/></a>
                             <spring:message code="public.cookie.banner.accepted.text_0004"/>
                         </p>
-                        <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-accept-all-success-banner-hide">
+                        <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override"
+                                data-module="govuk-button" id="cookie-accept-all-success-banner-hide">
                             <spring:message code="public.cookie.banner.accepted.text_0005"/>
                         </button>
                     </div>
@@ -130,11 +147,13 @@
     </div>
 
     <div id="cm_cookie_notification" class="govuk-visually-hidden">
-        <div class="govuk-cookie-banner " data-nosnippet role="region" aria-label="<spring:message code="public.cookie.banner.text_0001"/>">
+        <div class="govuk-cookie-banner " data-nosnippet role="region"
+             aria-label="<spring:message code="public.cookie.banner.text_0001"/>">
             <div class="govuk-cookie-banner__message govuk-width-container">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-two-thirds">
-                        <h2 class="govuk-cookie-banner__heading govuk-heading-m govuk-h-size-override"><spring:message code="public.cookie.banner.text_0001"/></h2>
+                        <h2 class="govuk-cookie-banner__heading govuk-heading-m govuk-h-size-override"><spring:message
+                            code="public.cookie.banner.text_0001"/></h2>
                         <div class="govuk-cookie-banner__content govuk-p-size-override">
                             <p><spring:message code="public.cookie.banner.text_0002"/></p>
                             <p><spring:message code="public.cookie.banner.text_0003"/></p>
@@ -142,13 +161,17 @@
                     </div>
                 </div>
                 <div class="govuk-button-group govuk-p-size-override">
-                    <button value="accept" type="button" name="cookies" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-accept-submit">
+                    <button value="accept" type="button" name="cookies" class="govuk-button govuk-p-size-override"
+                            data-module="govuk-button" id="cookie-accept-submit">
                         <spring:message code="public.cookie.banner.text_0004"/>
                     </button>
-                    <button value="reject" type="button" name="cookies" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-submit">
+                    <button value="reject" type="button" name="cookies" class="govuk-button govuk-p-size-override"
+                            data-module="govuk-button" id="cookie-reject-submit">
                         <spring:message code="public.cookie.banner.text_0005"/>
                     </button>
-                    <a class="govuk-link govuk-p-size-override" href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.text_0006"/></a>
+                    <a class="govuk-link govuk-p-size-override"
+                       href="${pageContext.request.contextPath}/cookie-preferences"><spring:message
+                        code="public.cookie.banner.text_0006"/></a>
                 </div>
             </div>
         </div>
@@ -180,12 +203,12 @@
                 <div class="content">
                     <nav id="proposition-menu" class="header__menu" role="navigation">
                         <span class="header__menu__proposition-name">
-                            <spring:message code="public.template.header.link.your.account" />
+                            <spring:message code="public.template.header.link.your.account"/>
                         </span>
                         <ul id="proposition-links" class="header__menu__proposition-links">
                             <li>
                                 <a href="/logout">
-                                    <spring:message code="public.template.header.link.sign.out" />
+                                    <spring:message code="public.template.header.link.sign.out"/>
                                 </a>
                             </li>
                         </ul>
@@ -200,16 +223,18 @@
 
 <main id="content" role="main">
     <div class="centered-content">
-        <div class="phase-banner-beta">
-            <p>
-                <strong class="phase-tag"><spring:message code="public.template.header.phase.tag" /></strong>
-                <span>
+        <div class="govuk-phase-banner">
+            <p class="govuk-phase-banner__content">
+                <strong class="govuk-tag govuk-phase-banner__content__tag">
+                    <spring:message code="public.template.header.phase.tag"/>
+                </strong>
+                <span class="govuk-phase-banner__text">
                     <c:set var="smartSurveyParam">
                         ${pageContext.request.scheme}://${pageContext.request.serverName}${requestScope['javax.servlet.forward.request_uri']}${empty param.client_id ? '' : '?client_id='}${param.client_id}
                     </c:set>
                     <c:set var="smartSurveyUrl">
                         <spring:url value="https://www.smartsurvey.co.uk/s/IDAMSurvey/">
-                            <spring:param name="pageurl" value="${smartSurveyParam}" />
+                            <spring:param name="pageurl" value="${smartSurveyParam}"/>
                         </spring:url>
                     </c:set>
                     <spring:message
@@ -217,7 +242,7 @@
                         code="public.template.header.phase.description"
                         arguments="${smartSurveyUrl}"
                     />
-                    <t:languageSwitch />
+                    <t:languageSwitch/>
                 </span>
             </p>
         </div>
@@ -230,20 +255,26 @@
     <div class="footer-wrapper">
         <div class="footer-meta">
             <div class="footer-meta-inner">
-                <h2 class="visuallyhidden"><spring:message code="public.template.footer.support.links" /></h2>
-                <c:set var="footerUrl" value="https://hmcts-access.service.gov.uk" />
+                <h2 class="visuallyhidden"><spring:message code="public.template.footer.support.links"/></h2>
+                <c:set var="footerUrl" value="https://hmcts-access.service.gov.uk"/>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/cookies"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
-                    <li><a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.template.footer.support.link.cookie.preferences" /></a></li>
-                    <li><a href="${pageContext.request.contextPath}/privacy-policy"><spring:message code="public.template.footer.support.link.privacy.policy" /></a></li>
-                    <li><a href="${pageContext.request.contextPath}/terms-and-conditions"><spring:message code="public.template.footer.support.link.terms.and.conditions" /></a></li>
-                    <li><a href="${pageContext.request.contextPath}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" /></a></li>
+                    <li><a href="${pageContext.request.contextPath}/cookies"><spring:message
+                        code="public.template.footer.support.link.cookies"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message
+                        code="public.template.footer.support.link.cookie.preferences"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/privacy-policy"><spring:message
+                        code="public.template.footer.support.link.privacy.policy"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/terms-and-conditions"><spring:message
+                        code="public.template.footer.support.link.terms.and.conditions"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/contact-us"><spring:message
+                        code="public.template.footer.support.link.contact.us"/></a></li>
                 </ul>
 
                 <div class="open-government-licence">
                     <p class="logo">
-                        <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">
-                            <spring:message code="public.template.licence.ogl" />
+                        <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+                           rel="license">
+                            <spring:message code="public.template.licence.ogl"/>
                         </a>
                     </p>
 
@@ -260,7 +291,7 @@
 
             <div class="copyright">
                 <a href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">
-                    <spring:message code="public.template.copyright" htmlEscape="false" />
+                    <spring:message code="public.template.copyright" htmlEscape="false"/>
                 </a>
             </div>
         </div>
