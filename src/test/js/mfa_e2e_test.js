@@ -653,3 +653,111 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
 
     I.resetRequestInterception();
 });
+
+Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to the MFA turned on service and then authorize to the same service with prompt=login and login again', async ({ I }) => {
+    const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+
+    I.amOnPage(loginUrl);
+    I.waitForText('Sign in');
+    I.fillField('#username', mfaUserEmail);
+    I.fillField('#password', userPassword);
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.seeInCurrentUrl("/verification");
+    I.waitForText('Verification required');
+    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+
+    I.fillField('code', otpCode);
+    I.click('Continue');
+    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.see('code=');
+    I.dontSee('error=');
+
+    const mfaturnedOnService1PageSource = await I.grabSource();
+    const mfaturnedOnService1Code = mfaturnedOnService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+
+    let mfaturnedOnService1JwtDecode = await jwt_decode(mfaturnedOnService1AccessToken);
+
+    assert.equal("access_token", mfaturnedOnService1JwtDecode.tokenName);
+    assert.equal(nonce, mfaturnedOnService1JwtDecode.nonce);
+    assert.equal(1, mfaturnedOnService1JwtDecode.auth_level);
+
+    I.amOnPage(loginUrl);
+    const idamSessionCookie = await I.grabCookie('Idam.Session');
+    const cookie = idamSessionCookie.value;
+
+    const authLocation = await I.getWebPublicOidcAuthorizeWithLogin(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
+    expect(authLocation).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
+
+    I.amOnPage(authLocation);
+    I.waitForText('Sign in');
+    I.fillField('#username', mfaUserEmail);
+    I.fillField('#password', userPassword);
+    I.click('Sign in');
+    I.seeInCurrentUrl("/verification");
+    I.waitForText('Verification required');
+    const otpCode2 = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+
+    I.fillField('code', otpCode2);
+    I.click('Continue');
+    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.see('code=');
+    I.dontSee('error=');
+
+    const mfaturnedOnService1PageSource2 = await I.grabSource();
+    const mfaturnedOnService1Code2 = mfaturnedOnService1PageSource2.match(/\?code=([^&]*)(.*)/)[1];
+    const mfaturnedOnService1AccessToken2 = await I.getAccessToken(mfaturnedOnService1Code2, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+
+    let mfaturnedOnService1JwtDecode2 = await jwt_decode(mfaturnedOnService1AccessToken2);
+
+    assert.equal("access_token", mfaturnedOnService1JwtDecode2.tokenName);
+    assert.equal(nonce, mfaturnedOnService1JwtDecode2.nonce);
+    assert.equal(1, mfaturnedOnService1JwtDecode2.auth_level);
+
+    I.amOnPage(loginUrl);
+    const idamSessionCookie2 = await I.grabCookie('Idam.Session');
+    const cookie2 = idamSessionCookie2.value;
+
+    // try authorizing to the mfa turned on service with the Idam session cookie and prompt not login
+    const location2 = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie2);
+    console.log("Location: " + location2);
+    expect(location2).to.includes(`${mfaTurnedOnService1.activationRedirectUrl}/?code=`.toLowerCase());
+
+    I.amOnPage(location2);
+    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.see('code=');
+    I.dontSee('error=');
+
+    const mfaTurnedOnService1PageSource3 = await I.grabSource();
+    const mfaTurnedOnService1Code3 = mfaTurnedOnService1PageSource3.match(/\?code=([^&]*)(.*)/)[1];
+    const mfaTurnedOnService1AccessToken3 = await I.getAccessToken(mfaTurnedOnService1Code3, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+
+    let mfaturnedOnService1JwtDecode3 = await jwt_decode(mfaTurnedOnService1AccessToken3);
+
+    assert.equal("access_token", mfaturnedOnService1JwtDecode3.tokenName);
+    assert.equal(nonce, mfaturnedOnService1JwtDecode3.nonce);
+    assert.equal(1, mfaturnedOnService1JwtDecode3.auth_level);
+
+    //Details api
+    const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(mfaTurnedOnService1AccessToken3);
+    expect(userInfo.active).to.equal(true);
+    expect(userInfo.email).to.equal(mfaUserEmail);
+    expect(userInfo.forename).to.equal(randomUserFirstName);
+    expect(userInfo.id).to.not.equal(null);
+    expect(userInfo.surname).to.equal('User');
+    expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.name, mfaTurnedOnServiceRole.name]);
+
+    //Webpublic OIDC userinfo
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(mfaTurnedOnService1AccessToken3);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
+    expect(oidcUserInfo.uid).to.not.equal(null);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOffServiceRole.name, mfaTurnedOnServiceRole.name]);
+
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
+    expect(oidcUserInfo.family_name).to.equal('User');
+
+    I.resetRequestInterception();
+});
