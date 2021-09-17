@@ -75,6 +75,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse.CodeEnum.STALE_USER_REGISTRATION_SENT;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ACCESSIBILITY_STATEMENT_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.AZURE_LOGIN_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
@@ -1910,6 +1911,18 @@ public class AppControllerTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(view().name(COOKIE_PREFERENCES_VIEW));
+    }
+
+    /**
+     * @verifies return view
+     * @see AppController#accessibilityStatementView()
+     */
+    @Test
+    public void accessibilityStatementView_shouldReturnView() throws Exception {
+        mockMvc.perform(get("/accessibility-statement"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(ACCESSIBILITY_STATEMENT_VIEW));
     }
 
     /**
