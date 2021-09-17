@@ -2,11 +2,10 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.zuul.context.RequestContext;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProperties;
@@ -23,14 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
-@RunWith(JUnitParamsRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class StepUpAuthenticationZuulFilterTest {
 
     private StepUpAuthenticationZuulFilter filter;
@@ -58,23 +56,25 @@ public class StepUpAuthenticationZuulFilterTest {
         assertTrue(filter.filterOrder() > SSOZuulFilter.FILTER_ORDER);
     }
 
-    private Object shouldFilterParams() {
-        return new Object[]{
-            new Object[]{true, true, true},
-            new Object[]{true, false, false},
-            new Object[]{false, true, false},
-            new Object[]{false, false, false},
-        };
-    }
-
     @Test
-    @Parameters(method = "shouldFilterParams")
-    public void shouldFilter(final boolean isAuthorize, final boolean hasSessionCookie, final boolean expectedResult) {
-        doReturn(isAuthorize).when(filter).isAuthorizeRequest(any());
-        doReturn(hasSessionCookie).when(filter).hasSessionCookie(any());
+    public void shouldFilter() {
+        doReturn(true).when(filter).isAuthorizeRequest(any());
+        doReturn(true).when(filter).hasSessionCookie(any());
+        doReturn(false).when(filter).isPromptLogin(any());
+        assertEquals(true, filter.shouldFilter());
 
-        final boolean shouldFilter = filter.shouldFilter();
-        assertEquals(shouldFilter, expectedResult);
+        doReturn(true).when(filter).isAuthorizeRequest(any());
+        doReturn(true).when(filter).hasSessionCookie(any());
+        doReturn(true).when(filter).isPromptLogin(any());
+        assertEquals(false, filter.shouldFilter());
+
+        doReturn(true).when(filter).isAuthorizeRequest(any());
+        doReturn(false).when(filter).hasSessionCookie(any());
+        assertEquals(false, filter.shouldFilter());
+
+        doReturn(false).when(filter).isAuthorizeRequest(any());
+        assertEquals(false, filter.shouldFilter());
+
     }
 
     private Object isAuthorizeRequestParams() {
@@ -88,12 +88,12 @@ public class StepUpAuthenticationZuulFilterTest {
     }
 
     @Test
-    @Parameters(method = "isAuthorizeRequestParams")
-    public void isAuthorizeRequest(String requestUrl, String httpMethod, Boolean expectedResult) {
+    //@Parameters(method = "isAuthorizeRequestParams")
+    public void isAuthorizeRequest() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
-        doReturn(requestUrl).when(request).getRequestURI();
-        doReturn(httpMethod).when(request).getMethod();
-        assertEquals(expectedResult, filter.isAuthorizeRequest(request));
+        doReturn("http://localhost:1234/o/authorize").when(request).getRequestURI();
+        doReturn("POST").when(request).getMethod();
+        assertEquals(true, filter.isAuthorizeRequest(request));
     }
 
     @Test
@@ -175,4 +175,26 @@ public class StepUpAuthenticationZuulFilterTest {
         assertTrue(RequestContext.getCurrentContext().sendZuulResponse());
         verify(filter, times(1)).dropCookie(any(), any());
     }
+
+    @Test
+    public void isPromptLogin_promptIsLogin() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        doReturn("login").when(request).getParameter("prompt");
+        assertTrue(filter.isPromptLogin(request));
+    }
+
+    @Test
+    public void isPromptLogin_promptIsNotLogin() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        doReturn("test-value").when(request).getParameter("prompt");
+        assertFalse(filter.isPromptLogin(request));
+    }
+
+    @Test
+    public void isPromptLogin_promptIsNotPresent() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        doReturn(null).when(request).getParameter("prompt");
+        assertFalse(filter.isPromptLogin(request));
+    }
+
 }

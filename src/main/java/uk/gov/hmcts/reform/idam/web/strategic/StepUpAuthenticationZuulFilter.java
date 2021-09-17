@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.idam.web.strategic;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,6 +29,8 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
 
     public static final String ZUUL_PROCESSING_ERROR = "Cannot process authentication response";
     public static final String OIDC_AUTHORIZE_ENDPOINT = "/o/authorize";
+    private static final String PROMPT_PARAMETER = "prompt";
+    private static final String PROMPT_LOGIN_VALUE = "login";
 
     private final SPIService spiService;
     private final String idamSessionCookieName;
@@ -59,7 +61,7 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
     @Override
     public boolean shouldFilter() {
         final HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
-        return isAuthorizeRequest(request) && hasSessionCookie(request);
+        return isAuthorizeRequest(request) && hasSessionCookie(request) && !isPromptLogin(request);
     }
 
     @Override
@@ -98,6 +100,11 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
     protected boolean isAuthorizeRequest(@Nonnull final HttpServletRequest request) {
         return request.getRequestURI().contains(OIDC_AUTHORIZE_ENDPOINT) &&
             ("post".equalsIgnoreCase(request.getMethod()) || "get".equalsIgnoreCase(request.getMethod()));
+    }
+
+    protected boolean isPromptLogin(HttpServletRequest request) {
+        String promptValue = request.getParameter(PROMPT_PARAMETER);
+        return StringUtils.isNotEmpty(promptValue) && promptValue.equals(PROMPT_LOGIN_VALUE);
     }
 
     protected boolean hasSessionCookie(@Nonnull final HttpServletRequest request) {
