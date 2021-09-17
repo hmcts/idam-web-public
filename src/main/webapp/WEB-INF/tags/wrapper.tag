@@ -148,13 +148,15 @@
 
 <div id="skiplink-container">
     <div>
-        <a href="#content" class="skiplink"><spring:message code="public.template.skip.to.main.content" /></a>
+        <a href="#skiplinktarget" class="skiplink"><spring:message code="public.template.skip.to.main.content" /></a>
     </div>
 </div>
 
 <header role="banner" id="global-header" class=" with-proposition ">
 
     <script src="/assets/javascripts/cookie-manager.js"></script>
+
+    <script src="/assets/javascripts/skiplink-target.js"></script>
 
     <div id="global-cookie-message">
         <p>
