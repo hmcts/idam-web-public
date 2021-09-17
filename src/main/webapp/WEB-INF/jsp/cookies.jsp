@@ -57,7 +57,7 @@
                     </ul>
                     <p><spring:message code="public.cookies.text_0015"/> <a target="_blank"
                                                                             href="http://www.aboutcookies.org/"><spring:message
-                        code="public.cookies.text_0016"/><span class="visuallyhidden">
+                        code="public.cookies.text_0016"/><span class="visually-hidden">
                         <spring:message code="public.template.link.opens.in.a.new.tab"/></span></a>
                         <spring:message code="public.cookies.text_0017"/>
                     </p>

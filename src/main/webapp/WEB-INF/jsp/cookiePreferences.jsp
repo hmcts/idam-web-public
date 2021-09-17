@@ -40,7 +40,7 @@
                     </ul>
                     <p><spring:message code="public.cookie.preferences.text_0008"/> <a target="_blank"
                                                                             href="http://www.aboutcookies.org/">
-                        <spring:message code="public.cookie.preferences.text_0009"/><span class="visuallyhidden">
+                        <spring:message code="public.cookie.preferences.text_0009"/><span class="visually-hidden">
                         <spring:message code="public.template.link.opens.in.a.new.tab"/></span></a>
                         <spring:message code="public.cookie.preferences.text_0010"/></p>
 
