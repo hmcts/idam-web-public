@@ -103,8 +103,7 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
     }
 
     protected boolean isPromptLogin(HttpServletRequest request) {
-        String promptValue = request.getParameter(PROMPT_PARAMETER);
-        return StringUtils.isNotEmpty(promptValue) && promptValue.equals(PROMPT_LOGIN_VALUE);
+        return StringUtils.equalsIgnoreCase(request.getParameter(PROMPT_PARAMETER), PROMPT_LOGIN_VALUE);
     }
 
     protected boolean hasSessionCookie(@Nonnull final HttpServletRequest request) {

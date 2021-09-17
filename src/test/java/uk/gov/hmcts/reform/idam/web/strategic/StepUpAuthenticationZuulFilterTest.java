@@ -77,23 +77,22 @@ public class StepUpAuthenticationZuulFilterTest {
 
     }
 
-    private Object isAuthorizeRequestParams() {
-        return new Object[]{
-            new Object[]{"http://localhost:1234/o/authorize", "POST", true},
-            new Object[]{"http://localhost:1234/o/authorize", "GET", true},
-            new Object[]{"http://localhost:1234/o/authorize", "PUT", false},
-            new Object[]{"http://localhost:1234/login?param=1", "POST", false},
-            new Object[]{"http://localhost:1234/login?param=1", "GET", false},
-        };
-    }
-
     @Test
-    //@Parameters(method = "isAuthorizeRequestParams")
     public void isAuthorizeRequest() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         doReturn("http://localhost:1234/o/authorize").when(request).getRequestURI();
         doReturn("POST").when(request).getMethod();
         assertEquals(true, filter.isAuthorizeRequest(request));
+        doReturn("http://localhost:1234/o/authorize").when(request).getRequestURI();
+        doReturn("GET").when(request).getMethod();
+        assertEquals(true, filter.isAuthorizeRequest(request));
+        doReturn("http://localhost:1234/o/authorize").when(request).getRequestURI();
+        doReturn("PUT").when(request).getMethod();
+        assertEquals(false, filter.isAuthorizeRequest(request));
+        doReturn("http://localhost:1234/login?param=1").when(request).getRequestURI();
+        assertEquals(false, filter.isAuthorizeRequest(request));
+        doReturn("http://localhost:1234/login?param=1").when(request).getRequestURI();
+        assertEquals(false, filter.isAuthorizeRequest(request));
     }
 
     @Test
