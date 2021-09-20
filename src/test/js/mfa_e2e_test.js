@@ -98,6 +98,48 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
+Scenario('@functional @mfaLogin I am able to login with MFA and prompt = login', async ({ I }) => {
+    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=login`;
+
+    I.amOnPage(loginUrl);
+    I.waitForText('Sign in');
+    I.fillField('#username', mfaUserEmail);
+    I.fillField('#password', userPassword);
+    I.click('Sign in');
+    I.seeInCurrentUrl("/verification");
+    I.waitForText('Verification required');
+    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+
+    I.fillField('code', otpCode);
+    I.interceptRequestsAfterSignin();
+    I.click('Continue');
+    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.see('code=');
+    I.dontSee('error=');
+
+    let pageSource = await I.grabSource();
+    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+
+    let jwtDecode = await jwt_decode(accessToken);
+
+    assert.equal("access_token", jwtDecode.tokenName);
+    assert.equal(nonce, jwtDecode.nonce);
+    assert.equal(1, jwtDecode.auth_level);
+
+    //Webpublic OIDC userinfo
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
+    expect(oidcUserInfo.uid).to.not.equal(null);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
+    expect(oidcUserInfo.family_name).to.equal('User');
+
+    I.resetRequestInterception();
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
+
 Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in Welsh', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6wtIgsUVTGybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=${scope}${Welsh.urlForceCy}`;
@@ -688,7 +730,7 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     const idamSessionCookie = await I.grabCookie('Idam.Session');
     const cookie = idamSessionCookie.value;
 
-    const authLocation = await I.getWebPublicOidcAuthorizeWithLogin(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
+    const authLocation = await I.getWebPublicOidcAuthorizeWithLoginRequired(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
     expect(authLocation).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
 
     const authParams = authLocation.split("/login?")[1];

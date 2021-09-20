@@ -438,7 +438,7 @@ public class AppController {
 
                     return new ModelAndView("redirect:/" + VERIFICATION_VIEW, authorizeParams);
                 } else {
-                    final String responseUrl = authoriseUser(cookies, httpRequest);
+                    final String responseUrl = authoriseUserDuringLogin(cookies, httpRequest);
                     final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
 
                     if (loginSuccess) {
@@ -493,12 +493,12 @@ public class AppController {
         return new ModelAndView(LOGIN_VIEW, model.asMap());
     }
 
-    private String authoriseUser(List<String> cookies, HttpServletRequest httpRequest) {
+    private String authoriseUserDuringLogin(List<String> cookies, HttpServletRequest httpRequest) {
         String responseUrl = null;
         if (cookies != null) {
             Map<String, String> params = new HashMap<>();
             httpRequest.getParameterMap().forEach((key, values) -> {
-                    if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
+                    if (values.length > 0 && !String.join(" ", values).trim().isEmpty() && !key.equals("prompt"))
                         params.put(key, String.join(" ", values));
                 }
             );
@@ -599,7 +599,7 @@ public class AppController {
             final List<String> responseCookies = spiService.submitOtpeAuthentication(authId, ipAddress, request.getCode());
             log.info("/verification: Successful OTP submission request");
 
-            final String responseUrl = authoriseUser(responseCookies, httpRequest);
+            final String responseUrl = authoriseUserDuringLogin(responseCookies, httpRequest);
             final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
             if (loginSuccess) {
                 log.info("/verification: Successful login");

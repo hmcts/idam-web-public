@@ -109,7 +109,7 @@ class IdamHelper extends Helper {
             });
     }
 
-    getWebPublicOidcAuthorizeWithLogin(serviceName, serviceRedirect, oauth2Scope, nonce, cookie) {
+    getWebPublicOidcAuthorizeWithLoginRequired(serviceName, serviceRedirect, oauth2Scope, nonce, cookie) {
         return fetch(`${TestData.WEB_PUBLIC_URL}/o/authorize?redirect_uri=${serviceRedirect}&client_id=${serviceName}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${oauth2Scope}&prompt=login`, {
             agent: agent,
             method: 'GET',

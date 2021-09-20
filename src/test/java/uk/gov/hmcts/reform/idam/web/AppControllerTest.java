@@ -57,6 +57,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -1413,11 +1414,24 @@ public class AppControllerTest {
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
-            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(PROMPT_PARAMETER, "login"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
-        verify(spiService).authorize(any(), eq(cookieList));
+        ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(spiService).authorize(paramsCaptor.capture(), eq(cookieList));
+
+        Map<String, String> actualParams = paramsCaptor.getValue();
+        assertThat(actualParams, hasEntry(USERNAME_PARAMETER, USER_EMAIL));
+        assertThat(actualParams, hasEntry(PASSWORD_PARAMETER, USER_PASSWORD));
+        assertThat(actualParams, hasEntry(REDIRECT_URI, REDIRECT_URI));
+        assertThat(actualParams, hasEntry(STATE_PARAMETER, STATE));
+        assertThat(actualParams, hasEntry(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
+        assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
+        assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
+        assertFalse(actualParams.containsKey("PROMPT_PARAMETER"));
+
     }
 
     /**
@@ -2068,7 +2082,8 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
-            .param(CODE_PARAMETER, "12345678"))
+            .param(CODE_PARAMETER, "12345678")
+            .param(PROMPT_PARAMETER, "login"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
@@ -2087,6 +2102,7 @@ public class AppControllerTest {
         assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
         assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
         assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345678"));
+        assertFalse(actualParams.containsKey(PROMPT_PARAMETER));
     }
 
     /**

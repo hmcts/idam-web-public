@@ -67,3 +67,41 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
 
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt = login', async ({ I }) => {
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&prompt=login`;
+    I.amOnPage(loginUrl);
+    I.waitForText('Sign in');
+    I.fillField('#username', citizenEmail);
+    I.fillField('#password', userPassword);
+    await I.runAccessibilityTest();
+    I.interceptRequestsAfterSignin();
+    I.click('Sign in');
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.see('code=');
+    I.dontSee('error=');
+
+    const pageSource = await I.grabSource();
+    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
+
+    //Details api
+    const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
+    expect(userInfo.active).to.equal(true);
+    expect(userInfo.email).to.equal(citizenEmail);
+    expect(userInfo.forename).to.equal(randomUserFirstName + 'Citizen');
+    expect(userInfo.id).to.not.equal(null);
+    expect(userInfo.surname).to.equal('User');
+    expect(userInfo.roles).to.eql(['citizen']);
+
+    //Webpublic OIDC userinfo
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(citizenEmail);
+    expect(oidcUserInfo.uid).to.not.equal(null);
+    expect(oidcUserInfo.roles).to.eql(['citizen']);
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'Citizen' + ' User');
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'Citizen');
+    expect(oidcUserInfo.family_name).to.equal('User');
+
+    I.resetRequestInterception();
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
