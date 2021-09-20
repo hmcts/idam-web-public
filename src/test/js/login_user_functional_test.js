@@ -96,7 +96,7 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
-    expect(oidcUserInfo.sub.toUpperCase()).to.equal(citizenEmail);
+    expect(oidcUserInfo.sub).to.equal(citizenEmail);
     expect(oidcUserInfo.uid).to.not.equal(null);
     expect(oidcUserInfo.roles).to.eql(['citizen']);
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'Citizen' + ' User');
