@@ -12,7 +12,7 @@ exports.config = {
             // show: true,
             url: TestData.WEB_PUBLIC_URL,
             waitForTimeout: 60000,
-            waitForAction: 500,
+            waitForAction: TestData.WAIT_FOR_ACTION_TIMEOUT,
             windowSize: "1280x960",
             getPageTimeout: 20000,
             chrome: {
