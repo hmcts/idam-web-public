@@ -355,6 +355,7 @@ public class AppController {
 
     /**
      * @should put in model correct data then call authorize service and redirect using redirect url returned by service
+     * @should put in model correct data then call authorize service and redirect using redirect url returned by service that does not match redirect
      * @should put in model correct data if username or password are empty.
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
      * @should put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
@@ -438,16 +439,20 @@ public class AppController {
 
                     return new ModelAndView("redirect:/" + VERIFICATION_VIEW, authorizeParams);
                 } else {
-                    final String responseUrl = authoriseUser(cookies, httpRequest);
+                    final String responseUrl = authoriseUserAfterAuthentication(cookies, httpRequest);
                     final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
 
                     if (loginSuccess) {
-                        log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
+                        if (responseUrl.startsWith(redirectUri)) {
+                            log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
+                        } else {
+                            log.info("/login: Successful for user {} with unexpected redirect {}", obfuscateEmailAddress(request.getUsername()), responseUrl);
+                        }
                         List<String> secureCookies = authHelper.makeCookiesSecure(cookies);
                         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                         return new ModelAndView(REDIRECT_PREFIX + responseUrl);
                     } else {
-                        log.info("/login: There is a problem while logging in  user - {}", obfuscateEmailAddress(request.getUsername()));
+                        log.info("/login: There is a problem while logging in  user {}, response url is {}", obfuscateEmailAddress(request.getUsername()), responseUrl != null ? responseUrl : "n/a");
                         model.addAttribute(HAS_LOGIN_FAILED, true);
                         bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
                         return new ModelAndView(LOGIN_VIEW, model.asMap());
@@ -493,12 +498,12 @@ public class AppController {
         return new ModelAndView(LOGIN_VIEW, model.asMap());
     }
 
-    private String authoriseUser(List<String> cookies, HttpServletRequest httpRequest) {
+    private String authoriseUserAfterAuthentication(List<String> cookies, HttpServletRequest httpRequest) {
         String responseUrl = null;
         if (cookies != null) {
             Map<String, String> params = new HashMap<>();
             httpRequest.getParameterMap().forEach((key, values) -> {
-                    if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
+                    if (values.length > 0 && !String.join(" ", values).trim().isEmpty() && !key.equals(PROMPT))
                         params.put(key, String.join(" ", values));
                 }
             );
@@ -538,6 +543,7 @@ public class AppController {
 
     /**
      * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user
+     * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user to unexpected response url
      * @should submit otp authentication filtering out Idam.Session cookie to avoid session bugs
      * @should return verification view for INCORRECT_OTP 401 response
      * @should return login view for TOO_MANY_ATTEMPTS_OTP 401 response
@@ -599,15 +605,19 @@ public class AppController {
             final List<String> responseCookies = spiService.submitOtpeAuthentication(authId, ipAddress, request.getCode());
             log.info("/verification: Successful OTP submission request");
 
-            final String responseUrl = authoriseUser(responseCookies, httpRequest);
+            final String responseUrl = authoriseUserAfterAuthentication(responseCookies, httpRequest);
             final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
             if (loginSuccess) {
-                log.info("/verification: Successful login");
+                if (responseUrl.startsWith(request.getRedirect_uri())) {
+                    log.info("/verification: Successful login");
+                } else {
+                    log.info("/verification: Successful login with unexpected redirect {}", responseUrl);
+                }
                 List<String> secureCookies = authHelper.makeCookiesSecure(responseCookies);
                 secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                 return new ModelAndView(REDIRECT_PREFIX + responseUrl);
             } else {
-                log.info("/verification: There is a problem while logging in user");
+                log.info("/verification: There is a problem while logging in user, response url is {}", responseUrl != null ? responseUrl : "n/a");
                 return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {

@@ -1177,9 +1177,12 @@ textarea {
     border-bottom: 1px solid #bfc1c3;
 }
 
-.phase-banner-alpha .language,
-.phase-banner-beta .language {
+.govuk-phase-banner .language {
     float: right;
+}
+
+.govuk-phase-banner span {
+    width: 100rem;
 }
 
 .login-list a {
@@ -1511,11 +1514,23 @@ textarea {
 }
 
 .govuk-p-size-override {
-    font-size: 1.75rem !important;
+    font-size: 1.2rem !important;
+}
+
+@media (min-width: 641px) {
+    .govuk-p-size-override {
+        font-size: 1.7rem !important;
+    }
 }
 
 #govuk-p-size-override p a {
-    font-size: 1.75rem !important;
+    font-size: 1.2rem !important;
+}
+
+@media (min-width: 641px) {
+    #govuk-p-size-override p a {
+        font-size: 1.7rem !important;
+    }
 }
 
 .govuk-h-size-override {
