@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.idam.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.CharEncoding;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -57,6 +58,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -1414,11 +1416,67 @@ public class AppControllerTest {
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
-            .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(PROMPT_PARAMETER, "login"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
-        verify(spiService).authorize(any(), eq(cookieList));
+        ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(spiService).authorize(paramsCaptor.capture(), eq(cookieList));
+
+        Map<String, String> actualParams = paramsCaptor.getValue();
+        assertThat(actualParams, hasEntry(USERNAME_PARAMETER, USER_EMAIL));
+        assertThat(actualParams, hasEntry(PASSWORD_PARAMETER, USER_PASSWORD));
+        assertThat(actualParams, hasEntry(REDIRECT_URI, REDIRECT_URI));
+        assertThat(actualParams, hasEntry(STATE_PARAMETER, STATE));
+        assertThat(actualParams, hasEntry(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
+        assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
+        assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
+        assertFalse(actualParams.containsKey("PROMPT_PARAMETER"));
+
+    }
+
+    /**
+     * @verifies put in model correct data then call authorize service and redirect using redirect url returned by service that does not match redirect
+     * @see AppController#login(AuthorizeRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void login_shouldPutInModelCorrectDataThenCallAuthorizeServiceAndRedirectUsingRedirectUrlReturnedByServiceThatDoesNotMatchRedirect() throws Exception {
+        List<String> cookieList = singletonList(AUTHENTICATE_SESSION_COOKE);
+        ApiAuthResult authResult = ApiAuthResult.builder()
+            .cookies(cookieList)
+            .httpStatus(HttpStatus.OK)
+            .policiesAction(EvaluatePoliciesAction.ALLOW)
+            .build();
+
+        given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS))).willReturn(authResult);
+        given(spiService.authorize(any(), eq(cookieList))).willReturn("test-redirect");
+
+        mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(PASSWORD_PARAMETER, USER_PASSWORD)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(PROMPT_PARAMETER, "login"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("test-redirect"));
+
+        ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(spiService).authorize(paramsCaptor.capture(), eq(cookieList));
+
+        Map<String, String> actualParams = paramsCaptor.getValue();
+        assertThat(actualParams, hasEntry(USERNAME_PARAMETER, USER_EMAIL));
+        assertThat(actualParams, hasEntry(PASSWORD_PARAMETER, USER_PASSWORD));
+        assertThat(actualParams, hasEntry(REDIRECT_URI, REDIRECT_URI));
+        assertThat(actualParams, hasEntry(STATE_PARAMETER, STATE));
+        assertThat(actualParams, hasEntry(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
+        assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
+        assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
+        assertFalse(actualParams.containsKey("PROMPT_PARAMETER"));
     }
 
     /**
@@ -2081,7 +2139,8 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
-            .param(CODE_PARAMETER, "12345678"))
+            .param(CODE_PARAMETER, "12345678")
+            .param(PROMPT_PARAMETER, "login"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl(REDIRECT_URI));
 
@@ -2100,6 +2159,51 @@ public class AppControllerTest {
         assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
         assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
         assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345678"));
+        assertFalse(actualParams.containsKey(PROMPT_PARAMETER));
+    }
+
+    /**
+     * @verifies submit otp authentication using authId cookie and otp code then call authorise and redirect the user to unexpected response url
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldSubmitOtpAuthenticationUsingAuthIdCookieAndOtpCodeThenCallAuthoriseAndRedirectTheUserToUnexpectedResponseUrl() throws Exception {
+        given(spiService.submitOtpeAuthentication(any(), any(), any()))
+            .willReturn(singletonList("Idam.Session=idamSessionCookie"));
+
+        given(spiService.authorize(any(), any()))
+            .willReturn("test-redirect");
+
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+            .cookie(new Cookie("Idam.AuthId", "authId"))
+            .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+            .param(USERNAME_PARAMETER, USER_EMAIL)
+            .param(REDIRECT_URI, REDIRECT_URI)
+            .param(STATE_PARAMETER, STATE)
+            .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+            .param(CODE_PARAMETER, "12345678")
+            .param(PROMPT_PARAMETER, "login"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("test-redirect"));
+
+        verify(spiService).submitOtpeAuthentication(eq("authId"),
+            eq(USER_IP_ADDRESS),
+            eq("12345678"));
+
+        ArgumentCaptor<Map> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(spiService).authorize(paramsCaptor.capture(), eq(singletonList("Idam.Session=idamSessionCookie")));
+
+        Map<String, String> actualParams = paramsCaptor.getValue();
+        assertThat(actualParams, hasEntry(USERNAME_PARAMETER, USER_EMAIL));
+        assertThat(actualParams, hasEntry(REDIRECT_URI, REDIRECT_URI));
+        assertThat(actualParams, hasEntry(STATE_PARAMETER, STATE));
+        assertThat(actualParams, hasEntry(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE));
+        assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
+        assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
+        assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345678"));
+        assertFalse(actualParams.containsKey(PROMPT_PARAMETER));
     }
 
     /**
