@@ -7,7 +7,7 @@
 
 <t:wrapper titleKey="public.template.footer.support.link.accessibility.statement">
     <article class="content__body">
-
+        <a href="javascript:history.go(-1)" class="link-back"><spring:message code="public.accessibility.statement.text_0000" /></a>
         <h1 class="heading-large"><spring:message code="public.accessibility.statement.text_0001" /></h1>
 
         <p><spring:message code="public.accessibility.statement.text_0002" /></p>
@@ -16,7 +16,7 @@
             <a href="https://www.gov.uk/help/accessibility"><spring:message code="public.accessibility.statement.text_0004" /></a>
             <spring:message code="public.accessibility.statement.text_0005" />
         </p>
-        <p><spring:message code="public.accessibility.statement.text_0006" /></p>
+        <p><spring:message htmlEscape="false" code="public.accessibility.statement.text_0006" /></p>
         <p><spring:message code="public.accessibility.statement.text_0007" /></p>
         <h2><spring:message code="public.accessibility.statement.text_0008"/></h2>
         <ul class="list list-bullet">
@@ -28,7 +28,7 @@
         </ul>
         <p><spring:message code="public.accessibility.statement.text_0014" /></p>
         <p>
-            <a href="https://mcmw.abilitynet.org.uk"><spring:message code="public.accessibility.statement.text_0015" /></a>
+            <spring:message htmlEscape="false" code="public.accessibility.statement.text_0015" />
             <spring:message code="public.accessibility.statement.text_0016" />
         </p>
 
