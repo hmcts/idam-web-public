@@ -36,6 +36,7 @@ public class MvcKeys {
     public static final String EJUDICIARY_AAD = "ejudiciary-aad";
     public static final String MOJ = "moj";
 
+    public static final String ACCESSIBILITY_STATEMENT_VIEW = "accessibilityStatement";
     public static final String USER_ACTIVATION_VIEW = "useractivation";
     public static final String ERROR_VIEW = "error";
     public static final String ERRORPAGE_VIEW = "errorpage";
