@@ -33,6 +33,9 @@ AfterSuite(async ({ I }) => {
 Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
     I.amOnPage(loginUrl);
+    I.waitForText('Cookies on hmcts-access.service.gov.uk');
+    await I.runAccessibilityTest();
+    I.click('Accept additional cookies');
     I.waitForText('Sign in');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
     I.fillField('#password', userPassword);
@@ -66,11 +69,16 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
+    I.clearCookie();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt = login', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&prompt=login`;
     I.amOnPage(loginUrl);
+    I.waitForText('Cookies on hmcts-access.service.gov.uk');
+    I.click('Reject additional cookies');
+    I.click('Hide this message');
+    await I.runAccessibilityTest();
     I.waitForText('Sign in');
     I.fillField('#username', citizenEmail);
     I.fillField('#password', userPassword);
@@ -104,4 +112,5 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
+    I.clearCookie();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
