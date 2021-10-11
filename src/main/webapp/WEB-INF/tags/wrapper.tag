@@ -21,6 +21,9 @@
     </script>
     <!-- End Google Analytics -->
 
+    <!-- Disable Search Engine Crawlers -->
+    <meta name="robots" content="noindex">
+
     <script>
         function sendEvent(eventCategory, eventAction, eventLabel) {
             ga('send', 'event', eventCategory, eventAction, eventLabel);
@@ -239,6 +242,7 @@
                 <ul>
                     <li><a href="${pageContext.request.contextPath}/cookies"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.template.footer.support.link.cookie.preferences" /></a></li>
+                    <li><a href="${pageContext.request.contextPath}/accessibility-statement"><spring:message code="public.template.footer.support.link.accessibility.statement" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/privacy-policy"><spring:message code="public.template.footer.support.link.privacy.policy" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/terms-and-conditions"><spring:message code="public.template.footer.support.link.terms.and.conditions" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" /></a></li>

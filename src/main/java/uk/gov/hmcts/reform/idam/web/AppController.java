@@ -896,6 +896,14 @@ public class AppController {
     /**
      * @should return view
      */
+    @GetMapping("/accessibility-statement")
+    public String accessibilityStatementView() {
+        return ACCESSIBILITY_STATEMENT_VIEW;
+    }
+
+    /**
+     * @should return view
+     */
     @GetMapping("/cookies")
     public String cookiesView() {
         if (configurationProperties.getFeatures().getExternalCookiePage().isEnabled()) {

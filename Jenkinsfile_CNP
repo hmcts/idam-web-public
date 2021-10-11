@@ -87,6 +87,7 @@ withPipeline(type, product, component) {
         env.REF_DATA_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
         env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
         env.TESTS_FOR_ACCESSIBILITY = true
+        env.WAIT_FOR_ACTION_TIMEOUT = 2000
         println """\
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using RPE_AUTH_URL: ${env.RPE_AUTH_URL}
@@ -179,6 +180,7 @@ withPipeline(type, product, component) {
 
     after('functionalTest:idam-aat') {
         env.TESTS_FOR_ACCESSIBILITY = false
+        env.WAIT_FOR_ACTION_TIMEOUT = 500
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
 
