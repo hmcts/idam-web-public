@@ -21,6 +21,9 @@
     </script>
     <!-- End Google Analytics -->
 
+    <!-- Disable Search Engine Crawlers -->
+    <meta name="robots" content="noindex">
+
     <script>
         function sendEvent(eventCategory, eventAction, eventLabel) {
             ga('send', 'event', eventCategory, eventAction, eventLabel);
