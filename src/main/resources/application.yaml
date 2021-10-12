@@ -54,10 +54,10 @@ spring:
   redis:
     host: localhost
     port: 6379
-    timeout: 200ms
+    timeout: 1000ms
     custom:
       command:
-        timeout: 1000ms
+        timeout: 30000ms
   mvc:
     view:
       prefix: /WEB-INF/jsp/
