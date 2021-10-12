@@ -57,7 +57,7 @@ spring:
     timeout: 1000ms
     custom:
       command:
-        timeout: 30000ms
+        timeout: 10000ms
   mvc:
     view:
       prefix: /WEB-INF/jsp/

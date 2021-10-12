@@ -72,6 +72,13 @@ public class SessionConfiguration {
         return lettuceConnectionFactory;
     }
 
+    @Bean
+    public RedisTemplate<Object, Object> sessionRedisTemplate() {
+        final RedisTemplate<Object, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory());
+        return template;
+    }
+
     /*
      * https://github.com/spring-projects/spring-session/issues/124
      */
