@@ -75,6 +75,7 @@ import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_LOGIN_HINTS;
 public class AppController {
 
     private static final String REDIRECT_RESET_INACTIVE_USER = "redirect:/reset/inactive-user";
+    private static final String REDIRECT_OIDC_AUTHORIZE = "redirect:/o/authorize";
     public static final String LOGIN_FAILURE_ERROR_CODE = "Login failure";
     public static final String REDIRECT_PREFIX = "redirect:";
     public static final String IDAM_AUTH_ID_COOKIE_PREFIX = "Idam.AuthId=";
@@ -480,6 +481,9 @@ public class AppController {
                         staleUserResetPasswordParams.remove(PASSWORD);
                         staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
                         return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, staleUserResetPasswordParams);
+                    case ACCOUNT_LINKED_TO_EXTERNAL_PROVIDER:
+                        Map<String, Object> redirectParams = setUpSSOParams(model, authenticationResult);
+                        return new ModelAndView(REDIRECT_OIDC_AUTHORIZE, redirectParams);
                     default:
                         log.info("/login: Login failed ({}) for user - {}", errorCode, obfuscateEmailAddress(request.getUsername()));
                         model.addAttribute(HAS_LOGIN_FAILED, true);
@@ -496,6 +500,17 @@ public class AppController {
             bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
         }
         return new ModelAndView(LOGIN_VIEW, model.asMap());
+    }
+
+    private Map<String, Object> setUpSSOParams(Model model, ApiAuthResult authenticationResult) {
+        Map<String, Object> redirectParams = model.asMap();
+        redirectParams.remove(USERNAME);
+        redirectParams.remove(PASSWORD);
+        redirectParams.remove(SELF_REGISTRATION_ENABLED);
+        redirectParams.putIfAbsent(RESPONSE_TYPE, CODE);
+        redirectParams.putIfAbsent(SCOPE, "openid roles profile");
+        redirectParams.put("login_hint", authenticationResult.getErrorInfo());
+        return redirectParams;
     }
 
     private String authoriseUserAfterAuthentication(List<String> cookies, HttpServletRequest httpRequest) {
