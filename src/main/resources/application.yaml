@@ -142,6 +142,7 @@ features:
     enabled: false
     url: path-to-gov-uk-page
   federated-s-s-o: ${federated.sso:true}
+  sso-auto-login-redirect: true
   step-up-authentication: ${step.up.authentication:true}
 
 ssoEmailDomains:

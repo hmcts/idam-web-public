@@ -105,6 +105,9 @@ public class AppController {
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
 
+    @Value("${features.sso-auto-login-redirect:true}")
+    private Boolean ssoAutoRedirect;
+
     /**
      * @should return index view
      */
@@ -483,7 +486,12 @@ public class AppController {
                         return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, staleUserResetPasswordParams);
                     case ACCOUNT_LINKED_TO_EXTERNAL_PROVIDER:
                         Map<String, Object> redirectParams = setUpSSOParams(model, authenticationResult);
-                        return new ModelAndView(REDIRECT_OIDC_AUTHORIZE, redirectParams);
+                        if (ssoAutoRedirect) {
+                            return new ModelAndView(REDIRECT_OIDC_AUTHORIZE, redirectParams);
+                        } else {
+                            model.addAttribute(HAS_LOGIN_FAILED, true);
+                            bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
+                        }
                     default:
                         log.info("/login: Login failed ({}) for user - {}", errorCode, obfuscateEmailAddress(request.getUsername()));
                         model.addAttribute(HAS_LOGIN_FAILED, true);
