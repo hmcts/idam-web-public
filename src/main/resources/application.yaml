@@ -51,9 +51,10 @@ spring:
   application:
     name: IDAM Web Public
   # docker run --name web-public-redis -d -p 6379:6379 redis
-  #redis:
-  #  host: localhost
-  #  port: 6379
+  redis:
+    host: localhost
+    port: 6379
+    password:
   mvc:
     view:
       prefix: /WEB-INF/jsp/

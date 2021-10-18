@@ -50,7 +50,7 @@ public class SessionConfiguration {
             System.out.println("Setting redis password");
             serverConfig.setPassword(RedisPassword.of(redisPassword));
         }
-        
+
         return new LettuceConnectionFactory(serverConfig);
     }
 
