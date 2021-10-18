@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
@@ -20,6 +23,15 @@ public class SessionConfiguration {
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
 
+    @Value("${spring.redis.host}")
+    private String redisHostName;
+
+    @Value("${spring.redis.port}")
+    private int redisPort;
+
+    @Value("${spring.redis.password}")
+    private String redisPassword;
+
     @Bean
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
@@ -33,7 +45,13 @@ public class SessionConfiguration {
 
     @Bean
     public LettuceConnectionFactory connectionFactory() {
-        return new LettuceConnectionFactory();
+        RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(redisHostName, redisPort);
+        if (StringUtils.isNotEmpty(redisPassword)) {
+            System.out.println("Setting redis password");
+            serverConfig.setPassword(RedisPassword.of(redisPassword));
+        }
+        
+        return new LettuceConnectionFactory(serverConfig);
     }
 
     /*

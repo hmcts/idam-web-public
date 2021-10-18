@@ -6,5 +6,6 @@ public class SessionInitializer extends AbstractHttpSessionApplicationInitialize
 
     public SessionInitializer() {
         super(SessionConfiguration.class);
+        System.out.println("SessionInitializer");
     }
 }
