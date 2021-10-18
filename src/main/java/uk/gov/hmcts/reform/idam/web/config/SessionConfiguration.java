@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -45,9 +46,10 @@ public class SessionConfiguration {
 
     @Bean
     public LettuceConnectionFactory connectionFactory() {
+        RedisClusterConfiguration serverConfig1 = new RedisClusterConfiguration();
         RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(redisHostName, redisPort);
         if (StringUtils.isNotEmpty(redisPassword)) {
-            System.out.println("Setting redis password");
+            System.out.println("Setting redis password to " +  redisPassword);
             serverConfig.setPassword(RedisPassword.of(redisPassword));
         }
 
