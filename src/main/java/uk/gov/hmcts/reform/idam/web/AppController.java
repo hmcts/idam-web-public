@@ -520,7 +520,8 @@ public class AppController {
         redirectParams.remove(MOJ_LOGIN_ENABLED);
         redirectParams.putIfAbsent(RESPONSE_TYPE, CODE);
         redirectParams.putIfAbsent(SCOPE, "openid roles profile");
-        redirectParams.put("login_hint", SSO_IDAM_API_PROVIDER_MAP.get(authenticationResult.getErrorInfo()));
+        redirectParams.put("login_hint", SSO_IDAM_API_PROVIDER_MAP
+            .getOrDefault(authenticationResult.getErrorInfo(), authenticationResult.getErrorInfo()));
         return redirectParams;
     }
 
