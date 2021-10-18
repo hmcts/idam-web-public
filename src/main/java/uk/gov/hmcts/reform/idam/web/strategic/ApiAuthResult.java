@@ -15,6 +15,7 @@ public class ApiAuthResult {
     private EvaluatePoliciesAction policiesAction;
     private HttpStatus httpStatus;
     private ErrorResponse.CodeEnum errorCode;
+    private String errorInfo;
 
     public boolean isSuccess() {
         return (httpStatus == HttpStatus.OK || httpStatus == HttpStatus.FOUND) &&

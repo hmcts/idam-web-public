@@ -170,7 +170,9 @@ public class SPIService {
         } catch (HttpClientErrorException | HttpServerErrorException he) {
             httpStatus = he.getStatusCode();
             if (httpStatus == HttpStatus.FORBIDDEN || httpStatus == HttpStatus.UNAUTHORIZED || httpStatus == HttpStatus.NOT_FOUND) {
-                resultBuilder.errorCode(getErrorCode(he.getResponseBodyAsString()));
+                ErrorResponse errorResponse = getErrorResponse(he.getResponseBodyAsString());
+                resultBuilder.errorCode(errorResponse.getCode());
+                resultBuilder.errorInfo(errorResponse.getInfo());
             } else {
                 throw he;
             }
@@ -180,14 +182,14 @@ public class SPIService {
         return resultBuilder.build();
     }
 
-    private ErrorResponse.CodeEnum getErrorCode(String errorBody) {
+    private ErrorResponse getErrorResponse(String errorBody) {
         try {
             ErrorResponse errorResponse = objectMapper.readValue(errorBody, ErrorResponse.class);
-            return errorResponse.getCode() != null ? errorResponse.getCode() : ErrorResponse.CodeEnum.ERROR;
+            return errorResponse.getCode() != null ? errorResponse : new ErrorResponse().code(ErrorResponse.CodeEnum.ERROR);
         } catch (JsonProcessingException e) {
             // The API might return the auth tree response instead of an ErrorResponse,
             // but we don't need the details from that type of response.
-            return ErrorResponse.CodeEnum.ERROR;
+            return new ErrorResponse().code(ErrorResponse.CodeEnum.ERROR);
         }
     }
 

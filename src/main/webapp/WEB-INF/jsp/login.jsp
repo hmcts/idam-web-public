@@ -171,7 +171,12 @@
                     </c:if>
 
                     <ul class="error-summary-list">
-                        <c:if test="${isUsernameEmpty}">
+                        <c:forEach var="error" items="${errors.fieldErrors}">
+                            <c:if test="${error.code.startsWith('Email')}">
+                                <c:set var="isEmailError" value="${error.code.startsWith('Email')}"/>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${(isEmailError || isUsernameEmpty)}">
                             <li><a href="#username"><form:errors path="username"/></a></li>
                         </c:if>
                         <c:if test="${isPasswordEmpty}">
@@ -240,6 +245,7 @@
 
                 <div class="login-list">
                     <input class="button" type="submit" name="save"
+                           onclick="document.getElementById('username').value = document.getElementById('username').value.trim()"
                            value="<spring:message code="public.login.form.submit" />">
                     <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled"
                                 name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
