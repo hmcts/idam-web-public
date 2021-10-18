@@ -1643,8 +1643,8 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
-            .andExpect(status().isOk())
-            .andExpect(view().name(LOGIN_VIEW));
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/o/authorize?response_type=response+type&state=state+test&client_id=clientId&redirect_uri=redirect_uri&scope=manage-roles"));
 
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
             .willReturn(authResultLocked);
