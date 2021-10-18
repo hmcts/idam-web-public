@@ -33,7 +33,7 @@ management:
   # but info and health should still be enabled
   health:
     redis:
-      enabled: true
+      enabled: false
   endpoint:
     health:
       show-details: "always"
