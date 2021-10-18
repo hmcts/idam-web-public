@@ -68,6 +68,7 @@ import static uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse.CodeEnum
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_IDAM_API_PROVIDER_MAP;
 import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_LOGIN_HINTS;
 
 @Slf4j
@@ -515,9 +516,11 @@ public class AppController {
         redirectParams.remove(USERNAME);
         redirectParams.remove(PASSWORD);
         redirectParams.remove(SELF_REGISTRATION_ENABLED);
+        redirectParams.remove(AZURE_LOGIN_ENABLED);
+        redirectParams.remove(MOJ_LOGIN_ENABLED);
         redirectParams.putIfAbsent(RESPONSE_TYPE, CODE);
         redirectParams.putIfAbsent(SCOPE, "openid roles profile");
-        redirectParams.put("login_hint", authenticationResult.getErrorInfo());
+        redirectParams.put("login_hint", SSO_IDAM_API_PROVIDER_MAP.get(authenticationResult.getErrorInfo()));
         return redirectParams;
     }
 

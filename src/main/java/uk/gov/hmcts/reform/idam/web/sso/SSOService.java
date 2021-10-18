@@ -23,6 +23,9 @@ public class SSOService {
     public static final Map<String, String> SSO_LOGIN_HINTS =
         ImmutableMap.of(EJUDICIARY_AAD, "/oauth2/authorization/oidc",
             MOJ, "/oauth2/authorization/moj");
+    public static final Map<String, String> SSO_IDAM_API_PROVIDER_MAP =
+        ImmutableMap.of("azure", EJUDICIARY_AAD,
+            "moj", MOJ);
     public static final String LOGIN_HINT_PARAM = "login_hint";
     public static final String PROVIDER_ATTR = "provider";
 
