@@ -46,8 +46,8 @@ public class SessionConfiguration {
     @Bean
     public LettuceConnectionFactory connectionFactory() {
         RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(redisHostName, redisPort);
-        if (StringUtils.isNotEmpty(redisPassword)) { // NOSONAR
-            System.out.println("Setting redis password"); //NOSONAR
+        if (StringUtils.isNotEmpty(redisPassword)) {
+            System.out.println("Setting redis password");
             serverConfig.setPassword(RedisPassword.of(redisPassword));
         }
 
