@@ -68,6 +68,7 @@ public class SessionConfiguration {
         LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
             .commandTimeout(redisCommandTimeout)
             .clientOptions(clientOptions)
+            .useSsl()
             .build();
         RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(redisHostName,
             redisPort);
