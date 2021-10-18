@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.idam.web.config;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -29,6 +31,9 @@ public class SessionConfiguration {
 
     @Value("${spring.redis.port}")
     private int redisPort;
+
+    @Value("${spring.redis.password}")
+    private String redisPassword;
 
     private @Value("${spring.redis.custom.command.timeout}")
     Duration redisCommandTimeout;
@@ -66,6 +71,10 @@ public class SessionConfiguration {
             .build();
         RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(redisHostName,
             redisPort);
+        if (StringUtils.isNotEmpty(redisPassword)) {
+            System.out.println("Setting redis password to " +  redisPassword);
+            serverConfig.setPassword(RedisPassword.of(redisPassword));
+        }
 
         final LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(serverConfig,
             clientConfig);
