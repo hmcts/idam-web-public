@@ -114,3 +114,32 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
     I.resetRequestInterception();
     I.clearCookie();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+
+Scenario('@debug @functional @login As a user, I should see the error message displayed for invalid email', async ({ I }) => {
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
+    I.amOnPage(loginUrl);
+    I.waitForText('Sign in');
+    I.fillField('#username', '');
+    I.fillField('#password', userPassword);
+    I.click('Sign in');
+    I.waitForText('Information is missing or invalid');
+    I.waitForText('Email address cannot be blank');
+    I.waitForText('Email address is not valid');
+    await I.runAccessibilityTest();
+    I.fillField('#username', 'invalidemail@');
+    I.fillField('#password', userPassword);
+    I.click('Sign in');
+    I.waitForText('Information is missing or invalid');
+    I.waitForText('Email address is not valid');
+    I.fillField('#username', 'invalidemail.com');
+    I.fillField('#password', userPassword);
+    I.click('Sign in');
+    I.waitForText('Information is missing or invalid');
+    I.waitForText('Email address is not valid');
+    I.fillField('#username', 'invalid@email@hhh.com');
+    I.fillField('#password', userPassword);
+    I.click('Sign in');
+    I.waitForText('Information is missing or invalid');
+    I.waitForText('Email address is not valid');
+});
