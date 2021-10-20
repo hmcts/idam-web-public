@@ -115,6 +115,6 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
     I.fillField('#password', TestData.MOJ_TEST_USER_PASSWORD);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText(TestData.WEB_PUBLIC_URL + `/o/authorize?response_type=code&client_id=${serviceName}&redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI)}&scope=openid+profile+roles&login_hint=moj`);
+    I.waitForText(TestData.WEB_PUBLIC_URL + '/o/authorize');
     I.resetRequestInterception();
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
+});
