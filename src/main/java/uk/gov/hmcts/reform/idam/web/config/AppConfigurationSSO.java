@@ -55,7 +55,7 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
         http
             .csrf()
             .ignoringAntMatchers("/o/**")
-            .ignoringAntMatchers("/rb_*")
+            .ignoringAntMatchers("/rb_*") //NOSONAR
             .csrfTokenRepository(new CookieCsrfTokenRepository()).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
