@@ -98,7 +98,18 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         expect(userInfo.surname).to.equal('TEST A');
         expect(userInfo.id).to.not.equal(null);
         expect(userInfo.roles).to.eql(['judiciary']);
+
+        I.resetRequestInterception();
+
+        //redirection verification
+        I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
+        I.waitForText('Sign in');
+        I.fillField('#username', TestData.EJUDICIARY_TEST_USER_USERNAME);
+        I.fillField('#password', TestData.EJUDICIARY_TEST_USER_PASSWORD);
+        I.interceptRequestsAfterSignin();
+        I.click('Sign in');
+        I.waitForText(TestData.WEB_PUBLIC_URL + `/o/authorize?response_type=code&client_id=${serviceName}&redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI)}&scope=openid+profile+roles&login_hint=ejudiciary-aad`);
+        I.resetRequestInterception();
     }
 
-    I.resetRequestInterception();
 });
