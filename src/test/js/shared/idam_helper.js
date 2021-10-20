@@ -764,6 +764,17 @@ class IdamHelper extends Helper {
         runAccessibility(url, page);
     }
 
+    async getDynatraceRUMLinkResponseStatus() {
+        return fetch(`${TestData.WEB_PUBLIC_URL}/rb_testlink`, {
+            agent: agent,
+            method: 'POST'
+        }).then(response => {
+            return response.status;
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+
 }
 
 module.exports = IdamHelper;
