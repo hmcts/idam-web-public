@@ -104,17 +104,18 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
         expect(userInfo.forename).to.equal(randomUserFirstName);
         expect(userInfo.surname).to.equal('User');
         expect(userInfo.roles).to.eql([mojUserRole.name]);
+
+        I.resetRequestInterception();
+
+        //redirection verification
+        I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
+        I.waitForText('Sign in');
+        I.fillField('#username', TestData.MOJ_TEST_USER_USERNAME);
+        I.fillField('#password', TestData.MOJ_TEST_USER_PASSWORD);
+        I.interceptRequestsAfterSignin();
+        I.click('Sign in');
+        I.waitForText(TestData.WEB_PUBLIC_URL + `/o/authorize?response_type=code&client_id=${serviceName}&redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI)}&scope=openid+profile+roles&login_hint=moj`);
+        I.resetRequestInterception();
     }
 
-    I.resetRequestInterception();
-
-    //redirection verification
-    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
-    I.waitForText('Sign in');
-    I.fillField('#username', TestData.MOJ_TEST_USER_USERNAME);
-    I.fillField('#password', TestData.MOJ_TEST_USER_PASSWORD);
-    I.interceptRequestsAfterSignin();
-    I.click('Sign in');
-    I.waitForText(TestData.WEB_PUBLIC_URL + '/o/authorize');
-    I.resetRequestInterception();
 });
