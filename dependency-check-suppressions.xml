@@ -24,4 +24,10 @@
         <cve>CVE-2020-23171</cve>
     </suppress>
 
+    <!-- Fixed in an upcoming release -->
+    <suppress>
+        <gav regex="true">^org\.apache\.tomcat\.embed:.*$</gav>
+        <cve>CVE-2021-42340</cve>
+    </suppress>
+
 </suppressions>
