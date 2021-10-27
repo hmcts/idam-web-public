@@ -30,15 +30,4 @@
         <cve>CVE-2021-42340</cve>
     </suppress>
 
-    <suppress>
-        <gav regex="true">^io\.netty:.*$</gav>
-        <cve>CVE-2021-37136</cve>
-    </suppress>
-
-    <suppress>
-        <gav regex="true">^io\.netty:.*$</gav>
-        <cve>CVE-2021-37137</cve>
-    </suppress>
-    <!-- - - - - - - - - - - - - - - - -->
-
 </suppressions>
