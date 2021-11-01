@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := all
 CHART := idam-web-public
-RELEASE := ${CHART}
+RELEASE := ${CHART}-pr-${PR}
 NAMESPACE := idam
 TEST := ${RELEASE}-test-service
 ACR := hmctspublic

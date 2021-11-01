@@ -6,8 +6,6 @@ import java.lang.reflect.Method;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.cglib.proxy.Callback;
 import org.springframework.cglib.proxy.CallbackFilter;
@@ -16,26 +14,22 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.cglib.proxy.NoOp;
 import org.springframework.cloud.netflix.zuul.filters.RouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.SimpleRouteLocator;
-import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.cloud.netflix.zuul.web.ZuulController;
 import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties({ ZuulProperties.class })
 public class ZuulConfiguration {
 
     /** The path returned by ErrorContoller.getErrorPath() with Spring Boot < 2.5 (and no longer available on Spring Boot >= 2.5). */
     private static final String ERROR_PATH = "/error";
 
     @Bean
-    public ZuulPostProcessor zuulPostProcessor(@Autowired ZuulProperties zuulProperties,
-                                               @Autowired ServerProperties server,
+    public ZuulPostProcessor zuulPostProcessor(@Autowired ZuulController zuulController,
+                                               @Autowired RouteLocator routeLocator,
                                                @Autowired(required = false) ErrorController errorController) {
-        return new ZuulPostProcessor(new SimpleRouteLocator(server.getServlet().getContextPath(),
-            zuulProperties), new ZuulController(), errorController);
+        return new ZuulPostProcessor(routeLocator, zuulController, errorController);
     }
 
     private static final class ZuulPostProcessor implements BeanPostProcessor {
