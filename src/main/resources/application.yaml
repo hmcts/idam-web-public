@@ -6,6 +6,8 @@ server:
   maxConnectionIdleTime: 20
   maxConnectionsPerRoute: 200
   maxConnectionsTotal: 200
+  error:
+    path: /error
   servlet:
     session:
       timeout: 600m
