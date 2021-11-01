@@ -88,7 +88,7 @@ allprojects {
     implementation group: 'io.github.openfeign', name: 'feign-jackson'
     implementation group: 'io.github.openfeign', name: 'feign-okhttp'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.7.RELEASE') {
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.9.RELEASE') {
       exclude(module: 'rxnetty-contexts')
       exclude(module: 'rxnetty-servo')
       exclude(module: 'rxnetty')
