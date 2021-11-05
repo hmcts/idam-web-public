@@ -44,6 +44,19 @@
                 </spring:url>
             </c:set>
 
+            <c:set var="mojLoginUrl">
+                <spring:url value="/o/authorize">
+                    <spring:param name="redirect_uri" value="${redirect_uri}"/>
+                    <spring:param name="client_id" value="${client_id}"/>
+                    <spring:param name="state" value="${state}"/>
+                    <spring:param name="nonce" value="${nonce}"/>
+                    <spring:param name="prompt" value="${prompt}"/>
+                    <spring:param name="scope" value="${scope}"/>
+                    <spring:param name="response_type" value="code"/>
+                    <spring:param name="login_hint" value="moj"/>
+                </spring:url>
+            </c:set>
+
             <spring:hasBindErrors name="authorizeCommand">
                 <script>
                     sendEvent('Authorization', 'Error', 'User authorization has failed');
@@ -158,7 +171,12 @@
                     </c:if>
 
                     <ul class="error-summary-list">
-                        <c:if test="${isUsernameEmpty}">
+                        <c:forEach var="error" items="${errors.fieldErrors}">
+                            <c:if test="${error.code.startsWith('Email')}">
+                                <c:set var="isEmailError" value="${error.code.startsWith('Email')}"/>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${(isEmailError || isUsernameEmpty)}">
                             <li><a href="#username"><form:errors path="username"/></a></li>
                         </c:if>
                         <c:if test="${isPasswordEmpty}">
@@ -227,17 +245,29 @@
 
                 <div class="login-list">
                     <input class="button" type="submit" name="save"
+                           onclick="document.getElementById('username').value = document.getElementById('username').value.trim()"
                            value="<spring:message code="public.login.form.submit" />">
                     <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled"
                                 name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
+
                     <c:if test="${azureLoginEnabled}">
                         <form:input path="azureLoginEnabled" type="hidden" id="azureLoginEnabled"
                                     name="azureLoginEnabled" value="${azureLoginEnabled}"/>
-                        <a><spring:message code="public.login.azure.link.or"/></a>
+                        <br><br>
                         <a href="${azureLoginUrl}">
                             <spring:message code="public.login.azure.link"/>
                         </a>
                     </c:if>
+
+                    <c:if test="${mojLoginEnabled}">
+                        <form:input path="mojLoginEnabled" type="hidden" id="mojLoginEnabled"
+                                    name="mojLoginEnabled" value="${mojLoginEnabled}"/>
+                        <br>
+                        <a href="${mojLoginUrl}">
+                            <spring:message code="public.login.moj.link"/>
+                        </a>
+                    </c:if>
+
                 </div>
             </div>
             <c:if test="${selfRegistrationEnabled}">

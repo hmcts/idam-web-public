@@ -4,12 +4,14 @@ import javax.validation.constraints.NotEmpty;
 
 import lombok.Getter;
 import lombok.Setter;
+import uk.gov.hmcts.reform.idam.web.validation.Email;
 
 @Setter
 @Getter
 public class AuthorizeRequest {
 
     @NotEmpty
+    @Email
     private String username;
 
     @NotEmpty
@@ -34,6 +36,8 @@ public class AuthorizeRequest {
     private String code;
 
     private boolean azureLoginEnabled;
+
+    private boolean mojLoginEnabled;
 
     private boolean hasOtpCheckFailed;
 }

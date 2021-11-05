@@ -31,6 +31,9 @@ management:
   # Enable the info and health endpoints
   # A given environment (such as prod) might disable all endpoints,
   # but info and health should still be enabled
+  health:
+    redis:
+      enabled: false
   endpoint:
     health:
       show-details: "always"
@@ -67,8 +70,15 @@ spring:
         provider:
           oidc:
             issuer-uri: https://sts.windows.net/723e4557-2f17-43ed-9e71-f1beb253e546/
+          moj:
+            issuer-uri: https://sts.windows.net/34c125c9-c7f3-486f-a78c-cf762c718831/
         registration:
           oidc:
+            client-id: placeholder
+            client-secret: placeholder
+            client-authentication-method: basic
+            scope: openid
+          moj:
             client-id: placeholder
             client-secret: placeholder
             client-authentication-method: basic
@@ -132,6 +142,7 @@ features:
     enabled: false
     url: path-to-gov-uk-page
   federated-s-s-o: ${federated.sso:true}
+  sso-auto-login-redirect: true
   step-up-authentication: ${step.up.authentication:true}
 
 ssoEmailDomains:

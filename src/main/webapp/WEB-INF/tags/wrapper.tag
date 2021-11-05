@@ -8,7 +8,6 @@
 <!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
 <!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
-    <t:baseUrl/>
     <!-- Google Analytics -->
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -21,6 +20,9 @@
     ga('send', 'pageview');
     </script>
     <!-- End Google Analytics -->
+
+    <!-- Disable Search Engine Crawlers -->
+    <meta name="robots" content="noindex">
 
     <script>
         function sendEvent(eventCategory, eventAction, eventLabel) {
@@ -84,78 +86,80 @@
     window.GOVUKFrontend.initAll()
 </script>
 
+<div class="govuk-visually-hidden govuk-cookie-banner govuk-!-display-none " data-nosnippet role="region"
+     aria-label="<spring:message code="public.cookie.banner.text_0005"/>" id="reject-all-cookies-success">
+    <div class="govuk-cookie-banner__message govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-cookie-banner__content govuk-p-size-override">
+                    <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0001"/></p>
+                    <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.rejected.text_0003"/></a>
+                        <spring:message code="public.cookie.banner.rejected.text_0004"/>
+                    </p>
+                    <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-all-success-banner-hide">
+                        <spring:message code="public.cookie.banner.rejected.text_0005"/>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="govuk-visually-hidden govuk-cookie-banner govuk-!-display-none " data-nosnippet role="region"
+     aria-label="<spring:message code="public.cookie.banner.text_0004"/>" id="accept-all-cookies-success">
+    <div class="govuk-cookie-banner__message govuk-width-container">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-cookie-banner__content govuk-p-size-override">
+                    <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0001"/></p>
+                    <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.accepted.text_0003"/></a>
+                        <spring:message code="public.cookie.banner.accepted.text_0004"/>
+                    </p>
+                    <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-accept-all-success-banner-hide">
+                        <spring:message code="public.cookie.banner.accepted.text_0005"/>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="cm_cookie_notification" class="govuk-visually-hidden govuk-!-display-none ">
+    <div class="govuk-cookie-banner " data-nosnippet role="region" aria-label="<spring:message code="public.cookie.banner.text_0001"/>">
+        <div class="govuk-cookie-banner__message govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h2 class="govuk-cookie-banner__heading govuk-heading-m govuk-h-size-override"><spring:message code="public.cookie.banner.text_0001"/></h2>
+                    <div class="govuk-cookie-banner__content govuk-p-size-override">
+                        <p><spring:message code="public.cookie.banner.text_0002"/></p>
+                        <p><spring:message code="public.cookie.banner.text_0003"/></p>
+                    </div>
+                </div>
+            </div>
+            <div class="govuk-button-group govuk-p-size-override">
+                <button value="accept" type="button" name="cookies" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-accept-submit">
+                    <spring:message code="public.cookie.banner.text_0004"/>
+                </button>
+                <button value="reject" type="button" name="cookies" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-submit">
+                    <spring:message code="public.cookie.banner.text_0005"/>
+                </button>
+                <a class="govuk-link govuk-p-size-override" href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.text_0006"/></a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="skiplink-container">
     <div>
-        <a href="#content" class="skiplink"><spring:message code="public.template.skip.to.main.content" /></a>
+        <a href="#skiplinktarget" class="skiplink"><spring:message code="public.template.skip.to.main.content" /></a>
     </div>
 </div>
 
 <header role="banner" id="global-header" class=" with-proposition ">
 
-    <div class="govuk-visually-hidden govuk-cookie-banner " data-nosnippet role="region"
-         aria-label="<spring:message code="public.cookie.banner.text_0005"/>" id="reject-all-cookies-success">
-        <div class="govuk-cookie-banner__message govuk-width-container">
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds">
-                    <div class="govuk-cookie-banner__content govuk-p-size-override">
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0001"/></p>
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.rejected.text_0003"/></a>
-                            <spring:message code="public.cookie.banner.rejected.text_0004"/>
-                        </p>
-                        <p id="cookie-reject-all-success-banner-hide" class="govuk-body govuk-button-group">
-                            <a class="govuk-button govuk-p-size-override"><spring:message code="public.cookie.banner.rejected.text_0005"/></a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="govuk-visually-hidden govuk-cookie-banner " data-nosnippet role="region"
-         aria-label="<spring:message code="public.cookie.banner.text_0004"/>" id="accept-all-cookies-success">
-        <div class="govuk-cookie-banner__message govuk-width-container">
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds">
-                    <div class="govuk-cookie-banner__content govuk-p-size-override">
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0001"/></p>
-                        <p class="govuk-body govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0002"/> <a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.accepted.text_0003"/></a>
-                            <spring:message code="public.cookie.banner.accepted.text_0004"/>
-                        </p>
-                        <p id="cookie-accept-all-success-banner-hide" class="govuk-body govuk-button-group">
-                            <a class="govuk-button govuk-p-size-override"><spring:message code="public.cookie.banner.accepted.text_0005"/></a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="cm_cookie_notification" class="govuk-visually-hidden">
-        <div class="govuk-cookie-banner " data-nosnippet role="region" aria-label="<spring:message code="public.cookie.banner.text_0001"/>">
-            <div class="govuk-cookie-banner__message govuk-width-container">
-                <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-two-thirds">
-                        <h2 class="govuk-cookie-banner__heading govuk-heading-m govuk-h-size-override"><spring:message code="public.cookie.banner.text_0001"/></h2>
-                        <div class="govuk-cookie-banner__content govuk-p-size-override">
-                            <p><spring:message code="public.cookie.banner.text_0002"/></p>
-                            <p><spring:message code="public.cookie.banner.text_0003"/></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="govuk-button-group govuk-p-size-override">
-                    <button value="accept" type="button" name="cookies" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-accept-submit">
-                        <spring:message code="public.cookie.banner.text_0004"/>
-                    </button>
-                    <button value="reject" type="button" name="cookies" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-submit">
-                        <spring:message code="public.cookie.banner.text_0005"/>
-                    </button>
-                    <a class="govuk-link govuk-p-size-override" href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.cookie.banner.text_0006"/></a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="/assets/javascripts/cookie-manager.js"></script>
+
+    <script src="/assets/javascripts/skiplink-target.js"></script>
 
     <div id="global-cookie-message">
         <p>
@@ -201,16 +205,18 @@
 
 <main id="content" role="main">
     <div class="centered-content">
-        <div class="phase-banner-beta">
-            <p>
-                <strong class="phase-tag"><spring:message code="public.template.header.phase.tag" /></strong>
-                <span>
+        <div class="govuk-phase-banner">
+            <p class="govuk-phase-banner__content govuk-p-size-override">
+                <strong class="govuk-tag govuk-phase-banner__content__tag govuk-p-size-override">
+                    <spring:message code="public.template.header.phase.tag"/>
+                </strong>
+                <span class="govuk-phase-banner__text">
                     <c:set var="smartSurveyParam">
                         ${pageContext.request.scheme}://${pageContext.request.serverName}${requestScope['javax.servlet.forward.request_uri']}${empty param.client_id ? '' : '?client_id='}${param.client_id}
                     </c:set>
                     <c:set var="smartSurveyUrl">
                         <spring:url value="https://www.smartsurvey.co.uk/s/IDAMSurvey/">
-                            <spring:param name="pageurl" value="${smartSurveyParam}" />
+                            <spring:param name="pageurl" value="${smartSurveyParam}"/>
                         </spring:url>
                     </c:set>
                     <spring:message
@@ -218,7 +224,7 @@
                         code="public.template.header.phase.description"
                         arguments="${smartSurveyUrl}"
                     />
-                    <t:languageSwitch />
+                    <t:languageSwitch/>
                 </span>
             </p>
         </div>
@@ -236,6 +242,7 @@
                 <ul>
                     <li><a href="${pageContext.request.contextPath}/cookies"><spring:message code="public.template.footer.support.link.cookies" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/cookie-preferences"><spring:message code="public.template.footer.support.link.cookie.preferences" /></a></li>
+                    <li><a href="${pageContext.request.contextPath}/accessibility-statement"><spring:message code="public.template.footer.support.link.accessibility.statement" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/privacy-policy"><spring:message code="public.template.footer.support.link.privacy.policy" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/terms-and-conditions"><spring:message code="public.template.footer.support.link.terms.and.conditions" /></a></li>
                     <li><a href="${pageContext.request.contextPath}/contact-us"><spring:message code="public.template.footer.support.link.contact.us" /></a></li>

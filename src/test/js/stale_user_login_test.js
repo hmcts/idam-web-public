@@ -46,7 +46,6 @@ Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) =>
     I.fillField('#username', staleUserEmail.toUpperCase());
     I.fillField('#password', userPassword);
     I.click('Sign in');
-    I.waitForText('You need to reset your password');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(staleUserEmail);
     I.amOnPage(reRegistrationUrl);
@@ -79,7 +78,6 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.fillField('#username', staleUserEmailWelsh);
     I.fillField('#password', userPassword);
     I.click(Welsh.signIn);
-    I.waitForText(Welsh.youNeedToResetYourPassword);
     I.waitForText(Welsh.staleUserErrorMessage);
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(staleUserEmailWelsh);
     I.amOnPage(reRegistrationUrl);

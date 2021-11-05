@@ -21,7 +21,8 @@ def secrets = [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY'),
-        secret('EJUDICIARY-TEST-USER-PASSWORD', 'EJUDICIARY_TEST_USER_PASSWORD')
+        secret('EJUDICIARY-TEST-USER-PASSWORD', 'EJUDICIARY_TEST_USER_PASSWORD'),
+        secret('MOJ-TEST-USER-PASSWORD', 'MOJ_TEST_USER_PASSWORD')
     ]
 ]
 
@@ -34,11 +35,14 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
+def branchesToSync = ['demo', 'perftest', 'ithc']
+
 withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     enableSlackNotifications('#idam_tech')
     enableAksStagingDeployment()
     disableLegacyDeployment()
+    syncBranchesWithMaster(branchesToSync)
 
     // AKS Callbacks
     before('akschartsinstall') {
@@ -83,6 +87,7 @@ withPipeline(type, product, component) {
         env.REF_DATA_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
         env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
         env.TESTS_FOR_ACCESSIBILITY = true
+        env.WAIT_FOR_ACTION_TIMEOUT = 2000
         println """\
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using RPE_AUTH_URL: ${env.RPE_AUTH_URL}
@@ -175,6 +180,7 @@ withPipeline(type, product, component) {
 
     after('functionalTest:idam-aat') {
         env.TESTS_FOR_ACCESSIBILITY = false
+        env.WAIT_FOR_ACTION_TIMEOUT = 500
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
 

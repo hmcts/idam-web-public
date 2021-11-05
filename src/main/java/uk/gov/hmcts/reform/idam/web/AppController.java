@@ -68,12 +68,15 @@ import static uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse.CodeEnum
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_IDAM_API_PROVIDER_MAP;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_LOGIN_HINTS;
 
 @Slf4j
 @Controller
 public class AppController {
 
     private static final String REDIRECT_RESET_INACTIVE_USER = "redirect:/reset/inactive-user";
+    private static final String REDIRECT_OIDC_AUTHORIZE = "redirect:/o/authorize";
     public static final String LOGIN_FAILURE_ERROR_CODE = "Login failure";
     public static final String REDIRECT_PREFIX = "redirect:";
     public static final String IDAM_AUTH_ID_COOKIE_PREFIX = "Idam.AuthId=";
@@ -102,6 +105,9 @@ public class AppController {
 
     @Value("${authentication.secureCookie}")
     private Boolean useSecureCookie;
+
+    @Value("${features.sso-auto-login-redirect:true}")
+    private Boolean ssoAutoRedirect;
 
     /**
      * @should return index view
@@ -323,9 +329,14 @@ public class AppController {
             service.ifPresent(theService -> {
                 model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
                 if (!CollectionUtils.isEmpty(theService.getSsoProviders())
-                    && theService.getSsoProviders().contains(EJUDICIARY_AAD)
+                    && theService.getSsoProviders().stream().anyMatch(SSO_LOGIN_HINTS::containsKey)
                     && configurationProperties.getFeatures().isFederatedSSO()) {
-                    model.addAttribute(AZURE_LOGIN_ENABLED, true);
+                    if (theService.getSsoProviders().contains(EJUDICIARY_AAD)) {
+                        model.addAttribute(AZURE_LOGIN_ENABLED, true);
+                    }
+                    if (theService.getSsoProviders().contains(MOJ)) {
+                        model.addAttribute(MOJ_LOGIN_ENABLED, true);
+                    }
                 }
             });
         }
@@ -349,6 +360,7 @@ public class AppController {
 
     /**
      * @should put in model correct data then call authorize service and redirect using redirect url returned by service
+     * @should put in model correct data then call authorize service and redirect using redirect url returned by service that does not match redirect
      * @should put in model correct data if username or password are empty.
      * @should put in model the correct data and return login view if authorize service doesn't return a response url
      * @should put in model the correct error detail in case authorize service throws a HttpClientErrorException and status code is 403 then return login view
@@ -371,8 +383,13 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
-        if (request.isAzureLoginEnabled() && configurationProperties.getFeatures().isFederatedSSO()) {
-            model.addAttribute(AZURE_LOGIN_ENABLED, true);
+        if (configurationProperties.getFeatures().isFederatedSSO()) {
+            if (request.isAzureLoginEnabled()) {
+                model.addAttribute(AZURE_LOGIN_ENABLED, true);
+            }
+            if (request.isMojLoginEnabled()) {
+                model.addAttribute(MOJ_LOGIN_ENABLED, true);
+            }
         }
 
         final boolean validationErrors = bindingResult.hasErrors();
@@ -427,16 +444,20 @@ public class AppController {
 
                     return new ModelAndView("redirect:/" + VERIFICATION_VIEW, authorizeParams);
                 } else {
-                    final String responseUrl = authoriseUser(cookies, httpRequest);
+                    final String responseUrl = authoriseUserAfterAuthentication(cookies, httpRequest);
                     final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
 
                     if (loginSuccess) {
-                        log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
+                        if (responseUrl.startsWith(redirectUri)) {
+                            log.info("/login: Successful login - {}", obfuscateEmailAddress(request.getUsername()));
+                        } else {
+                            log.info("/login: Successful for user {} with unexpected redirect {}", obfuscateEmailAddress(request.getUsername()), responseUrl);
+                        }
                         List<String> secureCookies = authHelper.makeCookiesSecure(cookies);
                         secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                         return new ModelAndView(REDIRECT_PREFIX + responseUrl);
                     } else {
-                        log.info("/login: There is a problem while logging in  user - {}", obfuscateEmailAddress(request.getUsername()));
+                        log.info("/login: There is a problem while logging in  user {}, response url is {}", obfuscateEmailAddress(request.getUsername()), responseUrl != null ? responseUrl : "n/a");
                         model.addAttribute(HAS_LOGIN_FAILED, true);
                         bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
                         return new ModelAndView(LOGIN_VIEW, model.asMap());
@@ -464,6 +485,14 @@ public class AppController {
                         staleUserResetPasswordParams.remove(PASSWORD);
                         staleUserResetPasswordParams.remove(SELF_REGISTRATION_ENABLED);
                         return new ModelAndView(REDIRECT_RESET_INACTIVE_USER, staleUserResetPasswordParams);
+                    case ACCOUNT_LINKED_TO_EXTERNAL_PROVIDER:
+                        Map<String, Object> redirectParams = setUpSSOParams(model, authenticationResult);
+                        if (ssoAutoRedirect) {
+                            return new ModelAndView(REDIRECT_OIDC_AUTHORIZE, redirectParams);
+                        } else {
+                            model.addAttribute(HAS_LOGIN_FAILED, true);
+                            bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
+                        }
                     default:
                         log.info("/login: Login failed ({}) for user - {}", errorCode, obfuscateEmailAddress(request.getUsername()));
                         model.addAttribute(HAS_LOGIN_FAILED, true);
@@ -482,12 +511,26 @@ public class AppController {
         return new ModelAndView(LOGIN_VIEW, model.asMap());
     }
 
-    private String authoriseUser(List<String> cookies, HttpServletRequest httpRequest) {
+    private Map<String, Object> setUpSSOParams(Model model, ApiAuthResult authenticationResult) {
+        Map<String, Object> redirectParams = model.asMap();
+        redirectParams.remove(USERNAME);
+        redirectParams.remove(PASSWORD);
+        redirectParams.remove(SELF_REGISTRATION_ENABLED);
+        redirectParams.remove(AZURE_LOGIN_ENABLED);
+        redirectParams.remove(MOJ_LOGIN_ENABLED);
+        redirectParams.putIfAbsent(RESPONSE_TYPE, CODE);
+        redirectParams.putIfAbsent(SCOPE, "openid roles profile");
+        redirectParams.put("login_hint", SSO_IDAM_API_PROVIDER_MAP
+            .getOrDefault(authenticationResult.getErrorInfo(), authenticationResult.getErrorInfo()));
+        return redirectParams;
+    }
+
+    private String authoriseUserAfterAuthentication(List<String> cookies, HttpServletRequest httpRequest) {
         String responseUrl = null;
         if (cookies != null) {
             Map<String, String> params = new HashMap<>();
             httpRequest.getParameterMap().forEach((key, values) -> {
-                    if (values.length > 0 && !String.join(" ", values).trim().isEmpty())
+                    if (values.length > 0 && !String.join(" ", values).trim().isEmpty() && !key.equals(PROMPT))
                         params.put(key, String.join(" ", values));
                 }
             );
@@ -527,6 +570,7 @@ public class AppController {
 
     /**
      * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user
+     * @should submit otp authentication using authId cookie and otp code then call authorise and redirect the user to unexpected response url
      * @should submit otp authentication filtering out Idam.Session cookie to avoid session bugs
      * @should return verification view for INCORRECT_OTP 401 response
      * @should return login view for TOO_MANY_ATTEMPTS_OTP 401 response
@@ -588,15 +632,19 @@ public class AppController {
             final List<String> responseCookies = spiService.submitOtpeAuthentication(authId, ipAddress, request.getCode());
             log.info("/verification: Successful OTP submission request");
 
-            final String responseUrl = authoriseUser(responseCookies, httpRequest);
+            final String responseUrl = authoriseUserAfterAuthentication(responseCookies, httpRequest);
             final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
             if (loginSuccess) {
-                log.info("/verification: Successful login");
+                if (responseUrl.startsWith(request.getRedirect_uri())) {
+                    log.info("/verification: Successful login");
+                } else {
+                    log.info("/verification: Successful login with unexpected redirect {}", responseUrl);
+                }
                 List<String> secureCookies = authHelper.makeCookiesSecure(responseCookies);
                 secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
                 return new ModelAndView(REDIRECT_PREFIX + responseUrl);
             } else {
-                log.info("/verification: There is a problem while logging in user");
+                log.info("/verification: There is a problem while logging in user, response url is {}", responseUrl != null ? responseUrl : "n/a");
                 return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
             }
         } catch (HttpClientErrorException | HttpServerErrorException he) {
@@ -870,6 +918,14 @@ public class AppController {
     @GetMapping("/cookie-preferences")
     public String cookiePreferencesView() {
         return COOKIE_PREFERENCES_VIEW;
+    }
+
+    /**
+     * @should return view
+     */
+    @GetMapping("/accessibility-statement")
+    public String accessibilityStatementView() {
+        return ACCESSIBILITY_STATEMENT_VIEW;
     }
 
     /**

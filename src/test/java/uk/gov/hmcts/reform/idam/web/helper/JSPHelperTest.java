@@ -140,23 +140,4 @@ public class JSPHelperTest {
         JSPHelper.getOtherLocaleUrl();
     }
 
-    @Test
-    public void getBaseUrl_shouldCorrectlyBuildUrl() {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final Map<String, String> urlMap = Map.of(
-            "http://test.com/context/page?param=value", "http://test.com",
-            "https://test.com/context/page?param=value", "https://test.com",
-            "https://test.com:1234/context/page?param=value", "https://test.com:1234"
-        );
-
-        urlMap.forEach((key, value) -> {
-            try {
-                doReturn(new StringBuffer(key)).when(request).getRequestURL();
-                Assert.assertEquals(value, JSPHelper.getBaseUrl(request));
-            } catch (MalformedURLException e) {
-                Assert.fail("Exception was not expected here");
-            }
-        });
-
-    }
 }

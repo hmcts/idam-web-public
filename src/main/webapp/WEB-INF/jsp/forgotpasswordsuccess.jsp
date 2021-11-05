@@ -43,6 +43,12 @@
             <p>
                 <spring:message code="public.common.user.created.few.minutes"/>
             </p>
+            <p>
+                <spring:message code="public.reset.password.stale.users.email.notarrived"/><a
+                href="/reset/forgotpassword"> <spring:message
+                code="public.reset.password.stale.users.email.tryagain.hyperlink"/></a><spring:message
+                code="public.reset.password.stale.users.email.tryagain.end"/>
+            </p>
         </div>
     </article>
 </t:wrapper>

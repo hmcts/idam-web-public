@@ -9,6 +9,7 @@ properties([
         string(name: 'API_URL_TO_TEST', defaultValue: 'https://idam-api.aat.platform.hmcts.net', description: 'The API URL you want to run these tests against '),
         string(name: 'RPE_AUTH_URL', defaultValue: 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal', description: 'The URL for s2s token authentication'),
         string(name: 'REF_DATA_URL', defaultValue: 'http://rd-professional-api-aat.service.core-compute-aat.internal', description: 'The URL for calls to Ref Data (PRD)'),
+        string(name: 'WAIT_FOR_ACTION_TIMEOUT', defaultValue: '2000', description: 'How long to wait after click, doubleClick or PressKey actions in ms')
     ])
 ])
 
@@ -25,7 +26,8 @@ def secrets = [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY'),
-        secret('EJUDICIARY-TEST-USER-PASSWORD', 'EJUDICIARY_TEST_USER_PASSWORD')
+        secret('EJUDICIARY-TEST-USER-PASSWORD', 'EJUDICIARY_TEST_USER_PASSWORD'),
+        secret('MOJ-TEST-USER-PASSWORD', 'MOJ_TEST_USER_PASSWORD')
     ]
 ]
 
@@ -43,6 +45,7 @@ withNightlyPipeline(type, product, component) {
     env.IDAMAPI = params.API_URL_TO_TEST
     env.RPE_AUTH_URL = params.RPE_AUTH_URL
     env.REF_DATA_URL = params.REF_DATA_URL
+    env.WAIT_FOR_ACTION_TIMEOUT = params.WAIT_FOR_ACTION_TIMEOUT
     loadVaultSecrets(secrets)
     enableSecurityScan()
     enableMutationTest()

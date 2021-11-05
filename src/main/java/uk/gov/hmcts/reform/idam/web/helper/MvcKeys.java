@@ -32,8 +32,11 @@ public class MvcKeys {
     public static final String INVALID_PIN = "invalidPin";
     public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
     public static final String AZURE_LOGIN_ENABLED = "azureLoginEnabled";
+    public static final String MOJ_LOGIN_ENABLED = "mojLoginEnabled";
     public static final String EJUDICIARY_AAD = "ejudiciary-aad";
+    public static final String MOJ = "moj";
 
+    public static final String ACCESSIBILITY_STATEMENT_VIEW = "accessibilityStatement";
     public static final String USER_ACTIVATION_VIEW = "useractivation";
     public static final String ERROR_VIEW = "error";
     public static final String ERRORPAGE_VIEW = "errorpage";

@@ -3,33 +3,39 @@ const {expect} = chai;
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 
-Feature('eJudiciary login tests');
+Feature('moj login tests');
 
 let serviceNames = [];
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
+const userPassword=randomData.getRandomUserPassword();
+let mojUserRole;
+let randomUserFirstName;
 
 BeforeSuite(async ({ I }) => {
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     const token = await I.getAuthToken();
-    await I.createService(serviceName, serviceClientSecret, '', token, 'openid profile roles', [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
+
+    mojUserRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mojlogintest", 'role description', '', token);
+    await I.createService(serviceName, serviceClientSecret, mojUserRole.id, token, 'openid profile roles', [TestData.MOJ_SSO_PROVIDER_KEY]);
     serviceNames.push(serviceName);
+    await I.createUserWithRoles(TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
 });
 
 AfterSuite(async ({ I }) => {
-    I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
-Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam through OIDC', async ({ I }) => {
-    I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/authorize?login_hint=${TestData.EJUDICIARY_SSO_PROVIDER_KEY}&client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
-    I.waitInUrl('/login/oauth2/code/oidc');
+Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam through OIDC', async ({ I }) => {
+    I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/authorize?login_hint=${TestData.MOJ_SSO_PROVIDER_KEY}&client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
+    I.waitInUrl('/login/oauth2/code/moj');
     I.waitForText('Sign in');
-    I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
+    I.fillField('loginfmt', TestData.MOJ_TEST_USER_USERNAME);
     I.click('Next');
     I.waitForText('Enter password');
-    I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
+    I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
     I.click('Sign in');
     I.waitForText('Stay signed in?');
 
@@ -51,30 +57,30 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
 
         const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
         expect(userInfo.active).to.equal(true);
-        expect(userInfo.email).to.equal(TestData.EJUDICIARY_TEST_USER_USERNAME);
-        expect(userInfo.forename).to.equal('SIDM EJUD');
-        expect(userInfo.surname).to.equal('TEST A');
+        expect(userInfo.email).to.equal(TestData.MOJ_TEST_USER_USERNAME);
         expect(userInfo.id).to.not.equal(null);
-        expect(userInfo.roles).to.eql(['judiciary']);
+        expect(userInfo.forename).to.equal(randomUserFirstName);
+        expect(userInfo.surname).to.equal('User');
+        expect(userInfo.roles).to.eql([mojUserRole.name]);
     }
 
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam', async ({ I }) => {
+Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login through the Justice.gov.uk login link from idam', async ({ I }) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
-    I.waitForText('Log in with your eJudiciary account');
-    I.click('Log in with your eJudiciary account');
+    I.waitForText('Log in with your Justice.gov.uk account');
+    I.click('Log in with your Justice.gov.uk account');
     I.waitInUrl('/oauth2/authorize');
     I.waitForText('Sign in');
-    I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
+    I.fillField('loginfmt', TestData.MOJ_TEST_USER_USERNAME);
     I.click('Next');
     I.waitForText('Enter password');
-    I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
+    I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
     I.click('Sign in');
-
     I.waitForText('Stay signed in?');
+
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
         I.click('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
@@ -93,22 +99,22 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
 
         const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
         expect(userInfo.active).to.equal(true);
-        expect(userInfo.email).to.equal(TestData.EJUDICIARY_TEST_USER_USERNAME);
-        expect(userInfo.forename).to.equal('SIDM EJUD');
-        expect(userInfo.surname).to.equal('TEST A');
+        expect(userInfo.email).to.equal(TestData.MOJ_TEST_USER_USERNAME);
         expect(userInfo.id).to.not.equal(null);
-        expect(userInfo.roles).to.eql(['judiciary']);
+        expect(userInfo.forename).to.equal(randomUserFirstName);
+        expect(userInfo.surname).to.equal('User');
+        expect(userInfo.roles).to.eql([mojUserRole.name]);
 
         I.resetRequestInterception();
 
         //redirection verification
         I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
         I.waitForText('Sign in');
-        I.fillField('#username', TestData.EJUDICIARY_TEST_USER_USERNAME);
-        I.fillField('#password', TestData.EJUDICIARY_TEST_USER_PASSWORD);
+        I.fillField('#username', TestData.MOJ_TEST_USER_USERNAME);
+        I.fillField('#password', TestData.MOJ_TEST_USER_PASSWORD);
         I.interceptRequestsAfterSignin();
         I.click('Sign in');
-        I.waitForText(TestData.WEB_PUBLIC_URL + `/o/authorize?response_type=code&client_id=${serviceName}&redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI)}&scope=openid+profile+roles&login_hint=ejudiciary-aad`);
+        I.waitForText(TestData.WEB_PUBLIC_URL + `/o/authorize?response_type=code&client_id=${serviceName}&redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI)}&scope=openid+profile+roles&login_hint=moj`);
         I.resetRequestInterception();
     }
 
