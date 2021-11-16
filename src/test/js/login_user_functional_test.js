@@ -36,7 +36,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     I.waitForText('Cookies on hmcts-access.service.gov.uk');
     await I.runAccessibilityTest();
     I.click('Accept additional cookies');
-    I.click('$cookie-accept-all-success-banner-hide');
+    I.click('#cookie-accept-all-success-banner-hide');
     I.waitForText('Sign in');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
     I.fillField('#password', userPassword);
