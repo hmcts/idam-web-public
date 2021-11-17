@@ -220,11 +220,6 @@
                             <td><spring:message code="public.cookies.text_0093"/></td>
                             <td><spring:message code="public.cookies.text_0094"/></td>
                         </tr>
-                        <tr>
-                            <th><spring:message code="public.cookies.text_0095"/></th>
-                            <td><spring:message code="public.cookies.text_0096"/></td>
-                            <td><spring:message code="public.cookies.text_0097"/></td>
-                        </tr>
                         </tbody>
                     </table>
                 </div>
