@@ -217,6 +217,8 @@ sonarqube {
     property "sonar.projectName", "SIDAM-WEB-PUBLIC"
     property "sonar.exclusions", "**/uk/gov/hmcts/reform/idam/web/config/properties/*.java," +
       "**/uk/gov/hmcts/reform/idam/web/config/IdamWebMvcConfiguration.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/SessionInitializer.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/SessionConfiguration.java," +
       "**/uk/gov/hmcts/reform/idam/web/model/*.java," +
       "**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys.java," +
       "**/uk/gov/hmcts/reform/idam/web/Application.java," +

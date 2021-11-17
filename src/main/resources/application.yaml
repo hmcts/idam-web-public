@@ -54,15 +54,12 @@ spring:
   redis:
     host: localhost
     port: 6379
+    password:
   mvc:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
   session:
-    redis:
-      flush-mode: ON_SAVE
-      namespace: spring:session
-    store-type: redis
     timeout: 432000s
   security:
     oauth2:
