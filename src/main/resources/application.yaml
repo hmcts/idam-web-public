@@ -134,6 +134,11 @@ validation:
 logging:
   level:
     ROOT: INFO
+    org:
+      springframework:
+        security:
+          web:
+            csrf: DEBUG
 
 azure:
   application-insights:
