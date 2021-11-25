@@ -211,6 +211,11 @@
                                     <spring:message code="public.common.error.enter.username"/>
                                 </span>
                     </c:if>
+                    <c:if test="${isEmailError}">
+                                <span class="error-message">
+                                    <spring:message code="public.common.error.invalid.email"/>
+                                </span>
+                    </c:if>
                     <form:input
                         class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${usernameError? ' form-control-error' : ''}"
                         path="username"
