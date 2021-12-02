@@ -8,14 +8,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
-import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
 import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -36,17 +31,21 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
 
     private final AuthHelper authHelper;
 
+    private final RequestMatcher csrfRequestMatcher;
+
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
     public AppConfigurationSSO(ConfigurationProperties configurationProperties,
-                            OAuth2AuthorizedClientRepository repository,
-                            SsoFederationApi ssoFederationApi, OidcApi oidcApi, AuthHelper authHelper) {
+                               OAuth2AuthorizedClientRepository repository,
+                               SsoFederationApi ssoFederationApi, OidcApi oidcApi,
+                               AuthHelper authHelper, RequestMatcher csrfRequestMatcher) {
         this.configurationProperties = configurationProperties;
         this.repository = repository;
         this.ssoFederationApi = ssoFederationApi;
         this.oidcApi = oidcApi;
         this.authHelper = authHelper;
+        this.csrfRequestMatcher = csrfRequestMatcher;
     }
 
     @Override
@@ -54,7 +53,7 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
         // @formatter:off
         http
             .csrf()
-            .ignoringAntMatchers("/o/**")
+            .requireCsrfProtectionMatcher(csrfRequestMatcher)
             .csrfTokenRepository(new CookieCsrfTokenRepository()).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()

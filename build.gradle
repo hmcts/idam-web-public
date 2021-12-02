@@ -218,6 +218,9 @@ sonarqube {
     property "sonar.exclusions", "**/uk/gov/hmcts/reform/idam/web/config/properties/*.java," +
       "**/uk/gov/hmcts/reform/idam/web/config/IdamWebMvcConfiguration.java," +
       "**/uk/gov/hmcts/reform/idam/web/config/SessionConfiguration.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/AppConfiguration.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/AppConfigurationSSO.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/AppCSRFConfiguration.java," +
       "**/uk/gov/hmcts/reform/idam/web/model/*.java," +
       "**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys.java," +
       "**/uk/gov/hmcts/reform/idam/web/Application.java," +
