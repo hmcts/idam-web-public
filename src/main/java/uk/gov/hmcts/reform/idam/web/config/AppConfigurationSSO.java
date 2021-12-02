@@ -10,7 +10,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
 import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
