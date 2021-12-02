@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +14,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @ConditionalOnMissingBean(AppConfigurationSSO.class)
 public class AppConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Value("${features.dynatrace.monitor.endpoint}")
+    private String dynatraceMonitorEndpoint;
+
     @Autowired
     private RequestMatcher csrfRequestMatcher;
 
@@ -21,7 +25,8 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
         // @formatter:off
         http
             .csrf()
-                .requireCsrfProtectionMatcher(csrfRequestMatcher)
+                .ignoringAntMatchers("/o/**")
+                .ignoringAntMatchers(dynatraceMonitorEndpoint)
             .csrfTokenRepository(new CookieCsrfTokenRepository()).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()

@@ -36,6 +36,9 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
+    @Value("${features.dynatrace.monitor.endpoint}")
+    private String dynatraceMonitorEndpoint;
+
     public AppConfigurationSSO(ConfigurationProperties configurationProperties,
                                OAuth2AuthorizedClientRepository repository,
                                SsoFederationApi ssoFederationApi, OidcApi oidcApi,
@@ -53,7 +56,8 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
         // @formatter:off
         http
             .csrf()
-            .requireCsrfProtectionMatcher(csrfRequestMatcher)
+            .ignoringAntMatchers("/o/**")
+            .ignoringAntMatchers(dynatraceMonitorEndpoint)
             .csrfTokenRepository(new CookieCsrfTokenRepository()).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()

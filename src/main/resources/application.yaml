@@ -156,7 +156,7 @@ features:
   step-up-authentication: ${step.up.authentication:true}
   dynatrace:
     monitor:
-      endpoint:
+      endpoint: "/rb_bf24054dsx"
 
 ssoEmailDomains:
   dummy: dummy
