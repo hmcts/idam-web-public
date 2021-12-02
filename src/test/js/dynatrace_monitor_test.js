@@ -1,12 +1,11 @@
 const assert = require('assert');
 var TestData = require('./config/test_data');
 
-Feature('Error message is displayed when trying to use an expired link');
+Feature('Dynatrace monitor endpoint is not blocked by CSRF');
 
-Scenario('@smoke @dynatracemonitor I can access a dynatrace link', async ({ I }) => {
+Scenario('@smoke @dynatracemonitor I can access a dynatrace endpoint', async ({ I }) => {
 
   let rsp = await I.getDynatraceMonitorResponseStatus();
-  console.log("dynatract response status " + rsp);
   assert("403" != rsp);
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
