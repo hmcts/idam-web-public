@@ -31,8 +31,6 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
 
     private final AuthHelper authHelper;
 
-    private final RequestMatcher csrfRequestMatcher;
-
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
@@ -42,13 +40,12 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
     public AppConfigurationSSO(ConfigurationProperties configurationProperties,
                                OAuth2AuthorizedClientRepository repository,
                                SsoFederationApi ssoFederationApi, OidcApi oidcApi,
-                               AuthHelper authHelper, RequestMatcher csrfRequestMatcher) {
+                               AuthHelper authHelper) {
         this.configurationProperties = configurationProperties;
         this.repository = repository;
         this.ssoFederationApi = ssoFederationApi;
         this.oidcApi = oidcApi;
         this.authHelper = authHelper;
-        this.csrfRequestMatcher = csrfRequestMatcher;
     }
 
     @Override

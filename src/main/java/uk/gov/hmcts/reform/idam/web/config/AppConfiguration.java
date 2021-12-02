@@ -16,10 +16,7 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
 
     @Value("${features.dynatrace.monitor.endpoint}")
     private String dynatraceMonitorEndpoint;
-
-    @Autowired
-    private RequestMatcher csrfRequestMatcher;
-
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
