@@ -116,5 +116,31 @@
             <li><spring:message code="public.contactus.text_0043" /></li>
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0044" /></a> </li>
         </ul>
+
+        <h2 class="heading-medium" id="sscs-header"><spring:message code="public.contactus.text_0045" /></h2>
+        <p id="sscs-content"><spring:message code="public.contactus.text_0046"/></p>
+        <script>
+            $(document).ready(function(){
+                hideContentBasedOnLanguage()
+            });
+
+            function hideContentBasedOnLanguage() {
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+
+                if (document.cookie.includes('idam_ui_locales=cy')
+                    || urlParams.get('ui_locales') === 'cy') {
+                    document.getElementById('sscs-header').classList.add('govuk-visually-hidden');
+                    document.getElementById('sscs-header').classList.add('govuk-!-display-none');
+                    document.getElementById('sscs-content').classList.add('govuk-visually-hidden');
+                    document.getElementById('sscs-content').classList.add('govuk-!-display-none');
+                } else {
+                    document.getElementById('sscs-header').classList.remove('govuk-visually-hidden');
+                    document.getElementById('sscs-header').classList.remove('govuk-!-display-none');
+                    document.getElementById('sscs-content').classList.remove('govuk-visually-hidden');
+                    document.getElementById('sscs-content').classList.remove('govuk-!-display-none');
+                }
+            }
+        </script>
     </article>
 </t:wrapper>
