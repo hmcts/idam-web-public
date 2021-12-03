@@ -8,12 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
-import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
@@ -39,9 +33,13 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
+    @Value("${features.dynatrace.monitor.endpoint}")
+    private String dynatraceMonitorEndpoint;
+
     public AppConfigurationSSO(ConfigurationProperties configurationProperties,
-                            OAuth2AuthorizedClientRepository repository,
-                            SsoFederationApi ssoFederationApi, OidcApi oidcApi, AuthHelper authHelper) {
+                               OAuth2AuthorizedClientRepository repository,
+                               SsoFederationApi ssoFederationApi, OidcApi oidcApi,
+                               AuthHelper authHelper) {
         this.configurationProperties = configurationProperties;
         this.repository = repository;
         this.ssoFederationApi = ssoFederationApi;
@@ -55,6 +53,7 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
         http
             .csrf()
             .ignoringAntMatchers("/o/**")
+            .ignoringAntMatchers(dynatraceMonitorEndpoint)
             .csrfTokenRepository(new CookieCsrfTokenRepository()).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()

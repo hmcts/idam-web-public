@@ -154,6 +154,9 @@ features:
   federated-s-s-o: ${federated.sso:true}
   sso-auto-login-redirect: true
   step-up-authentication: ${step.up.authentication:true}
+  dynatrace:
+    monitor:
+      endpoint: "/rb_bf24054dsx"
 
 ssoEmailDomains:
   dummy: dummy
