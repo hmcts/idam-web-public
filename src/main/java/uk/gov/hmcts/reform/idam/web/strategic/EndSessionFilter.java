@@ -2,12 +2,9 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.POST_TYPE;
