@@ -1,9 +1,15 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
+import io.lettuce.core.resource.ClientResources;
+import io.lettuce.core.resource.NettyCustomizer;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.socket.nio.NioChannelOption;
+import jdk.net.ExtendedSocketOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -75,7 +81,22 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository){
+    @Primary
+    ClientResources clientResources() {
+        return ClientResources.builder()
+            .nettyCustomizer(new NettyCustomizer() {
+                @Override
+                public void afterBootstrapInitialized(Bootstrap bootstrap) {
+                    bootstrap.option(NioChannelOption.of(ExtendedSocketOptions.TCP_KEEPIDLE), 15);
+                    bootstrap.option(NioChannelOption.of(ExtendedSocketOptions.TCP_KEEPINTERVAL), 5);
+                    bootstrap.option(NioChannelOption.of(ExtendedSocketOptions.TCP_KEEPCOUNT), 3);
+                }
+            })
+            .build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository) {
         return new SSOAuthenticationSuccessHandler(repository, ssoFederationApi, oidcApi,
             configurationProperties.getStrategic().getSession(), authHelper);
     }
