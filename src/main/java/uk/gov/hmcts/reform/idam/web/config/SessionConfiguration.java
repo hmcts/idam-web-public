@@ -2,6 +2,11 @@ package uk.gov.hmcts.reform.idam.web.config;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
+import io.lettuce.core.resource.ClientResources;
+import io.lettuce.core.resource.NettyCustomizer;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.socket.nio.NioChannelOption;
+import jdk.net.ExtendedSocketOptions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -59,6 +64,17 @@ public class SessionConfiguration {
     public LettuceConnectionFactory connectionFactory() {
         final SocketOptions socketOptions = SocketOptions.builder().connectTimeout(socketTimeout).build();
 
+        final ClientResources resources = ClientResources.builder()
+            .nettyCustomizer(new NettyCustomizer() {
+                @Override
+                public void afterBootstrapInitialized(Bootstrap bootstrap) {
+                    bootstrap.option(NioChannelOption.of(ExtendedSocketOptions.TCP_KEEPIDLE), 15);
+                    bootstrap.option(NioChannelOption.of(ExtendedSocketOptions.TCP_KEEPINTERVAL), 5);
+                    bootstrap.option(NioChannelOption.of(ExtendedSocketOptions.TCP_KEEPCOUNT), 3);
+                }
+            })
+            .build();
+
         final ClientOptions clientOptions = ClientOptions.builder()
             .socketOptions(socketOptions)
             .cancelCommandsOnReconnectFailure(true)
@@ -68,6 +84,7 @@ public class SessionConfiguration {
         LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
             .commandTimeout(redisCommandTimeout)
             .clientOptions(clientOptions)
+            .clientResources(resources)
             .useSsl()
             .build();
         RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(redisHostName,
