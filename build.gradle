@@ -32,6 +32,7 @@ allprojects {
   targetCompatibility = 11
 
   def idamBomVersion = '2.8.6'
+  ext['log4j2.version'] = '2.15.0'
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
