@@ -54,6 +54,11 @@ spring:
   redis:
     host: localhost
     port: 6379
+    password:
+    timeout: 1000ms
+    custom:
+      command:
+        timeout: 11000ms
   mvc:
     view:
       prefix: /WEB-INF/jsp/
@@ -129,6 +134,11 @@ validation:
 logging:
   level:
     ROOT: INFO
+    org:
+      springframework:
+        security:
+          web:
+            csrf: DEBUG
 
 azure:
   application-insights:
@@ -144,6 +154,9 @@ features:
   federated-s-s-o: ${federated.sso:true}
   sso-auto-login-redirect: true
   step-up-authentication: ${step.up.authentication:true}
+  dynatrace:
+    monitor:
+      endpoint: "/rb_bf24054dsx"
 
 ssoEmailDomains:
   dummy: dummy

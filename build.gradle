@@ -31,8 +31,7 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.8.6'
-  ext['log4j2.version'] = '2.17.0'
+  def idamBomVersion = '2.8.10'
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
@@ -218,6 +217,9 @@ sonarqube {
     property "sonar.projectName", "SIDAM-WEB-PUBLIC"
     property "sonar.exclusions", "**/uk/gov/hmcts/reform/idam/web/config/properties/*.java," +
       "**/uk/gov/hmcts/reform/idam/web/config/IdamWebMvcConfiguration.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/SessionConfiguration.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/AppConfiguration.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/AppConfigurationSSO.java," +
       "**/uk/gov/hmcts/reform/idam/web/model/*.java," +
       "**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys.java," +
       "**/uk/gov/hmcts/reform/idam/web/Application.java," +
