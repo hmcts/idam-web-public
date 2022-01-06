@@ -22,6 +22,8 @@ BeforeSuite(async ({ I }) => {
     await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
 
+    I.wait(0.5);
+
     await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 });

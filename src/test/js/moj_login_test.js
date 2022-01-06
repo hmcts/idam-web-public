@@ -21,6 +21,9 @@ BeforeSuite(async ({ I }) => {
     mojUserRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mojlogintest", 'role description', '', token);
     await I.createService(serviceName, serviceClientSecret, mojUserRole.id, token, 'openid profile roles', [TestData.MOJ_SSO_PROVIDER_KEY]);
     serviceNames.push(serviceName);
+
+    I.wait(0.5);
+
     await I.createUserWithRoles(TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
 });
 

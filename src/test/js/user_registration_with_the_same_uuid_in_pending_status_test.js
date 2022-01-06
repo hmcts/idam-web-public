@@ -47,6 +47,8 @@ BeforeSuite(async ({ I }) => {
     await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, '', apiAuthToken, 'create-user manage-user');
     serviceNames.push(serviceName);
 
+    I.wait(0.5);
+
     await I.createUserWithRoles(adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 

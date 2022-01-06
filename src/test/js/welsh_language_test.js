@@ -23,6 +23,9 @@ BeforeSuite(async ({ I }) => {
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
     await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
+
+    I.wait(0.5);
+
     await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     specialCharacterPassword = 'New%%%&&&234';

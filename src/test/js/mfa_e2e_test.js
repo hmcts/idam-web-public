@@ -47,6 +47,8 @@ BeforeSuite(async ({ I }) => {
 
     mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService1.oauth2ClientId}`;
     await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService1.activationRedirectUrl, token);
+
+    I.wait(0.5);
 });
 
 AfterSuite(async ({ I }) => {
