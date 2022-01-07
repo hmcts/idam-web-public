@@ -53,7 +53,7 @@ Scenario('@functional @welshLanguage There is a language switch that is working'
 
     I.click(englishLinkValue);
     I.waitForText(welshLinkValue);
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @welshLanguage I can set the language with a cookie', async ({ I }) => {
 
@@ -61,7 +61,7 @@ Scenario('@functional @welshLanguage I can set the language with a cookie', asyn
     I.setCookie({name: Welsh.localeCookie, value: 'cy'});
     I.amOnPage(Welsh.pageUrl);
     I.waitForText(Welsh.accessDeniedWelsh);
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 //TODO: add functional tag once the issue is fixed permanently.
 Scenario('@welshLanguage I can set the language with a header', async ({ I }) => {
@@ -79,7 +79,7 @@ Scenario('@functional @welshLanguage I can set the language with a parameter', a
     I.clearCookie(Welsh.localeCookie);
     I.amOnPage(Welsh.pageUrlWithParamWelsh);
     I.waitForText(Welsh.accessDeniedWelsh);
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @welshLanguage I can set the language to English with an invalid parameter', async ({ I }) => {
 
@@ -87,7 +87,7 @@ Scenario('@functional @welshLanguage I can set the language to English with an i
     I.clearCookie(Welsh.localeCookie);
     I.amOnPage(Welsh.pageUrl + '?' + Welsh.urlInvalidLang);
     I.waitForText('Access Denied');
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @welshLanguage I can reset my password in Welsh', async ({ I }) => {
 

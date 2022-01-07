@@ -114,4 +114,4 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         I.resetRequestInterception();
     }
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);

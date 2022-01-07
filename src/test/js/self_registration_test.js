@@ -104,8 +104,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
     await I.runAccessibilityTest();
     const emailResponse = await I.getEmailFromNotify(citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
-
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @selfregister @welshLanguage Account already created (force Welsh)', async ({ I }) => {
 
@@ -128,8 +127,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
     await I.runAccessibilityTest();
     const emailResponse = await I.getEmailFromNotify(citizenEmailWelsh);
     assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
-
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @selfregister @welshLanguage I can self register (no language)', async ({ I }) => {
 
@@ -379,7 +377,7 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
     const emailResponse = await I.getEmailFromNotify(staleUserEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @selfregister I can create a password only once using the activation link opened in multiple tabs', async ({ I }) => {
 

@@ -299,7 +299,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MFA turned off service and then step-up login to the MFA turned on service', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
@@ -369,7 +369,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa turned on service and then login to a mfa turned off service', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
@@ -445,7 +445,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa turned on service and then login to a another mfa turned on service', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
@@ -521,7 +521,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MFA turned off service and then login to another MFA turned off service', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
@@ -590,7 +590,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
@@ -646,7 +646,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on serv
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off service with invalid cookie ', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
@@ -696,7 +696,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to the MFA turned on service and then authorize to the same service with prompt=login and login again', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
@@ -807,4 +807,4 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);

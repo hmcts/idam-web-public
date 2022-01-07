@@ -121,4 +121,4 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
         I.resetRequestInterception();
     }
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
