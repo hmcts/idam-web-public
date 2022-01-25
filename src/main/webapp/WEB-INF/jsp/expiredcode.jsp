@@ -25,7 +25,7 @@
             <p>
                 <c:url value="/login" var="loginUrl">
                     <c:param name="redirect_uri" value="${redirectUri}" />
-                    <c:param name="client_id" value="${clientId}" />
+                    <c:param name="client_id" value="${client_id}" />
                     <c:param name="state" value="${state}" />
                     <c:param name="scope" value="${scope}" />
                     <c:param name="nonce" value="${nonce}" />
