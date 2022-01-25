@@ -39,6 +39,8 @@ BeforeSuite(async ({ I }) => {
     mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService.oauth2ClientId}`;
     await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService.activationRedirectUrl, token);
 
+    I.wait(0.5);
+
     professionalRoleName = randomData.getRandomRoleName(testSuiteId);
     await I.createRole(professionalRoleName, 'professional description', '', token);
 
@@ -71,7 +73,7 @@ BeforeSuite(async ({ I }) => {
         prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.label, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret, scope);
 
         serviceToken = await I.getServiceAuthToken();
-        
+
         // create organisation with MFA disabled
         let orgMFADisabled = await I.getTestOrganisation(orgMFADisabledCompanyNumber);
         let orgMFADisabledDetails = await I.createOrganisation(orgMFADisabled, serviceToken, prdAuthToken);
@@ -162,7 +164,7 @@ Scenario('@functional @mfaOrgLogin I am able to login with MFA as a member of an
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
-    
+
     const otpCode = await I.extractOtpFromNotifyEmail(professionalUserMFARequiredEmail);
 
     I.fillField('code', otpCode);

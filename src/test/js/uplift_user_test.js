@@ -46,6 +46,8 @@ BeforeSuite(async ({ I }) => {
     await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, serviceBetaRole.id, token);
     serviceNames.push(serviceName);
 
+    I.wait(0.5);
+
     await I.createUserWithRoles(existingCitizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
@@ -179,7 +181,7 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 
 Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user registration for stale user uplift account creation', async ({ I }) => {
