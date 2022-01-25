@@ -149,7 +149,7 @@
                             </div>
                         </spring:bind>
                         <form:input type="hidden" path="redirectUri" value="${redirectUri}"/>
-                        <form:input type="hidden" path="clientId" value="${clientId}"/>
+                        <form:input type="hidden" path="client_id" value="${clientId}"/>
                         <form:input type="hidden" path="state" value="${state}"/>
                         <p class="body-text">
                             <spring:message code="public.register.read.our" />
