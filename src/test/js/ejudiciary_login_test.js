@@ -15,6 +15,8 @@ BeforeSuite(async ({ I }) => {
     const token = await I.getAuthToken();
     await I.createService(serviceName, serviceClientSecret, '', token, 'openid profile roles', [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
     serviceNames.push(serviceName);
+
+    I.wait(0.5);
 });
 
 AfterSuite(async ({ I }) => {
@@ -112,4 +114,4 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         I.resetRequestInterception();
     }
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);

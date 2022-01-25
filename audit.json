@@ -61,5 +61,9 @@
   "10104_User Agent Fuzzer_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET" : "ignore",
   "40025_Proxy Disclosure_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET" : "ignore",
   "90027_Cookie Slack Detector_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET" : "ignore",
-  "10031_User Controllable HTML Element Attribute (Potential XSS)_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET" : "ignore"
+  "10031_User Controllable HTML Element Attribute (Potential XSS)_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET" : "ignore",
+  "10015_Re-examine Cache-control Directives_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement_GET" : "ignore",
+  "10015_Re-examine Cache-control Directives_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET" : "ignore",
+  "10015_Re-examine Cache-control Directives_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=en_GET" : "ignore",
+  "10015_Re-examine Cache-control Directives_https://idam-web-public.aat.platform.hmcts.net/login_GET" : "ignore"
 }
