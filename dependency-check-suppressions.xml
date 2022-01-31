@@ -10,18 +10,12 @@
         <cve>CVE-2015-0254</cve>
     </suppress>
 
-    <!-- False positive. See https://github.com/jeremylong/DependencyCheck/issues/1827 -->
+    <!-- False positive on CVE-2018-1258. See https://github.com/jeremylong/DependencyCheck/issues/1827 -->
+    <!-- CVE-2021-22112 cannot be externally exploited and needs to be programmed in. -->
     <suppress>
-        <gav regex="true">^org\.springframework\.security:spring-security.*$</gav>
+        <gav regex="true">^.*spring-boot-starter-oauth2.*$</gav>
         <cve>CVE-2018-1258</cve>
-    </suppress>
-
-    <!-- False positive. See https://nvd.nist.gov/vuln/detail/CVE-2020-23171
-         This application does not use lang-tag to write files to directories.
-    -->
-    <suppress>
-        <gav regex="true">^com\.nimbusds:lang-tag.*$</gav>
-        <cve>CVE-2020-23171</cve>
+        <cve>CVE-2021-22112</cve>
     </suppress>
 
 </suppressions>

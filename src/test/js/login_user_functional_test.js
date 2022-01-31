@@ -22,6 +22,8 @@ BeforeSuite(async ({ I }) => {
     await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
 
+    I.wait(0.5);
+
     await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 });
@@ -143,4 +145,4 @@ Scenario('@functional @login As a user, I should see the error message displayed
     I.click('Sign in');
     I.waitForText('Information is missing or invalid');
     I.waitForText('Email address is not valid');
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
