@@ -69,7 +69,7 @@ def static createFailedPipelineJiraTicket(String token) throws IOException {
 
     IssueInputBuilder iib = new IssueInputBuilder()
     iib.setProjectKey("SIDM")
-    iib.setSummary("Failed Nightly Pipeline Idam-Web-Admin")
+    iib.setSummary("Failed Nightly Pipeline Idam-Web-Public")
     iib.setIssueType(bug)
     iib.setDescription("Automated ticket for failed nightly pipeline.")
     iib.setPriorityId(3L)
