@@ -12,6 +12,8 @@ plugins {
   id 'application'
 }
 
+apply from: './gradle/jira.gradle'
+
 gitProperties {
   // Change date format in git.properties file.
   dateFormat = "yyyy-MM-dd HH:mm:ssZ"
@@ -136,6 +138,13 @@ allprojects {
     }
     testImplementation group: 'org.springframework.security', name: 'spring-security-test'
     testImplementation group: 'junit', name: 'junit'
+  }
+
+  task createAJiraTicket() {
+    doLast {
+      String token = System.getenv("JIRA_API_TOKEN")
+      createFailedPipelineJiraTicket(token)
+    }
   }
 
   task fortifyScan(type: JavaExec)  {
