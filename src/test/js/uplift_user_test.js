@@ -221,8 +221,12 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     expect(responseAfterAccountReActivation.email).to.equal(upliftAccountCreationStaleUserEmail);
     expect(responseAfterAccountReActivation.active).to.equal(true);
     expect(responseAfterAccountReActivation.stale).to.equal(false);
-    expect(responseAfterAccountReActivation.roles).to.eql(['citizen']);
-
+    if (TestData.WEB_PUBLIC_URL.includes("perftest"))
+    {
+        expect(responseAfterAccountReActivation.roles).to.eql(['5aa13a5d-aa60-4e30-b2e4-6df7c3b37ee1']);
+    } else {
+        expect(responseAfterAccountReActivation.roles).to.eql(['citizen']);
+    }
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftAccountCreationStaleUserEmail);
@@ -281,8 +285,12 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     expect(responseAfterAccountReActivation.email).to.equal(upliftLoginStaleUserEmail);
     expect(responseAfterAccountReActivation.active).to.equal(true);
     expect(responseAfterAccountReActivation.stale).to.equal(false);
-    expect(responseAfterAccountReActivation.roles).to.eql(['citizen']);
-
+    if (TestData.WEB_PUBLIC_URL.includes("perftest"))
+    {
+        expect(responseAfterAccountReActivation.roles).to.eql(['5aa13a5d-aa60-4e30-b2e4-6df7c3b37ee1']);
+    } else {
+        expect(responseAfterAccountReActivation.roles).to.eql(['citizen']);
+    }
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}&jwt=${accessToken}`);
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftLoginStaleUserEmail);
