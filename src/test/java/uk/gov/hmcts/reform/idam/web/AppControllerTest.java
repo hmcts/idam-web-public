@@ -66,7 +66,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -1257,7 +1257,7 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(FORGOT_PASSWORD_VIEW));
 
-        verifyZeroInteractions(spiService);
+        verifyNoInteractions(spiService);
     }
 
     /**
