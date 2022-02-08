@@ -184,7 +184,7 @@ public class AppController {
      * @should reject request if the last name is missing
      * @should reject request if the jwt is missing
      * @should reject request if the redirect URI is missing
-     * @should reject request if the clientId is missing
+     * @should reject request if the client_id is missing
      */
     @PostMapping("/login/uplift")
     public ModelAndView upliftRegister(@ModelAttribute("registerUserCommand") @Validated RegisterUserRequest request,
@@ -234,7 +234,7 @@ public class AppController {
 
         model.put(EMAIL, request.getUsername());
         model.put(REDIRECTURI, request.getRedirect_uri());
-        model.put(CLIENTID, request.getClient_id());
+        model.put(CLIENT_ID, request.getClient_id());
         model.put(JWT, request.getJwt());
         model.put(STATE, request.getState());
         model.put(NONCE, request.getNonce());
@@ -282,7 +282,7 @@ public class AppController {
                 responseBodyAsString, uk.gov.hmcts.reform.idam.api.internal.model.ForgotPasswordDetails.class);
             if (Strings.isNotEmpty(request.getRedirectUri())) {
                 return "/reset/forgotpassword?redirectUri=" + request.getRedirectUri() +
-                    "&clientId=" + nullToEmpty(request.getClientId()) +
+                    "&client_id=" + nullToEmpty(request.getClientId()) +
                     "&state=" + nullToEmpty(request.getState()) +
                     "&scope=" + nullToEmpty(request.getScope());
             }
@@ -815,7 +815,7 @@ public class AppController {
                                  final BindingResult bindingResult,
                                  final Map<String, Object> model) {
         model.put(REDIRECTURI, forgotPasswordRequest.getRedirectUri());
-        model.put(CLIENTID, forgotPasswordRequest.getClientId());
+        model.put(CLIENT_ID, forgotPasswordRequest.getClient_id());
         model.put(EMAIL, forgotPasswordRequest.getEmail());
         model.put(STATE, forgotPasswordRequest.getState());
         model.put(NONCE, forgotPasswordRequest.getNonce());
@@ -826,9 +826,9 @@ public class AppController {
                 spiService.forgetPassword(
                     forgotPasswordRequest.getEmail(),
                     forgotPasswordRequest.getRedirectUri(),
-                    forgotPasswordRequest.getClientId());
+                    forgotPasswordRequest.getClient_id());
 
-                model.put(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(forgotPasswordRequest.getClientId()));
+                model.put(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(forgotPasswordRequest.getClient_id()));
 
                 return FORGOTPASSWORDSUCCESS_VIEW;
             }
@@ -995,7 +995,7 @@ public class AppController {
                                          @RequestParam(required = false) String scope,
                                          Model model) {
         model.addAttribute(SELF_REGISTRATION_ENABLED, isSelfRegistrationEnabled(clientId));
-        model.addAttribute(CLIENTID, clientId);
+        model.addAttribute(CLIENT_ID, clientId);
         model.addAttribute(REDIRECTURI, redirectUri);
         model.addAttribute(STATE, state);
         model.addAttribute(SCOPE, scope);
@@ -1029,7 +1029,7 @@ public class AppController {
                                    @RequestParam(required = false) String nonce,
                                    @RequestParam(required = false) String prompt,
                                    Model model) {
-        model.addAttribute(CLIENTID, clientId);
+        model.addAttribute(CLIENT_ID, clientId);
         model.addAttribute(REDIRECTURI, redirectUri);
         model.addAttribute(STATE, state);
         model.addAttribute(SCOPE, scope);

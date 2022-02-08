@@ -38,7 +38,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENTID;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_ACTIVATION_LINK_VIEW;
@@ -174,7 +174,7 @@ public class UserController {
         if (service.isPresent() && Boolean.TRUE.equals(service.get().isSelfRegistrationAllowed())) {
             model.addAttribute("selfRegisterCommand", new SelfRegisterRequest());
             model.addAttribute(REDIRECTURI, redirectUri);
-            model.addAttribute(CLIENTID, clientId);
+            model.addAttribute(CLIENT_ID, clientId);
             model.addAttribute(STATE, state);
             model.addAttribute(NONCE, nonce);
             model.addAttribute(SCOPE, scope);
@@ -214,7 +214,7 @@ public class UserController {
 
         // Preserve query parameters
         model.addAttribute(REDIRECTURI, selfRegisterRequest.getRedirectUri());
-        model.addAttribute("clientId", selfRegisterRequest.getClientId());
+        model.addAttribute("client_id", selfRegisterRequest.getClient_id());
         model.addAttribute("state", selfRegisterRequest.getState());
 
         if (bindingResult.hasErrors()) {
