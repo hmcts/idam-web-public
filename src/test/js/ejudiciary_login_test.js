@@ -2,8 +2,13 @@ const chai = require('chai');
 const {expect} = chai;
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
+let isEnvtPerftest = TestData.WEB_PUBLIC_URL.includes("perftest");
 
-Feature('eJudiciary login tests');
+if (isEnvtPerftest){
+    xFeature('eJudiciary login tests');
+} else {
+    Feature('eJudiciary login tests');
+}
 
 let serviceNames = [];
 
