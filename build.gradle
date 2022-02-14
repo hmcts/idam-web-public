@@ -32,6 +32,8 @@ allprojects {
   targetCompatibility = 11
 
   def idamBomVersion = '2.8.14'
+  // Remove when Spring Boot Dependencies upgrades their tomcat version and idam-bom is upgraded accordingly
+  ext['tomcat.version'] = '9.0.58'
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
