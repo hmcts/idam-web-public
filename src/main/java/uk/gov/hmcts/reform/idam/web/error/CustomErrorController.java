@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Controller
 @Slf4j
-public class EverythingsOkayErrorController implements ErrorController {
+public class CustomErrorController implements ErrorController {
 
     public static final String ERROR_VIEW = "error";
 
@@ -21,13 +22,12 @@ public class EverythingsOkayErrorController implements ErrorController {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         Object exception = request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
 
-        if (status != null) {
+        if (status != null && exception != null) {
             int statusCode = Integer.parseInt(status.toString());
-            if(statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+            if(statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()
+                && exception instanceof IOException) {
                 response.setStatus(200);
-                if (exception != null) {
-                    log.info("Status 500 error redirect.", (Throwable) exception);
-                }
+                log.info("Status 500 error redirect.", (Throwable) exception);
             }
         }
 
