@@ -18,7 +18,7 @@ public class CustomErrorController implements ErrorController {
 
     public static final String ERROR_VIEW = "error";
 
-    @RequestMapping(path = "/error", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(path = "/error", method = {RequestMethod.GET, RequestMethod.POST}) //NOSONAR
     public String error(HttpServletRequest request, HttpServletResponse response) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         Object exception = request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
