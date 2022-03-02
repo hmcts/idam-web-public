@@ -28,6 +28,9 @@ BeforeSuite(async ({ I }) => {
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
     await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
+
+    I.wait(0.5);
+
     await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     await I.createUserWithRoles(citizenEmailWelsh, userPassword, randomUserFirstName + 'Welsh', ["citizen"]);
@@ -48,8 +51,8 @@ Scenario('@functional @selfregister User Validation errors', async ({ I }) => {
     I.waitInUrl('users/selfRegister');
     I.waitForText('Create an account or sign in');
     I.see('Create an account');
-    await I.runAccessibilityTest();
     I.click(formSubmitButton);
+    await I.runAccessibilityTest();
     I.waitForText('Information is missing or invalid');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
@@ -77,7 +80,6 @@ Scenario('@functional @selfregister User Validation errors', async ({ I }) => {
     I.see('Your last name is invalid');
     I.see('Last name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Sign in to your account.');
-    await I.runAccessibilityTest();
     I.click('Sign in to your account.');
     I.waitForText('Sign in');
     I.see('Sign in');
@@ -95,14 +97,12 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmail);
-    await I.runAccessibilityTest();
     I.click(formSubmitButton);
     I.waitForText('Check your email');
     await I.runAccessibilityTest();
     const emailResponse = await I.getEmailFromNotify(citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
-
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @selfregister @welshLanguage Account already created (force Welsh)', async ({ I }) => {
 
@@ -119,14 +119,12 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmailWelsh);
-    await I.runAccessibilityTest();
     I.click(formSubmitButton);
     I.waitForText(Welsh.checkYourEmail);
     await I.runAccessibilityTest();
     const emailResponse = await I.getEmailFromNotify(citizenEmailWelsh);
     assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
-
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @selfregister @welshLanguage I can self register (no language)', async ({ I }) => {
 
@@ -149,7 +147,6 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.seeTitleEquals('User Activation - HMCTS Access');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
-    await I.runAccessibilityTest();
     I.click(formSubmitButton);
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
@@ -376,7 +373,7 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
     const emailResponse = await I.getEmailFromNotify(staleUserEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @selfregister I can create a password only once using the activation link opened in multiple tabs', async ({ I }) => {
 

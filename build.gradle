@@ -4,9 +4,9 @@ plugins {
   id 'java'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE' apply false
-  id 'org.owasp.dependencycheck' version '6.1.1'
+  id 'org.owasp.dependencycheck' version '6.5.3'
   id 'org.sonarqube' version '2.6.2'
-  id 'org.springframework.boot' version '2.5.6' apply false
+  id 'org.springframework.boot' version '2.6.3' apply false
   id 'com.gorylenko.gradle-git-properties' version '1.4.21'
   id "info.solidsoft.pitest" version "1.6.0"
   id 'application'
@@ -31,7 +31,9 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.8.6'
+  def idamBomVersion = '2.8.14'
+  // Remove when Spring Boot Dependencies upgrades their tomcat version and idam-bom is upgraded accordingly
+  ext['tomcat.version'] = '9.0.58'
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
@@ -61,6 +63,7 @@ allprojects {
       nodeEnabled = false
       nodeAudit {
         enabled = false
+        yarnEnabled = false
       }
     }
   }
@@ -88,7 +91,7 @@ allprojects {
     implementation group: 'io.github.openfeign', name: 'feign-jackson'
     implementation group: 'io.github.openfeign', name: 'feign-okhttp'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.9.RELEASE') {
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.10.RELEASE') {
       exclude(module: 'rxnetty-contexts')
       exclude(module: 'rxnetty-servo')
       exclude(module: 'rxnetty')
@@ -217,6 +220,9 @@ sonarqube {
     property "sonar.projectName", "SIDAM-WEB-PUBLIC"
     property "sonar.exclusions", "**/uk/gov/hmcts/reform/idam/web/config/properties/*.java," +
       "**/uk/gov/hmcts/reform/idam/web/config/IdamWebMvcConfiguration.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/SessionConfiguration.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/AppConfiguration.java," +
+      "**/uk/gov/hmcts/reform/idam/web/config/AppConfigurationSSO.java," +
       "**/uk/gov/hmcts/reform/idam/web/model/*.java," +
       "**/uk/gov/hmcts/reform/idam/web/helper/MvcKeys.java," +
       "**/uk/gov/hmcts/reform/idam/web/Application.java," +

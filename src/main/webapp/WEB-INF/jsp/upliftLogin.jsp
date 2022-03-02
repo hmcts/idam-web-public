@@ -63,7 +63,7 @@
                     <div class="form-group">
                         <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
                             <c:param name="redirectUri" value="${param['redirect_uri']}" />
-                            <c:param name="clientId" value="${param['client_id']}" />
+                            <c:param name="client_id" value="${param['client_id']}" />
                             <c:param name="state" value="${param['state']}" />
                             <c:param name="nonce" value="${param['nonce']}" />
                             <c:param name="scope" value="${param['scope']}" />

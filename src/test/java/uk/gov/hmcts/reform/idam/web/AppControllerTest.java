@@ -66,7 +66,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -289,7 +289,7 @@ public class AppControllerTest {
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
@@ -403,7 +403,7 @@ public class AppControllerTest {
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/reset/inactive-user?client_id=clientId&redirect_uri=redirect_uri&state=state+test"));
+            .andExpect(redirectedUrl("/reset/inactive-user?client_id=client_id&redirect_uri=redirect_uri&state=state+test"));
 
     }
 
@@ -542,7 +542,7 @@ public class AppControllerTest {
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, MISSING)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID)
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(USERNAME_PARAMETER, USER_EMAIL)
             .param(USER_FIRST_NAME_PARAMETER, USER_FIRST_NAME)
             .param(USER_LAST_NAME_PARAMETER, USER_LAST_NAME)
@@ -713,7 +713,7 @@ public class AppControllerTest {
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", PASSWORD_PARAMETER));
@@ -755,7 +755,7 @@ public class AppControllerTest {
             .param(JWT_PARAMETER, JWT)
             .param(REDIRECTURI, MISSING)
             .param(STATE_PARAMETER, STATE)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR, ERROR))
             .andExpect(model().attributeHasFieldErrors("upliftRequest", REDIRECT_URI));
@@ -1023,7 +1023,7 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(EXPIRED_PASSWORD_RESET_TOKEN_VIEW_NAME))
             .andExpect(model().attribute("forgotPasswordLink",
-                "/reset/forgotpassword?redirectUri=1234&clientId=&state=&scope="));
+                "/reset/forgotpassword?redirectUri=1234&client_id=&state=&scope="));
 
         verify(spiService).validateResetPasswordToken(RESET_PASSWORD_TOKEN, RESET_PASSWORD_CODE);
     }
@@ -1238,7 +1238,7 @@ public class AppControllerTest {
         mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
             .param(USER_EMAIL_PARAMETER, USER_EMAIL)
             .param(REDIRECTURI, REDIRECT_URI)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk());
 
         verify(spiService).forgetPassword(USER_EMAIL, REDIRECT_URI, CLIENT_ID);
@@ -1257,7 +1257,7 @@ public class AppControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name(FORGOT_PASSWORD_VIEW));
 
-        verifyZeroInteractions(spiService);
+        verifyNoInteractions(spiService);
     }
 
     /**
@@ -1275,11 +1275,11 @@ public class AppControllerTest {
         mockMvc.perform(post(FORGOT_PASSWORD_WEB_ENDPOINT).with(csrf())
             .param(USER_EMAIL_PARAMETER, USER_EMAIL)
             .param(REDIRECTURI, REDIRECT_URI)
-            .param(CLIENTID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(status().isOk())
             .andExpect(view().name(FORGOT_PASSWORD_SUCCESS_VIEW))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
-            .andExpect(model().attribute(CLIENTID_PARAMETER, CLIENT_ID))
+            .andExpect(model().attribute(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(model().attribute(SELF_REGISTRATION_ENABLED, true));
     }
 
@@ -1644,7 +1644,7 @@ public class AppControllerTest {
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/o/authorize?response_type=response+type&state=state+test&client_id=clientId&redirect_uri=redirect_uri&scope=manage-roles"));
+            .andExpect(redirectedUrl("/o/authorize?response_type=response+type&state=state+test&client_id=client_id&redirect_uri=redirect_uri&scope=manage-roles"));
 
         given(spiService.authenticate(eq(USER_EMAIL), eq(USER_PASSWORD), eq(REDIRECT_URI), eq(USER_IP_ADDRESS)))
             .willReturn(authResultLocked);

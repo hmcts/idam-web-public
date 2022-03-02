@@ -414,7 +414,7 @@ public class UserControllerTest {
             .andExpect(status().isOk())
             .andExpect(model().attribute(SELF_REGISTER_COMMAND, notNullValue()))
             .andExpect(model().attribute(REDIRECTURI, GOOGLE_WEB_ADDRESS))
-            .andExpect(model().attribute(CLIENTID_PARAMETER, SERVICE_CLIENT_ID))
+            .andExpect(model().attribute(CLIENT_ID_PARAMETER, SERVICE_CLIENT_ID))
             .andExpect(model().attribute(STATE_PARAMETER, STATE))
             .andExpect(view().name(SELF_REGISTER_VIEW_NAME));
 
@@ -537,7 +537,7 @@ public class UserControllerTest {
         assertThat(
             userController.buildRegistrationLink(
                 new ActivationResult().redirectUri(GOOGLE_WEB_ADDRESS).clientId(CLIENT_ID)),
-            is("/users/selfRegister?redirect_uri=https://www.google.com&client_id=clientId"));
+            is("/users/selfRegister?redirect_uri=https://www.google.com&client_id=client_id"));
     }
 
     @Test

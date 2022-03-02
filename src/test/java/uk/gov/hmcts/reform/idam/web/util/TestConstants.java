@@ -121,8 +121,8 @@ public class TestConstants {
     public static final String SCOPE_PARAMETER = "scope";
     public static final String NONCE_PARAMETER = "nonce";
     public static final String PROMPT_PARAMETER = "prompt";
-    public static final String CLIENT_ID_PARAMETER = "client_id";
     public static final String CLIENTID_PARAMETER = "clientId";
+    public static final String CLIENT_ID_PARAMETER = "client_id";
     public static final String USERNAME_PARAMETER = "username";
     public static final String PASSWORD_PARAMETER = "password";
     public static final String RESPONSE_TYPE_PARAMETER = "response_type";
@@ -176,7 +176,7 @@ public class TestConstants {
     public static final String SERVICE_OAUTH2_CLIENT_ID = "cmc-citizen";
     public static final String RESPONSE_TYPE = "response type";
     public static final String STATE = "state test";
-    public static final String CLIENT_ID = "clientId";
+    public static final String CLIENT_ID = "client_id";
     public static final String REDIRECTURI = "redirectUri";
     public static final String NONCE_VALUE = "eshfwrhr09123rksdfnsad";
     public static final String PROMPT_VALUE = "login";
@@ -194,7 +194,7 @@ public class TestConstants {
     public static final String ERR_LOCKED_FAILED_RESPONSE = "{\"code\":\"ACCOUNT_LOCKED\"}";
     public static final String ERR_SUSPENDED_RESPONSE = "{\"code\":\"ACCOUNT_SUSPENDED\"}";
     public static final String ERR_STALE_USER_REGISTRATION_SENT = "{\"code\":\"STALE_USER_REGISTRATION_SENT\"}";
-    public static final String SELF_REGISTRATION_RESPONSE = "{\"firstName\":\"" + USER_FIRST_NAME + "\",\"lastName\":\"" + USER_LAST_NAME + "\",\"email\":\"" + USER_EMAIL + "\",\"redirectUri\":\"" + REDIRECT_URI + "\",\"clientId\":\"clientId\",\"state\":\"" + STATE + "\"}";
+    public static final String SELF_REGISTRATION_RESPONSE = "{\"firstName\":\"" + USER_FIRST_NAME + "\",\"lastName\":\"" + USER_LAST_NAME + "\",\"email\":\"" + USER_EMAIL + "\",\"redirectUri\":\"" + REDIRECT_URI + "\",\"client_id\":\"client_id\",\"state\":\"" + STATE + "\"}";
 
 
     //Requests

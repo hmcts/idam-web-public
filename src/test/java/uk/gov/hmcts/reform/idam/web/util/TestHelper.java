@@ -61,7 +61,7 @@ public class TestHelper {
     public static SelfRegisterRequest getSelfRegisterRequest() {
         SelfRegisterRequest selfRegisterRequest = new SelfRegisterRequest();
 
-        selfRegisterRequest.setClientId(CLIENT_ID);
+        selfRegisterRequest.setClient_id(CLIENT_ID);
         selfRegisterRequest.setEmail(USER_EMAIL);
         selfRegisterRequest.setFirstName(USER_FIRST_NAME);
         selfRegisterRequest.setLastName(USER_LAST_NAME);

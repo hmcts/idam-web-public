@@ -2,8 +2,13 @@ const chai = require('chai');
 const {expect} = chai;
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
+let isEnvtPerftest = TestData.WEB_PUBLIC_URL.includes("perftest");
 
-Feature('moj login tests');
+if (isEnvtPerftest){
+    xFeature('moj login tests');
+} else {
+    Feature('moj login tests');
+}
 
 let serviceNames = [];
 
@@ -21,6 +26,9 @@ BeforeSuite(async ({ I }) => {
     mojUserRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mojlogintest", 'role description', '', token);
     await I.createService(serviceName, serviceClientSecret, mojUserRole.id, token, 'openid profile roles', [TestData.MOJ_SSO_PROVIDER_KEY]);
     serviceNames.push(serviceName);
+
+    I.wait(0.5);
+
     await I.createUserWithRoles(TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
 });
 
@@ -68,7 +76,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login through the Justice.gov.uk login link from idam', async ({ I }) => {
-    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
+    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
     I.waitForText('Log in with your Justice.gov.uk account');
     I.click('Log in with your Justice.gov.uk account');
@@ -95,7 +103,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
 
         const pageSource = await I.grabSource();
         const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-        const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
+        const accessToken = await I.getAccessToken(code, serviceName.toUpperCase(), TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
         const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
         expect(userInfo.active).to.equal(true);
@@ -118,4 +126,4 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
         I.resetRequestInterception();
     }
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);

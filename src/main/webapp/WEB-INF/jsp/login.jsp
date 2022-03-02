@@ -25,7 +25,7 @@
 
             <c:url value="/reset/forgotpassword" var="forgotPasswordUrl">
                 <c:param name="redirectUri" value="${redirect_uri}"/>
-                <c:param name="clientId" value="${client_id}"/>
+                <c:param name="client_id" value="${client_id}"/>
                 <c:param name="state" value="${state}"/>
                 <c:param name="nonce" value="${nonce}"/>
                 <c:param name="scope" value="${scope}"/>
@@ -199,7 +199,7 @@
                 <c:if test="${selfRegistrationEnabled}">
                     <h2 class="heading-medium"><spring:message code="public.login.subheading.sign.in"/></h2>
                 </c:if>
-                <c:set var="usernameError" value="${isUsernameEmpty || hasLoginFailed}"/>
+                <c:set var="usernameError" value="${isUsernameEmpty || hasLoginFailed || isEmailError}"/>
                 <div class="form-group ${usernameError? 'form-group-error' : ''}">
                     <label for="username">
                                 <span class="form-label">
@@ -209,6 +209,11 @@
                     <c:if test="${isUsernameEmpty}">
                                 <span class="error-message">
                                     <spring:message code="public.common.error.enter.username"/>
+                                </span>
+                    </c:if>
+                    <c:if test="${isEmailError}">
+                                <span class="error-message">
+                                    <spring:message code="public.common.error.invalid.email"/>
                                 </span>
                     </c:if>
                     <form:input

@@ -2,8 +2,13 @@ const chai = require('chai');
 const {expect} = chai;
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
+let isEnvtPerftest = TestData.WEB_PUBLIC_URL.includes("perftest");
 
-Feature('eJudiciary login tests');
+if (isEnvtPerftest){
+    xFeature('eJudiciary login tests');
+} else {
+    Feature('eJudiciary login tests');
+}
 
 let serviceNames = [];
 
@@ -15,6 +20,8 @@ BeforeSuite(async ({ I }) => {
     const token = await I.getAuthToken();
     await I.createService(serviceName, serviceClientSecret, '', token, 'openid profile roles', [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
     serviceNames.push(serviceName);
+
+    I.wait(0.5);
 });
 
 AfterSuite(async ({ I }) => {
@@ -62,7 +69,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam', async ({ I }) => {
-    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
+    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
     I.waitForText('Log in with your eJudiciary account');
     I.click('Log in with your eJudiciary account');
@@ -89,7 +96,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
 
         const pageSource = await I.grabSource();
         const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-        const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
+        const accessToken = await I.getAccessToken(code, serviceName.toUpperCase(), TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
         const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
         expect(userInfo.active).to.equal(true);
@@ -112,4 +119,4 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         I.resetRequestInterception();
     }
 
-});
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
