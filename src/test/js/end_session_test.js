@@ -55,7 +55,10 @@ Scenario('@functional @endSession End Session', async ({ I }) => {
 
     I.dontSee('error=');
 
-    I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/endSession`);
+    I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/endSession?post_logout_redirect_uri=${TestData.SERVICE_REDIRECT_URI}`);
+    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.dontSee('code=');
+
     I.amOnPage(authorizeEndpointUrl);
     I.waitForText('Sign in');
 
