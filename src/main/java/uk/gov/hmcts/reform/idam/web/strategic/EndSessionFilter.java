@@ -25,36 +25,39 @@ public class EndSessionFilter extends ZuulFilter {
     }
 
     @Override
-	public String filterType() {
-		return POST_TYPE;
-	}
-
-	@Override
-	public int filterOrder() {
-		return SEND_RESPONSE_FILTER_ORDER - 1;
-	}
-
-	@Override
-	public boolean shouldFilter() {
-        final HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
-        return isEndSessionRequest(request);
-	}
+    public String filterType() {
+        return POST_TYPE;
+    }
 
     @Override
-	public Object run() {
+    public int filterOrder() {
+        return SEND_RESPONSE_FILTER_ORDER - 1;
+    }
+
+    @Override
+    public boolean shouldFilter() {
+        final HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
+        return isEndSessionRequest(request);
+    }
+
+    @Override
+    public Object run() {
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletRequest httpRequest = context.getRequest();
+
+        // invalidate sso session
         HttpSession session = httpRequest.getSession(false);
         if (session != null) {
             session.invalidate();
         }
 
+        // invalidate idam session
         HttpServletResponse servletResponse = context.getResponse();
         servletResponse.addHeader(HttpHeaders.SET_COOKIE, idamSessionCookieName
             + "=; Path=/; Expires=Thu, 01-Jan-1970 00:00:10 GMT; HttpOnly");
 
         return null;
-	}
+    }
 
     private boolean isEndSessionRequest(HttpServletRequest request) {
         return request.getRequestURI().contains(OIDC_END_SESSION_ENDPOINT);
