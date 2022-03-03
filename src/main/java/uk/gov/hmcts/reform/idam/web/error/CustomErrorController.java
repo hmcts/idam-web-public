@@ -25,10 +25,10 @@ public class CustomErrorController implements ErrorController {
 
         if (status != null && exception != null) {
             int statusCode = Integer.parseInt(status.toString());
+            log.info("Status " + statusCode + " error redirect.", (Throwable) exception);
             if(statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()
                 && exception instanceof IOException) {
                 response.setStatus(200);
-                log.info("Status 500 error redirect.", (Throwable) exception);
             }
         }
 
