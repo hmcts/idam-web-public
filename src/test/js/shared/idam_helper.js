@@ -456,7 +456,7 @@ class IdamHelper extends Helper {
     interceptRequestsAfterSignin() {
         const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
-        const pages = ["/login", "/register", "/activate", "/verification", "/useractivated"];
+        const pages = ["/login", "/register", "/activate", "/verification", "/useractivated", "/o/authorize", "/o/endSession"];
 
         helper.page.on('request', request => {
             if (pages.some(v => request.url().includes(v))) {

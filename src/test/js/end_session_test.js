@@ -34,8 +34,6 @@ AfterSuite(async ({ I }) => {
 Scenario('@functional @endSession End Session', async ({ I }) => {
     let authorizeEndpointUrl = TestData.WEB_PUBLIC_URL + `/o/authorize?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`;
 
-    console.log(authorizeEndpointUrl)
-
     I.amOnPage(authorizeEndpointUrl);
     I.waitForText('Sign in');
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
@@ -43,20 +41,18 @@ Scenario('@functional @endSession End Session', async ({ I }) => {
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
 
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.waitInUrl(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
 
     I.amOnPage(authorizeEndpointUrl);
     I.dontSee('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.wait(60);
+    I.waitInUrl(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
-
     I.dontSee('error=');
 
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/endSession?post_logout_redirect_uri=${TestData.SERVICE_REDIRECT_URI}`);
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    I.waitInUrl(TestData.SERVICE_REDIRECT_URI);
     I.dontSee('code=');
 
     I.amOnPage(authorizeEndpointUrl);
