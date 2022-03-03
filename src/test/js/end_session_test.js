@@ -32,11 +32,20 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario('@functional @endSession End Session', async ({ I }) => {
-    let authorizeEndpointUrl = TestData.WEB_PUBLIC_URL + `/o/authorize?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`;
+    let authorizeQueryParams = `client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`;
+    let authorizeEndpointUrl = TestData.WEB_PUBLIC_URL + `/o/authorize?${authorizeQueryParams}`;
 
     I.amOnPage(authorizeEndpointUrl);
+
+    const [page] = await I.getCurrentPage()
+    if (!page.url().includes(TestData.WEB_PUBLIC_URL)) {
+        // then idam-api is configured to redirect to a different idam-web-public on authorize request
+        // so we will go direct to the login page and create a session from there
+        let loginUrl = TestData.WEB_PUBLIC_URL + `/login?${authorizeQueryParams}`;
+        I.amOnPage(loginUrl);
+    }
     I.waitForText('Sign in');
-    I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
+    I.fillField('#username', citizenEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
