@@ -105,7 +105,11 @@ class IdamHelper extends Helper {
             headers: {'Cookie': `Idam.Session=${cookie}`},
             redirect: 'manual'
         }).then(response => {
-            return response.headers.get('Location');
+            let location = response.headers.get('Location');
+            if (location.indexOf(TestData.WEB_PUBLIC_URL) < 0) {
+                location = location.replace(/http(s?):\/\/.*?\/login/, TestData.WEB_PUBLIC_URL + "/login");
+            }
+            return location;
         })
             .catch(err => {
                 console.log(err);
