@@ -41,11 +41,6 @@ class IdamHelper extends Helper {
         return await browser.newPage();
     }
 
-    async getCurrentPage() {
-        const {browser} = this.helpers['Puppeteer'];
-        return await browser.pages();
-    }
-
     async createServiceData(serviceName, serviceClientSecret) {
         const token = await this.getAuthToken();
         this.createService(serviceName, serviceClientSecret,'', token, '', []);
