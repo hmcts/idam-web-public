@@ -735,10 +735,7 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     const authLocation = await I.getWebPublicOidcAuthorizeWithLoginRequired(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
     expect(authLocation).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
 
-    const authParams = authLocation.split("/login?")[1];
-    const authLoginUrl = `${TestData.WEB_PUBLIC_URL}/login?${authParams}`
-
-    I.amOnPage(authLoginUrl);
+    I.amOnPage(authLocation);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
