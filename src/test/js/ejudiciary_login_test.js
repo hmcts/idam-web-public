@@ -44,7 +44,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
         I.click('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
-        I.see("The reply URL specified in the request does not match the reply URLs configured for the application");
+        I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
         I.interceptRequestsAfterSignin();
         I.click('No');
@@ -86,7 +86,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         I.click('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
-        I.see("The reply URL specified in the request does not match the reply URLs configured for the application");
+        I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
         I.interceptRequestsAfterSignin();
         I.click('No');
