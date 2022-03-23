@@ -27,7 +27,7 @@ if [ "$DEBUG" == "true" ]; then
         -config api.addrs.addr.name=".*" \
         -config api.addrs.addr.regex=true
 else
-    zap-x.sh -d -host $ZAP_HOST -port $ZAP_PORT -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config rules.cookie.ignorelist=_ga,_gid,_gat,dtCookie,dtLatC,dtPC,dtSa,rxVisitor,rxvt -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true /dev/null 2>&1 &
+    zap-x.sh -daemon -host $ZAP_HOST -port $ZAP_PORT -config database.newsession=3 -config database.newsessionprompt=false -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config rules.cookie.ignorelist=_ga,_gid,_gat,dtCookie,dtLatC,dtPC,dtSa,rxVisitor,rxvt -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true &
 fi
 
 # Wait for ZAP to start
