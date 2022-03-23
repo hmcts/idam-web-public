@@ -7,6 +7,7 @@ Feature('Users can sign in');
 
 let randomUserFirstName;
 let citizenEmail;
+let idamServiceAccountUserEmail;
 let userFirstNames = [];
 let serviceNames = [];
 
@@ -18,6 +19,7 @@ const userPassword = randomData.getRandomUserPassword();
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
+    idamServiceAccountUserEmail = 'idamserviceaccount.' + randomData.getRandomEmailAddress();
 
     await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
@@ -26,6 +28,9 @@ BeforeSuite(async ({ I }) => {
 
     await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
+
+    await I.createUserWithRoles(idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 
 AfterSuite(async ({ I }) => {
@@ -145,4 +150,14 @@ Scenario('@functional @login As a user, I should see the error message displayed
     I.click('Sign in');
     I.waitForText('Information is missing or invalid');
     I.waitForText('Email address is not valid');
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @login @idamserviceaccount As a idam service account role user, I should see the error message displayed for login', async ({ I }) => {
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
+    I.amOnPage(loginUrl);
+    I.waitForText('Sign in');
+    I.fillField('#username', idamServiceAccountUserEmail);
+    I.fillField('#password', userPassword);
+    I.click('Sign in');
+    I.waitForText('Incorrect email or password');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
