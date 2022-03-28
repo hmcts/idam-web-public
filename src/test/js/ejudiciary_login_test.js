@@ -115,7 +115,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         I.fillField('#password', TestData.EJUDICIARY_TEST_USER_PASSWORD);
         I.interceptRequestsAfterSignin();
         I.click('Sign in');
-        I.waitForText(TestData.WEB_PUBLIC_URL + `/o/authorize?response_type=code&client_id=${serviceName}&redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI)}&scope=openid+profile+roles&login_hint=ejudiciary-aad`);
+        I.waitForText(TestData.WEB_PUBLIC_URL + `/oauth2/authorization/oidc`);
         I.resetRequestInterception();
     }
 
