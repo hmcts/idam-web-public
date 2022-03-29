@@ -332,7 +332,7 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createUserWithRoles(email, password, forename, userRoles) {
+    createUserWithRoles(email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
         const codeUserRoles = userRoles.map(role => ({'code': role}));
         const data = {
             email: email,
@@ -340,7 +340,9 @@ class IdamHelper extends Helper {
             password: password,
             roles: codeUserRoles,
             surname: 'User',
-            userGroup: {code: 'xxx_private_beta'}
+            userGroup: {code: 'xxx_private_beta'},
+            ssoProvider: ssoProvider,
+            ssoId: ssoId
         };
         return fetch(`${TestData.IDAM_API}/testing-support/accounts`, {
             agent: agent,
