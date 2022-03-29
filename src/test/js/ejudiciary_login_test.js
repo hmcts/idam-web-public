@@ -112,6 +112,9 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @ejudiciary As an ejudiciary user, I should be redirected to eJudiciary for login if I enter my username on the login screen', async ({ I }) => {
+    await I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
+    await I.createUserWithRoles(TestData.EJUDICIARY_TEST_USER_USERNAME, TestData.EJUDICIARY_TEST_USER_PASSWORD, "Judge", [ ], "azure", randomData.getRandomString());
+
     //redirection verification
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
