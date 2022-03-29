@@ -32,6 +32,8 @@ allprojects {
   targetCompatibility = 11
 
   def idamBomVersion = '2.8.17'
+  def jackson_version = '2.13.2'
+  def jackson_databind_version = '2.13.2.1'
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
@@ -104,7 +106,16 @@ allprojects {
 
     implementation group: 'javax.servlet', name: 'jstl'
     implementation group: 'javax.json', name: 'javax.json-api'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+    compile("com.fasterxml.jackson:jackson-bom") {
+      version {
+        strictly jackson_version
+      }
+    }
+    implementation (group: 'com.fasterxml.jackson.core', name: 'jackson-databind') {
+      version {
+        require jackson_databind_version
+      }
+    }
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.apache.commons', name: 'commons-text'
