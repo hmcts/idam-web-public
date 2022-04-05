@@ -30,7 +30,7 @@
                         <spring:message  code="public.common.user.created.re.enter.details"/>
                         <c:url value="/login/uplift" var="loginUpliftUrl">
                             <c:param name="redirect_uri" value="${redirectUri}" />
-                            <c:param name="client_id" value="${clientId}" />
+                            <c:param name="client_id" value="${client_id}" />
                             <c:param name="state" value="${state}" />
                             <c:param name="nonce" value="${nonce}" />
                             <c:param name="jwt" value="${jwt}" />
@@ -40,7 +40,7 @@
                     <c:otherwise>
                         <c:url value="/users/selfRegister" var="selfRegisterUrl">
                             <c:param name="redirect_uri" value="${redirectUri}" />
-                            <c:param name="client_id" value="${clientId}" />
+                            <c:param name="client_id" value="${client_id}" />
                         </c:url>
                         <spring:message code="public.common.user.created.re.enter.details"/>
                         <a href="${selfRegisterUrl}"><spring:message  code="public.common.user.created.re.enter.details.enter.details.again"/></a>

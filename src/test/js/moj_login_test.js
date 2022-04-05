@@ -2,8 +2,13 @@ const chai = require('chai');
 const {expect} = chai;
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
+let isEnvtPerftest = TestData.WEB_PUBLIC_URL.includes("perftest");
 
-Feature('moj login tests');
+if (isEnvtPerftest){
+    xFeature('moj login tests');
+} else {
+    Feature('moj login tests');
+}
 
 let serviceNames = [];
 
@@ -46,7 +51,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
         I.click('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
-        I.see("The reply URL specified in the request does not match the reply URLs configured for the application");
+        I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
         I.interceptRequestsAfterSignin();
         I.click('No');
@@ -88,7 +93,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
         I.click('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
-        I.see("The reply URL specified in the request does not match the reply URLs configured for the application");
+        I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
         I.interceptRequestsAfterSignin();
         I.click('No');
@@ -109,16 +114,29 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
         expect(userInfo.roles).to.eql([mojUserRole.name]);
 
         I.resetRequestInterception();
-
-        //redirection verification
-        I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
-        I.waitForText('Sign in');
-        I.fillField('#username', TestData.MOJ_TEST_USER_USERNAME);
-        I.fillField('#password', TestData.MOJ_TEST_USER_PASSWORD);
-        I.interceptRequestsAfterSignin();
-        I.click('Sign in');
-        I.waitForText(TestData.WEB_PUBLIC_URL + `/o/authorize?response_type=code&client_id=${serviceName}&redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI)}&scope=openid+profile+roles&login_hint=moj`);
-        I.resetRequestInterception();
     }
+
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to MoJ IDAM for login if I enter my username on the login screen', async ({ I }) => {
+    await I.deleteUser(TestData.MOJ_TEST_USER_USERNAME);
+    await I.createUserWithRoles(TestData.MOJ_TEST_USER_USERNAME, TestData.MOJ_TEST_USER_PASSWORD, randomUserFirstName, [mojUserRole.name], "moj", randomData.getRandomString());
+
+    //redirection verification
+    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
+    I.waitForText('Sign in');
+    I.fillField('#username', TestData.MOJ_TEST_USER_USERNAME);
+    I.fillField('#password', TestData.MOJ_TEST_USER_PASSWORD);
+    I.click('Sign in');
+
+    I.waitForText('Sign in');
+    I.fillField('loginfmt', TestData.MOJ_TEST_USER_USERNAME);
+    I.click('Next');
+    I.waitForText('Enter password');
+    I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
+    I.click('Sign in');
+
+    I.waitForText('Stay signed in?');
+    I.click('No');
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

@@ -24,7 +24,7 @@ public class SelfRegisterRequest  {
 
     private String redirectUri;
 
-    private String clientId;
+    private String client_id;
 
     private String state;
 

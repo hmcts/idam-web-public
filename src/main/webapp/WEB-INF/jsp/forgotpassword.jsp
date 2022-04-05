@@ -81,7 +81,7 @@
 
             <input class="button" type="submit" value="<spring:message code="public.common.button.submit.text"/>">
             <form:input path="redirectUri" type="hidden" id="redirectUri" />
-            <form:input path="clientId" type="hidden" id="clientId" />
+            <form:input path="client_id" type="hidden" id="client_id" />
             <form:input path="state" type="hidden" id="state" />
             <form:input path="scope" type="hidden" id="scope" />
         </form:form>

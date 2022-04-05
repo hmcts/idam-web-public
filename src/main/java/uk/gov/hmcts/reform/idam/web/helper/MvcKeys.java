@@ -5,7 +5,6 @@ package uk.gov.hmcts.reform.idam.web.helper;
  */
 public class MvcKeys {
 
-    public static final String CLIENTID = "clientId";
     public static final String CLIENT_ID = "client_id";
     public static final String EMAIL = "email";
     public static final String ERROR_MSG = "errorMsg";

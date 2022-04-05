@@ -15,6 +15,7 @@ const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 const citizenEmailWelsh = 'citizen.' + randomData.getRandomEmailAddress();
 const formSubmitButton = '.form input[type=submit]';
 let staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
+let idamServiceAccountUserEmail = 'idamserviceaccount.' + randomData.getRandomEmailAddress();
 let randomUserFirstName;
 let randomUserLastName;
 let userFirstNames = [];
@@ -39,6 +40,8 @@ BeforeSuite(async ({ I }) => {
     await I.createUserWithRoles(staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
+    await I.createUserWithRoles(idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 
 AfterSuite(async ({ I }) => {
@@ -415,3 +418,17 @@ Scenario('@functional @selfregister I can create a password only once using the 
     const page1Message = await page1.$eval('h1.heading-large', el => el.textContent.trim());
     expect(page1Message).to.equal(accountAlreadyActivatedMessage);
 });
+
+Scenario('@functional @selfregister @idamserviceaccount Account already created for idam service accont user', async ({ I }) => {
+    I.amOnPage(selfRegUrl);
+    I.waitInUrl('users/selfRegister');
+    I.waitForText('Create an account or sign in');
+    I.see('Create an account');
+    I.fillField('firstName', randomUserFirstName);
+    I.fillField('lastName', randomUserLastName);
+    I.fillField('email', idamServiceAccountUserEmail);
+    I.click(formSubmitButton);
+    I.waitForText('Check your email');
+    const emailResponse = await I.getEmailFromNotify(idamServiceAccountUserEmail);
+    assert.equal('You already have an account', emailResponse.subject);
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
