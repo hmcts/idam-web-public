@@ -81,12 +81,14 @@ try {
     }
 } catch (err) {
     node {
-        withAzureKeyvault(
-            azureKeyVaultSecrets: [secret('jira-api-token', 'JIRA_API_TOKEN')],
-            keyVaultURLOverride: "https://cftptl-intsvc.vault.azure.net/"
-        ) {
-            checkout scm
-            builder.gradle('createAJiraTicket')
+        onMaster() {
+            withAzureKeyvault(
+                azureKeyVaultSecrets: [secret('jira-api-token', 'JIRA_API_TOKEN')],
+                keyVaultURLOverride: "https://cftptl-intsvc.vault.azure.net/"
+            ) {
+                checkout scm
+                builder.gradle('createAJiraTicket')
+            }
         }
     }
     throw err
