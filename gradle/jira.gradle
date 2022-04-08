@@ -1,0 +1,114 @@
+import com.atlassian.jira.rest.client.api.AuthenticationHandler
+import com.atlassian.jira.rest.client.api.IssueRestClient
+import com.atlassian.jira.rest.client.api.JiraRestClient
+import com.atlassian.jira.rest.client.api.domain.BasicIssue
+import com.atlassian.jira.rest.client.api.domain.Field
+import com.atlassian.jira.rest.client.api.domain.Issue
+import com.atlassian.jira.rest.client.api.domain.IssueFieldId
+import com.atlassian.jira.rest.client.api.domain.IssueType
+import com.atlassian.jira.rest.client.api.domain.input.FieldInput
+import com.atlassian.jira.rest.client.api.domain.input.IssueInput
+import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder
+import com.atlassian.jira.rest.client.api.RestClientException
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory
+import com.atlassian.httpclient.api.Request
+
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+buildscript {
+  repositories {
+    mavenCentral()
+    maven { url 'https://packages.atlassian.com/maven/repository/public' }
+  }
+  dependencies {
+    classpath 'com.atlassian.jira:jira-rest-java-client-app:5.2.0'
+  }
+}
+
+def static createFailedPipelineJiraTicket(String token) throws IOException {
+  URI jiraServerUri = URI.create("https://tools.hmcts.net/jira/")
+  AsynchronousJiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
+  AuthenticationHandler auth = new BearerAuthenticationHandler(token)
+  JiraRestClient restClient = factory.create(jiraServerUri, auth)
+  try {
+    IssueRestClient issueClient = restClient.getIssueClient()
+    // Find the Bug Issue Type
+    IssueType bug = null
+    for (IssueType issueType : restClient.getMetadataClient().getIssueTypes().claim()) {
+      if (issueType.getName().equalsIgnoreCase("Bug")) {
+        bug = issueType
+      }
+    }
+    // Find the Sprint Field ID
+    String sprintFieldId = null
+    for (Field field : restClient.getMetadataClient().getFields().claim()) {
+      if (field.getName().equalsIgnoreCase("Sprint")) {
+        sprintFieldId = field.getId()
+      }
+    }
+    // Figure out what the current active sprint is
+    String sprintId = null
+    Pattern idPattern = Pattern.compile('(id=[0-9]*)')
+    Pattern statePattern = Pattern.compile('(state=[a-zA-Z]*)')
+    for (Issue issue : restClient.getSearchClient()
+      .searchJql("project=SIDM AND sprint IN openSprints() AND sprint NOT IN futureSprints() AND sprint NOT IN closedSprints()")
+      .claim().getIssues()) {
+      String sprintObjString = issue.getField(sprintFieldId).getValue()
+      Matcher idMatcher = idPattern.matcher(sprintObjString)
+      Matcher stateMatcher = statePattern.matcher(sprintObjString)
+      idMatcher.find()
+      stateMatcher.find()
+      String itemSprintId = idMatcher.group()
+      String itemSprintState = stateMatcher.group()
+      if (itemSprintState.split('=')[1].equalsIgnoreCase('ACTIVE')) {
+        sprintId = itemSprintId.split('=')[1]
+        break;
+      }
+    }
+
+    IssueInputBuilder iib = new IssueInputBuilder()
+    iib.setProjectKey("SIDM")
+    iib.setSummary("Failed Nightly Pipeline Idam-Web-Public")
+    iib.setIssueType(bug)
+    iib.setDescription("Automated ticket for failed nightly pipeline.")
+    iib.setPriorityId(1L)
+    iib.setReporter(restClient.getUserClient().getUser("Nikola.Naydenov").claim())
+
+    String description = "Link to failed build:\n${System.getenv('BUILD_URL')}"
+    iib.setFieldInput(new FieldInput(IssueFieldId.DESCRIPTION_FIELD, description))
+    iib.setFieldInput(new FieldInput(sprintFieldId, Integer.parseInt(sprintId)))
+
+    IssueInput issue = iib.build();
+    BasicIssue issueObj = issueClient.createIssue(issue).claim()
+
+    System.out.println("Issue " + issueObj.getKey() + " created successfully")
+    System.out.println(issueObj)
+  } catch (RestClientException ie) {
+    println 'Rest exception creating Jira ticket.'
+    println "Code ${ie.getStatusCode()}. Errors ${ie.getErrorCollections()}"
+    throw ie;
+  } finally {
+    restClient.close()
+  }
+}
+
+class BearerAuthenticationHandler implements AuthenticationHandler {
+
+  private static final String AUTHORIZATION_HEADER = "Authorization";
+
+  private final String token;
+
+  BearerAuthenticationHandler(final String token) {
+    this.token = token;
+  }
+
+  @Override
+  void configure(Request.Builder builder) {
+    builder.setHeader(AUTHORIZATION_HEADER, "Bearer " + token);
+  }
+}
+
+ext {
+  createFailedPipelineJiraTicket = this.&createFailedPipelineJiraTicket
+}

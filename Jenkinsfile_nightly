@@ -14,6 +14,9 @@ properties([
 ])
 
 @Library("Infrastructure") _
+import uk.gov.hmcts.contino.GradleBuilder
+
+GradleBuilder builder = new GradleBuilder(this, 'jenkins-library')
 
 def type = "java"
 
@@ -32,46 +35,61 @@ def secrets = [
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
-    [$class : 'AzureKeyVaultSecret',
+    [$class     : 'AzureKeyVaultSecret',
      secretType : 'Secret',
-     name : secretName,
-     version : '',
+     name       : secretName,
+     version    : '',
      envVariable: envVar
     ]
 }
 
-withNightlyPipeline(type, product, component) {
-    env.TEST_URL = params.URL_TO_TEST
-    env.IDAMAPI = params.API_URL_TO_TEST
-    env.RPE_AUTH_URL = params.RPE_AUTH_URL
-    env.REF_DATA_URL = params.REF_DATA_URL
-    env.WAIT_FOR_ACTION_TIMEOUT = params.WAIT_FOR_ACTION_TIMEOUT
-    loadVaultSecrets(secrets)
-    enableSecurityScan()
-    enableMutationTest()
-    enableFullFunctionalTest(200)
-    enableCrossBrowserTest()
-    enableFortifyScan('idam-idam-' + params.ENVIRONMENT)
+try {
+    withNightlyPipeline(type, product, component) {
+        env.TEST_URL = params.URL_TO_TEST
+        env.IDAMAPI = params.API_URL_TO_TEST
+        env.RPE_AUTH_URL = params.RPE_AUTH_URL
+        env.REF_DATA_URL = params.REF_DATA_URL
+        env.WAIT_FOR_ACTION_TIMEOUT = params.WAIT_FOR_ACTION_TIMEOUT
+        loadVaultSecrets(secrets)
+        enableSecurityScan()
+        enableMutationTest()
+        enableFullFunctionalTest(200)
+        enableCrossBrowserTest()
+        enableFortifyScan('idam-idam-' + params.ENVIRONMENT)
 
-    after('fortify-scan') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+        after('fortify-scan') {
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+        }
+
+        before('fullFunctionalTest') {
+            env.TESTS_FOR_ACCESSIBILITY = true
+        }
+
+        after('fullFunctionalTest') {
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+            env.TESTS_FOR_ACCESSIBILITY = false
+
+            publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "output",
+                reportFiles          : "idam-web-public-e2e-result.html",
+                reportName           : "IDAM Web Public E2E functional tests result"
+            ]
+        }
     }
-
-    before('fullFunctionalTest') {
-        env.TESTS_FOR_ACCESSIBILITY = true
+} catch (err) {
+    node {
+        onMaster() {
+            withAzureKeyvault(
+                azureKeyVaultSecrets: [secret('jira-api-token', 'JIRA_API_TOKEN')],
+                keyVaultURLOverride: "https://cftptl-intsvc.vault.azure.net/"
+            ) {
+                checkout scm
+                builder.gradle('createAJiraTicket')
+            }
+        }
     }
-
-    after('fullFunctionalTest') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-        env.TESTS_FOR_ACCESSIBILITY = false
-
-        publishHTML target: [
-            allowMissing : true,
-            alwaysLinkToLastBuild: true,
-            keepAll : true,
-            reportDir : "output",
-            reportFiles : "idam-web-public-e2e-result.html",
-            reportName : "IDAM Web Public E2E functional tests result"
-        ]
-    }
+    throw err
 }
