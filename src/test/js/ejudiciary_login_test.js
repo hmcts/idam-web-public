@@ -2,8 +2,13 @@ const chai = require('chai');
 const {expect} = chai;
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
+let isEnvtPerftest = TestData.WEB_PUBLIC_URL.includes("perftest");
 
-Feature('eJudiciary login tests');
+if (isEnvtPerftest){
+    xFeature('eJudiciary login tests');
+} else {
+    Feature('eJudiciary login tests');
+}
 
 let serviceNames = [];
 
@@ -102,16 +107,29 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         expect(userInfo.roles).to.eql(['judiciary']);
 
         I.resetRequestInterception();
-
-        //redirection verification
-        I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
-        I.waitForText('Sign in');
-        I.fillField('#username', TestData.EJUDICIARY_TEST_USER_USERNAME);
-        I.fillField('#password', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-        I.interceptRequestsAfterSignin();
-        I.click('Sign in');
-        I.waitForText(TestData.WEB_PUBLIC_URL + `/o/authorize?response_type=code&client_id=${serviceName}&redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI)}&scope=openid+profile+roles&login_hint=ejudiciary-aad`);
-        I.resetRequestInterception();
     }
+
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @ejudiciary As an ejudiciary user, I should be redirected to eJudiciary for login if I enter my username on the login screen', async ({ I }) => {
+    await I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
+    await I.createUserWithRoles(TestData.EJUDICIARY_TEST_USER_USERNAME, TestData.EJUDICIARY_TEST_USER_PASSWORD, "Judge", [ ], "azure", randomData.getRandomString());
+
+    //redirection verification
+    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
+    I.waitForText('Sign in');
+    I.fillField('#username', TestData.EJUDICIARY_TEST_USER_USERNAME);
+    I.fillField('#password', TestData.EJUDICIARY_TEST_USER_PASSWORD);
+    I.click('Sign in');
+
+    I.waitForText('Sign in');
+    I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
+    I.click('Next');
+    I.waitForText('Enter password');
+    I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
+    I.click('Sign in');
+
+    I.waitForText('Stay signed in?');
+    I.click('No');
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

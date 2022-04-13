@@ -16,7 +16,7 @@ public class ForgotPasswordRequest {
 
     private String redirectUri;
 
-    private String clientId;
+    private String client_id;
 
     private String state;
 

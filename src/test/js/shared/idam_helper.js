@@ -41,6 +41,11 @@ class IdamHelper extends Helper {
         return await browser.newPage();
     }
 
+    async getCurrentPage() {
+        const {browser} = this.helpers['Puppeteer'];
+        return await browser.pages();
+    }
+
     async createServiceData(serviceName, serviceClientSecret) {
         const token = await this.getAuthToken();
         this.createService(serviceName, serviceClientSecret,'', token, '', []);
@@ -100,7 +105,11 @@ class IdamHelper extends Helper {
             headers: {'Cookie': `Idam.Session=${cookie}`},
             redirect: 'manual'
         }).then(response => {
-            return response.headers.get('Location');
+            let location = response.headers.get('Location');
+            if (location.indexOf(TestData.WEB_PUBLIC_URL) < 0) {
+                location = location.replace(/http(s?):\/\/.*?\/login/, TestData.WEB_PUBLIC_URL + "/login");
+            }
+            return location;
         })
             .catch(err => {
                 console.log(err);
@@ -116,7 +125,11 @@ class IdamHelper extends Helper {
             headers: {'Cookie': `Idam.Session=${cookie}`},
             redirect: 'manual'
         }).then(response => {
-            return response.headers.get('Location');
+            let location = response.headers.get('Location');
+            if (location.indexOf(TestData.WEB_PUBLIC_URL) < 0) {
+                location = location.replace(/http(s?):\/\/.*?\/login/, TestData.WEB_PUBLIC_URL + "/login");
+            }
+            return location;
         })
             .catch(err => {
                 console.log(err);
@@ -319,7 +332,7 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createUserWithRoles(email, password, forename, userRoles) {
+    createUserWithRoles(email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
         const codeUserRoles = userRoles.map(role => ({'code': role}));
         const data = {
             email: email,
@@ -327,7 +340,9 @@ class IdamHelper extends Helper {
             password: password,
             roles: codeUserRoles,
             surname: 'User',
-            userGroup: {code: 'xxx_private_beta'}
+            userGroup: {code: 'xxx_private_beta'},
+            ssoProvider: ssoProvider,
+            ssoId: ssoId
         };
         return fetch(`${TestData.IDAM_API}/testing-support/accounts`, {
             agent: agent,
@@ -456,7 +471,7 @@ class IdamHelper extends Helper {
     interceptRequestsAfterSignin() {
         const helper = this.helpers['Puppeteer'];
         helper.page.setRequestInterception(true);
-        const pages = ["/login", "/register", "/activate", "/verification", "/useractivated"];
+        const pages = ["/login", "/register", "/activate", "/verification", "/useractivated", "/o/authorize", "/o/endSession"];
 
         helper.page.on('request', request => {
             if (pages.some(v => request.url().includes(v))) {

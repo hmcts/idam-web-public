@@ -11,6 +11,7 @@ let otherCitizenEmail;
 let plusCitizenEmail;
 let apostropheCitizenEmail;
 let staleUserEmail;
+let idamServiceAccountUserEmail;
 let userFirstNames = [];
 let serviceNames = [];
 let specialCharacterPassword;
@@ -30,6 +31,7 @@ BeforeSuite(async ({ I }) => {
     plusCitizenEmail = `plus.extra+${randomData.getRandomEmailAddress()}`;
     apostropheCitizenEmail = "apostrophe.o'test" + randomData.getRandomEmailAddress();
     staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
+    idamServiceAccountUserEmail = 'idamserviceaccount.' + randomData.getRandomEmailAddress();
     specialCharacterPassword = 'New&&&$$$%%%<>234';
 
     await I.createServiceData(serviceName, serviceClientSecret);
@@ -52,6 +54,8 @@ BeforeSuite(async ({ I }) => {
     await I.createUserWithRoles(staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
+    await I.createUserWithRoles(idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 
 AfterSuite(async ({ I }) => {
@@ -283,4 +287,23 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
+});
+
+Scenario('@functional @resetpass @idamserviceaccount As a idam service account user I can reset my password', async ({ I }) => {
+    const resetPassword = randomData.getRandomUserPassword();
+    I.amOnPage(loginPage);
+    I.waitForText('Sign in or create an account');
+    I.click('Forgotten password?');
+    I.waitForText('Reset your password');
+    I.fillField('#email', idamServiceAccountUserEmail);
+    I.click('Submit');
+    I.waitForText('Check your email');
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(idamServiceAccountUserEmail);
+    I.amOnPage(resetPasswordUrl);
+    I.waitForText('Create a new password');
+    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.fillField('#password1', resetPassword);
+    I.fillField('#password2', resetPassword);
+    I.click('Continue');
+    I.waitForText('Your password has been changed');
 });
