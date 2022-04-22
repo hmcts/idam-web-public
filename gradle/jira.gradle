@@ -72,7 +72,7 @@ def static createFailedPipelineJiraTicket(String token) throws IOException {
     iib.setSummary("Failed Nightly Pipeline Idam-Web-Public")
     iib.setIssueType(bug)
     iib.setDescription("Automated ticket for failed nightly pipeline.")
-    iib.setPriorityId(1L)
+    iib.setPriorityId(4L)
     iib.setReporter(restClient.getUserClient().getUser("Nikola.Naydenov").claim())
 
     String description = "Link to failed build:\n${System.getenv('BUILD_URL')}"
