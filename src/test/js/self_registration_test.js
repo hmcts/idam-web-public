@@ -32,15 +32,16 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
+    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
-    await I.createUserWithRoles(citizenEmailWelsh, userPassword, randomUserFirstName + 'Welsh', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmailWelsh, userPassword, randomUserFirstName + 'Welsh', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Welsh');
     specialCharacterPassword = 'New%%%&&&234';
-    await I.createUserWithRoles(staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
-    await I.createUserWithRoles(idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
     userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 

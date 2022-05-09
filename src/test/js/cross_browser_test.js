@@ -10,6 +10,7 @@ let citizenUserPasswordResetEmail;
 let userFirstNames = [];
 let serviceNames = [];
 let randomUserLastName;
+let accessToken;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -29,7 +30,8 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenUserLoginEmail, userPassword, randomUserFirstName + 'citizenLogin', ["citizen"]);
+    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenUserLoginEmail, userPassword, randomUserFirstName + 'citizenLogin', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'citizenSelfreg');
     userFirstNames.push(randomUserFirstName + 'citizenLogin');
     userFirstNames.push(randomUserFirstName + 'citizenPasswordReset');
@@ -71,7 +73,7 @@ Scenario('@crossbrowser Citizen user login', async ({ I }) => {
 
 Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
     citizenUserPasswordResetEmail = 'citizenPasswordReset' + randomData.getRandomEmailAddress();
-    await I.createUserWithRoles(citizenUserPasswordResetEmail, userPassword, randomUserFirstName + 'citizenPasswordReset', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, citizenUserPasswordResetEmail, userPassword, randomUserFirstName + 'citizenPasswordReset', ["citizen"]);
     const resetPassword = randomData.getRandomUserPassword();
 
     I.amOnPage(loginPage);

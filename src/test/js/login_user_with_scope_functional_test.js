@@ -46,10 +46,11 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', []);
+    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', []);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
-    await I.createUserWithRoles(respondentEmail, userPassword, randomUserFirstName + 'Respondent', []);
+    await I.createUserUsingTestingSupportService(accessToken, respondentEmail, userPassword, randomUserFirstName + 'Respondent', []);
     userFirstNames.push(randomUserFirstName + 'Respondent');
 });
 

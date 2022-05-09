@@ -42,8 +42,9 @@ BeforeSuite(async ({ I }) => {
     mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOnServiceRole.name], '', token, scope);
     mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
 
-    await I.createUserWithRoles(mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
-    await I.createUserWithRoles(mfaDisabledUserEmail, userPassword, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
+    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+    await I.createUserUsingTestingSupportService(accessToken, mfaDisabledUserEmail, userPassword, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
 
     mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService1.oauth2ClientId}`;
     await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService1.activationRedirectUrl, token);

@@ -42,7 +42,8 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
+    const accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, userPassword);

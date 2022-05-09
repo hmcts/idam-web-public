@@ -48,14 +48,15 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(existingCitizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
+    const accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, existingCitizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
-    await I.createUserWithRoles(upliftAccountCreationStaleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, upliftAccountCreationStaleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(upliftAccountCreationStaleUserEmail);
 
-    await I.createUserWithRoles(upliftLoginStaleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, upliftLoginStaleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(upliftLoginStaleUserEmail);
 

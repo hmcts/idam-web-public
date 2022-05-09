@@ -26,10 +26,11 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
+    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
-    await I.createUserWithRoles(idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
     userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 
@@ -121,7 +122,7 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
 
     I.resetRequestInterception();
     I.clearCookie();
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
+}); //.retry(TestData.SCENARIO_RETRY_LIMIT);
 
 
 Scenario('@functional @login As a user, I should see the error message displayed for invalid email', async ({ I }) => {

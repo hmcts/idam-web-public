@@ -26,7 +26,8 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
+    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     specialCharacterPassword = 'New%%%&&&234';
 });

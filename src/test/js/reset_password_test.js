@@ -39,22 +39,23 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
+    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
-    await I.createUserWithRoles(diffCaseCitizenEmail, userPassword, randomUserFirstName + 'diffcase', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, diffCaseCitizenEmail, userPassword, randomUserFirstName + 'diffcase', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'diffcase');
-    await I.createUserWithRoles(specialcharPwdResetCitizenEmail, userPassword, randomUserFirstName + 'specialcharpwd', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, specialcharPwdResetCitizenEmail, userPassword, randomUserFirstName + 'specialcharpwd', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'specialcharpwd');
-    await I.createUserWithRoles(otherCitizenEmail, userPassword, randomUserFirstName + 'Other', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, otherCitizenEmail, userPassword, randomUserFirstName + 'Other', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Other');
-    await I.createUserWithRoles(plusCitizenEmail, userPassword, randomUserFirstName + 'Plus', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, plusCitizenEmail, userPassword, randomUserFirstName + 'Plus', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Plus');
-    await I.createUserWithRoles(apostropheCitizenEmail, userPassword, randomUserFirstName + 'Apostrophe', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, apostropheCitizenEmail, userPassword, randomUserFirstName + 'Apostrophe', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Apostrophe');
-    await I.createUserWithRoles(staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
-    await I.createUserWithRoles(idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
     userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 

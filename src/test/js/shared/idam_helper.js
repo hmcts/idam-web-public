@@ -332,28 +332,58 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createUserWithRoles(email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
-        const codeUserRoles = userRoles.map(role => ({'code': role}));
+// Commenting for future ref.
+//    createUserUsingTestingSupportService(email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
+//        const codeUserRoles = userRoles.map(role => ({'code': role}));
+//        const data = {
+//            email: email,
+//            forename: forename,
+//            password: password,
+//            roles: codeUserRoles,
+//            surname: 'User',
+//            userGroup: {code: 'xxx_private_beta'},
+//            ssoProvider: ssoProvider,
+//            ssoId: ssoId
+//        };
+//        return fetch(`${TestData.IDAM_API}/testing-support/accounts`, {
+//            agent: agent,
+//            method: 'POST',
+//            body: JSON.stringify(data),
+//            headers: {'Content-Type': 'application/json'},
+//        }).then(res => res.json())
+//            .then((json) => {
+//                return json;
+//            })
+//            .catch(err => err);
+//    }
+
+    createUserUsingTestingSupportService(accessToken, email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
+        const userId = uuid.v4();
         const data = {
-            email: email,
-            forename: forename,
-            password: password,
-            roles: codeUserRoles,
-            surname: 'User',
-            userGroup: {code: 'xxx_private_beta'},
-            ssoProvider: ssoProvider,
-            ssoId: ssoId
+            activationSecretPhrase: password,
+            user: {
+               id: userId,
+               email: email,
+               forename: forename,
+               surname: 'User',
+               displayName: forename + ' User',
+               roleNames: userRoles,
+               ssoId: ssoId,
+               ssoProvider: ssoProvider
+            }
         };
-        return fetch(`${TestData.IDAM_API}/testing-support/accounts`, {
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/users`, {
             agent: agent,
             method: 'POST',
             body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken},
         }).then(res => res.json())
             .then((json) => {
                 return json;
             })
-            .catch(err => err);
+            .catch(err => {
+                console.log(err)
+            });
     }
 
     createPolicyForApplicationMfaTest(name, redirectUri, api_auth_token) {
@@ -557,33 +587,58 @@ class IdamHelper extends Helper {
         });
     }
 
-        getAccessTokenPasswordGrant(username, password, serviceName, serviceRedirect, clientSecret, scope) {
-            let searchParams = new URLSearchParams();
-            searchParams.set('grant_type', 'password');
-            searchParams.set('username', username);
-            searchParams.set('password', password);
-            searchParams.set('client_id', serviceName);
-            searchParams.set('client_secret', clientSecret);
-            searchParams.set('redirect_uri', serviceRedirect);
-            searchParams.set('scope', scope);
+    getAccessTokenPasswordGrant(username, password, serviceName, serviceRedirect, clientSecret, scope) {
+        let searchParams = new URLSearchParams();
+        searchParams.set('grant_type', 'password');
+        searchParams.set('username', username);
+        searchParams.set('password', password);
+        searchParams.set('client_id', serviceName);
+        searchParams.set('client_secret', clientSecret);
+        searchParams.set('redirect_uri', serviceRedirect);
+        searchParams.set('scope', scope);
 
-            return fetch(`${TestData.IDAM_API}/o/token`, {
-                agent: agent,
-                method: 'POST',
-                body: searchParams,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }).then(response => {
-                return response.json();
-            }).then((json) => {
-                return json.access_token;
-            }).catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
-            });
-        }
+        return fetch(`${TestData.IDAM_API}/o/token`, {
+            agent: agent,
+            method: 'POST',
+            body: searchParams,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(response => {
+            return response.json();
+        }).then((json) => {
+            return json.access_token;
+        }).catch(err => {
+            console.log(err)
+            let browser = this.helpers['Puppeteer'].browser;
+            browser.close();
+        });
+    }
+
+    getAccessTokenClientSecret(clientId, clientSecret) {
+        let searchParams = new URLSearchParams();
+        searchParams.set('grant_type', 'client_credentials');
+        searchParams.set('client_id', clientId);
+        searchParams.set('client_secret', clientSecret);
+        searchParams.set('scope', 'profile roles');
+
+        return fetch(`${TestData.IDAM_API}/o/token`, {
+            agent: agent,
+            method: 'POST',
+            body: searchParams,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(response => {
+            return response.json();
+        }).then((json) => {
+            return json.access_token;
+        }).catch(err => {
+            console.log(err)
+            let browser = this.helpers['Puppeteer'].browser;
+            browser.close();
+        });
+    }
 
     getUserInfo(accessToken) {
         return fetch(`${TestData.IDAM_API}/details`, {
@@ -690,7 +745,7 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
         }).then((response) => {
             if (response.status != 200) {
-                console.log('Error creating user', response.status);
+                console.log('Error registering user', response.status);
                 console.log(JSON.stringify(data))
                 throw new Error()
             }

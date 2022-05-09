@@ -26,11 +26,12 @@ BeforeSuite(async({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(staleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
+    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(staleUserEmail);
 
-    await I.createUserWithRoles(staleUserEmailWelsh, userPassword, randomUserFirstName + 'StaleUserWelsh', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, staleUserEmailWelsh, userPassword, randomUserFirstName + 'StaleUserWelsh', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUserWelsh');
     await I.retireStaleUser(staleUserEmailWelsh);
 });

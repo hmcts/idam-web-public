@@ -18,6 +18,7 @@ const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword=randomData.getRandomUserPassword();
 let mojUserRole;
 let randomUserFirstName;
+let accessToken;
 
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
@@ -29,7 +30,8 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
+    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
 });
 
 AfterSuite(async ({ I }) => {
@@ -120,7 +122,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
 
 Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to MoJ IDAM for login if I enter my username on the login screen', async ({ I }) => {
     await I.deleteUser(TestData.MOJ_TEST_USER_USERNAME);
-    await I.createUserWithRoles(TestData.MOJ_TEST_USER_USERNAME, TestData.MOJ_TEST_USER_PASSWORD, randomUserFirstName, [mojUserRole.name], "moj", randomData.getRandomString());
+    await I.createUserUsingTestingSupportService(accessToken, TestData.MOJ_TEST_USER_USERNAME, TestData.MOJ_TEST_USER_PASSWORD, randomUserFirstName, [mojUserRole.name], "moj", randomData.getRandomString());
 
     //redirection verification
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
