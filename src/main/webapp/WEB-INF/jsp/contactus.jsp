@@ -46,6 +46,14 @@
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0014" /></a> </li>
         </ul>
 
+        <h2 class="heading-medium"><spring:message code="public.contactus.text_0010_2" /></h2>
+        <ul class="list">
+            <li><spring:message code="public.contactus.text_0011_2" /></li>
+            <li><spring:message code="public.contactus.text_0012_2" /></li>
+            <li><spring:message code="public.contactus.text_0013_2" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0014" /></a> </li>
+        </ul>
+
         <h2 class="heading-medium"><spring:message code="public.contactus.text_0015" /></h2>
         <ul class="list">
             <li><spring:message code="public.contactus.text_0016" /></li>
