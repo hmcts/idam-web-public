@@ -42,7 +42,7 @@ BeforeSuite(async ({ I }) => {
     mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOnServiceRole.name], '', token, scope);
     mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
 
-    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    const accessToken = await I.getAccessTokenClientSecret(mfaTurnedOnService1.oauth2ClientId, serviceClientSecret);
     await I.createUserUsingTestingSupportService(accessToken, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     await I.createUserUsingTestingSupportService(accessToken, mfaDisabledUserEmail, userPassword, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
 

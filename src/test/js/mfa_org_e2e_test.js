@@ -56,7 +56,7 @@ BeforeSuite(async ({ I }) => {
         professionalUserMFARequiredEmail = randomData.getRandomEmailAddress();
     }
 
-    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    const accessToken = await I.getAccessTokenClientSecret(mfaTurnedOnServiceName, serviceClientSecret);
 
     professionalUserMFASkipFirstName = randomData.getRandomUserName(testSuiteId);
     await I.createUserUsingTestingSupportService(accessToken, professionalUserMFASkipEmail, userPassword, professionalUserMFASkipFirstName, [professionalRoleName]);
