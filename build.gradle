@@ -183,7 +183,7 @@ allprojects {
 
   task codeceptSmoke(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--stacktrace', '--reporter', 'mocha-multi'
   }
 
   task codeceptFunctional(type: Exec, dependsOn :'yarnInstall') {
