@@ -83,7 +83,7 @@ Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
     I.fillField('#email', citizenUserPasswordResetEmail);
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenUserPasswordResetEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenUserPasswordResetEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access');

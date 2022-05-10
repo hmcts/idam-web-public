@@ -20,6 +20,7 @@ let roleNames = [];
 let serviceNames = [];
 const pinUserRolePrefix = 'letter-';
 let serviceBetaRole;
+let accessTokenClientSecret;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -48,7 +49,7 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    const accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
     await I.createUserUsingTestingSupportService(accessTokenClientSecret, existingCitizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
@@ -135,7 +136,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     await I.runAccessibilityTest();
     I.click('.form input[type=submit]');
     I.waitForText('Check your email');
-    let url = await I.extractUrlFromNotifyEmail(citizenEmail);
+    let url = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, citizenEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
@@ -162,7 +163,7 @@ Scenario('@functional @uplift User should receive You already have an account em
     I.fillField('#username', existingCitizenEmail.toUpperCase());
     I.click('.form input[type=submit]');
     I.waitForText('Check your email');
-    const emailResponse = await I.getEmailFromNotify(existingCitizenEmail.toUpperCase());
+    const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessTokenClientSecret, existingCitizenEmail.toUpperCase());
     expect(emailResponse.subject).to.equal('You already have an account');
 });
 
@@ -205,7 +206,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.click('Continue');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     await I.runAccessibilityTest();
-    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftAccountCreationStaleUserEmail);
+    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, upliftAccountCreationStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);
@@ -270,7 +271,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.fillField('#password', userPassword);
     I.click('Sign in');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
-    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(upliftLoginStaleUserEmail);
+    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, upliftLoginStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);

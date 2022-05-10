@@ -21,6 +21,7 @@ let randomUserLastName;
 let userFirstNames = [];
 let serviceNames = [];
 let specialCharacterPassword;
+let accessToken;
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
@@ -32,7 +33,7 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
     await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     await I.createUserUsingTestingSupportService(accessToken, citizenEmailWelsh, userPassword, randomUserFirstName + 'Welsh', ["citizen"]);
@@ -104,7 +105,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
     I.click(formSubmitButton);
     I.waitForText('Check your email');
     await I.runAccessibilityTest();
-    const emailResponse = await I.getEmailFromNotify(citizenEmail);
+    const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -126,7 +127,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
     I.click(formSubmitButton);
     I.waitForText(Welsh.checkYourEmail);
     await I.runAccessibilityTest();
-    const emailResponse = await I.getEmailFromNotify(citizenEmailWelsh);
+    const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, citizenEmailWelsh);
     assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -145,7 +146,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -185,7 +186,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText(Welsh.checkYourEmail);
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText(Welsh.createAPassword);
     I.seeTitleEquals(Welsh.userActivationTitle);
@@ -221,7 +222,7 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -258,7 +259,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
 
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(randomUserEmailAddress);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, randomUserEmailAddress);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -294,7 +295,7 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -329,7 +330,7 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access');
@@ -374,7 +375,7 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
 
     I.waitForText('Check your email');
 
-    const emailResponse = await I.getEmailFromNotify(staleUserEmail);
+    const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, staleUserEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -392,7 +393,7 @@ Scenario('@functional @selfregister I can create a password only once using the 
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
 
     // open activation link in 1st tab
     const page1 = await I.createNewPage();
@@ -430,6 +431,6 @@ Scenario('@functional @selfregister @idamserviceaccount Account already created 
     I.fillField('email', idamServiceAccountUserEmail);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const emailResponse = await I.getEmailFromNotify(idamServiceAccountUserEmail);
+    const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, idamServiceAccountUserEmail);
     assert.equal('You already have an account', emailResponse.subject);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

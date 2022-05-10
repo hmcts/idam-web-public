@@ -25,6 +25,7 @@ let mfaTurnedOnService1;
 let mfaTurnedOffService1;
 let mfaTurnedOnService2;
 let mfaTurnedOffService2;
+let accessTokenClientSecret;
 
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
@@ -42,9 +43,9 @@ BeforeSuite(async ({ I }) => {
     mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOnServiceRole.name], '', token, scope);
     mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
 
-    const accessToken = await I.getAccessTokenClientSecret(mfaTurnedOnService1.oauth2ClientId, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
-    await I.createUserUsingTestingSupportService(accessToken, mfaDisabledUserEmail, userPassword, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
+    accessTokenClientSecret = await I.getAccessTokenClientSecret(mfaTurnedOnService1.oauth2ClientId, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaDisabledUserEmail, userPassword, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
 
     mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService1.oauth2ClientId}`;
     await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService1.activationRedirectUrl, token);
@@ -70,7 +71,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
-    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
@@ -112,7 +113,7 @@ Scenario('@functional @mfaLogin I am able to login with MFA and prompt = login',
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
-    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
@@ -154,9 +155,9 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.click(Welsh.signIn);
     I.seeInCurrentUrl("/verification");
     I.waitForText(Welsh.verificationRequired);
-    const otpEmailBody = await I.getEmailFromNotify(mfaUserEmail);
+    const otpEmailBody = await I.getEmailFromNotifyUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail);
     assert.equal(otpEmailBody.body.startsWith('Ysgrifennwyd'), true);
-    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
@@ -199,7 +200,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.waitInUrl("/verification");
     I.waitForText('Verification required');
     await I.runAccessibilityTest();
-    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     // empty field
     I.fillField('code', '');
@@ -241,7 +242,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.waitInUrl('/verification');
     I.waitForText('Verification required');
 
-    const otpCodeLatest = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCodeLatest = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     // previously generated otp should be invalidated
     I.fillField('code', otpCode);
@@ -332,7 +333,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
-    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.click('Continue');
@@ -384,7 +385,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
-    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.click('Continue');
@@ -460,7 +461,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
-    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.click('Continue');
@@ -608,7 +609,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on serv
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
-    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
@@ -711,7 +712,7 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
-    const otpCode = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.click('Continue');
@@ -743,7 +744,7 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     I.click('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
-    const otpCode2 = await I.extractOtpFromNotifyEmail(mfaUserEmail);
+    const otpCode2 = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode2);
     I.click('Continue');

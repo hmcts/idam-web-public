@@ -1,3 +1,4 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
@@ -333,7 +334,7 @@ class IdamHelper extends Helper {
     }
 
 // Commenting for future ref.
-//    createUserUsingTestingSupportService(email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
+//    createUserWithRoles(email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
 //        const codeUserRoles = userRoles.map(role => ({'code': role}));
 //        const data = {
 //            email: email,
@@ -430,40 +431,56 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    async getEmailFromNotify(searchEmail) {
-        let notificationsResponse = await notifyClient.getNotifications("email", null);
-        let emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
-        let i = 1;
-        while (i < MAX_NOTIFY_PAGES && !emailResponse && notificationsResponse.body.links.next) {
-            console.log("Searching notify emails, next page " + notificationsResponse.body.links.next);
-            let nextPageLink = notificationsResponse.body.links.next;
-            let nextPageLinkUrl = new URL(nextPageLink);
-            let olderThanId = nextPageLinkUrl.searchParams.get("older_than");
-            notificationsResponse = await notifyClient.getNotifications("email", null, null, olderThanId);
-            emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
-            i++;
-        }
-        return emailResponse;
-    }
+// Commenting for future ref.
+//    async getEmailFromNotify(searchEmail) {
+//        let notificationsResponse = await notifyClient.getNotifications("email", null);
+//        let emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
+//        let i = 1;
+//        while (i < MAX_NOTIFY_PAGES && !emailResponse && notificationsResponse.body.links.next) {
+//            console.log("Searching notify emails, next page " + notificationsResponse.body.links.next);
+//            let nextPageLink = notificationsResponse.body.links.next;
+//            let nextPageLinkUrl = new URL(nextPageLink);
+//            let olderThanId = nextPageLinkUrl.searchParams.get("older_than");
+//            notificationsResponse = await notifyClient.getNotifications("email", null, null, olderThanId);
+//            emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
+//            i++;
+//        }
+//        return emailResponse;
+//    }
 
-    searchForEmailInNotifyResults(notifications, searchEmail) {
-        const result = notifications.find(currentItem => {
-            // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
-            if (currentItem.email_address === searchEmail) {
-                return true;
+//    searchForEmailInNotifyResults(notifications, searchEmail) {
+//        const result = notifications.find(currentItem => {
+//            // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
+//            if (currentItem.email_address === searchEmail) {
+//                return true;
+//            }
+//            return false;
+//        });
+//        return result;
+//    }
+
+    async getEmailFromNotifyUsingTestingSupportService(accessToken, emailAddress) {
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/notifications/latest/${emailAddress}`, {
+            method: 'GET',
+            headers: {'Authorization': 'Bearer ' + accessToken}
+        }).then(response => {
+            if (response.status !== 200) {
+                console.log(`Error fetching email from Notify, response: ${response.status}`);
             }
-            return false;
+            return response.json();
+        }).catch(err => {
+            console.log(err);
         });
-        return result;
     }
 
-    async getEmailFromNotifyWithMaxRetries(searchEmail, maxRetries) {
-        let emailResponse = await this.getEmailFromNotify(searchEmail);
+    async getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, maxRetries) {
+        let emailResponse = await this.getEmailFromNotifyUsingTestingSupportService(accessToken, searchEmail);
+
         let i = 1;
         while (i < maxRetries && !emailResponse) {
             console.log(`Retrying email in notify for ${i} time`);
             this.sleep(1000);
-            emailResponse = await this.getEmailFromNotify(searchEmail);
+            emailResponse = await this.getEmailFromNotifyUsingTestingSupportService(accessToken, searchEmail);
             i++;
         }
         if (!emailResponse) {
@@ -476,9 +493,9 @@ class IdamHelper extends Helper {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async extractUrlFromNotifyEmail(searchEmail) {
+    async extractUrlFromNotifyEmail(accessToken, searchEmail) {
         let url;
-        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(searchEmail, MAX_RETRIES);
+        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, MAX_RETRIES);
         const regex = "(https.+)";
         const urlMatch = emailResponse.body.match(regex);
         if (urlMatch[0]) {
@@ -487,9 +504,9 @@ class IdamHelper extends Helper {
         return url;
     }
 
-    async extractOtpFromNotifyEmail(searchEmail) {
+    async extractOtpFromNotifyEmail(accessToken, searchEmail) {
         let otp;
-        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(searchEmail, MAX_RETRIES);
+        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, MAX_RETRIES);
         const regex = "[0-9]{8}";
         let otpMatch = emailResponse.body.match(regex);
         if (otpMatch[0]) {

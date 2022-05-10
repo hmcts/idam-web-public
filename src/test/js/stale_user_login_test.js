@@ -9,6 +9,7 @@ let staleUserEmail;
 let staleUserEmailWelsh;
 let userFirstNames = [];
 let serviceNames = [];
+let accessToken;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -26,7 +27,7 @@ BeforeSuite(async({ I }) => {
 
     I.wait(0.5);
 
-    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
     await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(staleUserEmail);
@@ -50,7 +51,7 @@ Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) =>
     I.fillField('#password', userPassword);
     I.click('Sign in');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
-    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(staleUserEmail);
+    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(accessToken, staleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);
@@ -82,7 +83,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.fillField('#password', userPassword);
     I.click(Welsh.signIn);
     I.waitForText(Welsh.staleUserErrorMessage);
-    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(staleUserEmailWelsh);
+    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(accessToken, staleUserEmailWelsh);
     I.amOnPage(reRegistrationUrl);
     I.waitForText(Welsh.createAPassword);
     I.fillField('#password1', newPassword);

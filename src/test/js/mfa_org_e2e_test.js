@@ -29,6 +29,7 @@ let professionalUserMFARequiredFirstName;
 let mfaTurnedOnService;
 let mfaApplicationPolicyName;
 let professionalRoleName;
+let accessTokenClientSecret;
 
 BeforeSuite(async ({ I }) => {
 
@@ -56,7 +57,7 @@ BeforeSuite(async ({ I }) => {
         professionalUserMFARequiredEmail = randomData.getRandomEmailAddress();
     }
 
-    const accessToken = await I.getAccessTokenClientSecret(mfaTurnedOnServiceName, serviceClientSecret);
+    accessTokenClientSecret = await I.getAccessTokenClientSecret(mfaTurnedOnServiceName, serviceClientSecret);
 
     professionalUserMFASkipFirstName = randomData.getRandomUserName(testSuiteId);
     await I.createUserUsingTestingSupportService(accessToken, professionalUserMFASkipEmail, userPassword, professionalUserMFASkipFirstName, [professionalRoleName]);
@@ -167,7 +168,7 @@ Scenario('@functional @mfaOrgLogin I am able to login with MFA as a member of an
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
 
-    const otpCode = await I.extractOtpFromNotifyEmail(professionalUserMFARequiredEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, professionalUserMFARequiredEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
