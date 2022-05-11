@@ -60,19 +60,19 @@ BeforeSuite(async ({ I }) => {
     accessTokenClientSecret = await I.getAccessTokenClientSecret(mfaTurnedOnServiceName, serviceClientSecret);
 
     professionalUserMFASkipFirstName = randomData.getRandomUserName(testSuiteId);
-    await I.createUserUsingTestingSupportService(accessToken, professionalUserMFASkipEmail, userPassword, professionalUserMFASkipFirstName, [professionalRoleName]);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, professionalUserMFASkipEmail, userPassword, professionalUserMFASkipFirstName, [professionalRoleName]);
 
     professionalUserMFADisabledFirstName = randomData.getRandomUserName(testSuiteId);
-    await I.createUserUsingTestingSupportService(accessToken, professionalUserMFADisabledEmail, userPassword, professionalUserMFADisabledFirstName, [professionalRoleName, 'idam-mfa-disabled']);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, professionalUserMFADisabledEmail, userPassword, professionalUserMFADisabledFirstName, [professionalRoleName, 'idam-mfa-disabled']);
 
     professionalUserMFARequiredFirstName = randomData.getRandomUserName(testSuiteId);
-    await I.createUserUsingTestingSupportService(accessToken, professionalUserMFARequiredEmail, userPassword, professionalUserMFARequiredFirstName, [professionalRoleName]);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, professionalUserMFARequiredEmail, userPassword, professionalUserMFARequiredFirstName, [professionalRoleName]);
 
     if (isRefDataEnabled) {
 
         // create ref data admin user
         const prdAdminUserEmail = randomData.getRandomEmailAddress();
-        await I.createUserUsingTestingSupportService(accessToken, prdAdminUserEmail, userPassword, randomData.getRandomUserName(testSuiteId), ['prd-admin']);
+        await I.createUserUsingTestingSupportService(accessTokenClientSecret, prdAdminUserEmail, userPassword, randomData.getRandomUserName(testSuiteId), ['prd-admin']);
         prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.label, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret, scope);
 
         serviceToken = await I.getServiceAuthToken();
