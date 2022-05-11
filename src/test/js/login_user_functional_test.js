@@ -122,7 +122,7 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
 
     I.resetRequestInterception();
     I.clearCookie();
-}); //.retry(TestData.SCENARIO_RETRY_LIMIT);
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 
 Scenario('@functional @login As a user, I should see the error message displayed for invalid email', async ({ I }) => {
