@@ -27,7 +27,8 @@
 
     <script>
         function sendEvent(eventCategory, eventAction, eventLabel) {
-            ga('send', 'event', eventCategory, eventAction, eventLabel);
+            // disabled with ga
+            //ga('send', 'event', eventCategory, eventAction, eventLabel);
         }
     </script>
 
