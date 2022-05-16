@@ -85,7 +85,7 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
     I.amOnPage(loginUrl);
     I.waitForText('Cookies on hmcts-access.service.gov.uk');
     I.click('Reject additional cookies');
-    I.click('Hide this message');
+    I.click('Hide this cookie message');
     await I.runAccessibilityTest();
     I.waitForText('Sign in');
     I.fillField('#username', citizenEmail);
