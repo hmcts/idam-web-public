@@ -99,7 +99,7 @@
                         <spring:message code="public.cookie.banner.rejected.text_0004"/>
                     </p>
                     <button type="button" name="hide-rejected" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-all-success-banner-hide">
-                        <spring:message code="public.cookie.banner.rejected.text_0005"/>
+                        <spring:message code="public.cookie.banner.rejected.text_0005"/>  <span class="govuk-visually-hidden"><spring:message code="public.cookie.banner.rejected.text_0006"/> </span><spring:message code="public.cookie.banner.rejected.text_0007"/>
                     </button>
                 </div>
             </div>
@@ -118,7 +118,7 @@
                         <spring:message code="public.cookie.banner.accepted.text_0004"/>
                     </p>
                     <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-accept-all-success-banner-hide">
-                        <spring:message code="public.cookie.banner.accepted.text_0005"/>
+                        <spring:message code="public.cookie.banner.accepted.text_0005"/> <span class="govuk-visually-hidden"><spring:message code="public.cookie.banner.accepted.text_0006"/> </span><spring:message code="public.cookie.banner.accepted.text_0007"/>
                     </button>
                 </div>
             </div>

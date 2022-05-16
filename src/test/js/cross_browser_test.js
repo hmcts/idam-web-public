@@ -53,7 +53,7 @@ Scenario('@crossbrowser Citizen user self registration', async ({ I }) => {
     const userActivationUrl = await I.extractUrlFromNotifyEmail(citizenUserSelfRegistrationEmail);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
-    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
     I.click('Continue');
@@ -84,7 +84,7 @@ Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenUserPasswordResetEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
-    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('#password1', resetPassword);
     I.fillField('#password2', resetPassword);
     I.click('Continue');

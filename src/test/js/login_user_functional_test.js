@@ -131,24 +131,24 @@ Scenario('@functional @login As a user, I should see the error message displayed
     I.fillField('#username', '');
     I.fillField('#password', userPassword);
     I.click('Sign in');
-    I.waitForText('Information is missing or invalid');
+    I.waitForText('There is a problem');
     I.waitForText('Email address cannot be blank');
     I.waitForText('Email address is not valid');
     await I.runAccessibilityTest();
     I.fillField('#username', 'invalidemail@');
     I.fillField('#password', userPassword);
     I.click('Sign in');
-    I.waitForText('Information is missing or invalid');
+    I.waitForText('There is a problem');
     I.waitForText('Email address is not valid');
     I.fillField('#username', 'invalidemail.com');
     I.fillField('#password', userPassword);
     I.click('Sign in');
-    I.waitForText('Information is missing or invalid');
+    I.waitForText('There is a problem');
     I.waitForText('Email address is not valid');
     I.fillField('#username', 'invalid@email@hhh.com');
     I.fillField('#password', userPassword);
     I.click('Sign in');
-    I.waitForText('Information is missing or invalid');
+    I.waitForText('There is a problem');
     I.waitForText('Email address is not valid');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 

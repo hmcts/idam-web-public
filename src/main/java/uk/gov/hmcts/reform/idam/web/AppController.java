@@ -192,7 +192,7 @@ public class AppController {
                                        final Map<String, Object> model) {
 
         if (bindingResult.hasErrors()) {
-            ErrorHelper.showLoginError("Information is missing or invalid",
+            ErrorHelper.showLoginError("There is a problem",
                 "Please fix the following",
                 request.getRedirect_uri(),
                 model);
@@ -713,7 +713,7 @@ public class AppController {
                                     final Map<String, Object> model, ModelMap modelMap) {
 
         if (bindingResult.hasErrors()) {
-            ErrorHelper.showLoginError("Information is missing or invalid",
+            ErrorHelper.showLoginError("There is a problem",
                 "Please fix the following",
                 request.getRedirect_uri(),
                 model);

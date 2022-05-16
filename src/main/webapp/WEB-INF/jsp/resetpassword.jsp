@@ -15,9 +15,9 @@
                 <script>
                     sendEvent('Reset Password', 'Error', 'Reset password error occurred');
                 </script>
-                <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
+                <div class="error-summary" role="alert" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                        <spring:message code="public.common.error.password.heading" text=""/>
+                        <spring:message code="public.common.error.title" text=""/>
                     </h2>
                     <ul class="error-summary-list">
                         <li><a href="#password1"><spring:message code="${errorMessage}" text=""/></a></li>

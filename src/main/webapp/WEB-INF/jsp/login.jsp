@@ -61,7 +61,7 @@
                 <script>
                     sendEvent('Authorization', 'Error', 'User authorization has failed');
                 </script>
-                <div class="error-summary" role="group"
+                <div class="error-summary" role="alert"
                      aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
 
@@ -153,7 +153,7 @@
                                 sendEvent('Authorization', 'Error', 'User login has failed');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                                <spring:message code="public.login.error.other.title"/>
+                                <spring:message code="public.common.error.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:otherwise>
@@ -202,20 +202,20 @@
                 <c:set var="usernameError" value="${isUsernameEmpty || hasLoginFailed || isEmailError}"/>
                 <div class="form-group ${usernameError? 'form-group-error' : ''}">
                     <label for="username">
-                                <span class="form-label">
-                                    <spring:message code="public.common.email.address.label"/>
-                                </span>
+                        <span class="form-label">
+                            <spring:message code="public.common.email.address.label"/>
+                        </span>
+                        <c:if test="${isUsernameEmpty}">
+                            <span class="error-message">
+                                <spring:message code="public.common.error.enter.username"/>
+                            </span>
+                        </c:if>
+                        <c:if test="${isEmailError}">
+                            <span class="error-message">
+                                <spring:message code="public.common.error.invalid.email"/>
+                            </span>
+                        </c:if>
                     </label>
-                    <c:if test="${isUsernameEmpty}">
-                                <span class="error-message">
-                                    <spring:message code="public.common.error.enter.username"/>
-                                </span>
-                    </c:if>
-                    <c:if test="${isEmailError}">
-                                <span class="error-message">
-                                    <spring:message code="public.common.error.invalid.email"/>
-                                </span>
-                    </c:if>
                     <form:input
                         class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${usernameError? ' form-control-error' : ''}"
                         path="username"
@@ -228,15 +228,15 @@
                 <c:set var="passwordError" value="${isPasswordEmpty || hasLoginFailed}"/>
                 <div class="form-group ${passwordError? 'form-group-error' : ''}">
                     <label for="password">
-                                <span class="form-label">
-                                    <spring:message code="public.common.password.label"/>
-                                </span>
+                        <span class="form-label">
+                            <spring:message code="public.common.password.label"/>
+                        </span>
+                        <c:if test="${isPasswordEmpty}">
+                            <span class="error-message">
+                                <spring:message code="public.common.error.enter.password"/>
+                            </span>
+                        </c:if>
                     </label>
-                    <c:if test="${isPasswordEmpty}">
-                                <span class="error-message">
-                                    <spring:message code="public.common.error.enter.password"/>
-                                </span>
-                    </c:if>
                     <form:input
                         class="form-control${selfRegistrationEnabled ? ' form-control-3-4': ''}${passwordError? ' form-control-error' : ''}"
                         id="password" name="password" path="password" type="password" value="" autocomplete="off"/>

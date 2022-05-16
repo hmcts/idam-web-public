@@ -12,10 +12,10 @@
                    method="post" _lpchecked="1"
                    action="/users/selfRegister" modelAttribute="selfRegisterCommand" novalidate="">
             <spring:hasBindErrors name="selfRegisterCommand">
-                <div class="error-summary" role="group"
+                <div class="error-summary" role="alert"
                      aria-labelledby="validation-error-summary-heading" tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                        <spring:message code="public.common.error.information.missing.invalid"/>
+                        <spring:message code="public.common.error.title"/>
                     </h2>
                     <p>
                         <spring:message code="public.common.error.please.fix.following"/>
@@ -94,7 +94,7 @@
                                     class="form-control form-control-3-4 ${status.error ? 'form-control-error' : ''}"
                                     id="firstName"
                                     value="${firstName}"
-                                    autocomplete="off"/>
+                                    autocomplete="given-name"/>
                             </div>
                         </spring:bind>
 
@@ -120,7 +120,7 @@
                                     class="form-control form-control-3-4 ${status.error ? 'form-control-error' : ''}"
                                     id="lastName"
                                     value="${lastName}"
-                                    autocomplete="off"/>
+                                    autocomplete="family-name"/>
                             </div>
                         </spring:bind>
                         <spring:bind path="email">
@@ -145,7 +145,7 @@
                                     class="form-control form-control-3-4 ${status.error ? 'form-control-error' : ''}"
                                     id="email"
                                     value="${email}"
-                                    autocomplete="off"/>
+                                    autocomplete="email"/>
                             </div>
                         </spring:bind>
                         <form:input type="hidden" path="redirectUri" value="${redirectUri}"/>

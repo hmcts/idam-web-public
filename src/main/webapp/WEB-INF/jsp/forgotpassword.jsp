@@ -20,10 +20,10 @@
                 <script>
                     sendEvent('Forgot Password', 'Error', 'Forgot password error occurred');
                 </script>
-                <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading"
+                <div class="error-summary" role="alert" aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                        <spring:message code="public.common.error.information.missing.invalid" text="default"/>
+                        <spring:message code="public.common.error.title" text="default"/>
                     </h2>
                     <p>
                         <spring:message code="public.common.error.please.fix.following" text="default"/>
