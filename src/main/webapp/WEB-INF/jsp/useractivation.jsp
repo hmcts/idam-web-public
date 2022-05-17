@@ -14,13 +14,13 @@
                 <script>
                     sendEvent('User activation', 'Error', 'An error occurred for create password');
                 </script>
-                <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
+                <div class="error-summary" role="alert" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                     <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
-                        <spring:message code="public.common.error.password.heading" text="default"/>
+                        <spring:message code="public.common.error.title" text="default"/>
                     </h2>
                     <ul class="error-summary-list">
-                      <c:if test="${!empty errorLabelOne}"><li><a href="users/activate#password1"><spring:message code="${errorLabelOne}" text=""/></a></li></c:if>
-                      <c:if test="${!empty errorLabelTwo}"><li><a href="users/activate#password2"><spring:message code="${errorLabelTwo}" text=""/></a></li></c:if>
+                      <c:if test="${!empty errorLabelOne}"><li><a href="#password1"><spring:message code="${errorLabelOne}" text=""/></a></li></c:if>
+                      <c:if test="${!empty errorLabelTwo}"><li><a href="#password2"><spring:message code="${errorLabelTwo}" text=""/></a></li></c:if>
                     </ul>
                 </div>
             </c:if>

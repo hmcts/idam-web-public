@@ -11,7 +11,7 @@
         <c:set var="hasError" value="${error != null}" />
 
         <spring:hasBindErrors name="registerUserCommand">
-            <div class="error-summary" role="group" aria-labelledby="validation-error-summary-heading" tabindex="-1">
+            <div class="error-summary" role="alert" aria-labelledby="validation-error-summary-heading" tabindex="-1">
                 <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                     ${errorTitle}
                 </h2>

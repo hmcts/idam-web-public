@@ -133,7 +133,7 @@ public class TestConstants {
     public static final String MOJ_LOGIN_ENABLED = "mojLoginEnabled";
 
     //Errors
-    public static final String INFORMATION_IS_MISSING_OR_INVALID = "Information is missing or invalid";
+    public static final String THERE_IS_A_PROBLEM = "There is a problem";
     public static final String PLEASE_FIX_THE_FOLLOWING = "Please fix the following";
     public static final String SORRY_THERE_WAS_AN_ERROR = "Sorry, there was an error";
     public static final String PIN_USER_NOT_LONGER_VALID = "PIN user no longer valid";
