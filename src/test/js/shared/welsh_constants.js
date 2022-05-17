@@ -23,7 +23,7 @@ module.exports = {
     checkYourEmail: 'Gwiriwch eich negeseuon e-bost',
     youAlreadyHaveAccountSubject: 'Mae gennych gyfrif yn barod / You already have an account',
     createAPassword: 'Creu cyfrinair',
-    userActivationTitle: 'Actifadu Cyfrif Defnyddiwr - Mynediad GLlTEM',
+    userActivationTitle: 'Actifadu Cyfrif Defnyddiwr - Mynediad GLlTEM - GOV.UK',
     accountCreated: 'Mae eich cyfrif wedi cael ei greu',
     youCanNowSignInWithYourNewPassword: 'Gallwch nawr fewngofnodi gyda’ch cyfrinair newydd.',
     youCanNowSignIn: 'Gallwch nawr fewngofnodi i’ch cyfrif.',
