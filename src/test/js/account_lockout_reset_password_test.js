@@ -44,7 +44,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/passwordReset?${activationParams}`);
     I.waitForText('Create a new password');
     await I.runAccessibilityTest();
-    I.seeTitleEquals('Reset Password - HMCTS Access');
+    I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('#password1', password);
     I.fillField('#password2', password);
     await I.runAccessibilityTest();

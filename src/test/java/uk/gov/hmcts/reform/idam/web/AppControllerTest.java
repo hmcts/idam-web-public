@@ -270,7 +270,7 @@ public class AppControllerTest {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR, ERROR))
-            .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
+            .andExpect(model().attribute(ERROR_TITLE, THERE_IS_A_PROBLEM))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
             .andExpect(view().name(UPLIFT_REGISTER_VIEW));
@@ -451,7 +451,7 @@ public class AppControllerTest {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR, ERROR))
-            .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
+            .andExpect(model().attribute(ERROR_TITLE, THERE_IS_A_PROBLEM))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
             .andExpect(view().name(UPLIFT_REGISTER_VIEW));
@@ -476,7 +476,7 @@ public class AppControllerTest {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR, ERROR))
-            .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
+            .andExpect(model().attribute(ERROR_TITLE, THERE_IS_A_PROBLEM))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
             .andExpect(view().name(UPLIFT_REGISTER_VIEW));
@@ -501,7 +501,7 @@ public class AppControllerTest {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR, ERROR))
-            .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
+            .andExpect(model().attribute(ERROR_TITLE, THERE_IS_A_PROBLEM))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
             .andExpect(view().name(UPLIFT_REGISTER_VIEW));
@@ -525,7 +525,7 @@ public class AppControllerTest {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR, ERROR))
-            .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
+            .andExpect(model().attribute(ERROR_TITLE, THERE_IS_A_PROBLEM))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
             .andExpect(view().name(UPLIFT_REGISTER_VIEW));
@@ -549,7 +549,7 @@ public class AppControllerTest {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR, ERROR))
-            .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
+            .andExpect(model().attribute(ERROR_TITLE, THERE_IS_A_PROBLEM))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, MISSING))
             .andExpect(view().name(UPLIFT_REGISTER_VIEW));
@@ -574,7 +574,7 @@ public class AppControllerTest {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR, ERROR))
-            .andExpect(model().attribute(ERROR_TITLE, INFORMATION_IS_MISSING_OR_INVALID))
+            .andExpect(model().attribute(ERROR_TITLE, THERE_IS_A_PROBLEM))
             .andExpect(model().attribute(ERROR_MESSAGE, PLEASE_FIX_THE_FOLLOWING))
             .andExpect(model().attribute(REDIRECTURI, REDIRECT_URI))
             .andExpect(view().name(UPLIFT_REGISTER_VIEW));

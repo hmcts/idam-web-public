@@ -19,7 +19,7 @@
                 <script>
                     sendEvent('Authorization', 'Error', 'User one time password authorization has failed');
                 </script>
-                <div class="error-summary" role="group"
+                <div class="error-summary" role="alert"
                      aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
 

@@ -95,7 +95,7 @@ Scenario('@functional @uplift @upliftvalid User Validation errors', ({ I }) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in');
     I.click("Continue");
-    I.waitForText('Information is missing or invalid');
+    I.waitForText('There is a problem');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
