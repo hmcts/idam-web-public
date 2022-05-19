@@ -15,6 +15,7 @@ let idamServiceAccountUserEmail;
 let userFirstNames = [];
 let serviceNames = [];
 let specialCharacterPassword;
+let accessToken;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -39,22 +40,23 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
+    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
-    await I.createUserWithRoles(diffCaseCitizenEmail, userPassword, randomUserFirstName + 'diffcase', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, diffCaseCitizenEmail, userPassword, randomUserFirstName + 'diffcase', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'diffcase');
-    await I.createUserWithRoles(specialcharPwdResetCitizenEmail, userPassword, randomUserFirstName + 'specialcharpwd', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, specialcharPwdResetCitizenEmail, userPassword, randomUserFirstName + 'specialcharpwd', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'specialcharpwd');
-    await I.createUserWithRoles(otherCitizenEmail, userPassword, randomUserFirstName + 'Other', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, otherCitizenEmail, userPassword, randomUserFirstName + 'Other', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Other');
-    await I.createUserWithRoles(plusCitizenEmail, userPassword, randomUserFirstName + 'Plus', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, plusCitizenEmail, userPassword, randomUserFirstName + 'Plus', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Plus');
-    await I.createUserWithRoles(apostropheCitizenEmail, userPassword, randomUserFirstName + 'Apostrophe', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, apostropheCitizenEmail, userPassword, randomUserFirstName + 'Apostrophe', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Apostrophe');
-    await I.createUserWithRoles(staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
-    await I.createUserWithRoles(idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
     userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 
@@ -73,7 +75,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.click('Submit');
     I.waitForText('Check your email');
     await I.runAccessibilityTest();
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -105,7 +107,7 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
     I.fillField('#email', diffCaseCitizenEmail.toUpperCase());
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(diffCaseCitizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, diffCaseCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -135,7 +137,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.fillField('#email', plusCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(plusCitizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, plusCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -165,7 +167,7 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     I.fillField('#email', apostropheCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(apostropheCitizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, apostropheCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -194,7 +196,7 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.fillField('#email', otherCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(otherCitizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, otherCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -237,7 +239,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.fillField('#email', specialcharPwdResetCitizenEmail);
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(specialcharPwdResetCitizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, specialcharPwdResetCitizenEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -268,7 +270,7 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.fillField('#email', staleUserEmail);
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(staleUserEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, staleUserEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
@@ -298,7 +300,7 @@ Scenario('@functional @resetpass @idamserviceaccount As a idam service account u
     I.fillField('#email', idamServiceAccountUserEmail);
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(idamServiceAccountUserEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, idamServiceAccountUserEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');

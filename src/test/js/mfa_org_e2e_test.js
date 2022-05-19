@@ -29,6 +29,7 @@ let professionalUserMFARequiredFirstName;
 let mfaTurnedOnService;
 let mfaApplicationPolicyName;
 let professionalRoleName;
+let accessTokenClientSecret;
 
 BeforeSuite(async ({ I }) => {
 
@@ -56,20 +57,22 @@ BeforeSuite(async ({ I }) => {
         professionalUserMFARequiredEmail = randomData.getRandomEmailAddress();
     }
 
+    accessTokenClientSecret = await I.getAccessTokenClientSecret(mfaTurnedOnServiceName, serviceClientSecret);
+
     professionalUserMFASkipFirstName = randomData.getRandomUserName(testSuiteId);
-    await I.createUserWithRoles(professionalUserMFASkipEmail, userPassword, professionalUserMFASkipFirstName, [professionalRoleName]);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, professionalUserMFASkipEmail, userPassword, professionalUserMFASkipFirstName, [professionalRoleName]);
 
     professionalUserMFADisabledFirstName = randomData.getRandomUserName(testSuiteId);
-    await I.createUserWithRoles(professionalUserMFADisabledEmail, userPassword, professionalUserMFADisabledFirstName, [professionalRoleName, 'idam-mfa-disabled']);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, professionalUserMFADisabledEmail, userPassword, professionalUserMFADisabledFirstName, [professionalRoleName, 'idam-mfa-disabled']);
 
     professionalUserMFARequiredFirstName = randomData.getRandomUserName(testSuiteId);
-    await I.createUserWithRoles(professionalUserMFARequiredEmail, userPassword, professionalUserMFARequiredFirstName, [professionalRoleName]);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, professionalUserMFARequiredEmail, userPassword, professionalUserMFARequiredFirstName, [professionalRoleName]);
 
     if (isRefDataEnabled) {
 
         // create ref data admin user
         const prdAdminUserEmail = randomData.getRandomEmailAddress();
-        await I.createUserWithRoles(prdAdminUserEmail, userPassword, randomData.getRandomUserName(testSuiteId), ['prd-admin']);
+        await I.createUserUsingTestingSupportService(accessTokenClientSecret, prdAdminUserEmail, userPassword, randomData.getRandomUserName(testSuiteId), ['prd-admin']);
         prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.label, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret, scope);
 
         serviceToken = await I.getServiceAuthToken();
@@ -165,7 +168,7 @@ Scenario('@functional @mfaOrgLogin I am able to login with MFA as a member of an
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
 
-    const otpCode = await I.extractOtpFromNotifyEmail(professionalUserMFARequiredEmail);
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, professionalUserMFARequiredEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();

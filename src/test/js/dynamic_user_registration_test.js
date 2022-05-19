@@ -7,6 +7,7 @@ let userEmail;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
+let accessTokenClientSecret;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -32,7 +33,8 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(adminEmail, userPassword, randomUserFirstName + 'Admin', [dynamicUserRegRole.name]);
+    accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, adminEmail, userPassword, randomUserFirstName + 'Admin', [dynamicUserRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, userPassword);
@@ -48,7 +50,7 @@ AfterSuite(async ({ I }) => {
 });
 
 Scenario('@functional Register User Dynamically', async ({ I }) => {
-    let url = await I.extractUrlFromNotifyEmail(userEmail);
+    let url = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, userEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }

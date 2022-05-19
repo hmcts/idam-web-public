@@ -6,6 +6,7 @@ Feature('When I am locked out of my account, resetting my password unlocks it');
 let citizenEmail;
 let userFirstNames = [];
 let serviceNames = [];
+let accessToken;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -21,7 +22,8 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
+    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 });
 
@@ -39,7 +41,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     await I.runAccessibilityTest();
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenEmail);
     const activationParams = resetPasswordUrl.match(/passwordReset\?(.*)/)[1];
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/passwordReset?${activationParams}`);
     I.waitForText('Create a new password');

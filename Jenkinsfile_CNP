@@ -57,6 +57,7 @@ withPipeline(type, product, component) {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
         env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
+        env.IDAM_TESTING_SUPPORT_API = "https://idam-testing-support-api.service.core-compute-preview.internal"
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
@@ -67,6 +68,7 @@ withPipeline(type, product, component) {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
         env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
+        env.IDAM_TESTING_SUPPORT_API = "https://idam-testing-support-api.service.core-compute-preview.internal"
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
@@ -86,13 +88,15 @@ withPipeline(type, product, component) {
         env.RPE_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         env.REF_DATA_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
         env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
+        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.aat.platform.hmcts.net"
         env.TESTS_FOR_ACCESSIBILITY = true
         env.WAIT_FOR_ACTION_TIMEOUT = 2000
         println """\
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
                 Using RPE_AUTH_URL: ${env.RPE_AUTH_URL}
                 Using REF_DATA_URL: ${env.REF_DATA_URL}
-                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+                Using IDAMAPI: ${env.IDAMAPI}
+                Using TESTING_SUPPORT_API_URL: ${env.TESTING_SUPPORT_API_URL}""".stripIndent()
     }
 
     before('buildinfra:idam-ithc') {
