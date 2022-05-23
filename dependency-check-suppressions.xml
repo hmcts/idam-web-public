@@ -27,6 +27,11 @@
         <cve>CVE-2014-0054</cve>
         <cve>CVE-2022-22965</cve>
         <cve>CVE-2022-22968</cve>
+    </suppress>
+
+    <!-- Currently there is no new version of spring-framework and no simple workaround -->
+    <suppress>
+        <gav regex="true">^.*spring-.*$</gav>
         <cve>CVE-2016-1000027</cve>
     </suppress>
 
