@@ -33,6 +33,8 @@
     <suppress>
         <gav regex="true">^.*spring-.*$</gav>
         <cve>CVE-2016-1000027</cve>
+        <cve>CVE-2022-22970</cve>
+        <cve>CVE-2022-22976</cve>
     </suppress>
 
 </suppressions>
