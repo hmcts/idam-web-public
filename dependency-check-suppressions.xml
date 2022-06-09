@@ -18,7 +18,7 @@
         <cve>CVE-2021-22112</cve>
     </suppress>
 
-    <!-- Currently there is no new version of spring-framework and no simple workaround -->
+    <!-- These are false positive CVEs from the dependency check plugin (to be addressed in v7.1.1) -->
     <suppress>
         <gav regex="true">^.*spring-.*$</gav>
         <cve>CVE-2016-1000027</cve>
