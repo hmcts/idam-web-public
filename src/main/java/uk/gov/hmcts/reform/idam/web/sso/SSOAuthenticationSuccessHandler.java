@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -95,16 +96,21 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
             throw e;
         }
 
-        String sessionCookie = federationApi.federationAuthenticate(bearerToken)
-            .headers().get(SET_COOKIE).stream()
-            .filter(cookie -> cookie.contains(sessionProperties.getIdamSessionCookie()))
-            .findAny().orElseThrow(() ->
-                restException(null, HttpStatus.UNAUTHORIZED,  new HttpHeaders(),
-                    HttpStatus.UNAUTHORIZED.getReasonPhrase(), "Unable to authenticate user.")
-            );
+        Collection<String> setCookie = federationApi.federationAuthenticate(bearerToken).headers().get(SET_COOKIE);
+        String sessionCookie = null;
+        if (setCookie == null) {
+            throw restException(null, HttpStatus.UNAUTHORIZED,  new HttpHeaders(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(), "Error occurred during federation authenticate.");
+        } else {
+            sessionCookie = setCookie.stream()
+                .filter(cookie -> cookie.contains(sessionProperties.getIdamSessionCookie()))
+                .findAny().orElseThrow(() ->
+                    restException(null, HttpStatus.UNAUTHORIZED,  new HttpHeaders(),
+                        HttpStatus.UNAUTHORIZED.getReasonPhrase(), "Unable to authenticate user.")
+                );
+        }
 
-        final Map<String, String[]> paramMap = (Map<String, String[]>) request.getSession()
-            .getAttribute("oidcParams");
+        final Map<String, String[]> paramMap = (Map<String, String[]>) request.getSession().getAttribute("oidcParams");
 
         if (CollectionUtils.isEmpty(paramMap)) {
             request.getSession().invalidate();
