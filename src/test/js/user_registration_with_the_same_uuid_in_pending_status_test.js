@@ -20,6 +20,7 @@ let assignableRole;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
+let accessTokenClientSecret;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -49,7 +50,8 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
+    accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, userPassword);
@@ -69,7 +71,7 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
-    const currentUserUrl = await I.extractUrlFromNotifyEmail(currentUserEmail);
+    const currentUserUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, currentUserEmail);
 
     I.amOnPage(currentUserUrl);
     I.waitForText('Create a password');
@@ -88,7 +90,7 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     expect(responseAfterCurrentUserActivation.email).to.equal(currentUserEmail);
     expect(responseAfterCurrentUserActivation.roles).to.eql([assignableRole.name]);
 
-    const previousUserUrl = await I.extractUrlFromNotifyEmail(previousUserEmail);
+    const previousUserUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, previousUserEmail);
 
     I.amOnPage(previousUserUrl);
     I.waitForText('Create a password');

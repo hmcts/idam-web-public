@@ -113,7 +113,9 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
 
 Scenario('@functional @ejudiciary As an ejudiciary user, I should be redirected to eJudiciary for login if I enter my username on the login screen', async ({ I }) => {
     await I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
-    await I.createUserWithRoles(TestData.EJUDICIARY_TEST_USER_USERNAME, TestData.EJUDICIARY_TEST_USER_PASSWORD, "Judge", [ ], "azure", randomData.getRandomString());
+
+    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, TestData.EJUDICIARY_TEST_USER_USERNAME, TestData.EJUDICIARY_TEST_USER_PASSWORD, "Judge", [ ], "azure", randomData.getRandomString());
 
     //redirection verification
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
@@ -130,6 +132,18 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be redirected 
     I.click('Sign in');
 
     I.waitForText('Stay signed in?');
-    I.click('No');
+
+    if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
+        I.click('No');
+        // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
+        I.waitInUrl("/kmsi");
+        I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
+    } else {
+        I.interceptRequestsAfterSignin();
+        I.click('No');
+        I.waitForText(TestData.SERVICE_REDIRECT_URI);
+        I.see('code=');
+        I.resetRequestInterception();
+    }
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

@@ -16,7 +16,7 @@ let serviceNames = [];
 let randomUserFirstName;
 let randomUserLastName;
 let specialCharacterPassword;
-
+let accessToken;
 
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
@@ -26,7 +26,8 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
+    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     specialCharacterPassword = 'New%%%&&&234';
 });
@@ -63,8 +64,7 @@ Scenario('@functional @welshLanguage I can set the language with a cookie', asyn
     I.waitForText(Welsh.accessDeniedWelsh);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-//TODO: add functional tag once the issue is fixed permanently.
-Scenario('@welshLanguage I can set the language with a header', async ({ I }) => {
+Scenario('@functional @welshLanguage I can set the language with a header', async ({ I }) => {
 
     I.amOnPage(Welsh.pageUrl);
     I.clearCookie(Welsh.localeCookie);
@@ -104,7 +104,7 @@ Scenario('@functional @welshLanguage I can reset my password in Welsh', async ({
     await I.runAccessibilityTest();
     I.click(Welsh.submitBtn);
     I.waitForText(Welsh.checkYourEmail);
-    const userPwdResetUrl = await I.extractUrlFromNotifyEmail(citizenEmail);
+    const userPwdResetUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenEmail);
     I.amOnPage(userPwdResetUrl);
     I.waitForText(Welsh.createANewPassword);
     I.fillField('#password1', specialCharacterPassword);

@@ -1,3 +1,4 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const fetch = require('node-fetch');
@@ -332,28 +333,58 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createUserWithRoles(email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
-        const codeUserRoles = userRoles.map(role => ({'code': role}));
+// Commenting for future ref.
+//    createUserWithRoles(email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
+//        const codeUserRoles = userRoles.map(role => ({'code': role}));
+//        const data = {
+//            email: email,
+//            forename: forename,
+//            password: password,
+//            roles: codeUserRoles,
+//            surname: 'User',
+//            userGroup: {code: 'xxx_private_beta'},
+//            ssoProvider: ssoProvider,
+//            ssoId: ssoId
+//        };
+//        return fetch(`${TestData.IDAM_API}/testing-support/accounts`, {
+//            agent: agent,
+//            method: 'POST',
+//            body: JSON.stringify(data),
+//            headers: {'Content-Type': 'application/json'},
+//        }).then(res => res.json())
+//            .then((json) => {
+//                return json;
+//            })
+//            .catch(err => err);
+//    }
+
+    createUserUsingTestingSupportService(accessToken, email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
+        const userId = uuid.v4();
         const data = {
-            email: email,
-            forename: forename,
-            password: password,
-            roles: codeUserRoles,
-            surname: 'User',
-            userGroup: {code: 'xxx_private_beta'},
-            ssoProvider: ssoProvider,
-            ssoId: ssoId
+            activationSecretPhrase: password,
+            user: {
+               id: userId,
+               email: email,
+               forename: forename,
+               surname: 'User',
+               displayName: forename + ' User',
+               roleNames: userRoles,
+               ssoId: ssoId,
+               ssoProvider: ssoProvider
+            }
         };
-        return fetch(`${TestData.IDAM_API}/testing-support/accounts`, {
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/users`, {
             agent: agent,
             method: 'POST',
             body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken},
         }).then(res => res.json())
             .then((json) => {
                 return json;
             })
-            .catch(err => err);
+            .catch(err => {
+                console.log(err)
+            });
     }
 
     createPolicyForApplicationMfaTest(name, redirectUri, api_auth_token) {
@@ -400,40 +431,56 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    async getEmailFromNotify(searchEmail) {
-        let notificationsResponse = await notifyClient.getNotifications("email", null);
-        let emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
-        let i = 1;
-        while (i < MAX_NOTIFY_PAGES && !emailResponse && notificationsResponse.body.links.next) {
-            console.log("Searching notify emails, next page " + notificationsResponse.body.links.next);
-            let nextPageLink = notificationsResponse.body.links.next;
-            let nextPageLinkUrl = new URL(nextPageLink);
-            let olderThanId = nextPageLinkUrl.searchParams.get("older_than");
-            notificationsResponse = await notifyClient.getNotifications("email", null, null, olderThanId);
-            emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
-            i++;
-        }
-        return emailResponse;
-    }
+// Commenting for future ref.
+//    async getEmailFromNotify(searchEmail) {
+//        let notificationsResponse = await notifyClient.getNotifications("email", null);
+//        let emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
+//        let i = 1;
+//        while (i < MAX_NOTIFY_PAGES && !emailResponse && notificationsResponse.body.links.next) {
+//            console.log("Searching notify emails, next page " + notificationsResponse.body.links.next);
+//            let nextPageLink = notificationsResponse.body.links.next;
+//            let nextPageLinkUrl = new URL(nextPageLink);
+//            let olderThanId = nextPageLinkUrl.searchParams.get("older_than");
+//            notificationsResponse = await notifyClient.getNotifications("email", null, null, olderThanId);
+//            emailResponse = this.searchForEmailInNotifyResults(notificationsResponse.body.notifications, searchEmail);
+//            i++;
+//        }
+//        return emailResponse;
+//    }
 
-    searchForEmailInNotifyResults(notifications, searchEmail) {
-        const result = notifications.find(currentItem => {
-            // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
-            if (currentItem.email_address === searchEmail) {
-                return true;
+//    searchForEmailInNotifyResults(notifications, searchEmail) {
+//        const result = notifications.find(currentItem => {
+//            // NOTE: NEVER LOG EMAIL ADDRESS FROM THE PRODUCTION QUEUE
+//            if (currentItem.email_address === searchEmail) {
+//                return true;
+//            }
+//            return false;
+//        });
+//        return result;
+//    }
+
+    async getEmailFromNotifyUsingTestingSupportService(accessToken, emailAddress) {
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/notifications/latest/${emailAddress}`, {
+            method: 'GET',
+            headers: {'Authorization': 'Bearer ' + accessToken}
+        }).then(response => {
+            if (response.status !== 200) {
+                console.log(`Error fetching email from Notify, response: ${response.status}`);
             }
-            return false;
+            return response.json();
+        }).catch(err => {
+            console.log(err);
         });
-        return result;
     }
 
-    async getEmailFromNotifyWithMaxRetries(searchEmail, maxRetries) {
-        let emailResponse = await this.getEmailFromNotify(searchEmail);
+    async getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, maxRetries) {
+        let emailResponse = await this.getEmailFromNotifyUsingTestingSupportService(accessToken, searchEmail);
+
         let i = 1;
         while (i < maxRetries && !emailResponse) {
             console.log(`Retrying email in notify for ${i} time`);
             this.sleep(1000);
-            emailResponse = await this.getEmailFromNotify(searchEmail);
+            emailResponse = await this.getEmailFromNotifyUsingTestingSupportService(accessToken, searchEmail);
             i++;
         }
         if (!emailResponse) {
@@ -446,9 +493,9 @@ class IdamHelper extends Helper {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async extractUrlFromNotifyEmail(searchEmail) {
+    async extractUrlFromNotifyEmail(accessToken, searchEmail) {
         let url;
-        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(searchEmail, MAX_RETRIES);
+        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, MAX_RETRIES);
         const regex = "(https.+)";
         const urlMatch = emailResponse.body.match(regex);
         if (urlMatch[0]) {
@@ -457,9 +504,9 @@ class IdamHelper extends Helper {
         return url;
     }
 
-    async extractOtpFromNotifyEmail(searchEmail) {
+    async extractOtpFromNotifyEmail(accessToken, searchEmail) {
         let otp;
-        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(searchEmail, MAX_RETRIES);
+        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, MAX_RETRIES);
         const regex = "[0-9]{8}";
         let otpMatch = emailResponse.body.match(regex);
         if (otpMatch[0]) {
@@ -557,33 +604,58 @@ class IdamHelper extends Helper {
         });
     }
 
-        getAccessTokenPasswordGrant(username, password, serviceName, serviceRedirect, clientSecret, scope) {
-            let searchParams = new URLSearchParams();
-            searchParams.set('grant_type', 'password');
-            searchParams.set('username', username);
-            searchParams.set('password', password);
-            searchParams.set('client_id', serviceName);
-            searchParams.set('client_secret', clientSecret);
-            searchParams.set('redirect_uri', serviceRedirect);
-            searchParams.set('scope', scope);
+    getAccessTokenPasswordGrant(username, password, serviceName, serviceRedirect, clientSecret, scope) {
+        let searchParams = new URLSearchParams();
+        searchParams.set('grant_type', 'password');
+        searchParams.set('username', username);
+        searchParams.set('password', password);
+        searchParams.set('client_id', serviceName);
+        searchParams.set('client_secret', clientSecret);
+        searchParams.set('redirect_uri', serviceRedirect);
+        searchParams.set('scope', scope);
 
-            return fetch(`${TestData.IDAM_API}/o/token`, {
-                agent: agent,
-                method: 'POST',
-                body: searchParams,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }).then(response => {
-                return response.json();
-            }).then((json) => {
-                return json.access_token;
-            }).catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
-            });
-        }
+        return fetch(`${TestData.IDAM_API}/o/token`, {
+            agent: agent,
+            method: 'POST',
+            body: searchParams,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(response => {
+            return response.json();
+        }).then((json) => {
+            return json.access_token;
+        }).catch(err => {
+            console.log(err)
+            let browser = this.helpers['Puppeteer'].browser;
+            browser.close();
+        });
+    }
+
+    getAccessTokenClientSecret(clientId, clientSecret) {
+        let searchParams = new URLSearchParams();
+        searchParams.set('grant_type', 'client_credentials');
+        searchParams.set('client_id', clientId);
+        searchParams.set('client_secret', clientSecret);
+        searchParams.set('scope', 'profile roles');
+
+        return fetch(`${TestData.IDAM_API}/o/token`, {
+            agent: agent,
+            method: 'POST',
+            body: searchParams,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(response => {
+            return response.json();
+        }).then((json) => {
+            return json.access_token;
+        }).catch(err => {
+            console.log(err)
+            let browser = this.helpers['Puppeteer'].browser;
+            browser.close();
+        });
+    }
 
     getUserInfo(accessToken) {
         return fetch(`${TestData.IDAM_API}/details`, {
@@ -690,7 +762,7 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
         }).then((response) => {
             if (response.status != 200) {
-                console.log('Error creating user', response.status);
+                console.log('Error registering user', response.status);
                 console.log(JSON.stringify(data))
                 throw new Error()
             }

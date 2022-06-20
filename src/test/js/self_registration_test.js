@@ -21,6 +21,7 @@ let randomUserLastName;
 let userFirstNames = [];
 let serviceNames = [];
 let specialCharacterPassword;
+let accessToken;
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
@@ -32,15 +33,16 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
+    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
-    await I.createUserWithRoles(citizenEmailWelsh, userPassword, randomUserFirstName + 'Welsh', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmailWelsh, userPassword, randomUserFirstName + 'Welsh', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Welsh');
     specialCharacterPassword = 'New%%%&&&234';
-    await I.createUserWithRoles(staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
+    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
-    await I.createUserWithRoles(idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
     userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 
@@ -56,7 +58,7 @@ Scenario('@functional @selfregister User Validation errors', async ({ I }) => {
     I.see('Create an account');
     I.click(formSubmitButton);
     await I.runAccessibilityTest();
-    I.waitForText('Information is missing or invalid');
+    I.waitForText('There is a problem');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
@@ -103,7 +105,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
     I.click(formSubmitButton);
     I.waitForText('Check your email');
     await I.runAccessibilityTest();
-    const emailResponse = await I.getEmailFromNotify(citizenEmail);
+    const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, citizenEmail);
     assert.equal('You already have an account', emailResponse.subject);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -125,7 +127,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
     I.click(formSubmitButton);
     I.waitForText(Welsh.checkYourEmail);
     await I.runAccessibilityTest();
-    const emailResponse = await I.getEmailFromNotify(citizenEmailWelsh);
+    const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, citizenEmailWelsh);
     assert.equal(Welsh.youAlreadyHaveAccountSubject, emailResponse.subject);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -144,10 +146,10 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
-    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
     I.click(formSubmitButton);
@@ -184,7 +186,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText(Welsh.checkYourEmail);
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText(Welsh.createAPassword);
     I.seeTitleEquals(Welsh.userActivationTitle);
@@ -220,10 +222,10 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
-    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
     I.click(formSubmitButton);
@@ -257,10 +259,10 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
 
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(randomUserEmailAddress);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, randomUserEmailAddress);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
-    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
     I.click(formSubmitButton);
@@ -293,10 +295,10 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
-    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);
     I.click(formSubmitButton);
@@ -328,34 +330,34 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
-    I.seeTitleEquals('User Activation - HMCTS Access');
+    I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('password1', 'Passw0rd');
     I.fillField('password2', 'Passw0rd');
     I.click(formSubmitButton);
-    I.waitForText('There was a problem with the password you entered');
+    I.waitForText('There is a problem');
     I.see("Your password is too easy to guess");
     I.fillField('password1', `${randomUserFirstName}Other6mKjmC`);
     I.fillField('password2', `${randomUserFirstName}Other6mKjmC`);
     I.click(formSubmitButton);
-    I.waitForText('There was a problem with the password you entered');
+    I.waitForText('There is a problem');
     I.see("Do not include your name or email in your password");
     I.fillField('password1', `${email}3ksTys`);
     I.fillField('password2', `${email}3ksTys`);
     I.click(formSubmitButton);
-    I.waitForText('There was a problem with the password you entered');
+    I.waitForText('There is a problem');
     I.see("Do not include your name or email in your password");
     I.fillField('password1', 'passwordidamtest');
     I.fillField('password2', 'passwordidamtest');
     I.click(formSubmitButton);
-    I.waitForText('There was a problem with the password you entered');
+    I.waitForText('There is a problem');
     I.see('Your password didn\'t have all the required characters');
     I.fillField('password1', 'Lincoln1');
     I.fillField('password2', 'Lincoln1');
     I.click(formSubmitButton);
-    I.waitForText('There was a problem with the password you entered');
+    I.waitForText('There is a problem');
     I.see("Your password is too easy to guess");
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -373,7 +375,7 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
 
     I.waitForText('Check your email');
 
-    const emailResponse = await I.getEmailFromNotify(staleUserEmail);
+    const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, staleUserEmail);
     assert.equal('You already have an account', emailResponse.subject);
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -391,7 +393,7 @@ Scenario('@functional @selfregister I can create a password only once using the 
     I.fillField('email', email);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(email);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
 
     // open activation link in 1st tab
     const page1 = await I.createNewPage();
@@ -429,6 +431,6 @@ Scenario('@functional @selfregister @idamserviceaccount Account already created 
     I.fillField('email', idamServiceAccountUserEmail);
     I.click(formSubmitButton);
     I.waitForText('Check your email');
-    const emailResponse = await I.getEmailFromNotify(idamServiceAccountUserEmail);
+    const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, idamServiceAccountUserEmail);
     assert.equal('You already have an account', emailResponse.subject);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

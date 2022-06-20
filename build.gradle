@@ -34,7 +34,6 @@ allprojects {
   targetCompatibility = 11
 
   def idamBomVersion = '2.8.26'
-  ext['idam-api-spec.version'] = '3.7.0'
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"

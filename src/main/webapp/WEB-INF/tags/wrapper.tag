@@ -9,16 +9,17 @@
 <!--[if gt IE 8]><!--><html lang="en"><!--<![endif]-->
 <head>
     <!-- Google Analytics -->
-    <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    <!-- disabled indefinitely -->
+<%--    <script>--%>
+<%--    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){--%>
+<%--    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),--%>
+<%--    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)--%>
+<%--    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');--%>
 
-    ga('create', '<spring:eval expression="@environment.getProperty(\'ga.tracking.id\')" />', 'auto');
+<%--    ga('create', '<spring:eval expression="@environment.getProperty(\'ga.tracking.id\')" />', 'auto');--%>
 
-    ga('send', 'pageview');
-    </script>
+<%--    ga('send', 'pageview');--%>
+<%--    </script>--%>
     <!-- End Google Analytics -->
 
     <!-- Disable Search Engine Crawlers -->
@@ -26,7 +27,8 @@
 
     <script>
         function sendEvent(eventCategory, eventAction, eventLabel) {
-            ga('send', 'event', eventCategory, eventAction, eventLabel);
+            // disabled with ga
+            //ga('send', 'event', eventCategory, eventAction, eventLabel);
         }
     </script>
 
@@ -97,7 +99,7 @@
                         <spring:message code="public.cookie.banner.rejected.text_0004"/>
                     </p>
                     <button type="button" name="hide-rejected" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-reject-all-success-banner-hide">
-                        <spring:message code="public.cookie.banner.rejected.text_0005"/>
+                        <spring:message code="public.cookie.banner.rejected.text_0005"/>  <span class="govuk-visually-hidden"><spring:message code="public.cookie.banner.rejected.text_0006"/> </span><spring:message code="public.cookie.banner.rejected.text_0007"/>
                     </button>
                 </div>
             </div>
@@ -116,7 +118,7 @@
                         <spring:message code="public.cookie.banner.accepted.text_0004"/>
                     </p>
                     <button type="button" name="hide-accepted" class="govuk-button govuk-p-size-override" data-module="govuk-button" id="cookie-accept-all-success-banner-hide">
-                        <spring:message code="public.cookie.banner.accepted.text_0005"/>
+                        <spring:message code="public.cookie.banner.accepted.text_0005"/> <span class="govuk-visually-hidden"><spring:message code="public.cookie.banner.accepted.text_0006"/> </span><spring:message code="public.cookie.banner.accepted.text_0007"/>
                     </button>
                 </div>
             </div>

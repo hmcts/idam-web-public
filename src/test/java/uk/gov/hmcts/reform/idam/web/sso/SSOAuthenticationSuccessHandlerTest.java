@@ -214,4 +214,14 @@ public class SSOAuthenticationSuccessHandlerTest {
         given(federationApi.federationAuthenticate(anyString())).willReturn(feignResponse1);
         underTest.onAuthenticationSuccess(request, response, authentication);
     }
+
+    @Test(expected = HttpStatusCodeException.class)
+    public void onAuthenticationSuccess_shouldThrowExceptionIfCookiesAreNull() throws IOException {
+        Map<String, Collection<String>> feignHeaders = Collections.emptyMap();
+        Response feignResponse1 = Response.builder()
+            .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
+            .build();
+        given(federationApi.federationAuthenticate(anyString())).willReturn(feignResponse1);
+        underTest.onAuthenticationSuccess(request, response, authentication);
+    }
 }

@@ -16,6 +16,7 @@ let assignableRole;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
+let accessTokenClientSecret;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -42,7 +43,8 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    await I.createUserWithRoles(adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
+    accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, userPassword);
@@ -61,7 +63,7 @@ Scenario('@functional user registration pending status and post activation redir
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
-    const url = await I.extractUrlFromNotifyEmail(userEmail);
+    const url = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, userEmail);
 
     I.amOnPage(url);
     I.waitForText('Create a password');
