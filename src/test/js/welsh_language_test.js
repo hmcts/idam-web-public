@@ -64,7 +64,8 @@ Scenario('@functional @welshLanguage I can set the language with a cookie', asyn
     I.waitForText(Welsh.accessDeniedWelsh);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-//TODO: add functional tag once the issue is fixed permanently.
+//TODO: add functional tag once the issue is fixed permanently (See  https://tools.hmcts.net/jira/browse/SIDM-4331)
+// Note that this must be tested against AAT (or any other environment that uses Front Door) before it is enabled.
 Scenario('@welshLanguage I can set the language with a header', async ({ I }) => {
 
     I.amOnPage(Welsh.pageUrl);
