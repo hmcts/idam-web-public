@@ -466,8 +466,9 @@ class IdamHelper extends Helper {
         }).then(response => {
             if (response.status !== 200) {
                 console.log(`Error fetching email from Notify, response: ${response.status}`);
+            } else {
+                return response.json();
             }
-            return response.json();
         }).catch(err => {
             console.log(err);
         });
@@ -479,7 +480,7 @@ class IdamHelper extends Helper {
         let i = 1;
         while (i < maxRetries && !emailResponse) {
             console.log(`Retrying email in notify for ${i} time`);
-            this.sleep(1000);
+            await this.sleep(1000);
             emailResponse = await this.getEmailFromNotifyUsingTestingSupportService(accessToken, searchEmail);
             i++;
         }
