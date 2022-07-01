@@ -44,7 +44,7 @@ exports.config = {
             'mocha-junit-reporter': {
                 stdout: './output/idam-web-public-mocha-stdout.log',
                 options: {
-                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/codeceptjs/idam-web-public-integration-result.xml'
+                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/functional/idam-web-public-integration-result.xml'
                 }
             },
             'mochawesome': {
