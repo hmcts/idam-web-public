@@ -52,7 +52,7 @@ Scenario('@crossbrowser Citizen user self registration', async ({ I }) => {
     I.fillField('email', citizenUserSelfRegistrationEmail);
     I.click("Continue");
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(citizenUserSelfRegistrationEmail);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenUserSelfRegistrationEmail);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
