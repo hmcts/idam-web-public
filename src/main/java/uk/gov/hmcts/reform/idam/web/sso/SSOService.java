@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.idam.web.sso;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -95,7 +94,7 @@ public class SSOService {
         response.sendRedirect(SSO_LOGIN_HINTS.get(provider));
     }
 
-    public String computeProviderSessionAttribute(@NotNull HttpServletRequest request,
+    public String computeProviderSessionAttribute(HttpServletRequest request,
                                                   boolean reuseExistingSession,
                                                   String loginEmail,
                                                   String loginHintParam) {
