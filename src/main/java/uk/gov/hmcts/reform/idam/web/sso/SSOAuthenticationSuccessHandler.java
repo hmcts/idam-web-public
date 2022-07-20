@@ -16,6 +16,7 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpStatusCodeException;
+import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
 import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
 import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProperties;
@@ -34,6 +35,7 @@ import java.util.Arrays;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static uk.gov.hmcts.reform.idam.web.helper.ErrorHelper.restException;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.PROVIDER_ATTR;
 
 @Slf4j
 @ConditionalOnProperty("features.federated-s-s-o")
@@ -51,15 +53,18 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     private final AuthHelper authHelper;
 
+    private final SSOService ssoService;
+
     public SSOAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository,
                                            SsoFederationApi federationApi, OidcApi oidcApi,
                                            StrategicConfigurationProperties.Session sessionProperties,
-                                            AuthHelper authHelper) {
+                                           AuthHelper authHelper, SSOService ssoService) {
         this.repository = repository;
         this.federationApi = federationApi;
         this.oidcApi = oidcApi;
         this.sessionProperties = sessionProperties;
         this.authHelper = authHelper;
+        this.ssoService = ssoService;
     }
 
     @Override
@@ -85,8 +90,9 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         final String access_token = client.getAccessToken().getTokenValue();
         String bearerToken = "Bearer " + access_token;
 
+        User user = null;
         try {
-            updateOrCreateUser(bearerToken);
+            user = updateOrCreateUser(bearerToken);
         } catch (HttpStatusCodeException e) {
             if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
                 response.setStatus(403);
@@ -133,6 +139,9 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
             secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
         }
 
+        String provider = ssoService.computeProviderSessionAttribute(request, true, user.getEmail());
+        request.getSession().setAttribute(PROVIDER_ATTR, provider);
+
         redirectStrategy.sendRedirect(request, response, responseUrl);
     }
 
@@ -141,13 +150,12 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     }
 
-    private void updateOrCreateUser(String bearerToken) {
+    private User updateOrCreateUser(String bearerToken) {
         try {
-            federationApi.updateFederatedUser(bearerToken);
+            return federationApi.updateFederatedUser(bearerToken);
         } catch (HttpStatusCodeException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-                federationApi.createFederatedUser(bearerToken);
-                return;
+                return federationApi.createFederatedUser(bearerToken);
             }
             throw e;
         }

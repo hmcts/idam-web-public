@@ -76,7 +76,6 @@ public class SSOServiceTest {
 
         verify(res).sendRedirect("/oauth2/authorization/oidc");
 
-        verify(sess).setAttribute("provider", "ejudiciary-aad");
     }
 
     @Test
@@ -101,6 +100,5 @@ public class SSOServiceTest {
 
         verify(res).sendRedirect("/oauth2/authorization/oidc");
 
-        verify(sess).setAttribute("provider", "ejudiciary-aad");
     }
 }

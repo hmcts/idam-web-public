@@ -59,6 +59,9 @@ public class SSOAuthenticationSuccessHandlerTest {
     @Mock
     private OidcApi oidcApi;
 
+    @Mock
+    private SSOService ssoService;
+
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private OAuth2AuthorizedClient client;
 
@@ -78,7 +81,7 @@ public class SSOAuthenticationSuccessHandlerTest {
         given(repository.loadAuthorizedClient(any(), any(), any())).willReturn(client);
         given(client.getAccessToken().getTokenValue()).willReturn("an_access_token");
         given(sessionProperties.getIdamSessionCookie()).willReturn("Idam.Session");
-        underTest = new SSOAuthenticationSuccessHandler(repository, federationApi, oidcApi, sessionProperties, authHelper);
+        underTest = new SSOAuthenticationSuccessHandler(repository, federationApi, oidcApi, sessionProperties, authHelper, ssoService);
     }
 
     @Test
@@ -96,8 +99,10 @@ public class SSOAuthenticationSuccessHandlerTest {
             .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
             .headers(feignHeaders).build();
         given(oidcApi.oauth2AuthorizePost(any(), any())).willReturn(feignResponse2);
+        given(ssoService.computeProviderSessionAttribute(request, true, null)).willReturn("ejudiciary-aad");
         underTest.onAuthenticationSuccess(request, response, authentication);
         verify(response, atLeastOnce()).sendRedirect(any());
+        verify(session).setAttribute("provider", "ejudiciary-aad");
     }
 
     @Test

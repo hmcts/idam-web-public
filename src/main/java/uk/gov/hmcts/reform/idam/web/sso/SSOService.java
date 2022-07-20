@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.idam.web.sso;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -82,6 +83,18 @@ public class SSOService {
                                             final boolean reuseExistingSession,
                                             final String loginEmail) throws IOException {
 
+        final String provider = computeProviderSessionAttribute(request, reuseExistingSession, loginEmail);
+
+        final Map<String, String[]> oidcParams = new HashMap<>(request.getParameterMap());
+        if (!oidcParams.containsKey(LOGIN_HINT_PARAM)) {
+            oidcParams.put(LOGIN_HINT_PARAM, new String[]{provider});
+        }
+        request.getSession().setAttribute("oidcParams", oidcParams);
+
+        response.sendRedirect(SSO_LOGIN_HINTS.get(provider));
+    }
+
+    public String computeProviderSessionAttribute(@NotNull HttpServletRequest request, boolean reuseExistingSession, String loginEmail) {
         final HttpSession existingSession = request.getSession(false);
         boolean ssoSessionExists = existingSession != null && existingSession.getAttribute(PROVIDER_ATTR) != null;
 
@@ -96,16 +109,6 @@ public class SSOService {
             provider = getSsoEmailDomains().get(extractEmailDomain(loginEmail));
         }
 
-        if (!ssoSessionExists) {
-            request.getSession().setAttribute(PROVIDER_ATTR, provider);
-        }
-
-        final Map<String, String[]> oidcParams = new HashMap<>(request.getParameterMap());
-        if (!oidcParams.containsKey(LOGIN_HINT_PARAM)) {
-            oidcParams.put(LOGIN_HINT_PARAM, new String[]{provider});
-        }
-        request.getSession().setAttribute("oidcParams", oidcParams);
-
-        response.sendRedirect(SSO_LOGIN_HINTS.get(provider));
+        return provider;
     }
 }
