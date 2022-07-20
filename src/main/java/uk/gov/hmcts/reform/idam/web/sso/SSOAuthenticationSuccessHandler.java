@@ -32,9 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static uk.gov.hmcts.reform.idam.web.helper.ErrorHelper.restException;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.LOGIN_HINT_PARAM;
 import static uk.gov.hmcts.reform.idam.web.sso.SSOService.PROVIDER_ATTR;
 
 @Slf4j
@@ -139,7 +141,10 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
             secureCookies.forEach(cookie -> response.addHeader(HttpHeaders.SET_COOKIE, cookie));
         }
 
-        String provider = ssoService.computeProviderSessionAttribute(request, true, user.getEmail());
+        String loginHint = paramMap.get(LOGIN_HINT_PARAM) != null ?
+            String.join("", paramMap.get(LOGIN_HINT_PARAM)) : null;
+        String provider = ssoService.computeProviderSessionAttribute(request, true,
+            user.getEmail(), loginHint);
         request.getSession().setAttribute(PROVIDER_ATTR, provider);
 
         redirectStrategy.sendRedirect(request, response, responseUrl);
