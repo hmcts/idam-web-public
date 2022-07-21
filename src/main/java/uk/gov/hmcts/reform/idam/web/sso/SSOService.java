@@ -82,23 +82,8 @@ public class SSOService {
                                             final boolean reuseExistingSession,
                                             final String loginEmail) throws IOException {
 
-        final HttpSession existingSession = request.getSession(false);
-        boolean ssoSessionExists = existingSession != null && existingSession.getAttribute(PROVIDER_ATTR) != null;
-
-        final String provider;
-
-        if (request.getParameter(LOGIN_HINT_PARAM) != null
-            && SSO_LOGIN_HINTS.containsKey(request.getParameter(LOGIN_HINT_PARAM).toLowerCase())) {
-            provider = request.getParameter(LOGIN_HINT_PARAM).toLowerCase();
-        } else if (reuseExistingSession && ssoSessionExists) {
-            provider = existingSession.getAttribute(PROVIDER_ATTR).toString();
-        } else {
-            provider = getSsoEmailDomains().get(extractEmailDomain(loginEmail));
-        }
-
-        if (!ssoSessionExists) {
-            request.getSession().setAttribute(PROVIDER_ATTR, provider);
-        }
+        final String provider = computeProviderSessionAttribute(request, reuseExistingSession,
+            loginEmail, request.getParameter(LOGIN_HINT_PARAM));
 
         final Map<String, String[]> oidcParams = new HashMap<>(request.getParameterMap());
         if (!oidcParams.containsKey(LOGIN_HINT_PARAM)) {
@@ -107,5 +92,25 @@ public class SSOService {
         request.getSession().setAttribute("oidcParams", oidcParams);
 
         response.sendRedirect(SSO_LOGIN_HINTS.get(provider));
+    }
+
+    public String computeProviderSessionAttribute(HttpServletRequest request,
+                                                  boolean reuseExistingSession,
+                                                  String loginEmail,
+                                                  String loginHintParam) {
+        final HttpSession existingSession = request.getSession(false);
+        boolean ssoSessionExists = existingSession != null && existingSession.getAttribute(PROVIDER_ATTR) != null;
+
+        final String provider;
+
+        if (loginHintParam != null && SSO_LOGIN_HINTS.containsKey(loginHintParam.toLowerCase())) {
+            provider = loginHintParam.toLowerCase();
+        } else if (reuseExistingSession && ssoSessionExists) {
+            provider = existingSession.getAttribute(PROVIDER_ATTR).toString();
+        } else {
+            provider = getSsoEmailDomains().get(extractEmailDomain(loginEmail));
+        }
+
+        return provider;
     }
 }
