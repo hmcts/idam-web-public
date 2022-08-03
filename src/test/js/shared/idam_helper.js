@@ -49,7 +49,7 @@ class IdamHelper extends Helper {
 
     async createServiceData(serviceName, serviceClientSecret) {
         const token = await this.getAuthToken();
-        this.createService(serviceName, serviceClientSecret,'', token, '', []);
+        await this.createService(serviceName, serviceClientSecret,'', token, '', []);
     }
 
     deleteService(service) {
