@@ -52,7 +52,7 @@
   "10038_Content Security Policy (CSP) Header Not Set_https://idam-web-public.aat.platform.hmcts.net/a_GET": "ignore",
   "10038_Content Security Policy (CSP) Header Not Set_https://idam-web-public.aat.platform.hmcts.net/a?ui_locales=cy_GET": "ignore",
   "10038_Content Security Policy (CSP) Header Not Set_https://idam-web-public.aat.platform.hmcts.net/a?ui_locales=en_GET": "ignore",
-  "10038_Content Security Policy (CSP) Header Not Set_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET", : "ignore",
+  "10038_Content Security Policy (CSP) Header Not Set_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET" : "ignore",
   "10038_Content Security Policy (CSP) Header Not Set_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=en_GET" : "ignore",
   "10038_Content Security Policy (CSP) Header Not Set_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement_GET" : "ignore",
   "10096_Timestamp Disclosure - Unix_https://idam-web-public.aat.platform.hmcts.net/a?ui_locales=cy_GET": "ignore",
