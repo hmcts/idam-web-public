@@ -44,6 +44,7 @@
   "10015_Incomplete or No Cache-control Header Set_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET" : "ignore",
   "10015_Incomplete or No Cache-control Header Set_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=en_GET" : "ignore",
   "10015_Incomplete or No Cache-control Header Set_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement_GET" : "ignore",
+  "10029_Cookie Poisoning_https://idam-web-public.aat.platform.hmcts.net/a_GET": "ignore",
   "10029_Cookie Poisoning_https://idam-web-public.aat.platform.hmcts.net/a?ui_locales=cy_GET": "ignore",
   "10029_Cookie Poisoning_https://idam-web-public.aat.platform.hmcts.net/a?ui_locales=en_GET": "ignore",
   "10029_Cookie Poisoning_https://idam-web-public.aat.platform.hmcts.net/accessibility-statement?ui_locales=cy_GET" : "ignore",
