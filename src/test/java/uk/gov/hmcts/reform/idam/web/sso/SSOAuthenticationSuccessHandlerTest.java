@@ -37,6 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static uk.gov.hmcts.reform.idam.web.helper.ErrorHelper.restException;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.LOGIN_HINT_PARAM;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SSOAuthenticationSuccessHandlerTest {
@@ -59,6 +60,9 @@ public class SSOAuthenticationSuccessHandlerTest {
     @Mock
     private OidcApi oidcApi;
 
+    @Mock
+    private SSOService ssoService;
+
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private OAuth2AuthorizedClient client;
 
@@ -78,13 +82,14 @@ public class SSOAuthenticationSuccessHandlerTest {
         given(repository.loadAuthorizedClient(any(), any(), any())).willReturn(client);
         given(client.getAccessToken().getTokenValue()).willReturn("an_access_token");
         given(sessionProperties.getIdamSessionCookie()).willReturn("Idam.Session");
-        underTest = new SSOAuthenticationSuccessHandler(repository, federationApi, oidcApi, sessionProperties, authHelper);
+        underTest = new SSOAuthenticationSuccessHandler(repository, federationApi, oidcApi, sessionProperties, authHelper, ssoService);
     }
 
     @Test
     public void onAuthenticationSuccess_shouldJustWorkBecauseIHaveMockedEverything() throws IOException {
         Map<String, Collection<String>> headers = ImmutableMap.of(SET_COOKIE, List.of("Idam.Session=abcdefg"));
-        final Map<String, String[]> paramMap = ImmutableMap.of("some_param", new String[] {"some_value"});
+        final Map<String, String[]> paramMap = ImmutableMap.of("some_param", new String[] {"some_value"},
+            LOGIN_HINT_PARAM, new String[] {"ejudiciary-aad"});
         Map<String, Collection<String>> feignHeaders = ImmutableMap.of(LOCATION, List.of("http://some_url"));
         given(request.getSession()).willReturn(session);
         given(session.getAttribute(anyString())).willReturn(paramMap);
@@ -96,8 +101,10 @@ public class SSOAuthenticationSuccessHandlerTest {
             .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
             .headers(feignHeaders).build();
         given(oidcApi.oauth2AuthorizePost(any(), any())).willReturn(feignResponse2);
+        given(ssoService.computeProviderSessionAttribute(request, true, null, "ejudiciary-aad")).willReturn("ejudiciary-aad");
         underTest.onAuthenticationSuccess(request, response, authentication);
         verify(response, atLeastOnce()).sendRedirect(any());
+        verify(session).setAttribute("provider", "ejudiciary-aad");
     }
 
     @Test

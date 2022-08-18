@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.AuthHelper;
 import uk.gov.hmcts.reform.idam.web.sso.SSOAuthenticationSuccessHandler;
+import uk.gov.hmcts.reform.idam.web.sso.SSOService;
 
 @Configuration
 @ConditionalOnProperty("features.federated-s-s-o")
@@ -36,6 +37,8 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
 
     private final AuthHelper authHelper;
 
+    private final SSOService ssoService;
+
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
@@ -45,12 +48,13 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
     public AppConfigurationSSO(ConfigurationProperties configurationProperties,
                                OAuth2AuthorizedClientRepository repository,
                                SsoFederationApi ssoFederationApi, OidcApi oidcApi,
-                               AuthHelper authHelper) {
+                               AuthHelper authHelper, SSOService ssoService) {
         this.configurationProperties = configurationProperties;
         this.repository = repository;
         this.ssoFederationApi = ssoFederationApi;
         this.oidcApi = oidcApi;
         this.authHelper = authHelper;
+        this.ssoService = ssoService;
     }
 
     @Override
@@ -98,7 +102,7 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationSuccessHandler myAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository) {
         return new SSOAuthenticationSuccessHandler(repository, ssoFederationApi, oidcApi,
-            configurationProperties.getStrategic().getSession(), authHelper);
+            configurationProperties.getStrategic().getSession(), authHelper, ssoService);
     }
 
 }
