@@ -84,13 +84,12 @@ try {
 } catch (err) {
     node {
         onMaster() {
-            withAzureKeyvault(
-                azureKeyVaultSecrets: [secret('jira-api-token', 'JIRA_API_TOKEN')],
-                keyVaultURLOverride: "https://cftptl-intsvc.vault.azure.net/"
-            ) {
-                checkout scm
-                builder.gradle('createAJiraTicket')
-            }
+            def slackMessage = "Idam Web Public nightly pipeline failed:"
+            slackMessage += "\nLink to build ${BUILD_ID}:\n${BUILD_URL}"
+            slackSend(
+                channel: "#idam-nightly-pipelines",
+                color: 'danger',
+                message: slackMessage)
         }
     }
     throw err
