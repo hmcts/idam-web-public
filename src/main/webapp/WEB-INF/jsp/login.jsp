@@ -249,8 +249,8 @@
                 </div>
 
                 <div class="login-list">
-                    <input class="button" type="submit" name="save"
-                           onclick="document.getElementById('username').value = document.getElementById('username').value.trim()"
+                    <input class="button" type="submit" name="save" data-prevent-double-click="true"
+                           onclick="document.getElementById('username').value = document.getElementById('username').value.trim(); this.disabled = true; document.getElementsByName('loginForm')[0].submit()"
                            value="<spring:message code="public.login.form.submit" />">
                     <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled"
                                 name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
