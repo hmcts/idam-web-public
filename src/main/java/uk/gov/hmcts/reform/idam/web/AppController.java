@@ -61,6 +61,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
@@ -349,8 +350,14 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(HAS_OTP_CHECK_FAILED, request.isHasOtpCheckFailed());
+        model.addAttribute(MISSING_AUTHID_COOKIE, request.isMissingAuthIdCookie());
 
         if (request.isHasOtpCheckFailed()) {
+            // redirecting from otp check
+            bindingResult.reject("Verification code failed");
+        }
+
+        if (request.isMissingAuthIdCookie()) {
             // redirecting from otp check
             bindingResult.reject("Verification code failed");
         }
@@ -679,6 +686,8 @@ public class AppController {
             }
 
             return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
+        } catch (NoSuchElementException e) {
+            return redirectToLoginMissingAuthId(request, bindingResult, model);
         }
     }
 
@@ -686,6 +695,16 @@ public class AppController {
                                                                 BindingResult bindingResult,
                                                                 Model model) {
         model.addAttribute("hasOtpCheckFailed", true);
+        bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
+        model.addAttribute("authorizeCommand", request);
+        model.addAttribute(USERNAME, null);
+        return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
+    }
+
+    private ModelAndView redirectToLoginMissingAuthId(VerificationRequest request,
+                                                                BindingResult bindingResult,
+                                                                Model model) {
+        model.addAttribute("missingAuthIdCookie", true);
         bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
         model.addAttribute("authorizeCommand", request);
         model.addAttribute(USERNAME, null);
