@@ -61,7 +61,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.NoSuchElementException;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
@@ -631,11 +630,16 @@ public class AppController {
 
         try {
             final String authId = StringUtils.substringAfter(
-                cookies.stream()
+                String.valueOf(
+                    cookies.stream()
                     .filter(cookie -> cookie.startsWith(IDAM_AUTH_ID_COOKIE_PREFIX))
-                    .findFirst()
-                    .orElseThrow(),
+                    .findFirst()),
                 IDAM_AUTH_ID_COOKIE_PREFIX);
+
+            if (authId.isEmpty()) {
+                return redirectToLoginMissingAuthId(request, bindingResult, model);
+            }
+
             final List<String> responseCookies = spiService.submitOtpeAuthentication(authId, ipAddress, request.getCode());
             log.info("/verification: Successful OTP submission request");
 
@@ -686,8 +690,6 @@ public class AppController {
             }
 
             return redirectToLoginOnFailedOtpVerification(request, bindingResult, model);
-        } catch (NoSuchElementException e) {
-            return redirectToLoginMissingAuthId(request, bindingResult, model);
         }
     }
 
