@@ -33,7 +33,7 @@ allprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
-  def idamBomVersion = '2.8.26'
+  def idamBomVersion = '2.8.33'
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
@@ -87,7 +87,6 @@ allprojects {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis-reactive'
     implementation group: 'org.springframework.session', name: 'spring-session-data-redis', version: '2.6.3'
     implementation group: 'org.springframework.data', name: 'spring-data-redis', version: '2.6.4'
-    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.31'
 
     implementation group: 'io.github.openfeign', name: 'feign-jackson'
     implementation group: 'io.github.openfeign', name: 'feign-okhttp'
