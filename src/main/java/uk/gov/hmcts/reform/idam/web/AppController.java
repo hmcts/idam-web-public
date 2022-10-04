@@ -583,6 +583,7 @@ public class AppController {
      * @should return verification view for expired OTP session 401 response
      * @should return login view for 403 response
      * @should return login view when authorize fails
+     * @should return login view for when missing AuthId cookie
      * @should validate code field is not empty
      * @should validate code field is digits
      * @should validate code field is 8 digits
@@ -630,10 +631,10 @@ public class AppController {
 
         try {
             final String authId = StringUtils.substringAfter(
-                String.valueOf(
-                    cookies.stream()
+                cookies.stream()
                     .filter(cookie -> cookie.startsWith(IDAM_AUTH_ID_COOKIE_PREFIX))
-                    .findFirst()),
+                    .findFirst()
+                    .orElse(""),
                 IDAM_AUTH_ID_COOKIE_PREFIX);
 
             if (authId.isEmpty()) {
