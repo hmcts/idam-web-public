@@ -107,7 +107,7 @@ allprojects {
 
     implementation group: 'javax.servlet', name: 'jstl'
     implementation group: 'javax.json', name: 'javax.json-api'
-    implementation (group: 'com.fasterxml.jackson.core', name: 'jackson-databind')
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.0'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.apache.commons', name: 'commons-text'
