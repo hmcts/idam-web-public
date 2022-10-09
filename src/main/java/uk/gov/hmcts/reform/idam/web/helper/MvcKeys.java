@@ -51,8 +51,6 @@ public class MvcKeys {
     public static final String RESETPASSWORD_VIEW = "resetpassword";
     public static final String UPLIFT_REGISTER_VIEW = "upliftRegister";
     public static final String USERCREATED_VIEW = "usercreated";
-    public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
-    public static final String TACTICAL_RESET_PWD_VIEW = "tacticalResetPassword";
     public static final String SELF_REGISTER_VIEW = "selfRegister";
     public static final String COOKIES_VIEW = "cookies";
     public static final String COOKIE_PREFERENCES_VIEW = "cookiePreferences";
