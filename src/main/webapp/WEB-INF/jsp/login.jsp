@@ -148,6 +148,15 @@
                             </h2>
                             <p class="text"><spring:message code="public.login.error.verificationcheck.instruction"/></p>
                         </c:when>
+                        <c:when test="${missingAuthIdCookie}">
+                            <script>
+                                sendEvent('Authorization', 'Error', 'User missing AuthId cookie');
+                            </script>
+                            <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
+                                <spring:message code="public.login.error.authidcookie.title"/>
+                            </h2>
+                            <p class="text"><spring:message code="public.login.error.authidcookie.instruction"/></p>
+                        </c:when>
                         <c:otherwise>
                             <script>
                                 sendEvent('Authorization', 'Error', 'User login has failed');

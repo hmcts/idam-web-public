@@ -2368,6 +2368,26 @@ public class AppControllerTest {
     }
 
     /**
+     * @verifies return login view for when missing AuthId cookie
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldReturnLoginViewForWhenMissingAuthIdCookie() throws Exception {
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+                .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+                .param(USERNAME_PARAMETER, USER_EMAIL)
+                .param(REDIRECT_URI, REDIRECT_URI)
+                .param(STATE_PARAMETER, STATE)
+                .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+                .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+                .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+                .param(CODE_PARAMETER, "12345678"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrlPattern("/login*"))
+            .andExpect(model().attribute(MvcKeys.MISSING_AUTHID_COOKIE, true));
+    }
+
+    /**
      * @verifies return hasOtpCheckCodeFailed on redirects and reject "Verification code failed"
      * @see AppController#loginView(AuthorizeRequest, BindingResult, Model)
      */
