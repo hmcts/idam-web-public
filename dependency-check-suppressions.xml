@@ -18,13 +18,11 @@
         <cve>CVE-2021-22112</cve>
     </suppress>
 
-    <!-- These are false positive CVEs from the dependency check plugin (to be addressed in v7.1.1) -->
+    <!-- These are false positive CVEs from the dependency check plugin -->
     <suppress>
         <gav regex="true">^.*spring-.*$</gav>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2020-5408</cve>
-        <cve>CVE-2022-22976</cve>
-        <cve>CVE-2022-22978</cve>
     </suppress>
 
     <suppress>
@@ -33,14 +31,8 @@
     </suppress>
 
     <suppress>
-        <gav regex="true">^.*log4j-.*$</gav>
-        <cve>CVE-2022-33915</cve>
-    </suppress>
-
-    <!-- Bug in plugin https://github.com/jeremylong/DependencyCheck/issues/4671 -->
-    <suppress>
-        <gav regex="true">^.*$</gav>
-        <cve>CVE-2022-31569</cve>
+        <gav regex="true">^.*jackson-databind.*$</gav>
+        <cve>CVE-2022-42003</cve>
     </suppress>
 
 </suppressions>
