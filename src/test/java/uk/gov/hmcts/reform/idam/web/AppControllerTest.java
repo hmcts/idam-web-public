@@ -87,7 +87,6 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STALE_USER_RESET_PASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
@@ -1935,28 +1934,6 @@ public class AppControllerTest {
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(CLIENT_ID_PARAMETER, MISSING))
             .andExpect(status().isForbidden());
-    }
-
-    /**
-     * @verifies return tacticalActivateExpired
-     * @see AppController#tacticalActivate()
-     */
-    @Test
-    public void tacticalActivate_shouldReturnTacticalActivateExpired() throws Exception {
-        mockMvc.perform(get(TACTICAL_ACTIVATE_ENDPOINT))
-            .andExpect(status().isOk())
-            .andExpect(view().name(TACTICAL_ACTIVATE_VIEW));
-    }
-
-    /**
-     * @verifies return tacticalReset
-     * @see AppController#tacticalResetPwd() ()
-     */
-    @Test
-    public void tacticalResetPwd_shouldReturnTacticalReset() throws Exception {
-        mockMvc.perform(get(TACTICAL_RESET_ENDPOINT))
-            .andExpect(status().isOk())
-            .andExpect(view().name(TACTICAL_RESET_PWD_VIEW));
     }
 
     /**

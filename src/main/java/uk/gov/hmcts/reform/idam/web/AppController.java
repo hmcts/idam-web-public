@@ -991,22 +991,6 @@ public class AppController {
     }
 
     /**
-     * @should return tacticalActivateExpired
-     */
-    @GetMapping("/activate")
-    public String tacticalActivate() {
-        return TACTICAL_ACTIVATE_VIEW;
-    }
-
-    /**
-     * @should return tacticalReset
-     */
-    @GetMapping("/reset")
-    public String tacticalResetPwd() {
-        return TACTICAL_RESET_PWD_VIEW;
-    }
-
-    /**
      * @should return staleUserResetPassword
      */
     @GetMapping("/reset/inactive-user")
