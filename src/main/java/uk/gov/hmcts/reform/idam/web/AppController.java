@@ -349,8 +349,14 @@ public class AppController {
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
         model.addAttribute(HAS_OTP_CHECK_FAILED, request.isHasOtpCheckFailed());
+        model.addAttribute(MISSING_AUTHID_COOKIE, request.isMissingAuthIdCookie());
 
         if (request.isHasOtpCheckFailed()) {
+            // redirecting from otp check
+            bindingResult.reject("Verification code failed");
+        }
+
+        if (request.isMissingAuthIdCookie()) {
             // redirecting from otp check
             bindingResult.reject("Verification code failed");
         }
@@ -577,6 +583,7 @@ public class AppController {
      * @should return verification view for expired OTP session 401 response
      * @should return login view for 403 response
      * @should return login view when authorize fails
+     * @should return login view for when missing AuthId cookie
      * @should validate code field is not empty
      * @should validate code field is digits
      * @should validate code field is 8 digits
@@ -627,8 +634,13 @@ public class AppController {
                 cookies.stream()
                     .filter(cookie -> cookie.startsWith(IDAM_AUTH_ID_COOKIE_PREFIX))
                     .findFirst()
-                    .orElseThrow(),
+                    .orElse(""),
                 IDAM_AUTH_ID_COOKIE_PREFIX);
+
+            if (authId.isEmpty()) {
+                return redirectToLoginMissingAuthId(request, bindingResult, model);
+            }
+
             final List<String> responseCookies = spiService.submitOtpeAuthentication(authId, ipAddress, request.getCode());
             log.info("/verification: Successful OTP submission request");
 
@@ -686,6 +698,16 @@ public class AppController {
                                                                 BindingResult bindingResult,
                                                                 Model model) {
         model.addAttribute("hasOtpCheckFailed", true);
+        bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
+        model.addAttribute("authorizeCommand", request);
+        model.addAttribute(USERNAME, null);
+        return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
+    }
+
+    private ModelAndView redirectToLoginMissingAuthId(VerificationRequest request,
+                                                                BindingResult bindingResult,
+                                                                Model model) {
+        model.addAttribute("missingAuthIdCookie", true);
         bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
         model.addAttribute("authorizeCommand", request);
         model.addAttribute(USERNAME, null);
