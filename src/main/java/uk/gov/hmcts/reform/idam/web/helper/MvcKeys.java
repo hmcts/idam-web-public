@@ -14,6 +14,7 @@ public class MvcKeys {
     public static final String HAS_POLICY_CHECK_FAILED = "hasPolicyCheckFailed";
     public static final String HAS_OTP_CHECK_FAILED = "hasOtpCheckFailed";
     public static final String HAS_OTP_SESSION_EXPIRED = "hasOtpSessionExpired";
+    public static final String MISSING_AUTHID_COOKIE = "missingAuthIdCookie";
     public static final String IS_ACCOUNT_LOCKED = "isAccountLocked";
     public static final String IS_ACCOUNT_SUSPENDED = "isAccountSuspended";
     public static final String IS_ACCOUNT_SSO_ACCOUNT = "isAccountSSOAccount";
@@ -51,8 +52,6 @@ public class MvcKeys {
     public static final String RESETPASSWORD_VIEW = "resetpassword";
     public static final String UPLIFT_REGISTER_VIEW = "upliftRegister";
     public static final String USERCREATED_VIEW = "usercreated";
-    public static final String TACTICAL_ACTIVATE_VIEW = "tacticalActivateExpired";
-    public static final String TACTICAL_RESET_PWD_VIEW = "tacticalResetPassword";
     public static final String SELF_REGISTER_VIEW = "selfRegister";
     public static final String COOKIES_VIEW = "cookies";
     public static final String COOKIE_PREFERENCES_VIEW = "cookiePreferences";
