@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.idam.web.sso.SSOZuulFilter;
 import javax.annotation.Nonnull;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
     private final String idamSessionCookieName;
 
     @Autowired
-    public StepUpAuthenticationZuulFilter(@Nonnull final ConfigurationProperties configurationProperties, @Nonnull final SPIService spiService) {
+    public StepUpAuthenticationZuulFilter(@NotNull final ConfigurationProperties configurationProperties, @NotNull final SPIService spiService) {
         this.idamSessionCookieName = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
         this.spiService = spiService;
     }
@@ -85,11 +86,11 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
         return null;
     }
 
-    protected void dropCookie(@Nonnull final String cookieName, @Nonnull final RequestContext context) {
+    protected void dropCookie(@NotNull final String cookieName, @NotNull final RequestContext context) {
         context.addZuulRequestHeader(HttpHeaders.COOKIE, cookieName + "=");
     }
 
-    protected String getSessionToken(@Nonnull final HttpServletRequest request) {
+    protected String getSessionToken(@NotNull final HttpServletRequest request) {
         return Arrays.stream(getCookiesFromRequest(request))
             .filter(cookie -> idamSessionCookieName.equals(cookie.getName()))
             .map(Cookie::getValue)
@@ -97,7 +98,7 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
             .orElseThrow();
     }
 
-    protected boolean isAuthorizeRequest(@Nonnull final HttpServletRequest request) {
+    protected boolean isAuthorizeRequest(@NotNull final HttpServletRequest request) {
         return request.getRequestURI().contains(OIDC_AUTHORIZE_ENDPOINT) &&
             ("post".equalsIgnoreCase(request.getMethod()) || "get".equalsIgnoreCase(request.getMethod()));
     }
@@ -106,12 +107,12 @@ public class StepUpAuthenticationZuulFilter extends ZuulFilter {
         return StringUtils.equalsIgnoreCase(request.getParameter(PROMPT_PARAMETER), PROMPT_LOGIN_VALUE);
     }
 
-    protected boolean hasSessionCookie(@Nonnull final HttpServletRequest request) {
+    protected boolean hasSessionCookie(@NotNull final HttpServletRequest request) {
         return Arrays.stream(getCookiesFromRequest(request)).anyMatch(cookie -> idamSessionCookieName.equals(cookie.getName()));
     }
 
-    @Nonnull
-    protected Cookie[] getCookiesFromRequest(@Nonnull final HttpServletRequest request) {
+    @NotNull
+    protected Cookie[] getCookiesFromRequest(@NotNull final HttpServletRequest request) {
         return Optional.ofNullable(request.getCookies()).orElse(new Cookie[]{});
     }
 }

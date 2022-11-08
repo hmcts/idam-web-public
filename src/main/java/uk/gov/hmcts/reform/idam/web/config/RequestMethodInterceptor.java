@@ -5,9 +5,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Set;
 
@@ -20,7 +20,7 @@ public class RequestMethodInterceptor extends HandlerInterceptorAdapter {
     static final Set<HttpMethod> FORBIDDEN_METHODS = Set.of(HttpMethod.OPTIONS, HttpMethod.TRACE);
 
     @Override
-    public boolean preHandle(HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull Object handler) throws IOException {
+    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws IOException {
 
         final String requestMethod = request.getMethod();
         final boolean blockRequest = request.getHeader(HttpHeaders.MAX_FORWARDS) != null &&

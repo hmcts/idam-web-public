@@ -1,0 +1,41 @@
+[versions]
+api-spec = "3.10.2"
+app-insights = "2.5.1"
+commons-io = "2.8.0"
+commons-text = "1.1"
+feign = "11.6"
+feign-form = "3.8.0"
+findbugs = "3.0.2"
+guava = "31.1-jre"
+snakeyaml = "1.33"
+spring-boot = "2.7.5"
+spring-cloud = "3.1.4"
+spring-security-oauth2 = "2.5.2.RELEASE"
+spring-security-oauth2-autoconfigure = "2.6.8"
+
+[libraries]
+applicationinsights-logging-logback = { module = "com.microsoft.azure:applicationinsights-logging-logback", version.ref = "app-insights" }
+applicationinsights-spring-boot-starter = { module = "com.microsoft.azure:applicationinsights-spring-boot-starter", version.ref = "app-insights" }
+applicationinsights-web = { module = "com.microsoft.azure:applicationinsights-web", version.ref = "app-insights" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
+commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
+feign-jackson = { module = "io.github.openfeign:feign-jackson", version.ref = "feign" }
+feign-okhttp = { module = "io.github.openfeign:feign-okhttp", version.ref = "feign" }
+findbugs-jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "findbugs" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+idam-api-spec = { module = "com.github.hmcts:idam-api-spec", version.ref = "api-spec" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+spring-cloud-openfeign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign", version.ref = "spring-cloud" }
+
+[bundles]
+applicationinsights = ["applicationinsights-logging-logback", "applicationinsights-spring-boot-starter", "applicationinsights-web"]
+feign = ["feign-jackson", "feign-okhttp", "spring-cloud-openfeign"]
+
+[plugins]
+jmh = { id = "me.champeau.jmh", version = "0.6.5" }
+spring = { id = "io.spring.dependency-management", version = "1.0.11.RELEASE" }
+spring-framework = { id = "org.springframework.boot", version.ref = "spring-boot" }
+owasp = { id = "org.owasp.dependencycheck", version = "7.3.0" }
+sonarqube = { id = "org.sonarqube", version = "2.8" }
+pitest = { id = "info.solidsoft.pitest", version = "1.6.0" }
+git-properties = { id = "com.gorylenko.gradle-git-properties", version = "1.4.21" }
