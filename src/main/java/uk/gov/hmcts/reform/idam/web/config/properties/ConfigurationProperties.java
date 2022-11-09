@@ -12,7 +12,6 @@ public class ConfigurationProperties {
 
     private ServerConfigurationProperties server;
     private StrategicConfigurationProperties strategic;
-    private SSLConfigurationProperties ssl;
     private FeaturesConfigurationProperties features;
     private Map<String, String> ssoEmailDomains;
 }
