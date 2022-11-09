@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -43,6 +42,7 @@ import uk.gov.hmcts.reform.idam.web.model.SelfRegisterRequest;
 
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -224,7 +224,7 @@ public class SPIService {
      * @should return a set-cookie header to set Idam.Session if successful
      * @should return null if no cookie is found
      */
-    public List<String> submitOtpeAuthentication(@NonNull final String authId, final String ipAddress,
+    public List<String> submitOtpeAuthentication(@NotNull final String authId, final String ipAddress,
                                                  @Nullable final String otp) {
         final MultiValueMap<String, String> form = new LinkedMultiValueMap<>(2);
         form.add("service", "otpe");

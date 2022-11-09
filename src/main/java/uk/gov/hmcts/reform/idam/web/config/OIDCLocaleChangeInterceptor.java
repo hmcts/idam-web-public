@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
 import com.google.common.collect.ImmutableSet;
-import lombok.NonNull;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -75,7 +74,7 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
      * @should throw if ignore invalid locale is true
      * @should not throw if ignore invalid locale is false
      */
-    protected void handleException(String localesTag, @NonNull final IllegalArgumentException ex) {
+    protected void handleException(String localesTag, @NotNull final IllegalArgumentException ex) {
         if (isIgnoreInvalidLocale()) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Ignoring invalid locale value [" + localesTag + "]: " + ex.getMessage());
