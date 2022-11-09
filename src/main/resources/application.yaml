@@ -43,10 +43,6 @@ management:
       exposure:
         include: health,info,prometheus
 
-ssl:
-  verification:
-    enabled: true
-
 spring:
   application:
     name: IDAM Web Public
