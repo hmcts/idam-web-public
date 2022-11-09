@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 
-import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class SSOService {
         this.configurationProperties = configurationProperties;
     }
 
-    public boolean isSSOEmail(@Nonnull final String username) {
+    public boolean isSSOEmail(@NotNull final String username) {
         final String emailDomain = extractEmailDomain(username);
         return getSsoEmailDomains()
             .keySet()
@@ -48,7 +48,7 @@ public class SSOService {
         return configurationProperties.getSsoEmailDomains();
     }
 
-    private String extractEmailDomain(@Nonnull final String username) {
+    private String extractEmailDomain(@NotNull final String username) {
         return StringUtils.substringAfterLast(username, "@");
     }
 
@@ -60,7 +60,7 @@ public class SSOService {
      *
      * @throws IOException
      */
-    public void redirectToExternalProvider(@Nonnull final HttpServletRequest request, @Nonnull final HttpServletResponse response) throws IOException {
+    public void redirectToExternalProvider(@NotNull final HttpServletRequest request, @NotNull final HttpServletResponse response) throws IOException {
         redirectToExternalProvider(request, response, true, null);
     }
 
@@ -73,12 +73,12 @@ public class SSOService {
      *
      * @throws IOException
      */
-    public void redirectToExternalProvider(@Nonnull final HttpServletRequest request, @Nonnull final HttpServletResponse response, @Nonnull final String loginEmail) throws IOException {
+    public void redirectToExternalProvider(@NotNull final HttpServletRequest request, @NotNull final HttpServletResponse response, @NotNull final String loginEmail) throws IOException {
         redirectToExternalProvider(request, response, false, loginEmail);
     }
 
-    private void redirectToExternalProvider(@Nonnull final HttpServletRequest request,
-                                            @Nonnull final HttpServletResponse response,
+    private void redirectToExternalProvider(@NotNull final HttpServletRequest request,
+                                            @NotNull final HttpServletResponse response,
                                             final boolean reuseExistingSession,
                                             final String loginEmail) throws IOException {
 
