@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse;
 import uk.gov.hmcts.reform.idam.web.helper.ErrorHelper;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -76,7 +76,7 @@ public class ValidationService {
         return true;
     }
 
-    private boolean containsIllegalCharacters(@Nonnull String password) {
+    private boolean containsIllegalCharacters(@NotNull String password) {
         for (char c : password.toCharArray()) {
             if ((c <= '\u001f' && c != '\t') || c >= '\u007f') {
                 return true;

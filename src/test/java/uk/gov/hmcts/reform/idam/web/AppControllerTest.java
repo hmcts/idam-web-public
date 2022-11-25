@@ -87,7 +87,6 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PRIVACY_POLICY_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.STALE_USER_RESET_PASSWORD_VIEW;
-import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TACTICAL_RESET_PWD_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.TERMS_AND_CONDITIONS_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_LOGIN_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.UPLIFT_REGISTER_VIEW;
@@ -1938,28 +1937,6 @@ public class AppControllerTest {
     }
 
     /**
-     * @verifies return tacticalActivateExpired
-     * @see AppController#tacticalActivate()
-     */
-    @Test
-    public void tacticalActivate_shouldReturnTacticalActivateExpired() throws Exception {
-        mockMvc.perform(get(TACTICAL_ACTIVATE_ENDPOINT))
-            .andExpect(status().isOk())
-            .andExpect(view().name(TACTICAL_ACTIVATE_VIEW));
-    }
-
-    /**
-     * @verifies return tacticalReset
-     * @see AppController#tacticalResetPwd() ()
-     */
-    @Test
-    public void tacticalResetPwd_shouldReturnTacticalReset() throws Exception {
-        mockMvc.perform(get(TACTICAL_RESET_ENDPOINT))
-            .andExpect(status().isOk())
-            .andExpect(view().name(TACTICAL_RESET_PWD_VIEW));
-    }
-
-    /**
      * @verifies return view
      * @see AppController#cookiePreferencesView()
      */
@@ -2365,6 +2342,26 @@ public class AppControllerTest {
         assertThat(actualParams, hasEntry(CLIENT_ID_PARAMETER, CLIENT_ID));
         assertThat(actualParams, hasEntry(SCOPE_PARAMETER, CUSTOM_SCOPE));
         assertThat(actualParams, hasEntry(CODE_PARAMETER, "12345678"));
+    }
+
+    /**
+     * @verifies return login view for when missing AuthId cookie
+     * @see AppController#verification(uk.gov.hmcts.reform.idam.web.model.VerificationRequest, BindingResult, Model, HttpServletRequest, HttpServletResponse)
+     */
+    @Test
+    public void verification_shouldReturnLoginViewForWhenMissingAuthIdCookie() throws Exception {
+        mockMvc.perform(post(VERIFICATION_ENDPOINT).with(csrf())
+                .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
+                .param(USERNAME_PARAMETER, USER_EMAIL)
+                .param(REDIRECT_URI, REDIRECT_URI)
+                .param(STATE_PARAMETER, STATE)
+                .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
+                .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+                .param(SCOPE_PARAMETER, CUSTOM_SCOPE)
+                .param(CODE_PARAMETER, "12345678"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrlPattern("/login*"))
+            .andExpect(model().attribute(MvcKeys.MISSING_AUTHID_COOKIE, true));
     }
 
     /**

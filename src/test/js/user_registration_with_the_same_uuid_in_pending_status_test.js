@@ -66,7 +66,7 @@ AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
-Scenario('@functional multiple users can be registered with same uuid but the previous user will be assigned with auto generated uuid upon activation', async ({ I }) => {
+Scenario('@functional multiple users can be registered with same uuid but the previous user will be told their account is already active', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
@@ -93,17 +93,6 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     const previousUserUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, previousUserEmail);
 
     I.amOnPage(previousUserUrl);
-    I.waitForText('Create a password');
-    I.fillField('#password1', userPassword);
-    I.fillField('#password2', userPassword);
-    I.click('Continue');
-    I.waitForText('Account created');
-    userFirstNames.push(randomUserFirstName);
+    I.waitForText('Your account is already activated.');
 
-    const responseAfterPreviousUserActivation = await I.getUserByEmail(previousUserEmail);
-    expect(responseAfterPreviousUserActivation.id).to.not.equal(userId);
-    expect(responseAfterPreviousUserActivation.active).to.equal(true);
-    expect(responseAfterPreviousUserActivation.forename).to.equal(randomUserFirstName);
-    expect(responseAfterPreviousUserActivation.surname).to.equal(randomUserLastName);
-    expect(responseAfterPreviousUserActivation.email).to.equal(previousUserEmail);
 });

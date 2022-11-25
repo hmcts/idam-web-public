@@ -56,7 +56,7 @@ withPipeline(type, product, component) {
     before('smoketest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
-        env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net/"
+        env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
         env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
