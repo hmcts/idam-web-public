@@ -797,6 +797,19 @@ class IdamHelper extends Helper {
             });
     }
 
+    async expireUser(email) {
+        return fetch(`${TestData.IDAM_API}/testing-support/invitations-by-email/${email}/status/expire`, {
+            agent: agent,
+            method: 'PUT',
+
+        }).then((response) => {
+            if (response.status !== 200) {
+                console.log('Error expiring user', response.status);
+                throw new Error();
+            }
+        });
+    }
+
     async getUserByEmail(userEmail) {
         const authToken = await this.getAuthToken();
         return fetch(`${TestData.IDAM_API}/users?email=${userEmail}`, {
