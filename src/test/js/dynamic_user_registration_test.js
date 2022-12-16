@@ -49,7 +49,7 @@ AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
-Scenario('@functional Register User Dynamically', async ({ I }) => {
+Scenario('@functional  Register User Dynamically', async ({ I }) => {
     let url = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, userEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
