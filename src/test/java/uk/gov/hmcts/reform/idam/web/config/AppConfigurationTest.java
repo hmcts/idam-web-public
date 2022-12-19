@@ -17,7 +17,7 @@ import java.net.URI;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(value = IdamWebMvcConfiguration.class)
+@WebMvcTest
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = {"testing=true", "features.federated-s-s-o=false"})
