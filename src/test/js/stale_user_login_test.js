@@ -42,6 +42,8 @@ AfterSuite(async({ I }) => {
     I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
+
+
 Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) => {
     const newPassword = randomData.getRandomUserPassword();
     const loginUrl = `${testData.WEB_PUBLIC_URL}/login?redirect_uri=${testData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
