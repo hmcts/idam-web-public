@@ -90,7 +90,7 @@ public class IdamWebMvcConfiguration implements WebMvcConfigurer {
         return new HttpStatusRequestRejectedHandler(HttpStatus.BAD_REQUEST.value()) {
             @Override
             public void handle(HttpServletRequest request, HttpServletResponse response, RequestRejectedException requestRejectedException) throws IOException {
-                log.error("Request rejected due to Spring Security - ", requestRejectedException);
+                log.error("Request rejected due to Spring Security", requestRejectedException);
                 response.sendError(HttpStatus.BAD_REQUEST.value());
             }
         };
