@@ -53,9 +53,9 @@ public class AppConfigurationTest {
 
     @Test
     public void disallowed_http_methods_should_return_http_400() throws Exception {
-        MockHttpServletRequestBuilder requestWithPotentiallyMaliciousString = MockMvcRequestBuilders.
+        MockHttpServletRequestBuilder requestWithNotAllowedHttpMethod = MockMvcRequestBuilders.
             request("DEBUG", URI.create("/"));
-        mvc.perform(requestWithPotentiallyMaliciousString)
+        mvc.perform(requestWithNotAllowedHttpMethod)
             .andExpect(status().isBadRequest());
     }
 }
