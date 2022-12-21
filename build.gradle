@@ -38,7 +38,7 @@ allprojects {
   }
 
   def springBootVersion = libs.versions.spring.boot.get()
-  ext['spring-security.version'] = '5.7.5'
+  ext['netty.version'] = '4.1.86.Final'
 
   dependencyManagement {
     imports {
