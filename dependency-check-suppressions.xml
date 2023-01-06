@@ -18,7 +18,7 @@
     </suppress>
     <!-- False positive: https://github.com/jeremylong/DependencyCheck/issues/5213  -->
     <suppress>
-        <gav regex="true">^LatencyUtils-.*$</gav>
+        <packageUrl regex="true">^pkg:maven/org\.latencyutils/LatencyUtils@.*$</packageUrl>
         <cve>CVE-2021-4277</cve>
     </suppress>
 
