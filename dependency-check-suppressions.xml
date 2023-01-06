@@ -16,12 +16,11 @@
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2020-5408</cve>
     </suppress>
-
-    <!-- NVD data is incorrect. They have the CPE as cpe:2.3:a:netty:netty:4.1.86:*:*:*:*:*:*:*.
-    An appropriate suppression until it's fixed -->
+    <!-- False positive: https://github.com/jeremylong/DependencyCheck/issues/5213  -->
     <suppress>
-        <packageUrl regex="true">^pkg:maven/io\.netty/.*@4\.1\.86\.Final$</packageUrl>
-        <cve>CVE-2022-41915</cve>
+        <gav regex="true">^.*LatencyUtils@.*$</gav>
+        <cve>CVE-2021-4277</cve>
     </suppress>
+
 
 </suppressions>
