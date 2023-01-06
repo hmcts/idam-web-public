@@ -38,7 +38,6 @@ allprojects {
   }
 
   def springBootVersion = libs.versions.spring.boot.get()
-  ext['netty.version'] = '4.1.86.Final'
 
   dependencyManagement {
     imports {
