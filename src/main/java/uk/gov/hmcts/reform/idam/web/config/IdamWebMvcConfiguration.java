@@ -35,7 +35,7 @@ public class IdamWebMvcConfiguration implements WebMvcConfigurer {
     public static final String UI_LOCALES_PARAM_NAME = "ui_locales";
     public static final String IDAM_LOCALES_COOKIE_NAME = "idam_ui_locales";
     @Value("${features.google-tag-manager:true}")
-    public void setStaticValue(boolean value) {
+    public void setGoogleTagManagerFeatureFlag(boolean value) {
         JSPHelper.googleTagManager = value;
     }
 
