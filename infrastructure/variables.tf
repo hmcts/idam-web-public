@@ -33,7 +33,7 @@ variable "appinsights_instrumentation_key" {
 }
 
 variable "common_tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "ga_tracking_id" {
