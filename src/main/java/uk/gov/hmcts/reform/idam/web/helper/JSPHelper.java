@@ -22,7 +22,7 @@ import java.util.Optional;
 @UtilityClass
 public class JSPHelper {
 
-    public static boolean googleTagManager;
+    private static boolean googleTagManager;
     private static final URLCodec URL_CODEC = new URLCodec();
     private static MessageSource messageSource;
     private final UrlPathHelper pathHelper = new UrlPathHelper();
@@ -78,6 +78,10 @@ public class JSPHelper {
 
     private static Locale getCurrentLocale() {
         return LocaleContextHolder.getLocale();
+    }
+
+    public static void setGTMEnabled(boolean enabled) {
+        googleTagManager = enabled;
     }
 
     public static boolean isGTMEnabled() {
