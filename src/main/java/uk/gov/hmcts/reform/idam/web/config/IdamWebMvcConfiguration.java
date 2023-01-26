@@ -36,7 +36,7 @@ public class IdamWebMvcConfiguration implements WebMvcConfigurer {
     public static final String IDAM_LOCALES_COOKIE_NAME = "idam_ui_locales";
     @Value("${features.google-tag-manager:true}")
     public void setGoogleTagManagerFeatureFlag(boolean value) {
-        JSPHelper.googleTagManager = value;
+        JSPHelper.setGTMEnabled(value);
     }
 
     /** A 10 years worth of expiration time for the locale cookie. */

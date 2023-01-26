@@ -142,13 +142,13 @@ public class JSPHelperTest {
 
     @Test
     public void isGTMEnabled_shouldReturnTrueWhenEnabled() {
-        JSPHelper.googleTagManager = true;
+        JSPHelper.setGTMEnabled(true);
         Assert.assertTrue(JSPHelper.isGTMEnabled());
     }
 
     @Test
     public void isGTMEnabled_shouldReturnFalseWhenNotEnabled() {
-        JSPHelper.googleTagManager = false;
+        JSPHelper.setGTMEnabled(false);
         Assert.assertFalse(JSPHelper.isGTMEnabled());
     }
 
