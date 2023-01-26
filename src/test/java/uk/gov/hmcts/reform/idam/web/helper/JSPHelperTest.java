@@ -140,4 +140,16 @@ public class JSPHelperTest {
         JSPHelper.getOtherLocaleUrl();
     }
 
+    @Test
+    public void isGTMEnabled_shouldReturnTrueWhenEnabled() {
+        JSPHelper.googleTagManager = true;
+        Assert.assertTrue(JSPHelper.isGTMEnabled());
+    }
+
+    @Test
+    public void isGTMEnabled_shouldReturnFalseWhenNotEnabled() {
+        JSPHelper.googleTagManager = false;
+        Assert.assertFalse(JSPHelper.isGTMEnabled());
+    }
+
 }
