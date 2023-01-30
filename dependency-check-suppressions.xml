@@ -10,10 +10,4 @@
         <cve>CVE-2015-0254</cve>
     </suppress>
 
-    <suppress>
-        <gav regex="true">^.*spring-.*$</gav>
-        <cve>CVE-2016-1000027</cve>
-        <cve>CVE-2020-5408</cve>
-    </suppress>
-
 </suppressions>
