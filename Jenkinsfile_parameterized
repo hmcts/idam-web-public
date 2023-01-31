@@ -64,7 +64,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
             Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
   }
 
-  after('akschartsinstall') {
+  afterSuccess('akschartsinstall') {
     env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
     env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
     println """\
@@ -72,7 +72,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
             Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
   }
   
-  after('smoketest:idam-preview') {
+  afterSuccess('smoketest:idam-preview') {
     env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
     env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
     println """\
@@ -80,7 +80,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
             Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
   }
 
-  after('functionalTest:idam-preview') {
+  afterSuccess('functionalTest:idam-preview') {
     env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
     env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
     println """\
@@ -89,7 +89,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
   }
   // End AKS Callbacks
   
-  after('test') {
+  afterSuccess('test') {
     publishHTML target: [
         allowMissing         : true,
         alwaysLinkToLastBuild: true,
@@ -101,7 +101,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
 
   }
 
-  after('smoketest:idam-preview') {
+  afterSuccess('smoketest:idam-preview') {
     archiveArtifacts '**/build/test-results/**/*'
 
     publishHTML target: [
@@ -114,7 +114,7 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
     ]
   }
 
-  after('functionalTest:idam-preview') {
+  afterSuccess('functionalTest:idam-preview') {
     archiveArtifacts '**/build/test-results/**/*'
     archiveArtifacts '**/functional-output/**/*'
 
