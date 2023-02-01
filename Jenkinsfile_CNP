@@ -56,8 +56,8 @@ withPipeline(type, product, component) {
     before('smoketest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
-        env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
-        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.service.core-compute-preview.internal"
+        env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
+        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
@@ -67,8 +67,8 @@ withPipeline(type, product, component) {
     before('functionalTest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
-        env.IDAMAPI = "https://idam-api.service.core-compute-preview.internal"
-        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.service.core-compute-preview.internal"
+        env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
+        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
@@ -105,7 +105,7 @@ withPipeline(type, product, component) {
                 Using ITHC_ENVIRONMENT_NAME: ${env.ITHC_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    after('akschartsinstall') {
+    afterSuccess('akschartsinstall') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
         println """\
@@ -113,7 +113,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    after('smoketest:idam-preview') {
+    afterSuccess('smoketest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
         println """\
@@ -121,7 +121,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    after('functionalTest:idam-preview') {
+    afterSuccess('functionalTest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
         println """\
@@ -130,7 +130,7 @@ withPipeline(type, product, component) {
     }
     // End AKS Callbacks
 
-    after('test') {
+    afterSuccess('test') {
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
@@ -142,7 +142,7 @@ withPipeline(type, product, component) {
 
     }
 
-    after('smoketest:idam-preview') {
+    afterSuccess('smoketest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
@@ -155,7 +155,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('smoketest:idam-aat') {
+    afterSuccess('smoketest:idam-aat') {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
@@ -168,7 +168,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('functionalTest:idam-preview') {
+    afterSuccess('functionalTest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
 
@@ -182,7 +182,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('functionalTest:idam-aat') {
+    afterSuccess('functionalTest:idam-aat') {
         env.TESTS_FOR_ACCESSIBILITY = false
         env.WAIT_FOR_ACTION_TIMEOUT = 500
         archiveArtifacts '**/build/test-results/**/*'

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.idam.web.helper;
 
-import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.net.URLCodec;
@@ -13,8 +12,8 @@ import org.springframework.web.util.UrlPathHelper;
 import uk.gov.hmcts.reform.idam.web.Application;
 import uk.gov.hmcts.reform.idam.web.config.IdamWebMvcConfiguration;
 
-import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
@@ -23,6 +22,7 @@ import java.util.Optional;
 @UtilityClass
 public class JSPHelper {
 
+    private static boolean googleTagManager;
     private static final URLCodec URL_CODEC = new URLCodec();
     private static MessageSource messageSource;
     private final UrlPathHelper pathHelper = new UrlPathHelper();
@@ -32,7 +32,7 @@ public class JSPHelper {
      * @should return correct url for Welsh
      * @should throw if there is no request in context
      */
-    @Nonnull
+    @NotNull
     public String getOtherLocaleUrl() throws DecoderException {
         final ServletRequestAttributes servletRequestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         final HttpServletRequest request = servletRequestAttributes != null ? servletRequestAttributes.getRequest() : null;
@@ -58,7 +58,7 @@ public class JSPHelper {
      * @should add nonexisting parameter
      * @should throw on any of the parameters being null
      */
-    public static String overrideLocaleParameter(@NonNull final UriComponentsBuilder builder, @NonNull final String targetLocale) {
+    public static String overrideLocaleParameter(@NotNull final UriComponentsBuilder builder, @NotNull final String targetLocale) {
         return builder.replaceQueryParam(IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME, new Locale(targetLocale)).toUriString();
     }
 
@@ -66,7 +66,7 @@ public class JSPHelper {
      * @should return en if current locale is welsh
      * @should return cy if current locale is english
      */
-    @Nonnull
+    @NotNull
     public static String getTargetLocale() {
         if (JSPHelper.messageSource == null) {
             final MessageSource newMessageSource = Application.getContext().getBean(MessageSource.class);
@@ -80,4 +80,11 @@ public class JSPHelper {
         return LocaleContextHolder.getLocale();
     }
 
+    public static void setGTMEnabled(boolean enabled) {
+        googleTagManager = enabled;
+    }
+
+    public static boolean isGTMEnabled() {
+        return googleTagManager;
+    }
 }

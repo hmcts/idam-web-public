@@ -40,4 +40,6 @@ public class AuthorizeRequest {
     private boolean mojLoginEnabled;
 
     private boolean hasOtpCheckFailed;
+
+    private boolean missingAuthIdCookie;
 }

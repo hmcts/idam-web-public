@@ -1,33 +1,32 @@
 #!groovy
+
 properties([
-//    pipelineTriggers([cron('10 21 * * *')]),
-parameters([
-    string(name: 'ENVIRONMENT', defaultValue: 'aat', description: 'Environment to test'),
-    string(name: 'URL_TO_TEST', defaultValue: 'https://idam-web-public.aat.platform.hmcts.net', description: 'The URL you want to run these tests against'),
-    string(name: 'API_URL_TO_TEST', defaultValue: 'https://idam-api.aat.platform.hmcts.net', description: 'The API URL you want to run these tests against '),
-    string(name: 'TESTING_SUPPORT_API_URL', defaultValue: 'https://idam-testing-support-api.aat.platform.hmcts.net', description: 'The testing support api URL you want to run these tests against'),
-    string(name: 'RPE_AUTH_URL', defaultValue: 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal', description: 'The URL for s2s token authentication'),
-    string(name: 'REF_DATA_URL', defaultValue: 'http://rd-professional-api-aat.service.core-compute-aat.internal', description: 'The URL for calls to Ref Data (PRD)'),
-    string(name: 'WAIT_FOR_ACTION_TIMEOUT', defaultValue: '2000', description: 'How long to wait after click, doubleClick or PressKey actions in ms'),
-    booleanParam(name: 'skipSecurityScanTests', defaultValue: false, description: 'Runs on aat envt only, tick the checkbox for skip'),
-    booleanParam(name: 'enableNonAATSecurityScan', defaultValue: false, description: 'Enables security scan on non-aat environments (won\'t honour the ZapScanner exclusions list atm)'),
-    booleanParam(name: 'skipMutationTests', defaultValue: false, description: 'Tick the checkbox for skip'),
-    booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox for skip'),
-    booleanParam(name: 'skipCrossBrowserTests', defaultValue: false, description: 'Tick the checkbox for skip'),
-    booleanParam(name: 'skipFortifyTests', defaultValue: true, description: 'Tick the checkbox for skip'),
-    booleanParam(name: 'USE_PROXY_SERVER', defaultValue: false, description: 'use proxy server for tests, required (true) for sandbox envt only'),
+    pipelineTriggers([cron('30 02 * * *')]),
+
+    parameters([
+        string(name: 'ENVIRONMENT', defaultValue: 'aat', description: 'Environment to test'),
+        string(name: 'URL_TO_TEST', defaultValue: 'https://idam-web-public.aat.platform.hmcts.net', description: 'The URL you want to run these tests against'),
+        string(name: 'API_URL_TO_TEST', defaultValue: 'https://idam-api.aat.platform.hmcts.net', description: 'The API URL you want to run these tests against '),
+        string(name: 'TESTING_SUPPORT_API_URL', defaultValue: 'https://idam-testing-support-api.aat.platform.hmcts.net', description: 'The testing support api URL you want to run these tests against'),
+        string(name: 'RPE_AUTH_URL', defaultValue: 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal', description: 'The URL for s2s token authentication'),
+        string(name: 'REF_DATA_URL', defaultValue: 'http://rd-professional-api-aat.service.core-compute-aat.internal', description: 'The URL for calls to Ref Data (PRD)'),
+        string(name: 'WAIT_FOR_ACTION_TIMEOUT', defaultValue: '2000', description: 'How long to wait after click, doubleClick or PressKey actions in ms')
+    ])
 ])
-])
+
 @Library("Infrastructure") _
 import uk.gov.hmcts.contino.GradleBuilder
 
 GradleBuilder builder = new GradleBuilder(this, 'jenkins-library')
+
 def type = "java"
+
 def product = "idam"
+
 def component = "web-public"
 
 def secrets = [
-    "idam-idam-${params.ENVIRONMENT}": [
+    'idam-idam-aat': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY'),
@@ -54,54 +53,34 @@ try {
         env.REF_DATA_URL = params.REF_DATA_URL
         env.WAIT_FOR_ACTION_TIMEOUT = params.WAIT_FOR_ACTION_TIMEOUT
         loadVaultSecrets(secrets)
+        enableSecurityScan()
+        enableMutationTest()
+        enableFullFunctionalTest(200)
+        enableCrossBrowserTest()
+        enableFortifyScan('idam-idam-' + params.ENVIRONMENT)
 
-        if ((params.ENVIRONMENT == 'aat' || params.enableNonAATSecurityScan) && !params.skipSecurityScanTests) {
-            enableSecurityScan()
-        }
-
-        if (!params.skipMutationTests) {
-            enableMutationTest()
-        }
-
-        if (!params.skipCrossBrowserTests) {
-            enableCrossBrowserTest()
+        afterSuccess('fortify-scan') {
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
         }
 
-        if ((params.ENVIRONMENT == 'aat' || params.enableNonAATSecurityScan) && !params.skipSecurityScanTests) {
-            enableSecurityScan()
-        }
-        if (!params.skipMutationTests) {
-            enableMutationTest()
-        }
-        if (!params.skipCrossBrowserTests) {
-            enableCrossBrowserTest()
-        }
-        if (!params.skipFortifyTests) {
-            enableFortifyScan('idam-idam-' + params.ENVIRONMENT)
-            after('fortify-scan') {
-                steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-            }
+        before('fullFunctionalTest') {
+            env.TESTS_FOR_ACCESSIBILITY = true
         }
 
+        afterSuccess('fullFunctionalTest') {
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+            env.TESTS_FOR_ACCESSIBILITY = false
 
-        if (!params.skipFullFunctionalTests) {
-            before('fullFunctionalTest') {
-                env.TESTS_FOR_ACCESSIBILITY = true
-            }
-            enableFullFunctionalTest(200)
-            after('fullFunctionalTest') {
-                publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "output",
-                    reportFiles          : "idam-web-public-e2e-result.html",
-                    reportName           : "IDAM Web Public E2E functional tests result"
-                ]
-            }
+            publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "output",
+                reportFiles          : "idam-web-public-e2e-result.html",
+                reportName           : "IDAM Web Public E2E functional tests result"
+            ]
         }
     }
-
 } catch (err) {
     node {
         onMaster() {
