@@ -1,15 +1,16 @@
 [versions]
 api-spec = "3.10.2"
 app-insights = "2.5.1"
-commons-io = "2.8.0"
-commons-text = "1.1"
-feign = "11.6"
+commons-io = "2.11.0"
+commons-text = "1.10.0"
+commons-fileupload = "1.5"
+feign = "12.1"
 feign-form = "3.8.0"
 findbugs = "3.0.2"
 guava = "31.1-jre"
 snakeyaml = "1.33"
-spring-boot = "2.7.8"
-spring-cloud = "3.1.4"
+spring-boot = "2.7.9"
+spring-cloud = "3.1.6"
 spring-security-oauth2 = "2.5.2.RELEASE"
 spring-security-oauth2-autoconfigure = "2.6.8"
 
@@ -17,6 +18,7 @@ spring-security-oauth2-autoconfigure = "2.6.8"
 applicationinsights-logging-logback = { module = "com.microsoft.azure:applicationinsights-logging-logback", version.ref = "app-insights" }
 applicationinsights-spring-boot-starter = { module = "com.microsoft.azure:applicationinsights-spring-boot-starter", version.ref = "app-insights" }
 applicationinsights-web = { module = "com.microsoft.azure:applicationinsights-web", version.ref = "app-insights" }
+commons-fileupload = { module = " commons-fileupload:commons-fileupload", version.ref = "commons-fileupload" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
 feign-jackson = { module = "io.github.openfeign:feign-jackson", version.ref = "feign" }
