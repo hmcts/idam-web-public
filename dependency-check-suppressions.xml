@@ -10,4 +10,24 @@
         <cve>CVE-2015-0254</cve>
     </suppress>
 
+    <!-- Currently no fixes are available for snakeyaml -->
+    <suppress>
+        <gav regex="true">^.*snakeyaml.*$</gav>
+        <cve>CVE-2022-1471</cve>
+        <cve>CVE-2022-25857</cve>
+        <cve>CVE-2022-38749</cve>
+        <cve>CVE-2022-38751</cve>
+        <cve>CVE-2022-38752</cve>
+        <cve>CVE-2022-41854</cve>
+        <cve>CVE-2022-38750</cve>
+    </suppress>
+
+    <!-- Until we can switch to spring 3+ these need to be suppressed -->
+    <suppress>
+        <gav regex="true">^.*$</gav>
+        <cve>CVE-2022-45688</cve>
+        <cve>CVE-2016-1000027</cve>
+        <cve>CVE-2020-5408</cve>
+    </suppress>
+
 </suppressions>

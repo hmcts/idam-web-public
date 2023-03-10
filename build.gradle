@@ -74,11 +74,15 @@ allprojects {
       exclude module: 'springfox-swagger-ui'
     }
     implementation libs.guava
+    implementation libs.commons.fileupload
     implementation libs.commons.io
     implementation libs.commons.text
     implementation libs.snakeyaml
     implementation libs.findbugs.jsr305
-    implementation libs.bundles.feign
+    implementation (libs.bundles.feign) {
+      exclude group: 'commons-fileupload'
+      exclude module: 'commons-fileupload'
+    }
     implementation libs.bundles.applicationinsights
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
