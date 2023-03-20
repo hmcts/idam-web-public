@@ -480,7 +480,7 @@ class IdamHelper extends Helper {
         let i = 1;
         while (i < maxRetries && !emailResponse) {
             console.log(`Retrying email in notify for ${i} time`);
-            await this.sleep(1000);
+            await this.sleep((maxRetries - 1) * 1000);
             emailResponse = await this.getEmailFromNotifyUsingTestingSupportService(accessToken, searchEmail);
             i++;
         }
