@@ -18,7 +18,7 @@ module.exports = {
     urlInvalidLang: `&${localeParam}=invalid`,
 
     createAnAccountOrSignIn: 'Creu cyfrif neu fewngofnodi',
-    createAnAccount: 'Greu cyfrif',
+    createAnAccount: 'Creu cyfrif',
     continueBtn: 'Parhau',
     checkYourEmail: 'Gwiriwch eich negeseuon e-bost',
     youAlreadyHaveAccountSubject: 'Mae gennych gyfrif yn barod / You already have an account',
