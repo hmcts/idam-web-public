@@ -9,26 +9,7 @@ DEBUG=false
 
 # ------------------------------------------------------------------
 
-if [ "$DEBUG" == "true" ]; then
-    ZAP_PORT=8080
-    TEST_URL=https://idam-web-public.aat.platform.hmcts.net
-
-    # start ZAP locally
-    echo "Starting a local instance of ZAP..."
-    #docker pull owasp/zap2docker-weekly:latest
-    docker run -d -u zap -p $ZAP_PORT:$ZAP_PORT owasp/zap2docker-weekly zap-x.sh \
-        -d \
-        -host $ZAP_HOST \
-        -port $ZAP_PORT \
-        -config api.disablekey=true \
-        -config scanner.attackOnStart=true \
-        -config view.mode=attack \
-        -config connection.dnsTtlSuccessfulQueries=-1 \
-        -config api.addrs.addr.name=".*" \
-        -config api.addrs.addr.regex=true
-else
-    zap-x.sh -daemon -host $ZAP_HOST -port $ZAP_PORT -config database.newsession=3 -config database.newsessionprompt=false -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true &
-fi
+zap-x.sh -daemon -host $ZAP_HOST -port $ZAP_PORT -config database.newsession=3 -config database.newsessionprompt=false -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config rules.cookie.ignorelist=_ga,_gid,_gat,dtCookie,dtLatC,dtPC,dtSa,rxVisitor,rxvt -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true &
 
 # Wait for ZAP to start
 printf "Waiting for ZAP to start"
