@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-    pipelineTriggers([cron('30 02 * * *')]),
+    pipelineTriggers([cron('070 07 * * *')]),
 
     parameters([
         string(name: 'ENVIRONMENT', defaultValue: 'aat', description: 'Environment to test'),
