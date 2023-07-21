@@ -15,6 +15,11 @@
         <gav regex="true">^.*org.springframework.*$</gav>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2020-5408</cve>
+        <cve>CVE-2023-34034</cve>
+    </suppress>
+    <suppress>
+        <gav regex="true">^.*org.bouncycastle.*$</gav>
+        <cve>CVE-2023-33201</cve>
     </suppress>
 
     <!--
@@ -27,6 +32,24 @@
     <suppress>
         <gav regex="true">^.*com.google.guava.*$</gav>
         <cve>CVE-2020-8908</cve>
+    </suppress>
+
+    <!--
+        No fixed version as of 21/07/2023
+    -->
+    <suppress>
+        <gav regex="true">^.*com.fasterxml.jackson.*$</gav>
+        <cve>CVE-2023-35116</cve>
+    </suppress>
+
+    <suppress>
+        <gav regex="true">^.*io.netty.*$</gav>
+        <cve>CVE-2023-34462</cve>
+    </suppress>
+
+    <suppress>
+        <gav regex="true">^.*com.squareup.okio.*$</gav>
+        <cve>CVE-2023-3635</cve>
     </suppress>
 
 </suppressions>
