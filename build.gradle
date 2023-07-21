@@ -247,7 +247,7 @@ sonarqube {
     property "sonar.host.url", "https://sonar.reform.hmcts.net/"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco.xml"
   }
 }
 
@@ -267,6 +267,7 @@ jacocoTestReport {
     xml.required = true
     html.required = true
     html.destination file("${buildDir}/reports/jacoco")
+    xml.destination file("${buildDir}/reports/jacoco.xml")
   }
 }
 
