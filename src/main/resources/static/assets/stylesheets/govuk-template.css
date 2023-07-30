@@ -498,20 +498,16 @@ fieldset {
 }
 
 a:link {
-    color: #005ea5;
-}
+    color: #1d70b8; }
 
 a:visited {
-    color: #4c2c92;
-}
+    color: #4c2c92; }
 
 a:hover {
-    color: #2b8cc4;
-}
+    color: #003078; }
 
 a:active {
-    color: #2b8cc4;
-}
+    color: #0b0c0c; }
 
 /*
  * 1. Corrects text resizing oddly in IE6/7 when body font-size is set using em units
@@ -732,13 +728,13 @@ a {
 }
 
 a:focus {
-    background-color: #ffbf47;
-    outline: 3px solid #ffbf47;
+    background-color: #ffdd00;
+    outline: 3px solid #ffdd00;
 }
 
 /* Make links slightly darker when focused to improve contrast. */
 a:link:focus {
-    color: #005798;
+    color: #0b0c0c;
 }
 
 /* Make skiplinks visible when they are tabbed to */
