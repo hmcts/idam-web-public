@@ -51,5 +51,9 @@
         <gav regex="true">^.*com.squareup.okio.*$</gav>
         <cve>CVE-2023-3635</cve>
     </suppress>
+    <suppress base="true">
+        <gav regex="true">^.*com.squareup.okhttp3:okhttp.*$</gav>
+        <cve>CVE-2023-3782</cve>
+    </suppress>
 
 </suppressions>
