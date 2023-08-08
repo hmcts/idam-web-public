@@ -77,6 +77,7 @@ allprojects {
   }
 
   dependencies {
+    implementation group: 'com.squareup.okio', name: 'okio', version: '3.5.0'
     implementation (libs.idam.api.spec) {
       exclude module: 'springfox-swagger2'
       exclude module: 'springfox-swagger-ui'
