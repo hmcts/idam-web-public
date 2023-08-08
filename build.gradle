@@ -51,6 +51,8 @@ allprojects {
     }
   }
 
+  ext['okhttp.version'] = '4.11.0'
+
   repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
@@ -75,6 +77,17 @@ allprojects {
   }
 
   dependencies {
+    configurations.all {
+      exclude group:"org.bouncycastle", module: "bcprov-jdk15on"
+      exclude group:"org.bouncycastle", module: "bcutil-jdk15on"
+      exclude group:"org.bouncycastle", module: "bcpkix-jdk15on"
+    }
+
+
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.74'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.74'
+    implementation 'org.bouncycastle:bcutil-jdk18on:1.74'
+
     implementation (libs.idam.api.spec) {
       exclude module: 'springfox-swagger2'
       exclude module: 'springfox-swagger-ui'
@@ -90,6 +103,8 @@ allprojects {
       exclude module: 'commons-fileupload'
     }
     implementation libs.bundles.applicationinsights
+
+    implementation group: 'com.squareup.okio', name: 'okio', version: '3.5.0'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
