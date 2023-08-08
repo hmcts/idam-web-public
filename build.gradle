@@ -77,7 +77,6 @@ allprojects {
   }
 
   dependencies {
-    implementation group: 'com.squareup.okio', name: 'okio', version: '3.5.0'
     implementation (libs.idam.api.spec) {
       exclude module: 'springfox-swagger2'
       exclude module: 'springfox-swagger-ui'
@@ -93,6 +92,8 @@ allprojects {
       exclude module: 'commons-fileupload'
     }
     implementation libs.bundles.applicationinsights
+
+    implementation group: 'com.squareup.okio', name: 'okio', version: '3.5.0'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'

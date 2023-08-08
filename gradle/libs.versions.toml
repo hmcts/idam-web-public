@@ -10,7 +10,7 @@ findbugs = "3.0.2"
 guava = "32.0.1-jre"
 snakeyaml = "2.0"
 spring-boot = "2.7.14"
-spring-cloud = "3.1.8"
+spring-cloud = "4.0.4"
 spring-security-oauth2 = "2.5.2.RELEASE"
 spring-security-oauth2-autoconfigure = "2.6.8"
 
