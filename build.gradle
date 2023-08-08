@@ -19,6 +19,12 @@ gitProperties {
   dateFormat = "yyyy-MM-dd HH:mm:ssZ"
 }
 
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
+}
+
 allprojects {
   apply plugin: 'java'
   apply plugin: 'io.spring.dependency-management'
@@ -30,8 +36,8 @@ allprojects {
   group = 'uk.gov.hmcts.reform.idam'
   description = 'idam-web-public'
 
-  sourceCompatibility = 11
-  targetCompatibility = 11
+  sourceCompatibility = 17
+  targetCompatibility = 17
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
@@ -128,7 +134,6 @@ allprojects {
     }
 
     testImplementation 'com.github.hmcts:fortify-client:1.1.0.patch-1.1:all'
-    testImplementation group: 'ch.qos.logback', name: 'logback-classic'
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
     testImplementation('pl.pragmatists:JUnitParams:1.1.1') {
@@ -242,7 +247,7 @@ sonarqube {
     property "sonar.host.url", "https://sonar.reform.hmcts.net/"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco.xml"
   }
 }
 
@@ -259,9 +264,10 @@ pitest {
 
 jacocoTestReport {
   reports {
-    xml.enabled = true
-    html.enabled = true
-    html.destination = file("${buildDir}/reports/jacoco")
+    xml.required = true
+    html.required = true
+    html.destination file("${buildDir}/reports/jacoco")
+    xml.destination file("${buildDir}/reports/jacoco.xml")
   }
 }
 

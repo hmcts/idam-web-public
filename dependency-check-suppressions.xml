@@ -15,75 +15,13 @@
         <gav regex="true">^.*org.springframework.*$</gav>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2020-5408</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[file name: spring-security-acl-5.7.9.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-acl@.*$</packageUrl>
         <cve>CVE-2023-34034</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[
-   file name: spring-security-web-5.7.9.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-web@.*$</packageUrl>
-        <cve>CVE-2023-34034</cve>
+        <gav regex="true">^.*org.bouncycastle.*$</gav>
+        <cve>CVE-2023-33201</cve>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: spring-security-taglibs-5.7.9.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-taglibs@.*$</packageUrl>
-        <cve>CVE-2023-34034</cve>
-    </suppress>
-    <suppress>
-    <notes><![CDATA[
-   file name: spring-security-oauth2-resource-server-5.7.9.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-oauth2\-resource\-server@.*$</packageUrl>
-    <cve>CVE-2023-34034</cve>
-    </suppress>
-    <suppress>
-    <notes><![CDATA[
-   file name: spring-security-oauth2-jose-5.7.9.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-oauth2\-jose@.*$</packageUrl>
-    <cve>CVE-2023-34034</cve>
-    </suppress>
-    <suppress>
-    <notes><![CDATA[
-   file name: spring-security-oauth2-core-5.7.9.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-oauth2\-core@.*$</packageUrl>
-    <cve>CVE-2023-34034</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: spring-security-oauth2-client-5.7.9.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-oauth2\-client@.*$</packageUrl>
-        <cve>CVE-2023-34034</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: spring-security-data-5.7.9.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-data@.*$</packageUrl>
-        <cve>CVE-2023-34034</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: spring-security-crypto-5.7.9.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
-        <cve>CVE-2023-34034</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: spring-security-core-5.7.9.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-core@.*$</packageUrl>
-        <cve>CVE-2023-34034</cve>
-    </suppress>
+
     <!--
     https://github.com/google/guava/issues/4011
      There is no non-vulnerable upgrade path for this component/package.
@@ -95,32 +33,27 @@
         <gav regex="true">^.*com.google.guava.*$</gav>
         <cve>CVE-2020-8908</cve>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: okio-jvm-2.8.0.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.squareup\.okio/okio@.*$</packageUrl>
-        <cve>CVE-2023-3635</cve>
-    </suppress>
 
-    <!-- disputed -->
+    <!--
+        No fixed version as of 21/07/2023
+    -->
     <suppress>
-        <gav regex="true">^.*com.fasterxml.jackson.core.*$</gav>
+        <gav regex="true">^.*com.fasterxml.jackson.*$</gav>
         <cve>CVE-2023-35116</cve>
     </suppress>
 
     <suppress>
-        <notes><![CDATA[file name: okhttp-4.9.3.jar]]> </notes>
-        <packageUrl regex="true">^pkg:maven/com\.squareup\.okhttp3/okhttp@.*$</packageUrl>
-        <cve>CVE-2023-3782</cve>
+        <gav regex="true">^.*io.netty.*$</gav>
+        <cve>CVE-2023-34462</cve>
     </suppress>
 
     <suppress>
-        <notes><![CDATA[
-   file name: spring-security-config-5.7.9.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-config@.*$</packageUrl>
-        <cve>CVE-2023-34034</cve>
+        <gav regex="true">^.*com.squareup.okio.*$</gav>
+        <cve>CVE-2023-3635</cve>
+    </suppress>
+    <suppress base="true">
+        <gav regex="true">^.*com.squareup.okhttp3:okhttp.*$</gav>
+        <cve>CVE-2023-3782</cve>
     </suppress>
 
 </suppressions>

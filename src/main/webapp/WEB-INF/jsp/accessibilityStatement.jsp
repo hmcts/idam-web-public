@@ -88,6 +88,21 @@
             </li>
         </ul>
 
+        <h3 class="heading-small"><spring:message code="public.accessibility.statement.text_ftt_title" /></h3>
+        <ul class="list list-bullet">
+            <li>
+                <spring:message code="public.accessibility.statement.text_0016"/>
+                <a href='mailto: <spring:message code="public.accessibility.statement.text_ftt_email"/>'><spring:message code="public.accessibility.statement.text_ftt_email" /></a>
+            </li>
+            <li>
+                <spring:message code="public.accessibility.statement.text_0017"/>
+                <a href='tel: <spring:message code="public.accessibility.statement.text_ftt_phone"/>'><spring:message code="public.accessibility.statement.text_ftt_phone" /></a>
+            </li>
+            <li>
+                <spring:message code="public.accessibility.statement.text_ftt_hours"/>
+            </li>
+        </ul>
+
         <h3 class="heading-small"><spring:message code="public.accessibility.statement.text_fpl_title" /></h3>
         <ul class="list list-bullet">
             <li>
