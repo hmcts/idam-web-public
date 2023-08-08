@@ -14,8 +14,6 @@
     <suppress>
         <gav regex="true">^.*org.springframework.*$</gav>
         <cve>CVE-2016-1000027</cve>
-        <cve>CVE-2020-5408</cve>
-        <cve>CVE-2023-34034</cve>
     </suppress>
 
     <!--
