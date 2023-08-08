@@ -19,6 +19,12 @@ gitProperties {
   dateFormat = "yyyy-MM-dd HH:mm:ssZ"
 }
 
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
+}
+
 allprojects {
   apply plugin: 'java'
   apply plugin: 'io.spring.dependency-management'
@@ -30,8 +36,8 @@ allprojects {
   group = 'uk.gov.hmcts.reform.idam'
   description = 'idam-web-public'
 
-  sourceCompatibility = 11
-  targetCompatibility = 11
+  sourceCompatibility = 17
+  targetCompatibility = 17
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
@@ -44,6 +50,8 @@ allprojects {
       mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
     }
   }
+
+  ext['okhttp.version'] = '4.11.0'
 
   repositories {
     mavenCentral()
@@ -69,6 +77,17 @@ allprojects {
   }
 
   dependencies {
+    configurations.all {
+      exclude group:"org.bouncycastle", module: "bcprov-jdk15on"
+      exclude group:"org.bouncycastle", module: "bcutil-jdk15on"
+      exclude group:"org.bouncycastle", module: "bcpkix-jdk15on"
+    }
+
+
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.74'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.74'
+    implementation 'org.bouncycastle:bcutil-jdk18on:1.74'
+
     implementation (libs.idam.api.spec) {
       exclude module: 'springfox-swagger2'
       exclude module: 'springfox-swagger-ui'
@@ -84,6 +103,8 @@ allprojects {
       exclude module: 'commons-fileupload'
     }
     implementation libs.bundles.applicationinsights
+
+    implementation group: 'com.squareup.okio', name: 'okio', version: '3.5.0'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -120,15 +141,14 @@ allprojects {
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper'
-    implementation group: 'org.pitest', name: 'pitest', version: '1.6.6'
-    implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.6.0'
+    implementation group: 'org.pitest', name: 'pitest', version: '1.14.2'
+    implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.9.11'
     implementation group: 'org.owasp.encoder', name: 'encoder-jsp', version: '1.2.2'
     implementation (group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: '0.5') {
       exclude module: 'junit'
     }
 
     testImplementation 'com.github.hmcts:fortify-client:1.1.0.patch-1.1:all'
-    testImplementation group: 'ch.qos.logback', name: 'logback-classic'
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
     testImplementation('pl.pragmatists:JUnitParams:1.1.1') {
@@ -242,7 +262,7 @@ sonarqube {
     property "sonar.host.url", "https://sonar.reform.hmcts.net/"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco.xml"
   }
 }
 
@@ -259,9 +279,10 @@ pitest {
 
 jacocoTestReport {
   reports {
-    xml.enabled = true
-    html.enabled = true
-    html.destination = file("${buildDir}/reports/jacoco")
+    xml.required = true
+    html.required = true
+    html.destination file("${buildDir}/reports/jacoco")
+    xml.destination file("${buildDir}/reports/jacoco.xml")
   }
 }
 

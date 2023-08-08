@@ -14,7 +14,6 @@
     <suppress>
         <gav regex="true">^.*org.springframework.*$</gav>
         <cve>CVE-2016-1000027</cve>
-        <cve>CVE-2020-5408</cve>
     </suppress>
 
     <!--
@@ -31,7 +30,7 @@
 
     <!-- disputed -->
     <suppress>
-        <gav regex="true">^.*com.fasterxml.jackson.core.*$</gav>
+        <gav regex="true">^.*com.fasterxml.jackson.*$</gav>
         <cve>CVE-2023-35116</cve>
     </suppress>
 
