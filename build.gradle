@@ -51,6 +51,8 @@ allprojects {
     }
   }
 
+  ext['okhttp.version'] = '4.11.0'
+
   repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }

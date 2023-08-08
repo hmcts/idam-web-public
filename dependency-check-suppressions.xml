@@ -34,26 +34,10 @@
         <cve>CVE-2020-8908</cve>
     </suppress>
 
-    <!--
-        No fixed version as of 21/07/2023
-    -->
+    <!-- disputed -->
     <suppress>
         <gav regex="true">^.*com.fasterxml.jackson.*$</gav>
         <cve>CVE-2023-35116</cve>
-    </suppress>
-
-    <suppress>
-        <gav regex="true">^.*io.netty.*$</gav>
-        <cve>CVE-2023-34462</cve>
-    </suppress>
-
-    <suppress>
-        <gav regex="true">^.*com.squareup.okio.*$</gav>
-        <cve>CVE-2023-3635</cve>
-    </suppress>
-    <suppress base="true">
-        <gav regex="true">^.*com.squareup.okhttp3:okhttp.*$</gav>
-        <cve>CVE-2023-3782</cve>
     </suppress>
 
 </suppressions>
