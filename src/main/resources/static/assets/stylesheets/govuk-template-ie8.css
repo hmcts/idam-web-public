@@ -877,6 +877,10 @@ button:focus {
     margin-bottom: 0;
 }
 
+#global-cookie-message a:link {
+    color: #1669b1;
+}
+
 /* Global footer */
 #footer {
     background-color: #dee0e2;
