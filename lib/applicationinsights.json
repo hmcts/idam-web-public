@@ -1,0 +1,19 @@
+{
+  "connectionString": "${file:/mnt/secrets/idam-idam/app-insights-connection-string}",
+  "role": {
+    "name": "idam-web-public"
+  },
+  "preview": {
+    "roleNameOverrides": [
+      {
+        "httpPathPrefix": "/health/",
+        "roleName": "idam-web-public (health)"
+      }
+    ]
+  },
+  "instrumentation": {
+    "micrometer": {
+      "enabled": false
+    }
+  }
+}
