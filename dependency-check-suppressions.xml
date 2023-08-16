@@ -10,4 +10,28 @@
         <cve>CVE-2015-0254</cve>
     </suppress>
 
+    <!-- Until we can switch to spring 3+ these need to be suppressed -->
+    <suppress>
+        <gav regex="true">^.*org.springframework.*$</gav>
+        <cve>CVE-2016-1000027</cve>
+    </suppress>
+
+    <!--
+    https://github.com/google/guava/issues/4011
+     There is no non-vulnerable upgrade path for this component/package.
+     We recommend investigating alternative components or replacing all usages of the deprecated
+     Files.createTempDir() method with a safer alternative, such as java.nio.file.Files.createTempDirectory()
+     for Java 7+.
+    -->
+    <suppress>
+        <gav regex="true">^.*com.google.guava.*$</gav>
+        <cve>CVE-2020-8908</cve>
+    </suppress>
+
+    <!-- disputed -->
+    <suppress>
+        <gav regex="true">^.*com.fasterxml.jackson.*$</gav>
+        <cve>CVE-2023-35116</cve>
+    </suppress>
+
 </suppressions>
