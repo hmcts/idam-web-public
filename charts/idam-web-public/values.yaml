@@ -12,6 +12,8 @@ java:
     "idam-idam":
       resourceGroup: idam-idam
       secrets:
+        - name: AppInsightsConnectionString
+          alias: app-insights-connection-string
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
         - name: redis-hostname
