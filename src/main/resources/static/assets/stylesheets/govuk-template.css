@@ -509,32 +509,6 @@ a:hover {
 a:active {
     color: #0b0c0c; }
 
-.translation-nav__list {
-    list-style: none;
-    margin: 0 -10px;
-    padding: 0;
-}
-
-.translation-nav__list:after {
-    content: "";
-    display: block;
-    clear: both;
-}
-
-.translation-nav__list-item {
-    float: left;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-bottom: 10px;
-    border-right: 1px solid #b1b4b6;
-    height: 16px;
-}
-
-.translation-nav__list-item:last-child {
-    border-right: 0;
-    border-left: 0;
-}
-
 /*
  * 1. Corrects text resizing oddly in IE6/7 when body font-size is set using em units
  *    http://clagnut.com/blog/348/#c790
