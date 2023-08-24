@@ -68,16 +68,25 @@ public class JSPHelper {
      */
     @NotNull
     public static String getTargetLocale() {
+        nullCheckMessageSource();
+        return JSPHelper.messageSource.getMessage("public.common.language.switch.locale", null, getCurrentLocale());
+    }
+
+    public static Locale getCurrentLocale() {
+        return LocaleContextHolder.getLocale();
+    }
+
+    public static String getLocalisedText(String messageCode, String languageTag) {
+        nullCheckMessageSource();
+        return JSPHelper.messageSource.getMessage(messageCode, null, Locale.forLanguageTag(languageTag));
+    }
+
+    private static void nullCheckMessageSource() {
         if (JSPHelper.messageSource == null) {
             final MessageSource newMessageSource = Application.getContext().getBean(MessageSource.class);
             JSPHelper.messageSource = Optional.ofNullable(newMessageSource)
                 .orElseThrow(() -> new IllegalStateException("No messages source is available"));
         }
-        return JSPHelper.messageSource.getMessage("public.common.language.switch.locale", null, getCurrentLocale());
-    }
-
-    private static Locale getCurrentLocale() {
-        return LocaleContextHolder.getLocale();
     }
 
     public static void setGTMEnabled(boolean enabled) {

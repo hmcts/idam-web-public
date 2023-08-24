@@ -213,27 +213,9 @@
 <main id="content" role="main">
     <div class="centered-content">
         <div class="govuk-phase-banner">
-            <p class="govuk-phase-banner__content govuk-p-size-override">
-                <strong class="govuk-tag govuk-phase-banner__content__tag govuk-p-size-override">
-                    <spring:message code="public.template.header.phase.tag"/>
-                </strong>
                 <span class="govuk-phase-banner__text">
-                    <c:set var="smartSurveyParam">
-                        ${pageContext.request.scheme}://${pageContext.request.serverName}${requestScope['javax.servlet.forward.request_uri']}${empty param.client_id ? '' : '?client_id='}${param.client_id}
-                    </c:set>
-                    <c:set var="smartSurveyUrl">
-                        <spring:url value="https://www.smartsurvey.co.uk/s/IDAMSurvey/">
-                            <spring:param name="pageurl" value="${smartSurveyParam}"/>
-                        </spring:url>
-                    </c:set>
-                    <spring:message
-                        htmlEscape="false"
-                        code="public.template.header.phase.description"
-                        arguments="${smartSurveyUrl}"
-                    />
                     <t:languageSwitch/>
                 </span>
-            </p>
         </div>
     </div>
 
