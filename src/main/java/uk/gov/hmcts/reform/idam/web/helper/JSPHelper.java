@@ -76,7 +76,7 @@ public class JSPHelper {
         return JSPHelper.messageSource.getMessage("public.common.language.switch.locale", null, getCurrentLocale());
     }
 
-    private static Locale getCurrentLocale() {
+    public static Locale getCurrentLocale() {
         return LocaleContextHolder.getLocale();
     }
 
