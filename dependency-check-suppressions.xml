@@ -14,6 +14,13 @@
     <suppress>
         <gav regex="true">^.*org.springframework.*$</gav>
         <cve>CVE-2016-1000027</cve>
+        <cve>CVE-2020-5408</cve>
+    </suppress>
+
+    <!-- Currently being investigated, no fix version -->
+    <suppress>
+        <gav regex="true">^.*io.netty.*$</gav>
+        <cve>CVE-2023-4586</cve>
     </suppress>
 
     <!--
