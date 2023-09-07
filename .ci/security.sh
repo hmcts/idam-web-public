@@ -38,7 +38,6 @@ globalexcludeurl.url_list.url(10).regex='.*/cookies.*'
 globalexcludeurl.url_list.url(10).enabled=true
 globalexcludeurl.url_list.url(11).regex='.*/cookie-preferences.*'
 globalexcludeurl.url_list.url(11).enabled=true
-line 2
 EOT
 
   echo "ZAP has successfully started"
