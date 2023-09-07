@@ -11,8 +11,38 @@ while !(curl -s http://0.0.0.0:1001) > /dev/null
     i=$(( (i+1) %4 ))
     sleep .1
   done
+  echo "Writing config file"
+
+cat <<EOT >> configfile
+globalexcludeurl.url_list.url(0).regex='.*jquery-3.4.1.min.js$'
+globalexcludeurl.url_list.url(0).enabled=true
+globalexcludeurl.url_list.url(1).regex='.*jquery-3.5.1.min.js$'
+globalexcludeurl.url_list.url(1).enabled=true
+globalexcludeurl.url_list.url(2).regex='.*/assets/images.*'
+globalexcludeurl.url_list.url(2).enabled=true
+globalexcludeurl.url_list.url(3).regex='.*/assets/stylesheets.*'
+globalexcludeurl.url_list.url(3).enabled=true
+globalexcludeurl.url_list.url(4).regex='.*/assets/javascripts.*'
+globalexcludeurl.url_list.url(4).enabled=true
+globalexcludeurl.url_list.url(5).regex='.*/ruxitagentjs_.*'
+globalexcludeurl.url_list.url(5).enabled=true
+globalexcludeurl.url_list.url(6).regex='.*/terms-and-conditions.*'
+globalexcludeurl.url_list.url(6).enabled=true
+globalexcludeurl.url_list.url(7).regex='.*/privacy-policy.*'
+globalexcludeurl.url_list.url(7).enabled=true
+globalexcludeurl.url_list.url(8).regex='.*/contact-us.*'
+globalexcludeurl.url_list.url(8).enabled=true
+globalexcludeurl.url_list.url(9).regex='.*/login.*'
+globalexcludeurl.url_list.url(9).enabled=true
+globalexcludeurl.url_list.url(10).regex='.*/cookies.*'
+globalexcludeurl.url_list.url(10).enabled=true
+globalexcludeurl.url_list.url(11).regex='.*/cookie-preferences.*'
+globalexcludeurl.url_list.url(11).enabled=true
+line 2
+EOT
+
   echo "ZAP has successfully started"
-  zap-full-scan.py -t ${TEST_URL} -P 1001 -l FAIL -r /zap/wrk/activescan.html -d  -z "-config globalexcludeurl.url_list.url(0).regex='.*jquery-3.4.1.min.js$' -config globalexcludeurl.url_list.url(0).enabled=true -config globalexcludeurl.url_list.url(1).regex='.*jquery-3.5.1.min.js$' -config globalexcludeurl.url_list.url(1).enabled=true -config globalexcludeurl.url_list.url(2).regex='.*/assets/images.*' -config globalexcludeurl.url_list.url(2).enabled=true -config globalexcludeurl.url_list.url(3).regex='.*/assets/stylesheets.*' -config globalexcludeurl.url_list.url(3).enabled=true -config globalexcludeurl.url_list.url(4).regex='.*/assets/javascripts.*' -config globalexcludeurl.url_list.url(4).enabled=true -config globalexcludeurl.url_list.url(5).regex='.*/ruxitagentjs_.*' -config globalexcludeurl.url_list.url(5).enabled=true -config globalexcludeurl.url_list.url(6).regex='.*/terms-and-conditions.*' -config globalexcludeurl.url_list.url(6).enabled=true -config globalexcludeurl.url_list.url(7).regex='.*/privacy-policy.*' -config globalexcludeurl.url_list.url(7).enabled=true -config globalexcludeurl.url_list.url(8).regex='.*/contact-us.*' -config globalexcludeurl.url_list.url(8).enabled=true -config globalexcludeurl.url_list.url(9).regex='.*/login.*' -config globalexcludeurl.url_list.url(9).enabled=true -config globalexcludeurl.url_list.url(10).regex='.*/cookies.*' -config globalexcludeurl.url_list.url(10).enabled=true -config globalexcludeurl.url_list.url(11).regex='.*/cookie-preferences.*' -config globalexcludeurl.url_list.url(11).enabled=true"
+  zap-full-scan.py -t ${TEST_URL} -P 1001 -l FAIL -r /zap/wrk/activescan.html -d  -c configfile
 
 
   echo 'Changing owner from $(id -u):$(id -g) to $(id -u):$(id -u)'
