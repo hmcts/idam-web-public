@@ -4,7 +4,7 @@ export LANG=C.UTF-8
 
 echo ${TEST_URL}
 
-zap-x.sh -daemon -host 0.0.0.0 -port 1001 -config database.newsession=3 -config database.newsessionprompt=false -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config globalexcludeurl.url_list.url.regex='^https?:\/\/.*\/(?:.*login.*)+$' -config rules.cookie.ignorelist=_ga,_gid,_gat,dtCookie,dtLatC,dtPC,dtSa,rxVisitor,rxvt -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true &
+zap-x.sh -daemon -host 0.0.0.0 -port 1001 -config database.newsession=3 -config database.newsessionprompt=false -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config -config globalexcludeurl.url_list.url.regex='^https?:\/\/.*\/(?:.*login.*)+$' -config rules.cookie.ignorelist=_ga,_gid,_gat,dtCookie,dtLatC,dtPC,dtSa,rxVisitor,rxvt -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true &
 i=0
 while !(curl -s http://0.0.0.0:1001) > /dev/null
   do
@@ -12,92 +12,7 @@ while !(curl -s http://0.0.0.0:1001) > /dev/null
     sleep .1
   done
   echo "ZAP has successfully started"
-  zap-full-scan.py -t ${TEST_URL} -P 1001 -l FAIL -r /zap/wrk/activescan.html -d --exclusions '[
-                                                                                   {
-                                                                                     "ruleName": "Exclude jquery 3.4",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*jquery-3.4.1.min.js$",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude jquery 3.5",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*jquery-3.5.1.min.js$",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude images",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/assets/images.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude stylesheets",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/assets/stylesheets.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude javascripts",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/assets/javascripts.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude ruxitagentjs",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/ruxitagentjs_.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude terms and conditions",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/terms-and-conditions.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude privacy policy",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/privacy-policy.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude contact us",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/contact-us.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude login",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/login.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude cookies",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/cookies.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   },
-                                                                                   {
-                                                                                     "ruleName": "Exclude cookie preferences",
-                                                                                     "enabled": true,
-                                                                                     "url": ".*/cookie-preferences.*",
-                                                                                     "match": "URL",
-                                                                                     "regex": true
-                                                                                   }
-                                                                                 ]'
+  zap-full-scan.py -t ${TEST_URL} -P 1001 -l FAIL -r /zap/wrk/activescan.html -d  -z "-config globalexcludeurl.url_list.url(0).regex='.*jquery-3.4.1.min.js$' -config globalexcludeurl.url_list.url(0).enabled=true -config globalexcludeurl.url_list.url(1).regex='.*jquery-3.5.1.min.js$' -config globalexcludeurl.url_list.url(1).enabled=true -config globalexcludeurl.url_list.url(2).regex='.*/assets/images.*' -config globalexcludeurl.url_list.url(2).enabled=true -config globalexcludeurl.url_list.url(3).regex='.*/assets/stylesheets.*' -config globalexcludeurl.url_list.url(3).enabled=true -config globalexcludeurl.url_list.url(4).regex='.*/assets/javascripts.*' -config globalexcludeurl.url_list.url(4).enabled=true -config globalexcludeurl.url_list.url(5).regex='.*/ruxitagentjs_.*' -config globalexcludeurl.url_list.url(5).enabled=true -config globalexcludeurl.url_list.url(6).regex='.*/terms-and-conditions.*' -config globalexcludeurl.url_list.url(6).enabled=true -config globalexcludeurl.url_list.url(7).regex='.*/privacy-policy.*' -config globalexcludeurl.url_list.url(7).enabled=true -config globalexcludeurl.url_list.url(8).regex='.*/contact-us.*' -config globalexcludeurl.url_list.url(8).enabled=true -config globalexcludeurl.url_list.url(9).regex='.*/login.*' -config globalexcludeurl.url_list.url(9).enabled=true -config globalexcludeurl.url_list.url(10).regex='.*/cookies.*' -config globalexcludeurl.url_list.url(10).enabled=true -config globalexcludeurl.url_list.url(11).regex='.*/cookie-preferences.*' -config globalexcludeurl.url_list.url(11).enabled=true"
 
 
   echo 'Changing owner from $(id -u):$(id -g) to $(id -u):$(id -u)'
