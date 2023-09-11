@@ -11,11 +11,8 @@ while !(curl -s http://0.0.0.0:1001) > /dev/null
     i=$(( (i+1) %4 ))
     sleep .1
   done
-
   echo "ZAP has successfully started"
   zap-full-scan.py -t ${TEST_URL} -P 1001 -l FAIL -r /zap/wrk/activescan.html -d
-
-
   echo 'Changing owner from $(id -u):$(id -g) to $(id -u):$(id -u)'
   chown -R $(id -u):$(id -u) /zap/wrk/activescan.html
   curl --fail http://0.0.0.0:1001/OTHER/core/other/jsonreport/?formMethod=GET --output /zap/wrk/report.json
