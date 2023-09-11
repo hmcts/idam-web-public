@@ -534,9 +534,9 @@ class IdamHelper extends Helper {
         });
     }
 
-    resetRequestInterception() {
+    async resetRequestInterception() {
         const helper = this.helpers['Puppeteer'];
-        helper.page.setRequestInterception(false);
+        await helper.page.setRequestInterception(false);
     }
 
     getPinUser(firstname, lastname) {
