@@ -1,63 +1,22 @@
 #!/bin/bash
-#echo "${SECURITYCONTEXT}" > /zap/security.context
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
-ZAP_PORT=1001
-ZAP_HOST=0.0.0.0
-DEBUG=false
+echo ${TEST_URL}
 
-# ------------------------------------------------------------------
-
-if [ "$DEBUG" == "true" ]; then
-    ZAP_PORT=8080
-    TEST_URL=https://idam-web-public.aat.platform.hmcts.net
-
-    # start ZAP locally
-    echo "Starting a local instance of ZAP..."
-    #docker pull owasp/zap2docker-weekly:latest
-    docker run -d -u zap -p $ZAP_PORT:$ZAP_PORT owasp/zap2docker-weekly zap-x.sh \
-        -d \
-        -host $ZAP_HOST \
-        -port $ZAP_PORT \
-        -config api.disablekey=true \
-        -config scanner.attackOnStart=true \
-        -config view.mode=attack \
-        -config connection.dnsTtlSuccessfulQueries=-1 \
-        -config api.addrs.addr.name=".*" \
-        -config api.addrs.addr.regex=true
-else
-    zap-x.sh -daemon -host $ZAP_HOST -port $ZAP_PORT -config database.newsession=3 -config database.newsessionprompt=false -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config rules.cookie.ignorelist=_ga,_gid,_gat,dtCookie,dtLatC,dtPC,dtSa,rxVisitor,rxvt -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true &
-fi
-
-# Wait for ZAP to start
-printf "Waiting for ZAP to start"
+zap-x.sh -daemon -host 0.0.0.0 -port 1001 -config database.newsession=3 -config database.newsessionprompt=false -config api.disablekey=true -config scanner.attackOnStart=true -config view.mode=attack -config globalexcludeurl.url_list.url\(0\).regex='.*jquery-3.4.1.min.js$' -config globalexcludeurl.url_list.url\(1\).regex='.*jquery-3.5.1.min.js$' -config globalexcludeurl.url_list.url\(2\).regex='.*/assets/images.*' -config globalexcludeurl.url_list.url\(3\).regex='.*/assets/stylesheets.*' -config globalexcludeurl.url_list.url\(4\).regex='.*/assets/javascripts.*' -config globalexcludeurl.url_list.url\(5\).regex='.*/ruxitagentjs_.*' -config globalexcludeurl.url_list.url\(6\).regex='.*/terms-and-conditions.*' -config globalexcludeurl.url_list.url\(7\).regex='.*/privacy-policy.*' -config globalexcludeurl.url_list.url\(8\).regex='.*/contact-us.*' -config globalexcludeurl.url_list.url\(9\).regex='.*/login.*' -config globalexcludeurl.url_list.url\(10\).regex='.*/cookies.*' -config globalexcludeurl.url_list.url\(11\).regex='.*/cookie-preferences.*' -config globalexcludeurl.url_list.url\(12\).regex='^https?:\/\/.*\/(?:.*login.*)+$' -config rules.cookie.ignorelist=_ga,_gid,_gat,dtCookie,dtLatC,dtPC,dtSa,rxVisitor,rxvt -config connection.dnsTtlSuccessfulQueries=-1 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true &
 i=0
-
-while ! (curl -s http://${ZAP_HOST}:${ZAP_PORT}) >/dev/null; do
-    i=$(((i + 1) % 5))
-    if [ $i -eq 0 ]; then
-        printf "."
-    fi
-    sleep .2
-done
-echo
-echo "ZAP has successfully started"
-
-zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT status -t 120
-zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT open-url "${TEST_URL}"
-xargs -I % echo "Excluding regexp: %" <zap-exclusions
-xargs -I % zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT exclude % <zap-exclusions
-zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT spider ${TEST_URL}
-zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT active-scan --scanners all --recursive "${TEST_URL}"
-zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT report -o activescan.html -f html
-echo 'Changing owner from $(id -u):$(id -g) to $(id -u):$(id -u)'
-chown -R $(id -u):$(id -u) activescan.html
-curl --fail http://${ZAP_HOST}:${ZAP_PORT}/OTHER/core/other/jsonreport/?formMethod=GET --output report.json
-cp *.html functional-output/
-zap-cli --zap-url http://$ZAP_HOST -p $ZAP_PORT alerts -l High --exit-code False
-
-# INFO: in order to add more exclusions for low-level issues, please do the following:
-# - Extract the JSON output of the security scan from the build (an array of objects, each beginning with "task":"OWASP Zaproxy")
-# - Transform it with jq using the following query: map({(.fingerprint):"ignore"})|add
-# - Add the entries you are interested in to audit.json
+while !(curl -s http://0.0.0.0:1001) > /dev/null
+  do
+    i=$(( (i+1) %4 ))
+    sleep .1
+  done
+  echo "ZAP has successfully started"
+  zap-full-scan.py -t ${TEST_URL} -P 1001 -l FAIL -r /zap/wrk/activescan.html -d
+  echo 'Changing owner from $(id -u):$(id -g) to $(id -u):$(id -u)'
+  chown -R $(id -u):$(id -u) /zap/wrk/activescan.html
+  curl --fail http://0.0.0.0:1001/OTHER/core/other/jsonreport/?formMethod=GET --output /zap/wrk/report.json
+  mkdir -p /zap/wrk/functional-output
+  chmod a+wx /zap/wrk/functional-output
+  cp /zap/wrk/*.html /zap/wrk/functional-output/
+  cp /zap/wrk/report.json /zap/wrk/functional-output/
