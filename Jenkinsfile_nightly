@@ -20,7 +20,7 @@ properties([
     ])
 ])
 
-@Library("Infrastructure") _
+@Library("Infrastructure@zap-cli-docker-idam") _
 import uk.gov.hmcts.contino.GradleBuilder
 
 GradleBuilder builder = new GradleBuilder(this, 'jenkins-library')
