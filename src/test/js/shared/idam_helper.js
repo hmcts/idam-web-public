@@ -534,9 +534,9 @@ class IdamHelper extends Helper {
         });
     }
 
-    resetRequestInterception() {
+    async resetRequestInterception() {
         const helper = this.helpers['Puppeteer'];
-        helper.page.setRequestInterception(false);
+        await helper.page.setRequestInterception(false);
     }
 
     getPinUser(firstname, lastname) {
@@ -862,7 +862,7 @@ class IdamHelper extends Helper {
         const url = await this.helpers['Puppeteer'].grabCurrentUrl();
         const {page} = await this.helpers['Puppeteer'];
 
-        runAccessibility(url, page);
+        await runAccessibility(url, page);
     }
 
     async getDynatraceMonitorResponseStatus() {
