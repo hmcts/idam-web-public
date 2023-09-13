@@ -11,6 +11,7 @@ properties([
         string(name: 'RPE_AUTH_URL', defaultValue: 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal', description: 'The URL for s2s token authentication'),
         string(name: 'REF_DATA_URL', defaultValue: 'http://rd-professional-api-aat.service.core-compute-aat.internal', description: 'The URL for calls to Ref Data (PRD)'),
         string(name: 'WAIT_FOR_ACTION_TIMEOUT', defaultValue: '2000', description: 'How long to wait after click, doubleClick or PressKey actions in ms'),
+        string(name: 'URL_EXCLUSIONS', defaultValue: "-config globalexcludeurl.url_list.url\(1\).regex='.*jquery-3.5.1.min.js$' -config globalexcludeurl.url_list.url\(2\).regex='.*/assets/images.*' -config globalexcludeurl.url_list.url\(3\).regex='.*/assets/stylesheets.*' -config globalexcludeurl.url_list.url\(4\).regex='.*/assets/javascripts.*' -config globalexcludeurl.url_list.url\(5\).regex='.*/ruxitagentjs_.*' -config globalexcludeurl.url_list.url\(6\).regex='.*/terms-and-conditions.*' -config globalexcludeurl.url_list.url\(7\).regex='.*/privacy-policy.*' -config globalexcludeurl.url_list.url\(8\).regex='.*/contact-us.*' -config globalexcludeurl.url_list.url\(9\).regex='.*/login.*' -config globalexcludeurl.url_list.url\(10\).regex='.*/cookies.*' -config globalexcludeurl.url_list.url\(11\).regex='.*/cookie-preferences.*' -config globalexcludeurl.url_list.url\(12\).regex='.*jquery-3.4.1.min.js$'"),
         booleanParam(name: 'skipSecurityScanTests', defaultValue: false, description: 'Runs on aat envt only, tick the checkbox for skip'),
         booleanParam(name: 'skipMutationTests', defaultValue: false, description: 'Tick the checkbox for skip'),
         booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox for skip'),
@@ -20,7 +21,7 @@ properties([
     ])
 ])
 
-@Library("Infrastructure@zap-cli-docker-idam") _
+@Library("Infrastructure@url-exclusions") _
 import uk.gov.hmcts.contino.GradleBuilder
 
 GradleBuilder builder = new GradleBuilder(this, 'jenkins-library')
@@ -59,6 +60,7 @@ try {
         env.REF_DATA_URL = params.REF_DATA_URL
         env.WAIT_FOR_ACTION_TIMEOUT = params.WAIT_FOR_ACTION_TIMEOUT
         loadVaultSecrets(secrets)
+        env.URL_EXCLUSIONS = params.URL_EXCLUSIONS
 
         if (params.ENVIRONMENT == 'aat' && !params.skipSecurityScanTests) {
             enableSecurityScan()
