@@ -61,6 +61,7 @@ try {
         env.WAIT_FOR_ACTION_TIMEOUT = params.WAIT_FOR_ACTION_TIMEOUT
         loadVaultSecrets(secrets)
         env.URL_EXCLUSIONS = params.URL_EXCLUSIONS
+        env.IS_FRONTEND = "true"
 
         if (params.ENVIRONMENT == 'aat' && !params.skipSecurityScanTests) {
             enableSecurityScan()
