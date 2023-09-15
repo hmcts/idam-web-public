@@ -237,7 +237,7 @@ allprojects {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
   }
-  
+
 }
 
 project.tasks['sonarqube'].dependsOn test
@@ -293,4 +293,3 @@ test.finalizedBy jacocoTestReport
 bootRun {
   systemProperties = System.properties
 }
-
