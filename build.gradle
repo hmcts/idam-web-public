@@ -125,7 +125,7 @@ allprojects {
       exclude(module: 'rxnetty-servo')
       exclude(module: 'rxnetty')
     }
-    implementation group: 'com.netflix.servo', name: 'servo-core', version: '0.13.0'
+    implementation group: 'com.netflix.servo', name: 'servo-core', version: '0.13.2'
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.31'
     implementation group: 'org.springframework.security', name: 'spring-security-taglibs'
 
