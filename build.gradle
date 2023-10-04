@@ -145,7 +145,7 @@ allprojects {
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.80'
     implementation group: 'org.pitest', name: 'pitest', version: '1.14.2'
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.9.11'
-    implementation group: 'org.owasp.encoder', name: 'encoder-jsp', version: '1.2.2'
+    implementation group: 'org.owasp.encoder', name: 'encoder-jsp', version: '1.2.3'
     implementation (group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: '0.5') {
       exclude module: 'junit'
     }
