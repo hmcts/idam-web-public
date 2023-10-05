@@ -11,6 +11,7 @@ properties([
         string(name: 'RPE_AUTH_URL', defaultValue: 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal', description: 'The URL for s2s token authentication'),
         string(name: 'REF_DATA_URL', defaultValue: 'http://rd-professional-api-aat.service.core-compute-aat.internal', description: 'The URL for calls to Ref Data (PRD)'),
         string(name: 'WAIT_FOR_ACTION_TIMEOUT', defaultValue: '2000', description: 'How long to wait after click, doubleClick or PressKey actions in ms'),
+        string(name: 'SecurityRules', defaultValue: 'http://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf'),
         booleanParam(name: 'skipSecurityScanTests', defaultValue: false, description: 'Runs on aat envt only, tick the checkbox for skip'),
         booleanParam(name: 'skipMutationTests', defaultValue: false, description: 'Tick the checkbox for skip'),
         booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox for skip'),
