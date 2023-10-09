@@ -1,6 +1,6 @@
 [versions]
 api-spec = "3.10.2"
-app-insights = "3.4.14"
+app-insights = "3.4.17"
 commons-io = "2.11.0"
 commons-text = "1.10.0"
 commons-fileupload = "1.5"
