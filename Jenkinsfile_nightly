@@ -64,7 +64,7 @@ try {
         loadVaultSecrets(secrets)
 
         if (params.ENVIRONMENT == 'aat' && !params.skipSecurityScanTests) {
-            enableSecurityScan(120, params.ZAP_URL_EXCLUSIONS)
+            enableSecurityScan(params.ZAP_URL_EXCLUSIONS)
         }
 
         if (!params.skipMutationTests) {
