@@ -22,7 +22,7 @@ properties([
     ])
 ])
 
-@Library("Infrastructure@url-exclusions") _
+@Library("Infrastructure@DTSPO-15437/gradle-frontend") _
 import uk.gov.hmcts.contino.GradleBuilder
 
 GradleBuilder builder = new GradleBuilder(this, 'jenkins-library')
