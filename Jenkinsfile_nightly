@@ -33,7 +33,7 @@ def product = "idam"
 
 def component = "web-public"
 
-def isFrontend = true
+def isFrontend = "true"
 
 def secrets = [
     "idam-idam-${params.ENVIRONMENT}": [
