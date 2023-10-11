@@ -14,7 +14,7 @@
 
         <h2 class="heading-medium"><spring:message code="public.contactus.text_0003" /></h2>
         <ul class="list">
-            <li><spring:message code="public.contactus.text_0004" /></li>
+            <li><spring:message htmlEscape="false" code="public.contactus.text_0004" /></li>
             <li><spring:message code="public.contactus.text_0005" /> </li>
             <li><spring:message code="public.contactus.text_0006" /></li>
             <li><spring:message code="public.contactus.text_0007" /></li>
@@ -23,7 +23,7 @@
 
         <h2 class="heading-medium"><spring:message code="public.contactus.text_0003_1" /></h2>
         <ul class="list">
-            <li><spring:message code="public.contactus.text_0004_1" /></li>
+            <li><spring:message htmlEscape="false" code="public.contactus.text_0004_1" /></li>
             <li><spring:message code="public.contactus.text_0005_1" /> </li>
             <li><spring:message code="public.contactus.text_0006_1" /></li>
             <li><spring:message code="public.contactus.text_0007_1" /></li>
