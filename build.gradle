@@ -127,7 +127,7 @@ allprojects {
     }
 
     implementation group: 'com.netflix.servo', name: 'servo-core', version: '0.13.2'
-    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.36'
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37'
     implementation group: 'org.springframework.security', name: 'spring-security-taglibs'
 
     compileOnly("org.projectlombok:lombok")
