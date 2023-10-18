@@ -59,7 +59,7 @@ try {
         //enableCrossBrowserTest()
        // enableFortifyScan('idam-idam-' + params.ENVIRONMENT)
 
-        afterSuccess('fortify-scan') {
+        afterAlways('fortify-scan') {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
         }
 
@@ -67,7 +67,7 @@ try {
             env.TESTS_FOR_ACCESSIBILITY = true
         }
 
-        afterSuccess('fullFunctionalTest') {
+        afterAlways('fullFunctionalTest') {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
             env.TESTS_FOR_ACCESSIBILITY = false
 
