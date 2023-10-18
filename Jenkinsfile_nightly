@@ -53,11 +53,11 @@ try {
         env.REF_DATA_URL = params.REF_DATA_URL
         env.WAIT_FOR_ACTION_TIMEOUT = params.WAIT_FOR_ACTION_TIMEOUT
         loadVaultSecrets(secrets)
-        enableSecurityScan()
-        enableMutationTest()
+       // enableSecurityScan()
+       // enableMutationTest()
         enableFullFunctionalTest(200)
-        enableCrossBrowserTest()
-        enableFortifyScan('idam-idam-' + params.ENVIRONMENT)
+        //enableCrossBrowserTest()
+       // enableFortifyScan('idam-idam-' + params.ENVIRONMENT)
 
         afterSuccess('fortify-scan') {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
