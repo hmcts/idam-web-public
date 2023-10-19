@@ -21,6 +21,7 @@
     <suppress>
         <gav regex="true">^.*io.netty.*$</gav>
         <cve>CVE-2023-4586</cve>
+        <cve>CVE-2023-44487</cve>
     </suppress>
 
     <!--
