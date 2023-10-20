@@ -52,6 +52,7 @@ allprojects {
   }
 
   ext['okhttp.version'] = '4.11.0'
+  ext['netty.version'] = '4.1.100.Final' // CVE-2023-44487
 
   repositories {
     mavenCentral()
