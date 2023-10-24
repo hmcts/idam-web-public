@@ -17,9 +17,9 @@
         <cve>CVE-2020-5408</cve>
     </suppress>
 
-    <!-- Currently being investigated, no fix version -->
-    <suppress>
-        <gav regex="true">^.*io.netty.*$</gav>
+    <!-- No fix till netty 5 release or fix applied to netty 4 -->
+    <suppress base="true">
+        <gav regex="true">^.*netty.*$</gav>
         <cve>CVE-2023-4586</cve>
     </suppress>
 
