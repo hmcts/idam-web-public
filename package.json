@@ -14,7 +14,7 @@
     "jwt-decode": "^3.1.2",
     "mocha-junit-reporter": "^2.0.0",
     "mocha-multi": "^1.1.3",
-    "mochawesome": "^6.2.1",
+    "mochawesome": "^7.0.0",
     "nightmare": "^3.0.2",
     "node-fetch": "^2.6.1",
     "notifications-node-client": "^4.7.3",
