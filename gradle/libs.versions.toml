@@ -1,5 +1,5 @@
 [versions]
-api-spec = "3.10.2"
+api-spec = "4.0.6"
 app-insights = "3.4.17"
 commons-io = "2.14.0"
 commons-text = "1.10.0"
