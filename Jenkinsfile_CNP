@@ -105,7 +105,7 @@ withPipeline(type, product, component) {
                 Using ITHC_ENVIRONMENT_NAME: ${env.ITHC_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    afterSuccess('akschartsinstall') {
+    afterAlways('akschartsinstall') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
         println """\
@@ -113,7 +113,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    afterSuccess('smoketest:idam-preview') {
+    afterAlways('smoketest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
         println """\
@@ -121,7 +121,7 @@ withPipeline(type, product, component) {
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    afterSuccess('functionalTest:idam-preview') {
+    afterAlways('functionalTest:idam-preview') {
         env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
         env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
         println """\
@@ -130,7 +130,7 @@ withPipeline(type, product, component) {
     }
     // End AKS Callbacks
 
-    afterSuccess('test') {
+    afterAlways('test') {
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
@@ -142,7 +142,7 @@ withPipeline(type, product, component) {
 
     }
 
-    afterSuccess('smoketest:idam-preview') {
+    afterAlways('smoketest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
@@ -155,7 +155,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    afterSuccess('smoketest:idam-aat') {
+    afterAlways('smoketest:idam-aat') {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
@@ -168,7 +168,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    afterSuccess('functionalTest:idam-preview') {
+    afterAlways('functionalTest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
 
@@ -182,7 +182,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    afterSuccess('functionalTest:idam-aat') {
+    afterAlways('functionalTest:idam-aat') {
         env.TESTS_FOR_ACCESSIBILITY = false
         env.WAIT_FOR_ACTION_TIMEOUT = 500
         archiveArtifacts '**/build/test-results/**/*'
