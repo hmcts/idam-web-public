@@ -2,7 +2,7 @@
 api-spec = "4.0.6"
 app-insights = "3.4.17"
 commons-io = "2.15.0"
-commons-text = "1.10.0"
+commons-text = "1.11.0"
 commons-fileupload = "1.5"
 feign = "12.5"
 feign-form = "3.8.0"
