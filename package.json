@@ -17,7 +17,7 @@
     "mochawesome": "^7.0.0",
     "nightmare": "^3.0.2",
     "node-fetch": "^2.6.1",
-    "notifications-node-client": "^4.7.3",
+    "notifications-node-client": "^7.0.0",
     "pa11y": "^5.3.0",
     "proxy-agent": "^4.0.1",
     "puppeteer": "^5.5.0",
