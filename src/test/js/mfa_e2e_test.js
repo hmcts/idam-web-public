@@ -269,6 +269,9 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    let currentUrl = await I.grabCurrentUrl();
+    I.addMochawesomeContext('Url is ' + currentUrl);
+    I.dontSeeInCurrentUrl("/verification");
     I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
