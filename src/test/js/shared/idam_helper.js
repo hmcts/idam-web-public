@@ -523,6 +523,7 @@ class IdamHelper extends Helper {
 
         helper.page.on('request', request => {
             if (pages.some(v => request.url().includes(v))) {
+                console.log("During intercept: " + request.url());
                 request.continue();
             } else {
                 request.respond({
