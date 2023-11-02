@@ -41,7 +41,7 @@ exports.config = {
             'codeceptjs-cli-reporter': {
                 stdout: '-',
                 options: {
-                    verbose: true
+                    verbose: true,
                     steps: true
                 }
             },
