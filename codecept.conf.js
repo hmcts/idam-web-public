@@ -5,7 +5,7 @@ exports.config = {
     tests: './src/test/js/**/*_test.js',
     output: './output',
     fullPageScreenshots: true,
-    timeout: 180000,
+    timeout: 90, // seconds
     bootstrap: false,
     helpers: {
         Puppeteer: {
