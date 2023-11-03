@@ -5,7 +5,7 @@ exports.config = {
     tests: './src/test/js/**/*_test.js',
     output: './output',
     fullPageScreenshots: true,
-    timeout: 180000,
+    timeout: 90, // seconds
     bootstrap: false,
     helpers: {
         Puppeteer: {
@@ -28,6 +28,9 @@ exports.config = {
         },
         GenerateReportHelper: {
             require: "./src/test/js/shared/generate_report_helper.js"
+        },
+        Mochawesome: {
+            uniqueScreenshotNames: true
         }
     },
     "include": {
@@ -38,17 +41,19 @@ exports.config = {
             'codeceptjs-cli-reporter': {
                 stdout: '-',
                 options: {
+                    verbose: true,
                     steps: true
                 }
             },
             'mocha-junit-reporter': {
-                stdout: './output/idam-web-public-mocha-stdout.log',
+                stdout: './output/idam-web-public-mocha--junit-stdout.log',
                 options: {
-                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/functional/idam-web-public-integration-result.xml'
+                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/functional/idam-web-public-integration-result.xml',
+                    attachments: true
                 }
             },
             'mochawesome': {
-                stdout: `./output/idam-web-public-mochawesome-stdout.log`,
+                stdout: './output/idam-web-public-mochawesome-stdout.log',
                 options: {
                     reportDir: 'output',
                     reportFilename: 'idam-web-public-e2e-result',
