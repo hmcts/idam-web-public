@@ -71,13 +71,13 @@ try {
         if (params.ENVIRONMENT == 'aat' && !params.skipFortifyTests) {
             enableFortifyScan('idam-idam-' + params.ENVIRONMENT)
         }
-        afterSuccess('fortify-scan') {
+        afterAlways('fortify-scan') {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
         }
         before('fullFunctionalTest') {
             env.TESTS_FOR_ACCESSIBILITY = true
         }
-        afterSuccess('fullFunctionalTest') {
+        afterAlways('fullFunctionalTest') {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
             env.TESTS_FOR_ACCESSIBILITY = false
             publishHTML target: [
