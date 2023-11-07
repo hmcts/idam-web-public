@@ -19,7 +19,7 @@
     "node-fetch": "^2.6.1",
     "notifications-node-client": "^7.0.0",
     "pa11y": "^6.0.0",
-    "proxy-agent": "^4.0.1",
+    "proxy-agent": "^6.0.0",
     "puppeteer": "^5.5.0",
     "webdriverio": "^6.12.1",
     "html_codesniffer": "^2.5.1"
