@@ -1,8 +1,6 @@
 #!groovy
-
 properties([
     //pipelineTriggers([cron('30 02 * * *')]),
-
     parameters([
         string(name: 'ENVIRONMENT', defaultValue: 'aat', description: 'Environment to test'),
         string(name: 'URL_TO_TEST', defaultValue: 'https://idam-web-public.aat.platform.hmcts.net', description: 'The URL you want to run these tests against'),
@@ -21,20 +19,13 @@ properties([
         booleanParam(name: 'USE_PROXY_SERVER', defaultValue: false, description: 'use proxy server for tests (proxyout.reform.hmcts.net:8080)'),
     ])
 ])
-
-@Library("Infrastructure@DTSPO-15437/gradle-frontend") _
+@Library("Infrastructure") _
 import uk.gov.hmcts.contino.GradleBuilder
-
 GradleBuilder builder = new GradleBuilder(this, 'jenkins-library')
-
 def type = "java"
-
 def product = "idam"
-
 def component = "web-public"
-
-def isFrontend = "true"
-
+def urlExclusions = params.ZAP_URL_EXCLUSIONS
 def secrets = [
     "idam-idam-${params.ENVIRONMENT}": [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
@@ -44,7 +35,6 @@ def secrets = [
         secret('MOJ-TEST-USER-PASSWORD', 'MOJ_TEST_USER_PASSWORD')
     ]
 ]
-
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     [$class     : 'AzureKeyVaultSecret',
      secretType : 'Secret',
@@ -53,7 +43,6 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
      envVariable: envVar
     ]
 }
-
 try {
     withNightlyPipeline(type, product, component) {
         env.Rules = params.SecurityRules
@@ -64,39 +53,33 @@ try {
         env.REF_DATA_URL = params.REF_DATA_URL
         env.WAIT_FOR_ACTION_TIMEOUT = params.WAIT_FOR_ACTION_TIMEOUT
         loadVaultSecrets(secrets)
-
         if (params.ENVIRONMENT == 'aat' && !params.skipSecurityScanTests) {
-            enableSecurityScan(params.ZAP_URL_EXCLUSIONS, isFrontend)
+            enableSecurityScan(
+                urlExclusions: urlExclusions, 
+                scanType: "frontend"
+            )
         }
-
         if (!params.skipMutationTests) {
             enableMutationTest()
         }
-
         if (!params.skipFullFunctionalTests) {
             enableFullFunctionalTest(200)
         }
-
         if (!params.skipCrossBrowserTests) {
             enableCrossBrowserTest()
         }
-
         if (params.ENVIRONMENT == 'aat' && !params.skipFortifyTests) {
             enableFortifyScan('idam-idam-' + params.ENVIRONMENT)
         }
-
         afterSuccess('fortify-scan') {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
         }
-
         before('fullFunctionalTest') {
             env.TESTS_FOR_ACCESSIBILITY = true
         }
-
         afterSuccess('fullFunctionalTest') {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
             env.TESTS_FOR_ACCESSIBILITY = false
-
             publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
