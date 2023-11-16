@@ -142,7 +142,7 @@ allprojects {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.82'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.83'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.82'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.16'
     implementation group: 'org.pitest', name: 'pitest', version: '1.15.3'
