@@ -15,8 +15,7 @@ LABEL maintainer=IDAM \
 ENV SERVER_PORT=8080
 
 ADD --chown=hmcts:hmcts build/libs/idam-web-public.war \
-                        lib/applicationinsights.json \
-                        lib/applicationinsights-agent-3.4.14.jar /opt/app/
+                        lib/applicationinsights.json /opt/app/
 
 CMD [ \
      "-Dspring.profiles.active=docker,local", \
