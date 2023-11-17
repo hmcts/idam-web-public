@@ -25,9 +25,9 @@
     js-tokens "^4.0.0"
 
 "@babel/parser@^7.8.3":
-  version "7.23.0"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.23.0.tgz#da950e622420bf96ca0d0f2909cdddac3acd8719"
-  integrity sha512-vvPKKdMemU85V9WE/l5wZEmImpCtLqbnTvqDS2U1fJ96KrxoW7KrXhNsNCblQlg8Ck4b85yxdTyelsMUgFUXiw==
+  version "7.23.3"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.23.3.tgz#0ce0be31a4ca4f1884b5786057cadcb6c3be58f9"
+  integrity sha512-uVsWNvlVsIninV2prNz/3lHCb+5CJ+e+IUBfbjToAHODtfGYLfCFuY4AU7TskI+dAKk+njsPiBjq1gKTvZOBaw==
 
 "@codeceptjs/configure@0.10.0":
   version "0.10.0"
@@ -910,9 +910,9 @@ clone@^1.0.2:
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
 
 codeceptjs@^3.0.4:
-  version "3.5.7"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-3.5.7.tgz#f1329c7e3f1155a293358b013f47e6927c34183d"
-  integrity sha512-nHM70EaFvQ3++ofu2+e3kKljGrrjJ9Fph3BZ0YYylwC6nUbxI/D47YnPzjD1Ff9ABbCb/WBkNxbIAIBT82X6EA==
+  version "3.5.8"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-3.5.8.tgz#025b283f34e78cf7db5e57e92b0dd09e3f1748fe"
+  integrity sha512-hYd51GOuDavSDjGOxqYjtCk+YikuDP6qEXJQOxvCto/IYOFMJCCT4PeEgH/Fd1csB5i5kulVjL0/iFAvm9BuYQ==
   dependencies:
     "@codeceptjs/configure" "0.10.0"
     "@codeceptjs/helper" "2.0.1"
