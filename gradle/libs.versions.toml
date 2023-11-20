@@ -1,6 +1,5 @@
 [versions]
 api-spec = "4.0.6"
-app-insights = "3.4.18"
 commons-io = "2.15.0"
 commons-text = "1.11.0"
 commons-fileupload = "1.5"
@@ -13,10 +12,10 @@ spring-boot = "2.7.17"
 spring-cloud = "3.1.8"
 spring-security-oauth2 = "2.5.2.RELEASE"
 spring-security-oauth2-autoconfigure = "2.6.8"
+reform-logging = "6.0.1"
 
 [libraries]
-applicationinsights-core = { module = "com.microsoft.azure:applicationinsights-core", version.ref = "app-insights" }
-applicationinsights-web = { module = "com.microsoft.azure:applicationinsights-web", version.ref = "app-insights" }
+reform-java-logging = { module = "com.github.hmcts.java-logging:logging", version.ref = "reform-logging"}
 commons-fileupload = { module = " commons-fileupload:commons-fileupload", version.ref = "commons-fileupload" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
@@ -29,7 +28,7 @@ snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 spring-cloud-openfeign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign", version.ref = "spring-cloud" }
 
 [bundles]
-applicationinsights = ["applicationinsights-core", "applicationinsights-web"]
+applicationinsights = ["reform-java-logging"]
 feign = ["feign-jackson", "feign-okhttp", "spring-cloud-openfeign"]
 
 [plugins]
