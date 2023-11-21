@@ -322,6 +322,5 @@ Scenario('@functional @uplift I am able create an account as an uplift user', as
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
-    console.debug(JSON.stringify(userInfo));
     expect(userInfo.roles).to.eql(['letter-holder']);
 });
