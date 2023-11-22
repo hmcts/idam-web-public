@@ -27,6 +27,15 @@ const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
+let testFirstName;
+let testCitizenEmail;
+let testServiceAccessToken;
+let testAccessTokenClientSecret;
+const testServiceName = randomData.getRandomServiceName(testSuitePrefix);
+const testServiceClientSecret = randomData.getRandomClientSecret();
+const testUserPassword = randomData.getRandomUserPassword();
+
+
 BeforeSuite(async ({ I }) => {
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix) + 'pinępinç';
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix) + 'ępinçłpin';
@@ -64,6 +73,15 @@ BeforeSuite(async ({ I }) => {
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
+    testFirstName = randomData.getRandomUserName(testSuitePrefix) ;
+    testCitizenEmail = 'existingcitizen.' + randomData.getRandomEmailAddress();
+    await I.createServiceData(testServiceName,testServiceClientSecret)
+    I.wait(0.5);
+    testAccessTokenClientSecret = await I.getAccessTokenClientSecret(testServiceName, testServiceClientSecret);
+    await I.createUserUsingTestingSupportService(testAccessTokenClientSecret, testCitizenEmail, testUserPassword, testFirstName + 'Citizen', ["citizen"]);
+    const pin = await I.getPinUser(testFirstName, testFirstName);
+    const authCode = await I.loginAsPin(pin.pin, testServiceName, TestData.SERVICE_REDIRECT_URI);
+    testServiceAccessToken = await I.getAccessToken(authCode, testServiceName, TestData.SERVICE_REDIRECT_URI, testServiceClientSecret);
 });
 
 AfterSuite(async ({ I }) => {
@@ -306,4 +324,20 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
+});
+Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async ({ I }) => {
+    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${testServiceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${testServiceAccessToken}`);
+    I.waitForText('Create an account or sign in');
+    I.fillField('#firstName', testFirstName);
+    I.fillField('#lastName', testFirstName);
+    I.fillField('#username', testCitizenEmail);
+    await I.runAccessibilityTest();
+    I.click('.form input[type=submit]');
+    I.waitForText('Check your email');
+    let url = await I.extractUrlFromNotifyEmail(testAccessTokenClientSecret, testCitizenEmail);
+    if (url) {
+        url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
+    }
+    let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(testServiceAccessToken);
+    expect(userInfo.roles).to.eql(['letter-holder']);
 });
