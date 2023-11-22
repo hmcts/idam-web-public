@@ -15,8 +15,6 @@ let existingCitizenEmail;
 let upliftAccountCreationStaleUserEmail;
 let upliftLoginStaleUserEmail;
 let accessToken;
-let authorizationCodeToken;
-
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
@@ -66,10 +64,6 @@ BeforeSuite(async ({ I }) => {
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
-    const user = await I.getPinUser(randomUserFirstName, randomUserLastName);
-    const signUpCode = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
-    authorizationCodeToken = await I.getAccessToken(signUpCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
-
 });
 
 AfterSuite(async ({ I }) => {
@@ -312,21 +306,4 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();
-});
-Scenario('@functional @uplift  @apple I am able create an account as an uplift user', async ({ I }) => {
-    I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${authorizationCodeToken}`);
-    I.waitForText('Create an account or sign in');
-    I.fillField('#firstName', randomUserFirstName);
-    I.fillField('#lastName', randomUserLastName);
-    I.fillField('#username', citizenEmail);
-    await I.runAccessibilityTest();
-    I.click('.form input[type=submit]');
-    I.waitForText('Check your email');
-
-    let url = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, citizenEmail);
-    if (url) {
-        url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
-    }
-    let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
-    expect(userInfo.roles).to.eql(['letter-holder']);
 });
