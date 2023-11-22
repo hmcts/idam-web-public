@@ -18,7 +18,6 @@ properties([
         booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox for skip'),
         booleanParam(name: 'skipCrossBrowserTests', defaultValue: false, description: 'Tick the checkbox for skip'),
         booleanParam(name: 'skipFortifyTests', defaultValue: true, description: 'Tick the checkbox for skip'),
-        booleanParam(name: 'USE_PROXY_SERVER', defaultValue: false, description: 'use proxy server for tests (proxyout.reform.hmcts.net:8080)'),
     ])
 ])
 
