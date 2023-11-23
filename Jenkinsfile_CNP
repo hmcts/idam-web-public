@@ -171,6 +171,7 @@ withPipeline(type, product, component) {
     afterAlways('functionalTest:idam-preview') {
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
+        archiveArtifacts '**/output/**'
 
         publishHTML target: [
             allowMissing         : true,

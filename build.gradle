@@ -85,9 +85,9 @@ allprojects {
     }
 
 
-    implementation 'org.bouncycastle:bcprov-jdk18on:1.74'
-    implementation 'org.bouncycastle:bcpkix-jdk18on:1.76'
-    implementation 'org.bouncycastle:bcutil-jdk18on:1.74'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.77'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.77'
+    implementation 'org.bouncycastle:bcutil-jdk18on:1.77'
 
     implementation (libs.idam.api.spec) {
       exclude module: 'springfox-swagger2'
@@ -118,7 +118,7 @@ allprojects {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis-reactive'
-    implementation group: 'org.springframework.session', name: 'spring-session-data-redis', version: '2.6.3'
+    implementation group: 'org.springframework.session', name: 'spring-session-data-redis', version: '2.7.4'
     implementation group: 'org.springframework.data', name: 'spring-data-redis', version: '2.6.4'
 
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.10.RELEASE') {
@@ -128,7 +128,7 @@ allprojects {
     }
 
     implementation group: 'com.netflix.servo', name: 'servo-core', version: '0.13.2'
-    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.36'
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.1'
     implementation group: 'org.springframework.security', name: 'spring-security-taglibs'
 
     compileOnly("org.projectlombok:lombok")
@@ -142,10 +142,10 @@ allprojects {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.81'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.81'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.81'
-    implementation group: 'org.pitest', name: 'pitest', version: '1.14.2'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.83'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.83'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.16'
+    implementation group: 'org.pitest', name: 'pitest', version: '1.15.3'
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
     implementation group: 'org.owasp.encoder', name: 'encoder-jsp', version: '1.2.3'
     implementation (group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: '0.5') {
