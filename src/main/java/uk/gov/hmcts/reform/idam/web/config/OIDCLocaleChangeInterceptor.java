@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
-import com.google.common.collect.ImmutableSet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -26,7 +25,7 @@ public class OIDCLocaleChangeInterceptor extends LocaleChangeInterceptor {
     public OIDCLocaleChangeInterceptor(@Nullable final Set<String> supportedLocales) {
         super();
         this.supportedLocales = Optional.ofNullable(supportedLocales)
-                                        .orElse(ImmutableSet.of())
+                                        .orElse(Set.of())
                                         .stream()
                                         .map(Locale::forLanguageTag)
                                         .collect(Collectors.toSet());
