@@ -1,7 +1,7 @@
 let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const testConfig = require('../config/test_data.js');
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const uuid = require('uuid');
 
 class RefDataHelper extends Helper {

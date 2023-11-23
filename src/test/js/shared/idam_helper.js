@@ -1,7 +1,7 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let Helper = codecept_helper;
 const TestData = require('../config/test_data');
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const uuid = require('uuid');
 const MAX_NOTIFY_PAGES = 3;  //max notify results pages to search
 const MAX_RETRIES = 5;  //max retries on each notify results page
