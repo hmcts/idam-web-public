@@ -1,6 +1,7 @@
+import { jwtDecode } from "jwt-decode";
+
 const randomData = require('./shared/random_data');
 const TestData = require('./config/test_data');
-const jwt_decode = require('jwt-decode');
 const deepEqualInAnyOrder = require('deep-equal-in-any-order');
 const chai = require('chai');
 chai.use(deepEqualInAnyOrder);
@@ -133,11 +134,11 @@ Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret);
 
-    let jwtDecode = await jwt_decode(accessToken);
+    let decodedJwt = await jwtDecode(accessToken);
 
-    expect(jwtDecode.tokenName).to.equal("access_token");
-    expect(jwtDecode.nonce).to.equal(nonce);
-    expect(jwtDecode.auth_level).to.equal(0);
+    expect(decodedJwt.tokenName).to.equal("access_token");
+    expect(decodedJwt.nonce).to.equal(nonce);
+    expect(decodedJwt.auth_level).to.equal(0);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
@@ -181,11 +182,11 @@ Scenario('@functional @mfaOrgLogin I am able to login with MFA as a member of an
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret);
 
-    let jwtDecode = await jwt_decode(accessToken);
+    let decodedJwt = await jwtDecode(accessToken);
 
-    expect(jwtDecode.tokenName).to.equal("access_token");
-    expect(jwtDecode.nonce).to.equal(nonce);
-    expect(jwtDecode.auth_level).to.equal(1);
+    expect(decodedJwt.tokenName).to.equal("access_token");
+    expect(decodedJwt.nonce).to.equal(nonce);
+    expect(decodedJwt.auth_level).to.equal(1);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
@@ -225,11 +226,11 @@ Scenario('@functional @mfaOrgLogin am able to login without MFA as an idam-mfa-d
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret);
 
-    let jwtDecode = await jwt_decode(accessToken);
+    let decodedJwt = await jwtDecode(accessToken);
 
-    expect(jwtDecode.tokenName).to.equal("access_token");
-    expect(jwtDecode.nonce).to.equal(nonce);
-    expect(jwtDecode.auth_level).to.equal(0);
+    expect(decodedJwt.tokenName).to.equal("access_token");
+    expect(decodedJwt.nonce).to.equal(nonce);
+    expect(decodedJwt.auth_level).to.equal(0);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);

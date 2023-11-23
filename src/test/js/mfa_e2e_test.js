@@ -1,8 +1,9 @@
+import { jwtDecode } from "jwt-decode";
+
 const randomData = require('./shared/random_data');
 const TestData = require('./config/test_data');
 const Welsh = require('./shared/welsh_constants');
 const assert = require('assert');
-const jwt_decode = require('jwt-decode');
 const deepEqualInAnyOrder = require('deep-equal-in-any-order');
 const chai = require('chai');
 chai.use(deepEqualInAnyOrder);
@@ -86,11 +87,11 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let jwtDecode = await jwt_decode(accessToken);
+    let decodedJwt = await jwtDecode(accessToken);
 
-    assert.equal("access_token", jwtDecode.tokenName);
-    assert.equal(nonce, jwtDecode.nonce);
-    assert.equal(1, jwtDecode.auth_level);
+    assert.equal("access_token", decodedJwt.tokenName);
+    assert.equal(nonce, decodedJwt.nonce);
+    assert.equal(1, decodedJwt.auth_level);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
@@ -128,11 +129,11 @@ Scenario('@functional @mfaLogin I am able to login with MFA and prompt = login',
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let jwtDecode = await jwt_decode(accessToken);
+    let decodedJwt = await jwtDecode(accessToken);
 
-    assert.equal("access_token", jwtDecode.tokenName);
-    assert.equal(nonce, jwtDecode.nonce);
-    assert.equal(1, jwtDecode.auth_level);
+    assert.equal("access_token", decodedJwt.tokenName);
+    assert.equal(nonce, decodedJwt.nonce);
+    assert.equal(1, decodedJwt.auth_level);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
@@ -172,11 +173,11 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let jwtDecode = await jwt_decode(accessToken);
+    let decodedJwt = await jwtDecode(accessToken);
 
-    assert.equal("access_token", jwtDecode.tokenName);
-    assert.equal(nonce, jwtDecode.nonce);
-    assert.equal(1, jwtDecode.auth_level);
+    assert.equal("access_token", decodedJwt.tokenName);
+    assert.equal(nonce, decodedJwt.nonce);
+    assert.equal(1, decodedJwt.auth_level);
 
     //Webpublic OIDC userinfo
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
@@ -280,11 +281,11 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let jwtDecode = await jwt_decode(accessToken);
+    let decodedJwt = await jwtDecode(accessToken);
 
-    assert.equal("access_token", jwtDecode.tokenName);
-    assert.equal(nonce, jwtDecode.nonce);
-    assert.equal(0, jwtDecode.auth_level);
+    assert.equal("access_token", decodedJwt.tokenName);
+    assert.equal(nonce, decodedJwt.nonce);
+    assert.equal(0, decodedJwt.auth_level);
 
     //Details api
     const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
@@ -350,11 +351,11 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let jwtDecode = await jwt_decode(accessToken);
+    let decodedJwt = await jwtDecode(accessToken);
 
-    assert.equal("access_token", jwtDecode.tokenName);
-    assert.equal(nonce, jwtDecode.nonce);
-    assert.equal(1, jwtDecode.auth_level);
+    assert.equal("access_token", decodedJwt.tokenName);
+    assert.equal(nonce, decodedJwt.nonce);
+    assert.equal(1, decodedJwt.auth_level);
 
     //Details api
     const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
@@ -402,7 +403,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const mfaturnedOnServiceCode = mfaturnedOnServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
     const mfaturnedOnServiceAccessToken = await I.getAccessToken(mfaturnedOnServiceCode, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let mfaturnedOnServiceJwtDecode = await jwt_decode(mfaturnedOnServiceAccessToken);
+    let mfaturnedOnServiceJwtDecode = await jwtDecode(mfaturnedOnServiceAccessToken);
 
     assert.equal("access_token", mfaturnedOnServiceJwtDecode.tokenName);
     assert.equal(nonce, mfaturnedOnServiceJwtDecode.nonce);
@@ -426,7 +427,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const mfaturnedOffServiceCode = mfaturnedOffServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
     const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, serviceClientSecret);
 
-    let mfaturnedOffServiceJwtDecode = await jwt_decode(mfaturnedOffServiceAccessToken);
+    let mfaturnedOffServiceJwtDecode = await jwtDecode(mfaturnedOffServiceAccessToken);
 
     assert.equal("access_token", mfaturnedOffServiceJwtDecode.tokenName);
     assert.equal(nonce, mfaturnedOffServiceJwtDecode.nonce);
@@ -478,7 +479,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const mfaturnedOnService1Code = mfaturnedOnService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
     const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let mfaturnedOnService1JwtDecode = await jwt_decode(mfaturnedOnService1AccessToken);
+    let mfaturnedOnService1JwtDecode = await jwtDecode(mfaturnedOnService1AccessToken);
 
     assert.equal("access_token", mfaturnedOnService1JwtDecode.tokenName);
     assert.equal(nonce, mfaturnedOnService1JwtDecode.nonce);
@@ -502,7 +503,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const mfaTurnedOnService2Code = mfaTurnedOnService2PageSource.match(/\?code=([^&]*)(.*)/)[1];
     const mfaTurnedOnService2AccessToken = await I.getAccessToken(mfaTurnedOnService2Code, mfaTurnedOnService2.oauth2ClientId, mfaTurnedOnService2.activationRedirectUrl, serviceClientSecret);
 
-    let mfaturnedOnService2JwtDecode = await jwt_decode(mfaTurnedOnService2AccessToken);
+    let mfaturnedOnService2JwtDecode = await jwtDecode(mfaTurnedOnService2AccessToken);
 
     assert.equal("access_token", mfaturnedOnService2JwtDecode.tokenName);
     assert.equal(nonce, mfaturnedOnService2JwtDecode.nonce);
@@ -548,7 +549,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const mfaTurnedOffService1Code = mfaTurnedOffService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
     const mfaTurnedOffService1AccessToken = await I.getAccessToken(mfaTurnedOffService1Code, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, serviceClientSecret);
 
-    let mfaTurnedOffService1JwtDecode = await jwt_decode(mfaTurnedOffService1AccessToken);
+    let mfaTurnedOffService1JwtDecode = await jwtDecode(mfaTurnedOffService1AccessToken);
 
     assert.equal("access_token", mfaTurnedOffService1JwtDecode.tokenName);
     assert.equal(nonce, mfaTurnedOffService1JwtDecode.nonce);
@@ -571,7 +572,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const mfaTurnedOffService2Code = mfaTurnedOffService2PageSource.match(/\?code=([^&]*)(.*)/)[1];
     const mfaTurnedOffService2AccessToken = await I.getAccessToken(mfaTurnedOffService2Code, mfaTurnedOffService2.oauth2ClientId, mfaTurnedOffService2.activationRedirectUrl, serviceClientSecret);
 
-    let mfaTurnedOffService2JwtDecode = await jwt_decode(mfaTurnedOffService2AccessToken);
+    let mfaTurnedOffService2JwtDecode = await jwtDecode(mfaTurnedOffService2AccessToken);
 
     assert.equal("access_token", mfaTurnedOffService2JwtDecode.tokenName);
     assert.equal(nonce, mfaTurnedOffService2JwtDecode.nonce);
@@ -627,11 +628,11 @@ Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on serv
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let jwtDecode = await jwt_decode(accessToken);
+    let decodedJwt = await jwtDecode(accessToken);
 
-    assert.equal("access_token", jwtDecode.tokenName);
-    assert.equal(nonce, jwtDecode.nonce);
-    assert.equal(1, jwtDecode.auth_level);
+    assert.equal("access_token", decodedJwt.tokenName);
+    assert.equal(nonce, decodedJwt.nonce);
+    assert.equal(1, decodedJwt.auth_level);
 
     //Details api
     const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
@@ -677,7 +678,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     const mfaturnedOffServiceCode = mfaturnedOffServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
     const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, serviceClientSecret);
 
-    let mfaturnedOffServiceJwtDecode = await jwt_decode(mfaturnedOffServiceAccessToken);
+    let mfaturnedOffServiceJwtDecode = await jwtDecode(mfaturnedOffServiceAccessToken);
 
     assert.equal("access_token", mfaturnedOffServiceJwtDecode.tokenName);
     assert.equal(nonce, mfaturnedOffServiceJwtDecode.nonce);
@@ -729,7 +730,7 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     const mfaturnedOnService1Code = mfaturnedOnService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
     const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let mfaturnedOnService1JwtDecode = await jwt_decode(mfaturnedOnService1AccessToken);
+    let mfaturnedOnService1JwtDecode = await jwtDecode(mfaturnedOnService1AccessToken);
 
     assert.equal("access_token", mfaturnedOnService1JwtDecode.tokenName);
     assert.equal(nonce, mfaturnedOnService1JwtDecode.nonce);
@@ -761,7 +762,7 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     const mfaturnedOnService1Code2 = mfaturnedOnService1PageSource2.match(/\?code=([^&]*)(.*)/)[1];
     const mfaturnedOnService1AccessToken2 = await I.getAccessToken(mfaturnedOnService1Code2, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let mfaturnedOnService1JwtDecode2 = await jwt_decode(mfaturnedOnService1AccessToken2);
+    let mfaturnedOnService1JwtDecode2 = await jwtDecode(mfaturnedOnService1AccessToken2);
 
     assert.equal("access_token", mfaturnedOnService1JwtDecode2.tokenName);
     assert.equal(nonce, mfaturnedOnService1JwtDecode2.nonce);
@@ -785,7 +786,7 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     const mfaTurnedOnService1Code3 = mfaTurnedOnService1PageSource3.match(/\?code=([^&]*)(.*)/)[1];
     const mfaTurnedOnService1AccessToken3 = await I.getAccessToken(mfaTurnedOnService1Code3, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
 
-    let mfaturnedOnService1JwtDecode3 = await jwt_decode(mfaTurnedOnService1AccessToken3);
+    let mfaturnedOnService1JwtDecode3 = await jwtDecode(mfaTurnedOnService1AccessToken3);
 
     assert.equal("access_token", mfaturnedOnService1JwtDecode3.tokenName);
     assert.equal(nonce, mfaturnedOnService1JwtDecode3.nonce);
