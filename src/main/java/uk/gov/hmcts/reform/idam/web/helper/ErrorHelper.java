@@ -15,34 +15,34 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @UtilityClass
 public class ErrorHelper {
 
-    private static final String ERROR = "error";
-    private static final String ERROR_TITLE = "errorTitle";
-    private static final String ERROR_MESSAGE = "errorMessage";
-    private static final String REDIRECT_URI = "redirectUri";
-    private static final String ERROR_LABEL_ONE = "errorLabelOne";
-    private static final String ERROR_LABEL_TWO = "errorLabelTwo";
+    private static final String ERROR_KEY = "error";
+    private static final String ERROR_TITLE_KEY = "errorTitle";
+    private static final String ERROR_MESSAGE_KEY = "errorMessage";
+    private static final String REDIRECT_URI_KEY = "redirectUri";
+    private static final String ERROR_LABEL_ONE_KEY = "errorLabelOne";
+    private static final String ERROR_LABEL_TWO_KEY = "errorLabelTwo";
 
     public static void showLoginError(String errorTitle, String errorMessage, String redirectUri,
                                       Map<String, Object> model) {
-        model.put(ERROR, ERROR);
-        model.put(ERROR_TITLE, errorTitle);
-        model.put(ERROR_MESSAGE, errorMessage);
-        model.put(REDIRECT_URI, redirectUri);
+        model.put(ERROR_KEY, ERROR_KEY);
+        model.put(ERROR_TITLE_KEY, errorTitle);
+        model.put(ERROR_MESSAGE_KEY, errorMessage);
+        model.put(REDIRECT_URI_KEY, redirectUri);
     }
 
     public static void showError(String errorTitle, String errorMessage, String errorLabelOne, String errorLabelTwo,
                                  Map<String, Object> model) {
-        model.put(ERROR, ERROR);
-        model.put(ERROR_TITLE, errorTitle);
-        model.put(ERROR_MESSAGE, errorMessage);
-        model.put(ERROR_LABEL_ONE, errorLabelOne);
-        model.put(ERROR_LABEL_TWO, errorLabelTwo);
+        model.put(ERROR_KEY, ERROR_KEY);
+        model.put(ERROR_TITLE_KEY, errorTitle);
+        model.put(ERROR_MESSAGE_KEY, errorMessage);
+        model.put(ERROR_LABEL_ONE_KEY, errorLabelOne);
+        model.put(ERROR_LABEL_TWO_KEY, errorLabelTwo);
     }
 
     public static void showError(String errorLabelOne, String errorLabelTwo, Map<String, Object> model) {
-        model.put(ERROR, ERROR);
-        model.put(ERROR_LABEL_ONE, errorLabelOne);
-        model.put(ERROR_LABEL_TWO, errorLabelTwo);
+        model.put(ERROR_KEY, ERROR_KEY);
+        model.put(ERROR_LABEL_ONE_KEY, errorLabelOne);
+        model.put(ERROR_LABEL_TWO_KEY, errorLabelTwo);
     }
 
     public static HttpStatusCodeException restException(@Nullable String message,

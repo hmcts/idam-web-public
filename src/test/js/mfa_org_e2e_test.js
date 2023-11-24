@@ -214,6 +214,9 @@ Scenario('@functional @mfaOrgLogin am able to login without MFA as an idam-mfa-d
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    let currentUrl = await I.grabCurrentUrl();
+    I.addMochawesomeContext('Url is ' + currentUrl);
+    I.dontSeeInCurrentUrl("/verification");
     I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');

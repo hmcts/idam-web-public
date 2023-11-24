@@ -38,7 +38,7 @@ public class MvcKeys {
 
     public static final String ACCESSIBILITY_STATEMENT_VIEW = "accessibilityStatement";
     public static final String USER_ACTIVATION_VIEW = "useractivation";
-    public static final String ERROR_VIEW = "error";
+    public static final String ERROR_TITLE = "Error";
     public static final String ERRORPAGE_VIEW = "errorpage";
     public static final String PAGE_NOT_FOUND_VIEW = "404";
     public static final String EXPIRED_PASSWORD_RESET_LINK_VIEW = "expiredPasswordResetLink";

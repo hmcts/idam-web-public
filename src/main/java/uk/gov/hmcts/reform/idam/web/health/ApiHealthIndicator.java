@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_TITLE;
+
 @Component
 public class ApiHealthIndicator implements HealthIndicator {
 
@@ -46,12 +48,12 @@ public class ApiHealthIndicator implements HealthIndicator {
                         return Health.up().build();
                     } else if (Status.DOWN.getCode().equals(apiStatus)) {
                         return Health.down()
-                            .withDetail("Error", "The API server status is DOWN")
+                            .withDetail(ERROR_TITLE, "The API server status is DOWN")
                             .build();
                     }
                 } else {
                     return Health.down()
-                        .withDetail("Error", "Couldn't determine the API server status")
+                        .withDetail(ERROR_TITLE, "Couldn't determine the API server status")
                         .build();
                 }
             }
@@ -62,7 +64,7 @@ public class ApiHealthIndicator implements HealthIndicator {
 
         } catch (RestClientException e) {
             return Health.down()
-                .withDetail("Error", "An exception occurred while checking the API server status")
+                .withDetail(ERROR_TITLE, "An exception occurred while checking the API server status")
                 .build();
         }
     }

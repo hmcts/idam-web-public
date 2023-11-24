@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +63,11 @@ public class UserControllerTest {
 
     @MockBean
     private SPIService spiService;
+
+    @Autowired
+    private ObjectMapper mapper;
+
+    private UserController userController = new UserController(mapper, spiService, validationService);
 
     /**
      * @verifies return expiredtoken view and  have redirect_uri attribute in model  if token expired
@@ -521,7 +527,6 @@ public class UserControllerTest {
      */
     @Test
     public void buildRegistrationLink_shouldReturnNullIfRedirecturiOrClientidAreEmpty() throws Exception {
-        UserController userController = new UserController();
         assertNull(userController.buildRegistrationLink(new ActivationResult()));
         assertNull(userController.buildRegistrationLink(new ActivationResult().redirectUri(GOOGLE_WEB_ADDRESS)));
         assertNull(userController.buildRegistrationLink(new ActivationResult().clientId(CLIENT_ID)));
@@ -533,7 +538,6 @@ public class UserControllerTest {
      */
     @Test
     public void buildRegistrationLink_shouldBuildLinkIfRedirecturiAndClientidArePresent() throws Exception {
-        UserController userController = new UserController();
         assertThat(
             userController.buildRegistrationLink(
                 new ActivationResult().redirectUri(GOOGLE_WEB_ADDRESS).clientId(CLIENT_ID)),
@@ -542,7 +546,6 @@ public class UserControllerTest {
 
     @Test
     public void userActivated_shouldReturnCorrectValue() {
-        UserController userController = new UserController();
         String result;
         Map<String, Object> model = new HashMap<>();
 
@@ -559,7 +562,6 @@ public class UserControllerTest {
 
     @Test
     public void expiredToken_shouldReturnCorrectValue() {
-        UserController userController = new UserController();
         assertEquals("expiredtoken", userController.expiredToken(null));
     }
 

@@ -6,10 +6,58 @@
   "preview": {
     "roleNameOverrides": [
       {
-        "httpPathPrefix": "/health/",
+        "httpPathPrefix": "/health",
         "roleName": "idam-web-public (health)"
       }
-    ]
+    ],
+    "sampling": {
+      "overrides": [
+        {
+          "telemetryType": "request",
+          "attributes": [
+            {
+              "key": "http.url",
+              "value": "https?://[^/]+/health.*",
+              "matchType": "regexp"
+            }
+          ],
+          "percentage": 1
+        },
+        {
+          "telemetryType": "request",
+          "attributes": [
+            {
+              "key": "http.url",
+              "value": "https?://[^/]+/o/.*",
+              "matchType": "regexp"
+            }
+          ],
+          "percentage": 20
+        },
+        {
+          "telemetryType": "request",
+          "attributes": [
+            {
+              "key": "http.url",
+              "value": "https?://[^/]+/rb_.*",
+              "matchType": "regexp"
+            }
+          ],
+          "percentage": 20
+        },
+        {
+          "telemetryType": "request",
+          "attributes": [
+            {
+              "key": "http.url",
+              "value": "https?://[^/]+/assets/.*",
+              "matchType": "regexp"
+            }
+          ],
+          "percentage": 1
+        }
+      ]
+    }
   },
   "instrumentation": {
     "micrometer": {

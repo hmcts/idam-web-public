@@ -1,22 +1,21 @@
 [versions]
-api-spec = "3.10.2"
-app-insights = "3.4.17"
-commons-io = "2.14.0"
-commons-text = "1.10.0"
+api-spec = "4.0.6"
+commons-io = "2.15.0"
+commons-text = "1.11.0"
 commons-fileupload = "1.5"
-feign = "12.4"
+feign = "13.1"
 feign-form = "3.8.0"
 findbugs = "3.0.2"
 guava = "32.1.3-jre"
-snakeyaml = "2.0"
-spring-boot = "2.7.16"
+snakeyaml = "2.2"
+spring-boot = "2.7.18"
 spring-cloud = "3.1.8"
 spring-security-oauth2 = "2.5.2.RELEASE"
 spring-security-oauth2-autoconfigure = "2.6.8"
+reform-logging = "6.0.1"
 
 [libraries]
-applicationinsights-core = { module = "com.microsoft.azure:applicationinsights-core", version.ref = "app-insights" }
-applicationinsights-web = { module = "com.microsoft.azure:applicationinsights-web", version.ref = "app-insights" }
+reform-java-logging = { module = "com.github.hmcts.java-logging:logging", version.ref = "reform-logging"}
 commons-fileupload = { module = " commons-fileupload:commons-fileupload", version.ref = "commons-fileupload" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
@@ -29,14 +28,14 @@ snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 spring-cloud-openfeign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign", version.ref = "spring-cloud" }
 
 [bundles]
-applicationinsights = ["applicationinsights-core", "applicationinsights-web"]
+applicationinsights = ["reform-java-logging"]
 feign = ["feign-jackson", "feign-okhttp", "spring-cloud-openfeign"]
 
 [plugins]
-jmh = { id = "me.champeau.jmh", version = "0.6.5" }
-spring = { id = "io.spring.dependency-management", version = "1.1.3" }
+jmh = { id = "me.champeau.jmh", version = "0.7.2" }
+spring = { id = "io.spring.dependency-management", version = "1.1.4" }
 spring-framework = { id = "org.springframework.boot", version.ref = "spring-boot" }
-owasp = { id = "org.owasp.dependencycheck", version = "8.4.0" }
-sonarqube = { id = "org.sonarqube", version = "4.2.1.3168" }
-pitest = { id = "info.solidsoft.pitest", version = "1.9.11" }
-git-properties = { id = "com.gorylenko.gradle-git-properties", version = "1.4.21" }
+owasp = { id = "org.owasp.dependencycheck", version = "9.0.0" }
+sonarqube = { id = "org.sonarqube", version = "4.4.1.3373" }
+pitest = { id = "info.solidsoft.pitest", version = "1.15.0" }
+git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.4.1" }

@@ -8,7 +8,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -60,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.netflix.zuul.constants.ZuulHeaders.X_FORWARDED_FOR;
 import static java.util.Optional.ofNullable;
@@ -79,35 +77,42 @@ public class AppController {
     private static final String REDIRECT_OIDC_AUTHORIZE = "redirect:/o/authorize";
     public static final String LOGIN_FAILURE_ERROR_CODE = "Login failure";
     public static final String REDIRECT_PREFIX = "redirect:";
+    public static final String REDIRECT_PREFIX_WITH_SLASH = "redirect:/";
+    public static final String AUTHORIZE_COMMAND = "authorizeCommand";
     public static final String IDAM_AUTH_ID_COOKIE_PREFIX = "Idam.AuthId=";
-    public static final String ERROR_TITLE = "Error";
 
-    @Autowired
-    private SPIService spiService;
+    private final SPIService spiService;
 
-    @Autowired
-    private ValidationService validationService;
+    private final ValidationService validationService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private ConfigurationProperties configurationProperties;
+    private final ConfigurationProperties configurationProperties;
 
-    @Autowired
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
-    @Autowired
-    private SSOService ssoService;
+    private final SSOService ssoService;
 
-    @Autowired
-    private AuthHelper authHelper;
-
-    @Value("${authentication.secureCookie}")
-    private Boolean useSecureCookie;
+    private final AuthHelper authHelper;
 
     @Value("${features.sso-auto-login-redirect:true}")
     private Boolean ssoAutoRedirect;
+
+    public AppController(SPIService spiService,
+                         ValidationService validationService,
+                         ObjectMapper objectMapper,
+                         ConfigurationProperties configurationProperties,
+                         ObjectMapper mapper,
+                         SSOService ssoService,
+                         AuthHelper authHelper) {
+        this.spiService = spiService;
+        this.validationService = validationService;
+        this.objectMapper = objectMapper;
+        this.configurationProperties = configurationProperties;
+        this.mapper = mapper;
+        this.ssoService = ssoService;
+        this.authHelper = authHelper;
+    }
 
     /**
      * @should return index view
@@ -117,7 +122,7 @@ public class AppController {
                             HttpServletRequest request,
                             final Map<String, Object> model) {
         redirectAttributes.addAllAttributes(request.getParameterMap());
-        return "redirect:" + LOGIN_VIEW;
+        return REDIRECT_PREFIX + LOGIN_VIEW;
     }
 
     /**
@@ -314,7 +319,7 @@ public class AppController {
      * @should return hasOtpCheckCodeFailed on redirects and reject "Verification code failed"
      */
     @GetMapping("/login")
-    public String loginView(@ModelAttribute("authorizeCommand") AuthorizeRequest request,
+    public String loginView(@ModelAttribute(AUTHORIZE_COMMAND) AuthorizeRequest request,
                             BindingResult bindingResult, Model model) {
         if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
             model.addAttribute(ERROR_MSG, "error.page.access.denied");
@@ -322,24 +327,7 @@ public class AppController {
             return ERRORPAGE_VIEW;
         }
 
-        model.addAttribute(SELF_REGISTRATION_ENABLED, false);
-
-        if (StringUtils.isNotBlank(request.getClient_id())) {
-            Optional<Service> service = spiService.getServiceByClientId(request.getClient_id());
-            service.ifPresent(theService -> {
-                model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
-                if (!CollectionUtils.isEmpty(theService.getSsoProviders())
-                    && theService.getSsoProviders().stream().anyMatch(SSO_LOGIN_HINTS::containsKey)
-                    && configurationProperties.getFeatures().isFederatedSSO()) {
-                    if (theService.getSsoProviders().contains(EJUDICIARY_AAD)) {
-                        model.addAttribute(AZURE_LOGIN_ENABLED, true);
-                    }
-                    if (theService.getSsoProviders().contains(MOJ)) {
-                        model.addAttribute(MOJ_LOGIN_ENABLED, true);
-                    }
-                }
-            });
-        }
+        enableConfiguredClientFeatures(request, model);
 
         model.addAttribute(RESPONSE_TYPE, request.getResponse_type());
         model.addAttribute(STATE, request.getState());
@@ -364,6 +352,26 @@ public class AppController {
         return LOGIN_VIEW;
     }
 
+    private void enableConfiguredClientFeatures(AuthorizeRequest request, Model model) {
+        model.addAttribute(SELF_REGISTRATION_ENABLED, false);
+        if (StringUtils.isNotBlank(request.getClient_id())) {
+            Optional<Service> service = spiService.getServiceByClientId(request.getClient_id());
+            service.ifPresent(theService -> {
+                model.addAttribute(SELF_REGISTRATION_ENABLED, theService.isSelfRegistrationAllowed());
+                if (!CollectionUtils.isEmpty(theService.getSsoProviders())
+                    && theService.getSsoProviders().stream().anyMatch(SSO_LOGIN_HINTS::containsKey)
+                    && configurationProperties.getFeatures().isFederatedSSO()) {
+                    if (theService.getSsoProviders().contains(EJUDICIARY_AAD)) {
+                        model.addAttribute(AZURE_LOGIN_ENABLED, true);
+                    }
+                    if (theService.getSsoProviders().contains(MOJ)) {
+                        model.addAttribute(MOJ_LOGIN_ENABLED, true);
+                    }
+                }
+            });
+        }
+    }
+
     /**
      * @should put in model correct data then call authorize service and redirect using redirect url returned by service
      * @should put in model correct data then call authorize service and redirect using redirect url returned by service that does not match redirect
@@ -376,7 +384,7 @@ public class AppController {
      * @should not forward username password params on OTP
      */
     @PostMapping("/login")
-    public ModelAndView login(@ModelAttribute("authorizeCommand") @Validated AuthorizeRequest request,
+    public ModelAndView login(@ModelAttribute(AUTHORIZE_COMMAND) @Validated AuthorizeRequest request,
                               BindingResult bindingResult, Model model, HttpServletRequest httpRequest,
                               HttpServletResponse response) throws IOException {
         model.addAttribute(USERNAME, request.getUsername());
@@ -448,7 +456,7 @@ public class AppController {
                     authorizeParams.remove(PASSWORD);
                     authorizeParams.remove(SELF_REGISTRATION_ENABLED);
 
-                    return new ModelAndView("redirect:/" + VERIFICATION_VIEW, authorizeParams);
+                    return new ModelAndView(REDIRECT_PREFIX_WITH_SLASH + VERIFICATION_VIEW, authorizeParams);
                 } else {
                     final String responseUrl = authoriseUserAfterAuthentication(cookies, httpRequest);
                     final boolean loginSuccess = responseUrl != null && !responseUrl.contains("error");
@@ -553,7 +561,7 @@ public class AppController {
      * @should populate authorizeCommand
      */
     @GetMapping("/verification")
-    public String verificationView(@ModelAttribute("authorizeCommand") VerificationRequest request,
+    public String verificationView(@ModelAttribute(AUTHORIZE_COMMAND) VerificationRequest request,
                                    BindingResult bindingResult, Model model) {
         if (StringUtils.isEmpty(request.getClient_id()) || StringUtils.isEmpty(request.getRedirect_uri())) {
             model.addAttribute(ERROR_MSG, "error.page.access.denied");
@@ -569,7 +577,7 @@ public class AppController {
         model.addAttribute(NONCE, request.getNonce());
         model.addAttribute(PROMPT, request.getPrompt());
 
-        model.addAttribute("authorizeCommand", request);
+        model.addAttribute(AUTHORIZE_COMMAND, request);
 
         return VERIFICATION_VIEW;
     }
@@ -589,7 +597,7 @@ public class AppController {
      * @should validate code field is 8 digits
      */
     @PostMapping("/verification")
-    public ModelAndView verification(@ModelAttribute("authorizeCommand") @Validated VerificationRequest request,
+    public ModelAndView verification(@ModelAttribute(AUTHORIZE_COMMAND) @Validated VerificationRequest request,
                                      BindingResult bindingResult,
                                      Model model,
                                      HttpServletRequest httpRequest,
@@ -610,7 +618,7 @@ public class AppController {
                 .orElse(Collections.emptyList());
             final List<String> errorCode = codeErrors.stream()
                 .map(FieldError::getCode)
-                .collect(Collectors.toList());
+                .toList();
             if (errorCode.contains(NotEmpty.class.getSimpleName())) {
                 model.addAttribute("isCodeEmpty", true);
             } else if (errorCode.contains(Pattern.class.getSimpleName())) {
@@ -627,7 +635,7 @@ public class AppController {
         final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[]{}))
             .filter(c -> !idamSessionCookie.equals(c.getName()))
             .map(c -> String.format("%s=%s", c.getName(), c.getValue())) // map to: "Idam.AuthId=xyz"
-            .collect(Collectors.toList());
+            .toList();
 
         try {
             final String authId = StringUtils.substringAfter(
@@ -699,9 +707,9 @@ public class AppController {
                                                                 Model model) {
         model.addAttribute("hasOtpCheckFailed", true);
         bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
-        model.addAttribute("authorizeCommand", request);
+        model.addAttribute(AUTHORIZE_COMMAND, request);
         model.addAttribute(USERNAME, null);
-        return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
+        return new ModelAndView(REDIRECT_PREFIX_WITH_SLASH + LOGIN_VIEW, model.asMap());
     }
 
     private ModelAndView redirectToLoginMissingAuthId(VerificationRequest request,
@@ -709,13 +717,13 @@ public class AppController {
                                                                 Model model) {
         model.addAttribute("missingAuthIdCookie", true);
         bindingResult.reject(LOGIN_FAILURE_ERROR_CODE);
-        model.addAttribute("authorizeCommand", request);
+        model.addAttribute(AUTHORIZE_COMMAND, request);
         model.addAttribute(USERNAME, null);
-        return new ModelAndView("redirect:/" + LOGIN_VIEW, model.asMap());
+        return new ModelAndView(REDIRECT_PREFIX_WITH_SLASH + LOGIN_VIEW, model.asMap());
     }
 
     private ModelAndView redirectToExpiredCode(Model model) {
-        return new ModelAndView("redirect:/" + EXPIRED_CODE_VIEW, model.asMap());
+        return new ModelAndView(REDIRECT_PREFIX_WITH_SLASH + EXPIRED_CODE_VIEW, model.asMap());
     }
 
 
