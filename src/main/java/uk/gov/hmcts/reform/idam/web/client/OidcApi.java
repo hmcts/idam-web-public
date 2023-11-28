@@ -16,5 +16,5 @@ public interface OidcApi {
         "Accept: application/json",
         "Cookie: {cookie}"
     })
-    Response oauth2AuthorizePost(@Param("cookie") String cookie, @QueryMap(encoded=true) Map<String, Object> queryParams);
+    Response oauth2AuthorizePost(@Param("cookie") String cookie, @QueryMap Map<String, Object> queryParams);
 }

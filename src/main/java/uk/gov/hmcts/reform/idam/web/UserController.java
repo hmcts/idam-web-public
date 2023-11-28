@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Base64;
 import org.owasp.encoder.Encode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -40,6 +39,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CLIENT_ID;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EMAIL;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERROR_TITLE;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ERRORPAGE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_ACTIVATION_LINK_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.NONCE;
@@ -61,14 +61,17 @@ public class UserController {
     private static final String ALREADY_ACTIVATED_KEY = "public.error.page.already.activated.description";
     private static final String PAGE_NOT_FOUND_VIEW = "404";
 
-    @Autowired
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
-    @Autowired
-    private SPIService spiService;
+    private final SPIService spiService;
 
-    @Autowired
-    private ValidationService validationService;
+    private final ValidationService validationService;
+
+    public UserController(ObjectMapper mapper, SPIService spiService, ValidationService validationService) {
+        this.mapper = mapper;
+        this.spiService = spiService;
+        this.validationService = validationService;
+    }
 
     /**
      * @should return users view
@@ -288,7 +291,7 @@ public class UserController {
 
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED)) {
-                    ErrorHelper.showError("Error",
+                    ErrorHelper.showError(ERROR_TITLE,
                         "public.common.error.blacklisted.password",
                         "public.common.error.blacklisted.password",
                         "public.common.error.enter.password",
@@ -297,7 +300,7 @@ public class UserController {
                 }
 
                 if (validationService.isErrorInResponse(e.getResponseBodyAsString(), ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)) {
-                    ErrorHelper.showError("Error",
+                    ErrorHelper.showError(ERROR_TITLE,
                         "public.common.error.containspersonalinfo.password",
                         "public.common.error.containspersonalinfo.password",
                         "public.common.error.enter.password",
@@ -310,7 +313,7 @@ public class UserController {
                 }
             }
 
-            ErrorHelper.showError("Error",
+            ErrorHelper.showError(ERROR_TITLE,
                 "public.common.error.invalid.password",
                 "public.common.error.invalid.password",
                 "public.common.error.enter.password",

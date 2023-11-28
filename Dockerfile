@@ -1,8 +1,8 @@
  # renovate: datasource=github-releases depName=microsoft/ApplicationInsights-Java
-ARG APP_INSIGHTS_AGENT_VERSION=3.4.17
+ARG APP_INSIGHTS_AGENT_VERSION=3.4.18
 
 # Application image
-FROM hmctspublic.azurecr.io/base/java:17-distroless
+FROM hmctspublic.azurecr.io/base/java:21-distroless
 
 LABEL maintainer=IDAM \
       owner="HM Courts & Tribunals Service"
@@ -15,8 +15,7 @@ LABEL maintainer=IDAM \
 ENV SERVER_PORT=8080
 
 ADD --chown=hmcts:hmcts build/libs/idam-web-public.war \
-                        lib/applicationinsights.json \
-                        lib/applicationinsights-agent-3.4.14.jar /opt/app/
+                        lib/applicationinsights.json /opt/app/
 
 CMD [ \
      "-Dspring.profiles.active=docker,local", \

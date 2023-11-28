@@ -311,53 +311,6 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createUser(email, password, forename, role, serviceRole) {
-        console.log('Creating user with email: ', email);
-        const data = {
-            email: email,
-            forename: forename,
-            password: password,
-            roles: [{code: role}, {code: serviceRole}],
-            surname: 'User',
-            userGroup: {code: 'xxx_private_beta'},
-        };
-        return fetch(`${TestData.IDAM_API}/testing-support/accounts`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json'},
-        }).then(res => res.json())
-            .then((json) => {
-                return json;
-            })
-            .catch(err => err);
-    }
-
-// Commenting for future ref.
-//    createUserWithRoles(email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
-//        const codeUserRoles = userRoles.map(role => ({'code': role}));
-//        const data = {
-//            email: email,
-//            forename: forename,
-//            password: password,
-//            roles: codeUserRoles,
-//            surname: 'User',
-//            userGroup: {code: 'xxx_private_beta'},
-//            ssoProvider: ssoProvider,
-//            ssoId: ssoId
-//        };
-//        return fetch(`${TestData.IDAM_API}/testing-support/accounts`, {
-//            agent: agent,
-//            method: 'POST',
-//            body: JSON.stringify(data),
-//            headers: {'Content-Type': 'application/json'},
-//        }).then(res => res.json())
-//            .then((json) => {
-//                return json;
-//            })
-//            .catch(err => err);
-//    }
-
     createUserUsingTestingSupportService(accessToken, email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
         const userId = uuid.v4();
         const data = {
@@ -523,6 +476,7 @@ class IdamHelper extends Helper {
 
         helper.page.on('request', request => {
             if (pages.some(v => request.url().includes(v))) {
+                console.log("During intercept: " + request.url());
                 request.continue();
             } else {
                 request.respond({

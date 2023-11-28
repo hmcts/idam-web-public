@@ -76,6 +76,8 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
+    let currentUrl = await I.grabCurrentUrl();
+    I.addMochawesomeContext('Url is ' + currentUrl);
     I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -267,6 +269,9 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    let currentUrl = await I.grabCurrentUrl();
+    I.addMochawesomeContext('Url is ' + currentUrl);
+    I.dontSeeInCurrentUrl("/verification");
     I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
