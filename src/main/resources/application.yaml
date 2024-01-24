@@ -63,6 +63,7 @@ spring:
     redis:
       flush-mode: ON_SAVE
       namespace: spring:session
+      cleanup-cron: 0 * * *
     store-type: redis
     timeout: 432000s
   security:
