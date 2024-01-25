@@ -42,7 +42,8 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/authorize?login_hint=${TestData.MOJ_SSO_PROVIDER_KEY}&client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.wait(10);
 
-    await page.screenshot({path: 'output/desperate.png', fullPage: true});
+    await I.saveScreenshot('debug.png');
+    await I.getCurrentPage().screenshot({path: 'output/desperate.png', fullPage: true});
 
     I.retry(9).seeInCurrentUrl('/login/oauth2/code/moj');
     I.retry(9).see('Sign in');
