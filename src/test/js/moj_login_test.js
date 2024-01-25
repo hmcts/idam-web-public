@@ -45,8 +45,8 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     let logs = await I.grabBrowserLogs();
     console.log(JSON.stringify(logs))
 
-    I.waitInUrl('/login/oauth2/code/moj');
-    I.waitForText('Sign in');
+    I.retry(9).seeInCurrentUrl('/login/oauth2/code/moj');
+    I.retry(9).see('Sign in');
     I.fillField('loginfmt', TestData.MOJ_TEST_USER_USERNAME);
     I.click('Next');
     I.waitForText('Enter password');
