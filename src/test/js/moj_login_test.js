@@ -80,7 +80,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional As an Justice.gov.uk user, I should be able to login through the Justice.gov.uk login link from idam', async ({ I }) => {
+Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login through the Justice.gov.uk login link from idam', async ({ I }) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
     I.waitForText('Log in with your Justice.gov.uk account');
@@ -123,7 +123,7 @@ Scenario('@functional As an Justice.gov.uk user, I should be able to login throu
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional As a Justice.gov.uk user, I should be redirected to MoJ IDAM for login if I enter my username on the login screen', async ({ I }) => {
+Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to MoJ IDAM for login if I enter my username on the login screen', async ({ I }) => {
     await I.deleteUser(TestData.MOJ_TEST_USER_USERNAME);
     await I.createUserUsingTestingSupportService(accessToken, TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name], "moj", randomData.getRandomString());
     //redirection verification
