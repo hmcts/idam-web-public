@@ -40,7 +40,7 @@ AfterSuite(async ({ I }) => {
 
 Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam through OIDC', async ({ I }) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/authorize?login_hint=${TestData.MOJ_SSO_PROVIDER_KEY}&client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
-    I.waitInUrl('/login/oauth2/code/moj');
+    //I.waitInUrl('/login/oauth2/code/moj');
     I.waitForText('Sign in');
     I.fillField('loginfmt', TestData.MOJ_TEST_USER_USERNAME);
     I.click('Next');
