@@ -43,7 +43,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     I.wait(10);
 
     await I.saveScreenshot('debug.png');
-    await I.getCurrentPage().screenshot({path: 'output/desperate.png', fullPage: true});
+    await I.getCurrentPage().screenshot({path: 'desperate.png', fullPage: true});
 
     I.retry(9).seeInCurrentUrl('/login/oauth2/code/moj');
     I.retry(9).see('Sign in');
@@ -82,7 +82,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login through the Justice.gov.uk login link from idam', async ({ I }) => {
+Scenario('@functional As an Justice.gov.uk user, I should be able to login through the Justice.gov.uk login link from idam', async ({ I }) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
     I.waitForText('Log in with your Justice.gov.uk account');
@@ -125,7 +125,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to MoJ IDAM for login if I enter my username on the login screen', async ({ I }) => {
+Scenario('@functional As a Justice.gov.uk user, I should be redirected to MoJ IDAM for login if I enter my username on the login screen', async ({ I }) => {
     await I.deleteUser(TestData.MOJ_TEST_USER_USERNAME);
     await I.createUserUsingTestingSupportService(accessToken, TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name], "moj", randomData.getRandomString());
     //redirection verification
