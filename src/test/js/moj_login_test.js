@@ -152,3 +152,46 @@ Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to M
     }
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
+
+Scenario('@functional @moj As a Justice.gov.uk user, I should be able to SSO even if my SSO ID has changed', async ({ I }) => {
+    await I.deleteUser(TestData.MOJ_TEST_USER_USERNAME);
+
+    const oldSsoId = randomData.getRandomString()
+    await I.createUserUsingTestingSupportService(accessToken, TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name], "moj", oldSsoId);
+
+    //redirection verification
+    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
+    I.waitForText('Sign in');
+    I.waitForText('Log in with your Justice.gov.uk account');
+    I.click('Log in with your Justice.gov.uk account');
+    I.waitInUrl('/oauth2/authorize');
+    I.waitForText('Sign in');
+    I.fillField('loginfmt', TestData.MOJ_TEST_USER_USERNAME);
+    I.click('Next');
+    I.waitForText('Enter password');
+    I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
+    I.click('Sign in');
+    I.waitForText('Stay signed in?');
+
+    if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
+        I.click('No');
+        // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
+        I.waitInUrl("/kmsi");
+        I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
+    } else {
+        I.interceptRequestsAfterSignin();
+        I.click('No');
+        I.waitForText(TestData.SERVICE_REDIRECT_URI);
+        I.see('code=');
+        I.dontSee('error=');
+
+        const getUserByEmailResponse = await I.getUserByEmail(TestData.MOJ_TEST_USER_USERNAME);
+        const newSsoId = getUserByEmailResponse.ssoId;
+        expect(newSsoId).to.not.equal(oldSsoId);
+        expect(newSsoId).to.equal(TestData.MOJ_TEST_USER_SSO_ID);
+        expect(getUserByEmailResponse.ssoProvider).to.equal("moj");
+
+        I.resetRequestInterception();
+    }
+
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
