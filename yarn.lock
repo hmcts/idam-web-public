@@ -3,11 +3,11 @@
 
 
 "@babel/code-frame@^7.0.0":
-  version "7.22.13"
-  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.22.13.tgz#e3c1c099402598483b7a8c46a721d1038803755e"
-  integrity sha512-XktuhWlJ5g+3TJXc5upd9Ks1HutSArik6jf2eAjYFyIOf4ej3RN+184cZbzDvbPnuTJIUhPKKJE3cIsYTiAT3w==
+  version "7.23.5"
+  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.23.5.tgz#9009b69a8c602293476ad598ff53e4562e15c244"
+  integrity sha512-CgH3s1a96LipHCmSUmYFPwY7MNx8C3avkq7i4Wl3cfa662ldtUe4VM1TPXX70pfmrlWTb6jLqTYrZyT2ZTJBgA==
   dependencies:
-    "@babel/highlight" "^7.22.13"
+    "@babel/highlight" "^7.23.4"
     chalk "^2.4.2"
 
 "@babel/helper-validator-identifier@^7.22.20":
@@ -15,10 +15,10 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.22.20.tgz#c4ae002c61d2879e724581d96665583dbc1dc0e0"
   integrity sha512-Y4OZ+ytlatR8AI+8KZfKuL5urKp7qey08ha31L8b3BwewJAoJamTzyvxPR/5D+KkdJCGPq/+8TukHBlY10FX9A==
 
-"@babel/highlight@^7.22.13":
-  version "7.22.20"
-  resolved "https://registry.yarnpkg.com/@babel/highlight/-/highlight-7.22.20.tgz#4ca92b71d80554b01427815e06f2df965b9c1f54"
-  integrity sha512-dkdMCN3py0+ksCgYmGG8jKeGA/8Tk+gJwSYYlFGxG5lmhfKNoAy004YpLxpS1W2J8m/EK2Ew+yOs9pVRwO89mg==
+"@babel/highlight@^7.23.4":
+  version "7.23.4"
+  resolved "https://registry.yarnpkg.com/@babel/highlight/-/highlight-7.23.4.tgz#edaadf4d8232e1a961432db785091207ead0621b"
+  integrity sha512-acGdbYSfp2WheJoJm/EBBBLh/ID8KDc64ISZ9DYtBmC8/Q204PZJLHyzeB5qMzJ5trcOkybd78M4x2KWsUq++A==
   dependencies:
     "@babel/helper-validator-identifier" "^7.22.20"
     chalk "^2.4.2"
@@ -834,13 +834,13 @@ chromium-bidi@0.4.16:
   dependencies:
     mitt "3.0.0"
 
-chromium-bidi@0.5.4:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/chromium-bidi/-/chromium-bidi-0.5.4.tgz#dcf60bbc510a0a1d19b35012d7bb53f82bb5f2ba"
-  integrity sha512-p9CdiHl0xNh4P7oVa44zXgJJw+pvnHXFDB+tVdo25xaPLgQDVf2kQO+TDxD2fp2Evqi7vs/vGRINMzl1qJrWiw==
+chromium-bidi@0.5.8:
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/chromium-bidi/-/chromium-bidi-0.5.8.tgz#5053038425c062ed34b9bc973e84e79de0a5cef0"
+  integrity sha512-blqh+1cEQbHBKmok3rVJkBlBxt9beKBgOsxbFgs7UJcoVbbeZ+K7+6liAsjgpc8l1Xd55cQUy14fXZdGSb4zIw==
   dependencies:
     mitt "3.0.1"
-    urlpattern-polyfill "9.0.0"
+    urlpattern-polyfill "10.0.0"
 
 class-transformer@0.5.1:
   version "0.5.1"
@@ -3118,13 +3118,13 @@ pump@^3.0.0:
     end-of-stream "^1.1.0"
     once "^1.3.1"
 
-puppeteer-core@21.9.0:
-  version "21.9.0"
-  resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-21.9.0.tgz#7462d5dd0571cd1e0580cc3729d7951cc6fe2505"
-  integrity sha512-QgowcczLAoLWlV38s3y3VuEvjJGfKU5rR6Q23GUbiGOaiQi+QpaWQ+aXdzP9LHVSUPmHdAaWhcvMztYSw3f8gQ==
+puppeteer-core@21.11.0:
+  version "21.11.0"
+  resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-21.11.0.tgz#6c60ec350f1a3a2152179c68166da6edfce18a23"
+  integrity sha512-ArbnyA3U5SGHokEvkfWjW+O8hOxV1RSJxOgriX/3A4xZRqixt9ZFHD0yPgZQF05Qj0oAqi8H/7stDorjoHY90Q==
   dependencies:
     "@puppeteer/browsers" "1.9.1"
-    chromium-bidi "0.5.4"
+    chromium-bidi "0.5.8"
     cross-fetch "4.0.0"
     debug "4.3.4"
     devtools-protocol "0.0.1232444"
@@ -3143,13 +3143,13 @@ puppeteer-core@^20.9.0:
     ws "8.13.0"
 
 puppeteer@^21.5.2:
-  version "21.9.0"
-  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-21.9.0.tgz#ff6cb321f6d43c1f39ba74bbdfccf2b5ef0121af"
-  integrity sha512-vcLR81Rp+MBrgqhiXZfpwEBbyKTa88Hd+8Al3+emWzcJb9evLLSfUYli0QUqhofPFrXsO2A/dAF9OunyOivL6w==
+  version "21.11.0"
+  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-21.11.0.tgz#46e64067b742b0e17a3b8dc668bc437f45cdd9f1"
+  integrity sha512-9jTHuYe22TD3sNxy0nEIzC7ZrlRnDgeX3xPkbS7PnbdwYjl2o/z/YuCrRBwezdKpbTDTJ4VqIggzNyeRcKq3cg==
   dependencies:
     "@puppeteer/browsers" "1.9.1"
     cosmiconfig "9.0.0"
-    puppeteer-core "21.9.0"
+    puppeteer-core "21.11.0"
 
 puppeteer@~9.1.1:
   version "9.1.1"
@@ -3819,10 +3819,10 @@ upper-case@^1.1.1:
   resolved "https://registry.yarnpkg.com/upper-case/-/upper-case-1.1.3.tgz#f6b4501c2ec4cdd26ba78be7222961de77621598"
   integrity sha512-WRbjgmYzgXkCV7zNVpy5YgrHgbBv126rMALQQMrmzOVC4GM2waQ9x7xtm8VU+1yF2kWyPzI9zbZ48n4vSxwfSA==
 
-urlpattern-polyfill@9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/urlpattern-polyfill/-/urlpattern-polyfill-9.0.0.tgz#bc7e386bb12fd7898b58d1509df21d3c29ab3460"
-  integrity sha512-WHN8KDQblxd32odxeIgo83rdVDE2bvdkb86it7bMhYZwWKJz0+O0RK/eZiHYnM+zgt/U7hAHOlCQGfjjvSkw2g==
+urlpattern-polyfill@10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/urlpattern-polyfill/-/urlpattern-polyfill-10.0.0.tgz#f0a03a97bfb03cdf33553e5e79a2aadd22cac8ec"
+  integrity sha512-H/A06tKD7sS1O1X2SshBVeA5FLycRpjqiBeqGKmBwBDBy28EnRjORxTNe269KSSr5un5qyWi1iL61wLxpd+ZOg==
 
 userhome@1.0.0:
   version "1.0.0"
