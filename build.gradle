@@ -105,7 +105,7 @@ allprojects {
     }
     implementation libs.bundles.applicationinsights
 
-    implementation group: 'com.squareup.okio', name: 'okio', version: '3.7.0'
+    implementation group: 'com.squareup.okio', name: 'okio', version: '3.8.0'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
