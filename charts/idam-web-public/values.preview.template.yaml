@@ -5,5 +5,7 @@ java:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  ingressAnnotations:
+    external-dns.alpha.kubernetes.io/exclude: "true"
   environment:
     STRATEGIC_SERVICE_URL: http://idam-api
