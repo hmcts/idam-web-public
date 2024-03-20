@@ -15,7 +15,7 @@ const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName =  randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
-const appendedStringPromise = randomData.getRandomTextFor11KB();
+const largeCookieValue = randomData.getRandomTextFor11KB();
 
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
@@ -39,20 +39,16 @@ AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
-Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
+Scenario('@arun @functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
     I.amOnPage(loginUrl);
     const [page] = await I.getCurrentPage()
-
-    appendedStringPromise.then(appendedString => {
-        page.setCookie({
-            name: 'yourCookieName',
-            value: appendedString,
-            path: '/',
-            expires: Math.floor(Date.now() / 1000) + 60 * 60,
-        });
-    });
-
+    page.setCookie({
+                name: 'cookieName',
+                value: largeCookieValue,
+                path: '/', // Add path parameter if necessary
+                expires: Math.floor(Date.now() / 1000) + 60 * 60, // Example expiration time (1 hour from now)
+            });
     I.waitForText('Cookies on hmcts-access.service.gov.uk');
     await I.runAccessibilityTest();
     I.click('Accept additional cookies');

@@ -12,7 +12,7 @@ function randomAlphabeticString(length = 10) {
     return randomString
 }
 
-async function createRandomString(length) {
+function createRandomString(length) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
     for (let i = 0; i < length; i++) {
