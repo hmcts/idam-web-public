@@ -39,7 +39,7 @@ AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
-Scenario('@arun @functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
+Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
     I.amOnPage(loginUrl);
     const [page] = await I.getCurrentPage()
