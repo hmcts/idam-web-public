@@ -12,6 +12,15 @@ function randomAlphabeticString(length = 10) {
     return randomString
 }
 
+async function createRandomString(length) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
 function generatePassword(passwordLength) {
     const numberChars = "0123456789";
     const upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -44,6 +53,7 @@ module.exports = {
     getRandomEmailAddress: () => randomString() + "@mailtest.gov.uk",
     getRandomUserPassword: () => generatePassword(12),
     getRandomClientSecret: () => generatePassword(12),
+    getRandomTextFor11KB: () => createRandomString(1112150),
     getRandomUserName: (testSuitePrefix) => testBasePrefix + testSuitePrefix + "USER" + randomAlphabeticString(),
     getRandomRoleName: (testSuitePrefix) => testBasePrefix + testSuitePrefix + "ROLE_" + randomString(),
     getRandomServiceName: (testSuitePrefix) => testBasePrefix + testSuitePrefix + "SERVICE_" + randomString(),
