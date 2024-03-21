@@ -37,9 +37,9 @@ java:
     SSL_VERIFICATION_ENABLED: true
     GA_TRACKING_ID: ''
 
-  cpuRequests: '1000m'
-  cpuLimits: '2500m'
-  memoryRequests: '1024Mi'
+  cpuRequests: '60m'
+  cpuLimits: '100m'
+  memoryRequests: '1536Mi'
   memoryLimits: '2048Mi'
 
   devmemoryRequests: '768Mi'
