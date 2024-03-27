@@ -36,6 +36,10 @@ java:
     ENDPOINTS_ENABLED: true
     SSL_VERIFICATION_ENABLED: true
     GA_TRACKING_ID: ''
+  autoscaling:
+    enabled: true
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
 
   cpuRequests: '60m'
   cpuLimits: '100m'
