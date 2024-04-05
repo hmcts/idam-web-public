@@ -18,7 +18,7 @@
     "nightmare": "^3.0.2",
     "node-fetch": "^2.6.1",
     "notifications-node-client": "^8.0.0",
-    "pa11y": "^7.0.0",
+    "pa11y": "^8.0.0",
     "proxy-agent": "^6.0.0",
     "puppeteer": "^21.5.2",
     "webdriverio": "^8.0.0",
