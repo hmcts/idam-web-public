@@ -86,7 +86,7 @@ allprojects {
 
     implementation 'org.bouncycastle:bcprov-jdk18on:1.77'
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.78'
-    implementation 'org.bouncycastle:bcutil-jdk18on:1.77'
+    implementation 'org.bouncycastle:bcutil-jdk18on:1.78'
 
     implementation (libs.idam.api.spec) {
       exclude module: 'springfox-swagger2'
