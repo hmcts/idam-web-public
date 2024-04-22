@@ -90,6 +90,12 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
+
+    const letterRole = userInfo.roles.find(role => /^letter/.test(role));
+    console.log("****************"+JSON.stringify(userInfo))
+    console.log("****************"+letterRole)
+
+
     expect(userInfo.roles).to.eql(['letter-holder']);
 });
 
@@ -245,8 +251,9 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'StaleUser' + " User");
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'StaleUser');
     expect(oidcUserInfo.family_name).to.equal('User');
-
+    console.trace(JSON.stringify(oidcUserInfo));
     I.resetRequestInterception();
+    I.cleanupLetterHolderRole(accessTokenClientSecret,oidcUserInfo.roles)
 });
 
 Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift login', async ({ I }) => {
@@ -304,6 +311,6 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'StaleUser' + " User");
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'StaleUser');
     expect(oidcUserInfo.family_name).to.equal('User');
-
     I.resetRequestInterception();
+    I.cleanupLetterHolderRoles(accessTokenClientSecret,oidcUserInfo.roles)
 });

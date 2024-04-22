@@ -66,6 +66,23 @@ class IdamHelper extends Helper {
         });
     }
 
+    async cleanupLetterHolderRole(token, roles) {
+        const rolesStartingWithLetter = roles.filter(role => role.startsWith('letter'));
+        for (const role of rolesStartingWithLetter) {
+            try {
+                const response = await fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/roles/${role}`, {
+                    agent: agent,
+                    method: 'DELETE',
+                    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+                });
+                console.debug("**************"+response.status);
+
+            } catch (error) {
+                console.debug(error);
+            }
+        }
+    }
+
     getBase64(email_address, password) {
         console.log("BASE64-ENCODED " + Buffer.from(email_address + ":" + password).toString('base64'))
         return Buffer.from(email_address + ":" + password).toString('base64')
@@ -800,12 +817,14 @@ class IdamHelper extends Helper {
             agent: agent,
             method: 'DELETE'
         }).then(response => {
+            console.trace(`SUCCESSS ${roleNames}, response: ${response.status}`);
+
             if (response.status !== 200) {
-                console.log(`Error deleting test data with prefix ${testDataPrefix}, response: ${response.status}`);
+                console.trace(`Error deleting test data with prefix ${testDataPrefix}, response: ${response.status}`);
             }
             return response.json();
         }).catch(err => {
-            console.log(err);
+            console.trace(err);
         });
     }
 
