@@ -249,7 +249,6 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'StaleUser' + " User");
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'StaleUser');
     expect(oidcUserInfo.family_name).to.equal('User');
-    console.trace(JSON.stringify(oidcUserInfo));
     I.resetRequestInterception();
     I.cleanupLetterHolderRoles(accessTokenClientSecret,oidcUserInfo.roles)
 });

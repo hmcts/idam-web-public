@@ -75,8 +75,6 @@ class IdamHelper extends Helper {
                     method: 'DELETE',
                     headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
                 });
-                console.debug("**************"+response.status);
-
             } catch (error) {
                 console.debug(error);
             }
