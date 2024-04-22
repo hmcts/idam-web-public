@@ -92,11 +92,9 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
 
     const letterRole = userInfo.roles.find(role => /^letter/.test(role));
-    console.log("****************"+JSON.stringify(userInfo))
-    console.log("****************"+letterRole)
-
 
     expect(userInfo.roles).to.eql(['letter-holder']);
+    I.cleanupLetterHolderRoles(accessTokenClientSecret,userInfo.roles)
 });
 
 Scenario('@functional @uplift @upliftvalid User Validation errors', ({ I }) => {
@@ -253,7 +251,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     expect(oidcUserInfo.family_name).to.equal('User');
     console.trace(JSON.stringify(oidcUserInfo));
     I.resetRequestInterception();
-    I.cleanupLetterHolderRole(accessTokenClientSecret,oidcUserInfo.roles)
+    I.cleanupLetterHolderRoles(accessTokenClientSecret,oidcUserInfo.roles)
 });
 
 Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift login', async ({ I }) => {

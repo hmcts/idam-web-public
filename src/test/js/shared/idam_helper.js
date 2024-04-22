@@ -66,7 +66,7 @@ class IdamHelper extends Helper {
         });
     }
 
-    async cleanupLetterHolderRole(token, roles) {
+    async cleanupLetterHolderRoles(token, roles) {
         const rolesStartingWithLetter = roles.filter(role => role.startsWith('letter'));
         for (const role of rolesStartingWithLetter) {
             try {
