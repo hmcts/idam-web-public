@@ -815,14 +815,12 @@ class IdamHelper extends Helper {
             agent: agent,
             method: 'DELETE'
         }).then(response => {
-            console.trace(`SUCCESSS ${roleNames}, response: ${response.status}`);
-
             if (response.status !== 200) {
-                console.trace(`Error deleting test data with prefix ${testDataPrefix}, response: ${response.status}`);
+                console.log(`Error deleting test data with prefix ${testDataPrefix}, response: ${response.status}`);
             }
             return response.json();
         }).catch(err => {
-            console.trace(err);
+            console.log(err);
         });
     }
 
