@@ -249,7 +249,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.resetRequestInterception();
 });
 
-Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift login', async ({ I }) => {
+Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift login1', async ({ I }) => {
     const newPassword = randomData.getRandomUserPassword();
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
