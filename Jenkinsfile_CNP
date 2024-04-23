@@ -8,16 +8,10 @@ def product = "idam"
 
 def component = "web-public"
 
-env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
-env.PROD_ENVIRONMENT_NAME = 'idam-prod'
-env.DEMO_ENVIRONMENT_NAME = 'idam-demo'
-env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
-env.PERFTEST_ENVIRONMENT_NAME = 'idam-perftest'
-env.ITHC_ENVIRONMENT_NAME = 'idam-ithc'
 env.NO_SKIP_IMG_BUILD = 'true'
 
 def secrets = [
-    'idam-${env}': [
+    'idam-idam-${env}': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY'),
