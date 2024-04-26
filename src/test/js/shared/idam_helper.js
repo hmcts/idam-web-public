@@ -66,6 +66,21 @@ class IdamHelper extends Helper {
         });
     }
 
+    async cleanupLetterHolderRoles(token, roles) {
+        const rolesStartingWithLetter = roles.filter(role => role.startsWith('letter'));
+        for (const role of rolesStartingWithLetter) {
+            try {
+                const response = await fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/roles/${role}`, {
+                    agent: agent,
+                    method: 'DELETE',
+                    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+                });
+            } catch (error) {
+                console.debug(error);
+            }
+        }
+    }
+
     getBase64(email_address, password) {
         console.log("BASE64-ENCODED " + Buffer.from(email_address + ":" + password).toString('base64'))
         return Buffer.from(email_address + ":" + password).toString('base64')
