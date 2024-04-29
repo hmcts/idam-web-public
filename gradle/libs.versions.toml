@@ -38,4 +38,4 @@ spring-framework = { id = "org.springframework.boot", version.ref = "spring-boot
 owasp = { id = "org.owasp.dependencycheck", version = "9.1.0" }
 sonarqube = { id = "org.sonarqube", version = "5.0.0.4638" }
 pitest = { id = "info.solidsoft.pitest", version = "1.15.0" }
-git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.4.1" }
+git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.4.2" }
