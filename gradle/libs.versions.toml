@@ -33,7 +33,7 @@ feign = ["feign-jackson", "feign-okhttp", "spring-cloud-openfeign"]
 
 [plugins]
 jmh = { id = "me.champeau.jmh", version = "0.7.2" }
-spring = { id = "io.spring.dependency-management", version = "1.1.4" }
+spring = { id = "io.spring.dependency-management", version = "1.1.5" }
 spring-framework = { id = "org.springframework.boot", version.ref = "spring-boot" }
 owasp = { id = "org.owasp.dependencycheck", version = "9.1.0" }
 sonarqube = { id = "org.sonarqube", version = "5.0.0.4638" }
