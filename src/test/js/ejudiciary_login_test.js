@@ -18,7 +18,12 @@ const serviceClientSecret = randomData.getRandomClientSecret();
 
 BeforeSuite(async ({ I }) => {
     const token = await I.getAuthToken();
-    await I.createService(serviceName, serviceClientSecret, '', token, 'openid profile roles', [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
+    accessToken = await I.getToken();
+    const scopes = ['openid', 'profile', 'roles'];
+
+   // await I.createService(serviceName, serviceClientSecret, '', token, 'openid profile roles', [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, '', token, scopes, [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
+
     serviceNames.push(serviceName);
 
     I.wait(0.5);
