@@ -17,7 +17,8 @@ BeforeSuite(async ({ I }) => {
     const randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
-    await I.createServiceData(serviceName, serviceClientSecret);
+    accessToken =  await I.getToken();
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', accessToken, [], []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);

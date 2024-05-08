@@ -845,6 +845,123 @@ class IdamHelper extends Helper {
         });
     }
 
+    async  getToken() {
+        try {
+            // Check if TestData.TOKEN is not empty or null
+
+            if (TestData.FUNCTIONAL_TEST_TOKEN && TestData.FUNCTIONAL_TEST_TOKEN.trim() !== "") {
+                return TestData.FUNCTIONAL_TEST_TOKEN;
+            }
+            console.log("FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET "+TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET)
+
+            const response = await fetch(`${TestData.IDAM_API}/o/token`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    grant_type: 'client_credentials',
+                    client_id: 'idam-functional-test-service',
+                    client_secret: TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET,
+                    scope: 'profile roles',
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch token');
+            }
+
+            const tokenData = await response.json();
+            TestData.FUNCTIONAL_TEST_TOKEN = tokenData.access_token;
+            return tokenData.access_token; // Assuming token is in the 'access_token' field
+        } catch (error) {
+            console.trace('Error fetching token:', error);
+            throw error;
+        }
+    }
+
+    createServiceUsingTestingSupportService(serviceName, serviceClientSecret, roleId, token, scope = [], ssoProviders = '') {
+        let data;
+
+        if (roleId === '') {
+
+            data = {
+                clientId: serviceName,
+                clientSecret : serviceClientSecret,
+                description: serviceName,
+                hmctsAccess: {
+                    mfaRequired: false,
+                    selfRegistrationAllowed: true,
+                    postActivationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
+                    onboardingRoleNames: ['auto-private-beta_role'],
+                    ssoProviders:ssoProviders
+                },
+                oauth2: {
+                    issuerOverride: false,
+                    grantTypes: [
+                        "authorization_code",
+                        "refresh_token",
+                        "password",
+                        "implicit",
+                        "client_credentials"
+                    ],
+                    scopes : scope,
+                    redirectUris: [TestData.SERVICE_REDIRECT_URI],
+                    accessTokenLifetime: "PT0S",
+                    refreshTokenLifetime: "PT0S"
+                }};
+
+        } else {
+
+            data = {
+                clientId: serviceName,
+                clientSecret : serviceClientSecret,
+                description: serviceName,
+                allowedRoles: [roleId, 'auto-admin_role'],
+                hmctsAccess: {
+                    mfaRequired: false,
+                    selfRegistrationAllowed: true,
+                    postActivationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
+                    onboardingRoleNames: ['auto-private-beta_role'],
+                    ssoProviders:ssoProviders
+                },
+                oauth2: {
+                    issuerOverride: false,
+                    grantTypes: [
+                        "authorization_code",
+                        "refresh_token",
+                        "password",
+                        "implicit",
+                        "client_credentials"
+                    ],
+                    scopes: scope,
+                    redirectUris: [TestData.SERVICE_REDIRECT_URI],
+                    accessTokenLifetime: "PT0S",
+                    refreshTokenLifetime: "PT0S"
+                }
+            };
+
+        }
+        console.trace(JSON.stringify(data));
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/services`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+        }).then(response => {
+            console.trace("******");
+
+            console.trace(response);
+            if (response.status !== 201) {
+                console.log(`Error creating service  ${serviceName}, response: ${response.status}`);
+            }
+            return response.json();
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+
+
 
 }
 
