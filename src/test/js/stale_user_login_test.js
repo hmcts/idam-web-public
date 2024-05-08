@@ -17,22 +17,24 @@ const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async({ I }) => {
+    const token = await I.getToken();
+    const scopes = ['openid', 'profile', 'roles'];
 
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     staleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     staleUserEmailWelsh = 'staleuser.' + randomData.getRandomEmailAddress();
 
-    await I.createServiceData(serviceName, serviceClientSecret);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], token, scopes, []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
     accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, staleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(staleUserEmail);
 
-    await I.createUserUsingTestingSupportService(accessToken, staleUserEmailWelsh, userPassword, randomUserFirstName + 'StaleUserWelsh', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, staleUserEmailWelsh, userPassword, randomUserFirstName + 'StaleUserWelsh', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUserWelsh');
     await I.retireStaleUser(staleUserEmailWelsh);
 });

@@ -961,6 +961,33 @@ class IdamHelper extends Helper {
         });
     }
 
+    createRoleUsingTestingSupportService(roleName, roleDescription, assignableRoles, api_auth_token) {
+        const roleId = uuid.v4();
+        const data = {
+            assignableRoles: assignableRoles,
+            conflictingRoles: [],
+            description: roleDescription,
+            name: roleName,
+            id: roleId,
+        };
+        console.trace(JSON.stringify(data));
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/roles`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + api_auth_token},
+        })
+            .then(res => {
+                console.log("Response status code:", res.status); // Log the response status code
+                return res.json();
+            })
+            .then(json => {
+                return json;
+            })
+            .catch(err => err);
+    }
+
+
 
 
 }
