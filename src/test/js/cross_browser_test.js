@@ -10,7 +10,7 @@ let citizenUserPasswordResetEmail;
 let userFirstNames = [];
 let serviceNames = [];
 let randomUserLastName;
-let accessToken;
+let testingToken;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -24,14 +24,13 @@ BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
     citizenUserLoginEmail = 'citizenLogin' + randomData.getRandomEmailAddress();
-
-    await I.createServiceData(serviceName, serviceClientSecret);
-    serviceNames.push(serviceName);
+    testingToken =  await I.getToken();
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);    serviceNames.push(serviceName);
 
     I.wait(0.5);
 
-    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, citizenUserLoginEmail, userPassword, randomUserFirstName + 'citizenLogin', ["citizen"]);
+    testingToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(testingToken, citizenUserLoginEmail, userPassword, randomUserFirstName + 'citizenLogin', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'citizenSelfreg');
     userFirstNames.push(randomUserFirstName + 'citizenLogin');
     userFirstNames.push(randomUserFirstName + 'citizenPasswordReset');
@@ -52,7 +51,7 @@ Scenario('@crossbrowser Citizen user self registration', async ({ I }) => {
     I.fillField('email', citizenUserSelfRegistrationEmail);
     I.click("Continue");
     I.waitForText('Check your email');
-    const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenUserSelfRegistrationEmail);
+    const userActivationUrl = await I.extractUrlFromNotifyEmail(testingToken, citizenUserSelfRegistrationEmail);
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
@@ -73,7 +72,7 @@ Scenario('@crossbrowser Citizen user login', async ({ I }) => {
 
 Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
     citizenUserPasswordResetEmail = 'citizenPasswordReset' + randomData.getRandomEmailAddress();
-    await I.createUserUsingTestingSupportService(accessToken, citizenUserPasswordResetEmail, userPassword, randomUserFirstName + 'citizenPasswordReset', ["citizen"]);
+    await I.createUserUsingTestingSupportService(testingToken, citizenUserPasswordResetEmail, userPassword, randomUserFirstName + 'citizenPasswordReset', ["citizen"]);
     const resetPassword = randomData.getRandomUserPassword();
 
     I.amOnPage(loginPage);
@@ -83,7 +82,7 @@ Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
     I.fillField('#email', citizenUserPasswordResetEmail);
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenUserPasswordResetEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(testingToken, citizenUserPasswordResetEmail);
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
