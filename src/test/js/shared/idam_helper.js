@@ -37,6 +37,8 @@ const URLSearchParams = require('url').URLSearchParams;
 
 class IdamHelper extends Helper {
 
+
+
     async createNewPage() {
         const {browser} = this.helpers['Puppeteer'];
         return await browser.newPage();
@@ -92,6 +94,7 @@ class IdamHelper extends Helper {
             body: searchParams,
             headers: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Basic ' + base64}
         }).then(response => {
+            console.log("getAuthorizeCode"+response.status)
             return response.json();
         }).then((json) => {
             console.log("Code: " + json.code);
@@ -187,6 +190,87 @@ class IdamHelper extends Helper {
         });
     }
 
+    createServiceUsingTestingSupportService(serviceName, serviceClientSecret, roleId, token, scope = [], ssoProviders = '') {
+        let data;
+
+        if (roleId === '') {
+
+            data = {
+                clientId: serviceName,
+                clientSecret : serviceClientSecret,
+                description: serviceName,
+                hmctsAccess: {
+                    mfaRequired: false,
+                    selfRegistrationAllowed: true,
+                    postActivationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
+                    onboardingRoleNames: ['auto-private-beta_role'],
+                    ssoProviders:ssoProviders
+                },
+                oauth2: {
+                    issuerOverride: false,
+                    grantTypes: [
+                        "authorization_code",
+                        "refresh_token",
+                        "password",
+                        "implicit",
+                        "client_credentials"
+                    ],
+                    scopes : scope,
+                    redirectUris: [TestData.SERVICE_REDIRECT_URI],
+                    accessTokenLifetime: "PT0S",
+                    refreshTokenLifetime: "PT0S"
+                }};
+
+        } else {
+
+            data = {
+                clientId: serviceName,
+                clientSecret : serviceClientSecret,
+                description: serviceName,
+                allowedRoles: [roleId, 'auto-admin_role'],
+                hmctsAccess: {
+                    mfaRequired: false,
+                    selfRegistrationAllowed: true,
+                    postActivationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
+                    onboardingRoleNames: ['auto-private-beta_role'],
+                    ssoProviders:ssoProviders
+                },
+                oauth2: {
+                    issuerOverride: false,
+                    grantTypes: [
+                        "authorization_code",
+                        "refresh_token",
+                        "password",
+                        "implicit",
+                        "client_credentials"
+                    ],
+                    scopes: scope,
+                    redirectUris: [TestData.SERVICE_REDIRECT_URI],
+                    accessTokenLifetime: "PT0S",
+                    refreshTokenLifetime: "PT0S"
+                }
+            };
+
+        }
+        console.trace(JSON.stringify(data));
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/services`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+        }).then(response => {
+            console.trace("******");
+
+            console.trace(response);
+            if (response.status !== 201) {
+                console.log(`Error creating service  ${serviceName}, response: ${response.status}`);
+            }
+            return response.json();
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+
     createServiceWithRoles(serviceName, serviceClientSecret, serviceRoles, betaRole, token, scope) {
         if (scope == null) {
             scope = ''
@@ -215,6 +299,61 @@ class IdamHelper extends Helper {
             })
             .catch(err => err);
     }
+
+    createServiceWithRolesUsingTestingSupportService(serviceName, serviceClientSecret, serviceRoles, betaRole, token, scope) {
+        if (scope == null) {
+            scope = []
+        }
+
+        const data = {
+            clientId: serviceName,
+            clientSecret : serviceClientSecret,
+            description: serviceName,
+            hmctsAccess: {
+                mfaRequired: false,
+                selfRegistrationAllowed: true,
+                postActivationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
+                onboardingRoleNames: betaRole,
+            },
+            oauth2: {
+                issuerOverride: false,
+                grantTypes: [
+                    "authorization_code",
+                    "refresh_token",
+                    "password",
+                    "implicit",
+                    "client_credentials"
+                ],
+                allowedRoles: serviceRoles,
+                scopes : scope,
+                redirectUris: [TestData.SERVICE_REDIRECT_URI],
+                accessTokenLifetime: "PT0S",
+                refreshTokenLifetime: "PT0S"
+            }};
+
+
+        console.trace(JSON.stringify(data));
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/services`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+        })
+            .then(res => {
+                console.trace(res); // Log the response data
+                return res.json();
+            }).then(json => {
+                console.log("RESPONSE:::: "+json); // Log the response data
+                return json;
+            }).catch(err => {
+                console.error(err); // Log any errors that occur during the request
+                throw err; // Re-throw the error to propagate it to the caller
+            });
+
+
+
+    }
+
 
     createNewServiceWithRoles(serviceName, serviceClientSecret, serviceRoles, betaRole, token, scope) {
         if (scope == null) {
@@ -276,8 +415,40 @@ class IdamHelper extends Helper {
         ).then(
             function (json) {
                 console.log('Admin auth token received');
+                TestData.TOKEN = json.api_auth_token;
+
                 return json.api_auth_token;
             });
+    }
+
+    async  getToken() {
+
+        try {
+            const response = await fetch(`${TestData.IDAM_API}/o/token`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    grant_type: 'client_credentials',
+                    client_id: 'idam-functional-test-service',
+                    client_secret: 'cie8moot8soo0dae8iesixielohgh8Jo',
+                    scope: 'profile roles',
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch token');
+            }
+
+            const tokenData = await response.json();
+            console.debug(tokenData.access_token);
+            TestData.TOKEN=tokenData.access_token;
+            return tokenData.access_token; // Assuming token is in the 'access_token' field
+        } catch (error) {
+            console.trace('Error fetching token:', error);
+            throw error;
+        }
     }
 
     deleteUser(email) {
@@ -311,6 +482,34 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
+    createRoleUsingTestingSupportService(roleName, roleDescription, assignableRoles, api_auth_token) {
+        const roleId = uuid.v4();
+        const data = {
+            assignableRoles: assignableRoles,
+            conflictingRoles: [],
+            description: roleDescription,
+            name: roleName,
+            id: roleId,
+        };
+        console.trace(JSON.stringify(data));
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/roles`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + api_auth_token},
+        })
+            .then(res => {
+                console.log("Response status code:", res.status); // Log the response status code
+                return res.json();
+            })
+            .then(json => {
+                return json;
+            })
+            .catch(err => err);
+    }
+
+
+
     createUserUsingTestingSupportService(accessToken, email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
         const userId = uuid.v4();
         const data = {
@@ -326,6 +525,7 @@ class IdamHelper extends Helper {
                ssoProvider: ssoProvider
             }
         };
+        console.log()
         return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/users`, {
             agent: agent,
             method: 'POST',
@@ -515,12 +715,19 @@ class IdamHelper extends Helper {
     }
 
     loginAsPin(pin, clientId, serviceRedirect) {
+        console.log("************");
+        console.log(pin)
+        console.log(clientId)
+        console.log(serviceRedirect)
+
         return fetch(`${TestData.IDAM_API}/pin?client_id=${clientId}&redirect_uri=${serviceRedirect}`, {
             agent: agent,
             method: 'GET',
             headers: {'Content-Type': 'application/json', 'pin': pin},
             redirect: 'manual',
         }).then(response => {
+            console.log("************"+response.status);
+
             const location = response.headers.get('location');
             const code = location.match('(?<=code=)(.*)(?=&scope)');
             return code[0];
@@ -547,7 +754,7 @@ class IdamHelper extends Helper {
                 'Authorization': 'Basic ' + this.getBase64(serviceName, clientSecret)
             }
         }).then(response => {
-            //console.log(response)
+            console.log("getAccessToken :"+response.status)
             return response.json();
         }).then((json) => {
             console.log("Token: " + json.access_token);
@@ -593,7 +800,7 @@ class IdamHelper extends Helper {
         searchParams.set('client_id', clientId);
         searchParams.set('client_secret', clientSecret);
         searchParams.set('scope', 'profile roles');
-
+        console.log(JSON.stringify(searchParams));
         return fetch(`${TestData.IDAM_API}/o/token`, {
             agent: agent,
             method: 'POST',
@@ -693,6 +900,7 @@ class IdamHelper extends Helper {
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + bearerToken},
         }).then((response) => {
+            console.log("Response: "+response.status)
             if (response.status != 200) {
                 console.log('Error registering user', response.status);
                 console.log(JSON.stringify(data));

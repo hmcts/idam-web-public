@@ -44,7 +44,8 @@ function shuffleArray(array) {
     return array;
 }
 
-const testBasePrefix = "SIDMTESTWP_" + randomAlphabeticString();
+const testBasePrefix = "iwp-test-service" + randomAlphabeticString();
+const testRoleBasePrefix = "iwp-test-role" + randomAlphabeticString();
 
 module.exports = {
     getRandomString: randomString,
@@ -55,6 +56,6 @@ module.exports = {
     getRandomClientSecret: () => generatePassword(12),
     getRandomTextFor11KB: () => createRandomString(1112150),
     getRandomUserName: (testSuitePrefix) => testBasePrefix + testSuitePrefix + "USER" + randomAlphabeticString(),
-    getRandomRoleName: (testSuitePrefix) => testBasePrefix + testSuitePrefix + "ROLE_" + randomString(),
+    getRandomRoleName: (testSuitePrefix) => testRoleBasePrefix + testSuitePrefix + "ROLE_" + randomString(),
     getRandomServiceName: (testSuitePrefix) => testBasePrefix + testSuitePrefix + "SERVICE_" + randomString(),
 };

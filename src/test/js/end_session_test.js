@@ -16,15 +16,16 @@ const userPassword = randomData.getRandomUserPassword();
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
+    const scopes = ['openid', 'profile', 'roles'];
 
-    const token = await I.getAuthToken();
-    await I.createService(serviceName, serviceClientSecret, '', token, 'openid profile roles', []);
+    const token = await I.getToken();
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], token, scopes, []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
     const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 });
 
@@ -32,7 +33,7 @@ AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
-Scenario('@functional @endSession End Session', async ({ I }) => {
+Scenario('@functional   @endSession End Session', async ({ I }) => {
     let authorizeQueryParams = `client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`;
     let authorizeEndpointUrl = TestData.WEB_PUBLIC_URL + `/o/authorize?${authorizeQueryParams}`;
 

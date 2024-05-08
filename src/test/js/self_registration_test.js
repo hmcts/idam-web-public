@@ -28,7 +28,10 @@ const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=$
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
-    await I.createServiceData(serviceName, serviceClientSecret);
+    const token = await I.getToken();
+    const scopes = ['openid', 'profile', 'roles'];
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], token, scopes, []);
+
     serviceNames.push(serviceName);
 
     I.wait(0.5);

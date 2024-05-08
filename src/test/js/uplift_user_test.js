@@ -34,17 +34,22 @@ BeforeSuite(async ({ I }) => {
     existingCitizenEmail = 'existingcitizen.' + randomData.getRandomEmailAddress();
     upliftAccountCreationStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     upliftLoginStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
+    const scopes = ['openid', 'profile', 'roles'];
 
     const token = await I.getAuthToken();
-    serviceBetaRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_beta", 'beta description', '', token);
-    let serviceAdminRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description', serviceBetaRole.id, token);
-    let serviceSuperRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', serviceAdminRole.id, token);
+    const testingToken = I.getToken();
+    serviceBetaRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_beta", 'beta description', [], testingToken);
+
+    let serviceAdminRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description', [serviceBetaRole.name], testingToken);
+    let serviceSuperRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', [serviceAdminRole.name], testingToken);
 
     let serviceRoleNames = [serviceBetaRole.name, serviceAdminRole.name, serviceSuperRole.name];
     let serviceRoleIds = [serviceBetaRole.id, serviceAdminRole.id, serviceSuperRole.id];
     roleNames.push(serviceRoleNames);
 
-    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, serviceBetaRole.id, token);
+    // await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, serviceBetaRole.id, token);
+    await I.createServiceWithRolesUsingTestingSupportService(serviceName, serviceClientSecret, serviceRoleNames, [serviceBetaRole.name], testingToken, []);
+
     serviceNames.push(serviceName);
 
     I.wait(0.5);

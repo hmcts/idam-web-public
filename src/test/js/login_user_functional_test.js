@@ -20,18 +20,21 @@ const largeCookieValue = randomData.getRandomTextFor11KB();
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
+
+    const testingToken =  await I.getToken();
+
     idamServiceAccountUserEmail = 'idamserviceaccount.' + randomData.getRandomEmailAddress();
 
-    await I.createServiceData(serviceName, serviceClientSecret);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);
+
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
-    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
+    await I.createUserUsingTestingSupportService(testingToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
-    await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    await I.createUserUsingTestingSupportService(testingToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
     userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 
@@ -39,7 +42,7 @@ AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
-Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
+Scenario('@functional  @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
     I.amOnPage(loginUrl);
     const [page] = await I.getCurrentPage()

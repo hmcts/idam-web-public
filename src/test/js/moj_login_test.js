@@ -22,16 +22,20 @@ let accessToken;
 
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
-    const token = await I.getAuthToken();
+    const token = await I.getToken();
+    const scopes = ['openid', 'profile', 'roles'];
 
-    mojUserRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mojlogintest", 'role description', '', token);
-    await I.createService(serviceName, serviceClientSecret, mojUserRole.id, token, 'openid profile roles', [TestData.MOJ_SSO_PROVIDER_KEY]);
+    // mojUserRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mojlogintest", 'role description', '', token);
+    mojUserRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_mojlogintest",'', [], token);
+
+    // await I.createService(serviceName, serviceClientSecret, mojUserRole.id, token,  , [TestData.MOJ_SSO_PROVIDER_KEY]);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [mojUserRole.name], token, scopes, [TestData.MOJ_SSO_PROVIDER_KEY]);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
     accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
+    await I.createUserUsingTestingSupportService(token, TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
 });
 
 AfterSuite(async ({ I }) => {

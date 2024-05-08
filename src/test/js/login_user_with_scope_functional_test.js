@@ -12,7 +12,7 @@ let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
 
-const customScope = 'manage-roles';
+const customScope = ['openid','profile','roles','manage-roles'];
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
@@ -33,32 +33,34 @@ BeforeSuite(async ({ I }) => {
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     respondentEmail = 'respondent.' + randomData.getRandomEmailAddress();
 
-    const token = await I.getAuthToken();
-    citizenUserDynamicRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix), '', '', token);
-    pinUserDynamicRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix), '', '', token);
-
+    const token = await I.getToken();
+    citizenUserDynamicRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix), '', [], token);
+    pinUserDynamicRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix), '', [], token);
     let serviceRoleNames = [citizenUserDynamicRole.name, pinUserDynamicRole.name];
     let serviceRoleIds = [citizenUserDynamicRole.id, pinUserDynamicRole.id];
     roleNames.push(serviceRoleNames);
 
-    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, '', token, customScope);
+    await I.createServiceWithRolesUsingTestingSupportService(serviceName, serviceClientSecret, serviceRoleNames, [], token, customScope);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
     const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', []);
+    console.log("accessToken"+accessToken);
+    await I.createUserUsingTestingSupportService(token, citizenEmail, userPassword, randomUserFirstName + 'Citizen', []);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 
-    await I.createUserUsingTestingSupportService(accessToken, respondentEmail, userPassword, randomUserFirstName + 'Respondent', []);
+    await I.createUserUsingTestingSupportService(token, respondentEmail, userPassword, randomUserFirstName + 'Respondent', []);
     userFirstNames.push(randomUserFirstName + 'Respondent');
+
 });
 
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
-});
+// AfterSuite(async ({ I }) => {
+//     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
+// });
 
-Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async ({ I }) => {
+Scenario('@functional  @loginuserwithscope As a service, I can request a custom scope on user login', async ({ I }) => {
+
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', citizenEmail);
@@ -82,9 +84,13 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on PIN user login', async ({ I }) => {
+Scenario('@functional @loginuserwithscope  As a service, I can request a custom scope on PIN user login', async ({ I }) => {
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
+    console.log(pinUser.pin);
+    console.log(serviceName);
+    console.log(TestData.SERVICE_REDIRECT_URI);
+
     let code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 

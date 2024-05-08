@@ -6,8 +6,7 @@ Feature('When I am locked out of my account, resetting my password unlocks it');
 let citizenEmail;
 let userFirstNames = [];
 let serviceNames = [];
-let accessToken;
-
+let testingToken;
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
@@ -17,13 +16,14 @@ BeforeSuite(async ({ I }) => {
     const randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
-    await I.createServiceData(serviceName, serviceClientSecret);
+    testingToken =  await I.getToken();
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
-    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
+    testingToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    await I.createUserUsingTestingSupportService(testingToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
 });
 
@@ -31,7 +31,7 @@ AfterSuite(async ({ I }) => {
     return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
-Scenario('@functional @unlock My user account is unlocked when I reset my password - citizen', async ({ I }) => {
+Scenario('@functional @test123 @unlock My user account is unlocked when I reset my password - citizen', async ({ I }) => {
     const password = randomData.getRandomUserPassword();
     I.lockAccount(citizenEmail, serviceName);
     await I.runAccessibilityTest();
@@ -41,7 +41,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     await I.runAccessibilityTest();
     I.click('Submit');
     I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenEmail);
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(testingToken, citizenEmail);
     const activationParams = resetPasswordUrl.match(/passwordReset\?(.*)/)[1];
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/passwordReset?${activationParams}`);
     I.waitForText('Create a new password');

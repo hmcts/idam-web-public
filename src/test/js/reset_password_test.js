@@ -24,6 +24,9 @@ const userPassword = randomData.getRandomUserPassword();
 const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
 
 BeforeSuite(async ({ I }) => {
+    const token = await I.getToken();
+    const scopes = ['openid', 'profile', 'roles'];
+
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     diffCaseCitizenEmail = 'diffcase.' + randomData.getRandomEmailAddress();
@@ -34,29 +37,30 @@ BeforeSuite(async ({ I }) => {
     staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
     idamServiceAccountUserEmail = 'idamserviceaccount.' + randomData.getRandomEmailAddress();
     specialCharacterPassword = 'New&&&$$$%%%<>234';
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], token, scopes, []);
 
-    await I.createServiceData(serviceName, serviceClientSecret);
+    //await I.createServiceData(serviceName, serviceClientSecret);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
     accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
-    await I.createUserUsingTestingSupportService(accessToken, diffCaseCitizenEmail, userPassword, randomUserFirstName + 'diffcase', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, diffCaseCitizenEmail, userPassword, randomUserFirstName + 'diffcase', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'diffcase');
-    await I.createUserUsingTestingSupportService(accessToken, specialcharPwdResetCitizenEmail, userPassword, randomUserFirstName + 'specialcharpwd', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, specialcharPwdResetCitizenEmail, userPassword, randomUserFirstName + 'specialcharpwd', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'specialcharpwd');
-    await I.createUserUsingTestingSupportService(accessToken, otherCitizenEmail, userPassword, randomUserFirstName + 'Other', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, otherCitizenEmail, userPassword, randomUserFirstName + 'Other', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Other');
-    await I.createUserUsingTestingSupportService(accessToken, plusCitizenEmail, userPassword, randomUserFirstName + 'Plus', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, plusCitizenEmail, userPassword, randomUserFirstName + 'Plus', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Plus');
-    await I.createUserUsingTestingSupportService(accessToken, apostropheCitizenEmail, userPassword, randomUserFirstName + 'Apostrophe', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, apostropheCitizenEmail, userPassword, randomUserFirstName + 'Apostrophe', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Apostrophe');
-    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Stale');
     await I.retireStaleUser(staleUserEmail)
-    await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+    await I.createUserUsingTestingSupportService(token, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
     userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
 });
 
@@ -158,7 +162,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.resetRequestInterception();
 });
 
-Scenario('@functional @resetpass As a citizen user with an apostrophe email I can reset my password', async ({ I }) => {
+Scenario('@functional  @resetpass As a citizen user with an apostrophe email I can reset my password', async ({ I }) => {
     const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
