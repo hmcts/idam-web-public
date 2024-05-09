@@ -226,6 +226,7 @@ class IdamHelper extends Helper {
             headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token},
         }).then(res => res.json())
             .then((json) => {
+                console.log("SERVICE:::: "+JSON.stringify(json));
                 return json;
             })
             .catch(err => err);
@@ -248,16 +249,22 @@ class IdamHelper extends Helper {
             activationRedirectUrl: `https://www.${serviceName}.com`,
             selfRegistrationAllowed: true
         };
+        console.log(JSON.stringify(data))
         return fetch(`${TestData.IDAM_API}/services`, {
             agent: agent,
             method: 'POST',
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token},
-        }).then(res => res.json())
-            .then((json) => {
-                return json;
-            })
-            .catch(err => err);
+        }) .then(res => {
+            console.trace(res); // Log the response data
+            return res.json();
+        }).then(json => {
+            console.log("RESPONSE:::: "+json); // Log the response data
+            return json;
+        }).catch(err => {
+            console.error(err); // Log any errors that occur during the request
+            throw err; // Re-throw the error to propagate it to the caller
+        });
     }
 
     getAuthToken() {
@@ -319,8 +326,15 @@ class IdamHelper extends Helper {
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
         })
-            .then(res => res.json())
-            .then((json) => {
+            .then(res => {
+              //  console.trace(res);
+
+               // console.log("Response status code:", res.status); // Log the response status code
+                return res.json();
+            })
+            .then(json => {
+                console.trace(json);
+
                 return json;
             })
             .catch(err => err);
@@ -346,13 +360,15 @@ class IdamHelper extends Helper {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken},
-        }).then(res => res.json())
-            .then((json) => {
-                return json;
-            })
-            .catch(err => {
-                console.log(err)
-            });
+        }).then(res => {
+            console.log("****createUserUsingTestingSupportService :*****"+res.status); // Log the response data
+            return res.json();
+        }).then(json => {
+            return json;
+        }).catch(err => {
+            console.error(err); // Log any errors that occur during the request
+            throw err; // Re-throw the error to propagate it to the caller
+        });
     }
 
     createPolicyForApplicationMfaTest(name, redirectUri, api_auth_token) {
@@ -383,9 +399,15 @@ class IdamHelper extends Helper {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        }).then(res => {
+            console.log("CreateMFAPOLICY Response status code:", res.status);
+            return res.json();
         })
-            .then(res => res.json())
-            .catch(err => err);
+            .catch(err => {
+                console.error("Fetch error:", err); // Log any fetch errors
+                throw err; // Re-throw the error to propagate it to the caller
+            });
+
     }
 
 
@@ -880,115 +902,95 @@ class IdamHelper extends Helper {
         }
     }
 
-    createServiceUsingTestingSupportService(serviceName, serviceClientSecret, roleId, token, scope = [], ssoProviders = '') {
-        let data;
+    async createServiceUsingTestingSupportService(serviceName, serviceClientSecret, roleNames, token, scope = [], ssoProviders = []) {
+        let roles;
 
-        if (roleId === '') {
-
-            data = {
-                clientId: serviceName,
-                clientSecret : serviceClientSecret,
-                description: serviceName,
-                hmctsAccess: {
-                    mfaRequired: false,
-                    selfRegistrationAllowed: true,
-                    postActivationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
-                    onboardingRoleNames: ['auto-private-beta_role'],
-                    ssoProviders:ssoProviders
-                },
-                oauth2: {
-                    issuerOverride: false,
-                    grantTypes: [
-                        "authorization_code",
-                        "refresh_token",
-                        "password",
-                        "implicit",
-                        "client_credentials"
-                    ],
-                    scopes : scope,
-                    redirectUris: [TestData.SERVICE_REDIRECT_URI],
-                    accessTokenLifetime: "PT0S",
-                    refreshTokenLifetime: "PT0S"
-                }};
-
+        if (!roleNames || roleNames.length === 0) {
+            roles = ['auto-private-beta_role'];
         } else {
-
-            data = {
-                clientId: serviceName,
-                clientSecret : serviceClientSecret,
-                description: serviceName,
-                allowedRoles: [roleId, 'auto-admin_role'],
-                hmctsAccess: {
-                    mfaRequired: false,
-                    selfRegistrationAllowed: true,
-                    postActivationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
-                    onboardingRoleNames: ['auto-private-beta_role'],
-                    ssoProviders:ssoProviders
-                },
-                oauth2: {
-                    issuerOverride: false,
-                    grantTypes: [
-                        "authorization_code",
-                        "refresh_token",
-                        "password",
-                        "implicit",
-                        "client_credentials"
-                    ],
-                    scopes: scope,
-                    redirectUris: [TestData.SERVICE_REDIRECT_URI],
-                    accessTokenLifetime: "PT0S",
-                    refreshTokenLifetime: "PT0S"
-                }
-            };
-
+            roles = [...roleNames, 'auto-admin_role', 'auto-private-beta_role'];
         }
-        console.trace(JSON.stringify(data));
+
+        let data = {
+            clientId: serviceName,
+            clientSecret: serviceClientSecret,
+            description: serviceName,
+            hmctsAccess: {
+                mfaRequired: false,
+                selfRegistrationAllowed: true,
+                postActivationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
+                onboardingRoleNames: roles,
+                ssoProviders: ssoProviders
+            },
+            oauth2: {
+                issuerOverride: false,
+                grantTypes: [
+                    "authorization_code",
+                    "refresh_token",
+                    "password",
+                    "implicit",
+                    "client_credentials"
+                ],
+                scopes: scope,
+                redirectUris: [TestData.SERVICE_REDIRECT_URI],
+                accessTokenLifetime: "PT0S",
+                refreshTokenLifetime: "PT0S"
+            }
+        };
+
+
         return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/services`, {
             agent: agent,
             method: 'POST',
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
         }).then(response => {
-            console.trace("******");
-
-            console.trace(response);
-            if (response.status !== 201) {
-                console.log(`Error creating service  ${serviceName}, response: ${response.status}`);
+            if (response.ok) {
+                console.log(`Success code ${response.status} for service ${serviceName} in createServiceUsingTestingSupportService`);
+            } else {
+                console.log(`Error creating service ${serviceName}, response: ${response.status}`);
+                console.log(JSON.stringify(data));
+                return response.json().then(errorData => {
+                    console.error("Error response body:", errorData);
+                    throw new Error("Error creating service");
+                });
             }
-            return response.json();
         }).catch(err => {
-            console.log(err);
+            console.error("Error:", err);
+            throw err;
         });
     }
 
-    createRoleUsingTestingSupportService(roleName, roleDescription, assignableRoles, api_auth_token) {
-        const roleId = uuid.v4();
-        const data = {
-            assignableRoles: assignableRoles,
-            conflictingRoles: [],
-            description: roleDescription,
-            name: roleName,
-            id: roleId,
-        };
-        console.trace(JSON.stringify(data));
-        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/roles`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + api_auth_token},
-        })
-            .then(res => {
-                console.log("Response status code:", res.status); // Log the response status code
-                return res.json();
-            })
-            .then(json => {
-                return json;
-            })
-            .catch(err => err);
+    async  createRoleUsingTestingSupportService(roleName, roleDescription, assignableRoles, token) {
+        try {
+            const roleId = uuid.v4();
+            const data = {
+                assignableRoles: assignableRoles,
+                description: roleDescription,
+                name: roleName,
+                id: roleId,
+            };
+
+            const response = await fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/roles`, {
+                agent: agent,
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+            });
+            console.log(`*****createRoleUsingTestingSupportService response for role ${roleName}:*****`, response.status);
+            if (!response.ok) {
+                console.log(JSON.stringify(data));
+                console.log("*****createRoleUsingTestingSupportService response:*****", response.status);
+                return response;
+            }
+
+            const json = await response.json();
+            return json;
+        } catch (error) {
+            console.error("Error creating role:", error);
+            throw error;
+        }
     }
-
-
-
 
 }
 
