@@ -22,21 +22,22 @@ let accessToken;
 
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
-    const token = await I.getAuthToken();
+    const token = await I.getToken();
 
-    mojUserRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mojlogintest", 'role description', '', token);
-    await I.createService(serviceName, serviceClientSecret, mojUserRole.id, token, 'openid profile roles', [TestData.MOJ_SSO_PROVIDER_KEY]);
+    mojUserRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_mojlogintest", 'role description', [], token);
+
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [mojUserRole.name], token, ["openid", "profile", "roles"],[TestData.MOJ_SSO_PROVIDER_KEY],false,TestData.SERVICE_REDIRECT_URI);
+
     serviceNames.push(serviceName);
     //test
     I.wait(0.5);
 
     accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
+    await I.createUserUsingTestingSupportService(token, TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name]);
 });
 
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
-});
+
+
 
 Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam through OIDC', async ({ I }) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/authorize?login_hint=${TestData.MOJ_SSO_PROVIDER_KEY}&client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
