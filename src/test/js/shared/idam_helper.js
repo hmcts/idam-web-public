@@ -902,23 +902,26 @@ class IdamHelper extends Helper {
         }
     }
 
-    async createServiceUsingTestingSupportService(serviceName, serviceClientSecret, roleNames, token, scope = [], ssoProviders = []) {
+    async createServiceUsingTestingSupportService(serviceName, serviceClientSecret, roleNames, token, scope = [], ssoProviders = [],mfaTurnedOn = false,redirectUrl = null) {
         let roles;
-
         if (!roleNames || roleNames.length === 0) {
-            roles = ['auto-private-beta_role'];
+            //roles = ['auto-private-beta_role'];
         } else {
-            roles = [...roleNames, 'auto-admin_role', 'auto-private-beta_role'];
+            roles = [...roleNames.flat()];
+
+            // roles = [...roleNames.flat(), 'auto-admin_role', 'auto-private-beta_role'];
         }
+
+        let url = redirectUrl || TestData.SERVICE_REDIRECT_URI;
 
         let data = {
             clientId: serviceName,
             clientSecret: serviceClientSecret,
             description: serviceName,
             hmctsAccess: {
-                mfaRequired: false,
+                mfaRequired: mfaTurnedOn,
                 selfRegistrationAllowed: true,
-                postActivationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
+                postActivationRedirectUrl: url,
                 onboardingRoleNames: roles,
                 ssoProviders: ssoProviders
             },
@@ -932,11 +935,12 @@ class IdamHelper extends Helper {
                     "client_credentials"
                 ],
                 scopes: scope,
-                redirectUris: [TestData.SERVICE_REDIRECT_URI],
+                redirectUris: [url],
                 accessTokenLifetime: "PT0S",
                 refreshTokenLifetime: "PT0S"
             }
         };
+        // console.log(JSON.stringify(data));
 
 
         return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/services`, {
@@ -947,13 +951,11 @@ class IdamHelper extends Helper {
         }).then(response => {
             if (response.ok) {
                 console.log(`Success code ${response.status} for service ${serviceName} in createServiceUsingTestingSupportService`);
+                return response.json();
+
             } else {
                 console.log(`Error creating service ${serviceName}, response: ${response.status}`);
-                console.log(JSON.stringify(data));
-                return response.json().then(errorData => {
-                    console.error("Error response body:", errorData);
-                    throw new Error("Error creating service");
-                });
+                return response.json();
             }
         }).catch(err => {
             console.error("Error:", err);
@@ -965,7 +967,7 @@ class IdamHelper extends Helper {
         try {
             const roleId = uuid.v4();
             const data = {
-                assignableRoles: assignableRoles,
+                assignableRoleNames: assignableRoles,
                 description: roleDescription,
                 name: roleName,
                 id: roleId,
@@ -983,6 +985,7 @@ class IdamHelper extends Helper {
                 console.log("*****createRoleUsingTestingSupportService response:*****", response.status);
                 return response;
             }
+            console.log(JSON.stringify(data));
 
             const json = await response.json();
             return json;
