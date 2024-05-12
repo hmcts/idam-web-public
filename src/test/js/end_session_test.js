@@ -27,10 +27,6 @@ BeforeSuite(async ({ I }) => {
     userFirstNames.push(randomUserFirstName + 'Citizen');
 });
 
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
-});
-
 Scenario('@functional @endSession End Session', async ({ I }) => {
     let authorizeQueryParams = `client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`;
     let authorizeEndpointUrl = TestData.WEB_PUBLIC_URL + `/o/authorize?${authorizeQueryParams}`;

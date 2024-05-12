@@ -36,10 +36,6 @@ BeforeSuite(async ({ I }) => {
     userFirstNames.push(randomUserFirstName + 'citizenPasswordReset');
 });
 
-AfterSuite(async ({ I }) => {
-     return I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix)
-});
-
 Scenario('@crossbrowser Citizen user self registration', async ({ I }) => {
     citizenUserSelfRegistrationEmail = 'citizenSelfreg' + randomData.getRandomEmailAddress();
     I.amOnPage(selfRegUrl);
