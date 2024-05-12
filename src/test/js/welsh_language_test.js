@@ -21,7 +21,8 @@ let accessToken;
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
-    await I.createServiceData(serviceName, serviceClientSecret);
+    const testingToken =  await I.getToken();
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
@@ -30,10 +31,6 @@ BeforeSuite(async ({ I }) => {
     await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     specialCharacterPassword = 'New%%%&&&234';
-});
-
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @welshLanguage There is a language switch that is working', async ({ I }) => {

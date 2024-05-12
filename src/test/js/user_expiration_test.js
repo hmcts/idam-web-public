@@ -7,7 +7,7 @@ let userEmail;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
-let accessTokenClientSecret;
+let testingToken;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -20,21 +20,21 @@ BeforeSuite(async ({ I }) => {
     const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     userEmail = 'user.' + randomData.getRandomEmailAddress();
 
-    const token = await I.getAuthToken();
-    let assignableRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', '', token);
-    let dynamicUserRegRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_dynUsrReg", 'dynamic user reg role', assignableRole.id, token);
+    testingToken= await I.getToken();
+    let assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', [], testingToken);
+    let dynamicUserRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_dynUsrReg", 'dynamic user reg role', [assignableRole.name], testingToken);
+
+
 
     let serviceRoleNames = [assignableRole.name, dynamicUserRegRole.name];
-    let serviceRoleIds = [assignableRole.id, dynamicUserRegRole.id];
     roleNames.push(serviceRoleNames);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,[serviceRoleNames], testingToken, ["openid", "profile", "roles", "manage-user", "create-user"],[]);
 
-    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, '', token, 'create-user');
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
-    accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessTokenClientSecret, adminEmail, userPassword, randomUserFirstName + 'Admin', [dynamicUserRegRole.name]);
+    await I.createUserUsingTestingSupportService(testingToken, adminEmail, userPassword, randomUserFirstName + 'Admin', [dynamicUserRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, userPassword);
@@ -46,12 +46,9 @@ BeforeSuite(async ({ I }) => {
     await I.expireUser(userEmail)
 });
 
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
-});
 
-Scenario('@functional User registration link expiration', async ({ I }) => {
-    let url = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, userEmail);
+Scenario('@functional @userexpiration User registration link expiration', async ({ I }) => {
+    let url = await I.extractUrlFromNotifyEmail(testingToken, userEmail);
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
