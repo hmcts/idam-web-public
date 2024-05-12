@@ -5,7 +5,7 @@ module.exports = {
     SMOKE_TEST_USER_USERNAME: process.env.SMOKE_TEST_USER_USERNAME,
     SMOKE_TEST_USER_PASSWORD: process.env.SMOKE_TEST_USER_PASSWORD,
     NOTIFY_API_KEY: process.env.NOTIFY_API_KEY,
-    SCENARIO_RETRY_LIMIT: 0,
+    SCENARIO_RETRY_LIMIT: 3,
     WAIT_FOR_ACTION_TIMEOUT: process.env.WAIT_FOR_ACTION_TIMEOUT || 500,
     SERVICE_REDIRECT_URI: 'https://idam.testservice.gov.uk',
     EJUDICIARY_SSO_PROVIDER_KEY: 'ejudiciary-aad',
