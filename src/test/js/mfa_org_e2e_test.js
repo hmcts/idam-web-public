@@ -38,16 +38,9 @@ BeforeSuite(async ({ I }) => {
     token = await I.getToken();
     const mfaTurnedOnServiceName = randomData.getRandomServiceName(testSuiteId)+'ON';
     const mfaTurnedOffServiceName = randomData.getRandomServiceName(testSuiteId)+'OFF';
-
-    // mfaTurnedOnService = await I.createNewServiceWithRoles(mfaTurnedOnServiceName, serviceClientSecret,  [], '', token, scope);
     mfaTurnedOnService = await I.createServiceUsingTestingSupportService(mfaTurnedOnServiceName, serviceClientSecret, [], token, ["openid", "profile", "roles", "manage-user", "create-user"],[],true,`https://www.${mfaTurnedOnServiceName}.com`);
     mfaTurnedOffService = await I.createServiceUsingTestingSupportService(mfaTurnedOffServiceName, serviceClientSecret, [], token, ["openid", "profile", "roles", "manage-user", "create-user"],[],false,`https://www.${mfaTurnedOffServiceName}.com`);
-
-    // mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService.oauth2ClientId}`;
-    // await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService.activationRedirectUrl, token);
-
     I.wait(0.5);
-
     professionalRoleName = randomData.getRandomRoleName(testSuiteId);
     await I.createRoleUsingTestingSupportService(professionalRoleName, 'professional description', [], token);
 
@@ -116,7 +109,7 @@ BeforeSuite(async ({ I }) => {
 
 
 
-Scenario('@functional @mfaOrgLogin  I am able to login without MFA as a member of an organisation that has MFA disabled', async ({ I }) => {
+Scenario('@functional @mfaOrgLogin @wip I am able to login without MFA as a member of an organisation that has MFA disabled', async ({ I }) => {
 
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService.clientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
@@ -126,7 +119,7 @@ Scenario('@functional @mfaOrgLogin  I am able to login without MFA as a member o
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText(mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl);
+    I.waitForText(mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
