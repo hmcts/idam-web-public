@@ -54,7 +54,7 @@ BeforeSuite(async ({ I }) => {
     await I.registerUserWithId(accessToken, userEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name)
 });
 
-Scenario('@functional  @wip user registration pending status and post activation redirect url test', async ({ I }) => {
+Scenario('@functional  user registration pending status and post activation redirect url test', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
