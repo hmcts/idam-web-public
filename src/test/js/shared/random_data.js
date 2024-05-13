@@ -44,7 +44,7 @@ function shuffleArray(array) {
     return array;
 }
 
-const testBasePrefix = "iwp_" + randomAlphabeticString();
+const testBasePrefix = "iwp_" ;
 
 module.exports = {
     getRandomString: randomString,

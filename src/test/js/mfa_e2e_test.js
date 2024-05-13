@@ -26,43 +26,41 @@ let mfaTurnedOffService1;
 let mfaTurnedOnService2;
 let mfaTurnedOffService2;
 let accessTokenClientSecret;
+let scopes = ["openid", "profile", "roles","manage-user","create-user" ];
 
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     mfaUserEmail = randomData.getRandomEmailAddress();
     mfaDisabledUserEmail = randomData.getRandomEmailAddress();
 
-    token = await I.getAuthToken();
+    token = await I.getToken();
 
-    mfaTurnedOnServiceRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mfaotptest_admin", 'admin description', '', token);
-    mfaTurnedOnService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret,  [mfaTurnedOnServiceRole.name], '', token, scope);
+    mfaTurnedOnServiceRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_mfaotptest_admin", 'admin description', [], token);
+    let serviceName = randomData.getRandomServiceName(testSuitePrefix)
+    mfaTurnedOnService1 = await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [mfaTurnedOnServiceRole.name], token,scopes,[],true,`https://www.${serviceName}.com`) ;
+    serviceName = randomData.getRandomServiceName(testSuitePrefix)
+    mfaTurnedOffServiceRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_mfaotptest", 'admin description', [], token);
+    mfaTurnedOffService1 = await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [mfaTurnedOffServiceRole.name], token,scopes,[],false,`https://www.${serviceName}.com`) ;
+    serviceName = randomData.getRandomServiceName(testSuitePrefix)
+    mfaTurnedOnService2 = await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [mfaTurnedOnServiceRole.name], token,scopes,[],true,`https://www.${serviceName}.com`) ;
+    serviceName = randomData.getRandomServiceName(testSuitePrefix)
+    mfaTurnedOffService2 = await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [mfaTurnedOffServiceRole.name], token,scopes,[],false,`https://www.${serviceName}.com`) ;
 
-    mfaTurnedOffServiceRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_mfaotptest", 'admin description', '', token);
-    mfaTurnedOffService1 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
-
-    mfaTurnedOnService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOnServiceRole.name], '', token, scope);
-    mfaTurnedOffService2 = await I.createNewServiceWithRoles(randomData.getRandomServiceName(testSuitePrefix), serviceClientSecret, [mfaTurnedOffServiceRole.name], '', token, scope);
-
-    accessTokenClientSecret = await I.getAccessTokenClientSecret(mfaTurnedOnService1.oauth2ClientId, serviceClientSecret);
+    accessTokenClientSecret = await I.getAccessTokenClientSecret(mfaTurnedOnService1.clientId, serviceClientSecret);
     await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
     await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaDisabledUserEmail, userPassword, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
 
-    mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService1.oauth2ClientId}`;
-    await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService1.activationRedirectUrl, token);
+    // mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService1.oauth2ClientId}`;
+    // await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService1.activationRedirectUrl, token);
 
     I.wait(0.5);
 });
 
-AfterSuite(async ({ I }) => {
-    return Promise.all([
-        I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix),
-        I.deletePolicy(mfaApplicationPolicyName, token),
-    ]);
-});
 
-Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
+
+Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -78,13 +76,13 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     I.click('Continue');
     let currentUrl = await I.grabCurrentUrl();
     I.addMochawesomeContext('Url is ' + currentUrl);
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     let pageSource = await I.grabSource();
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -104,9 +102,9 @@ Scenario('@functional @mfaLogin I am able to login with MFA', async ({ I }) => {
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin I am able to login with MFA and prompt = login', async ({ I }) => {
+Scenario('@functional @mfaLogin  I am able to login with MFA and prompt = login', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=login`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=login`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -120,13 +118,13 @@ Scenario('@functional @mfaLogin I am able to login with MFA and prompt = login',
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     let pageSource = await I.grabSource();
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -146,9 +144,9 @@ Scenario('@functional @mfaLogin I am able to login with MFA and prompt = login',
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in Welsh', async ({ I }) => {
+Scenario('@functional @mfaLogin @welshLanguage  I am able to login with MFA in Welsh', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6wtIgsUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=${scope}${Welsh.urlForceCy}`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=${scope}${Welsh.urlForceCy}`;
 
     I.amOnPage(loginUrl);
     I.waitForText(Welsh.signInOrCreateAccount);
@@ -164,13 +162,13 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.click(Welsh.submitBtn);
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     let pageSource = await I.grabSource();
     let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -192,7 +190,7 @@ Scenario('@functional @mfaLogin @welshLanguage I am able to login with MFA in We
 
 Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts otp expired message and continue button should be present', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTutbVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm5ed0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm5ed0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -253,7 +251,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.fillField('code', otpCodeLatest);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
     I.resetRequestInterception();
@@ -261,7 +259,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
 
 Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I can login without mfa for the application with mfa turned on', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgtUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -272,13 +270,13 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     let currentUrl = await I.grabCurrentUrl();
     I.addMochawesomeContext('Url is ' + currentUrl);
     I.dontSeeInCurrentUrl("/verification");
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -310,7 +308,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
 
 Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MFA turned off service and then step-up login to the MFA turned on service', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.activationRedirectUrl}&client_id=${mfaTurnedOffService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -318,7 +316,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
@@ -327,9 +325,9 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const cookie = idamSessionCookie.value;
 
     // try authorizing to the mfa turned on service with the Idam session cookie from mfa turned off service
-    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
+    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
     console.log("Location: " + location);
-    expect(location).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
+    expect(location).to.includes(`/login?client_id=${mfaTurnedOnService1.clientId}&redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}`);
 
     I.amOnPage(location);
     I.waitForText('Sign in');
@@ -342,13 +340,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
 
     I.fillField('code', otpCode);
     I.click('Continue');
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -378,9 +376,9 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa turned on service and then login to a mfa turned off service', async ({ I }) => {
+Scenario('@functional @mfaLogin @mfaStepUpLogin @wip As a user, I can login to a mfa turned on service and then login to a mfa turned off service', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -394,13 +392,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
 
     I.fillField('code', otpCode);
     I.click('Continue');
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaturnedOnServicePageSource = await I.grabSource();
     const mfaturnedOnServiceCode = mfaturnedOnServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOnServiceAccessToken = await I.getAccessToken(mfaturnedOnServiceCode, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    const mfaturnedOnServiceAccessToken = await I.getAccessToken(mfaturnedOnServiceCode, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnServiceJwtDecode = await jwt_decode(mfaturnedOnServiceAccessToken);
 
@@ -413,18 +411,18 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const cookie = idamSessionCookie.value;
 
     // try authorizing to the mfa turned off service with the Idam session cookie from mfa turned on service
-    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, scope, nonce, cookie);
+    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService1.clientId, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
     console.log("Location: " + location);
-    expect(location).to.includes(`${mfaTurnedOffService1.activationRedirectUrl}/?code=`.toLowerCase());
+    expect(location).to.includes(`${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}/?code=`.toLowerCase());
 
     I.amOnPage(location);
-    I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaturnedOffServicePageSource = await I.grabSource();
     const mfaturnedOffServiceCode = mfaturnedOffServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, serviceClientSecret);
+    const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.clientId, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOffServiceJwtDecode = await jwt_decode(mfaturnedOffServiceAccessToken);
 
@@ -454,9 +452,9 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa turned on service and then login to a another mfa turned on service', async ({ I }) => {
+Scenario('@functional @mfaLogin @mfaStepUpLogin @wip As a user, I can login to a mfa turned on service and then login to a another mfa turned on service', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -470,13 +468,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
 
     I.fillField('code', otpCode);
     I.click('Continue');
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaturnedOnService1PageSource = await I.grabSource();
     const mfaturnedOnService1Code = mfaturnedOnService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService1JwtDecode = await jwt_decode(mfaturnedOnService1AccessToken);
 
@@ -489,18 +487,18 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const cookie = idamSessionCookie.value;
 
     // try authorizing to the mfa turned on service with the Idam session cookie from another mfa turned on service
-    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService2.oauth2ClientId, mfaTurnedOnService2.activationRedirectUrl, scope, nonce, cookie);
+    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService2.clientId, mfaTurnedOnService2.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
     console.log("Location: " + location);
-    expect(location).to.includes(`${mfaTurnedOnService2.activationRedirectUrl}/?code=`.toLowerCase());
+    expect(location).to.includes(`${mfaTurnedOnService2.hmctsAccess.postActivationRedirectUrl}/?code=`.toLowerCase());
 
     I.amOnPage(location);
-    I.waitForText(mfaTurnedOnService2.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService2.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaTurnedOnService2PageSource = await I.grabSource();
     const mfaTurnedOnService2Code = mfaTurnedOnService2PageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaTurnedOnService2AccessToken = await I.getAccessToken(mfaTurnedOnService2Code, mfaTurnedOnService2.oauth2ClientId, mfaTurnedOnService2.activationRedirectUrl, serviceClientSecret);
+    const mfaTurnedOnService2AccessToken = await I.getAccessToken(mfaTurnedOnService2Code, mfaTurnedOnService2.clientId, mfaTurnedOnService2.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService2JwtDecode = await jwt_decode(mfaTurnedOnService2AccessToken);
 
@@ -530,9 +528,9 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MFA turned off service and then login to another MFA turned off service', async ({ I }) => {
+Scenario('@functional @mfaLogin @mfaStepUpLogin @wip As a user, I can login to the MFA turned off service and then login to another MFA turned off service', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.activationRedirectUrl}&client_id=${mfaTurnedOffService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -540,13 +538,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaTurnedOffService1PageSource = await I.grabSource();
     const mfaTurnedOffService1Code = mfaTurnedOffService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaTurnedOffService1AccessToken = await I.getAccessToken(mfaTurnedOffService1Code, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, serviceClientSecret);
+    const mfaTurnedOffService1AccessToken = await I.getAccessToken(mfaTurnedOffService1Code, mfaTurnedOffService1.clientId, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaTurnedOffService1JwtDecode = await jwt_decode(mfaTurnedOffService1AccessToken);
 
@@ -559,17 +557,17 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     const cookie = idamSessionCookie.value;
 
     // try authorizing to the mfa turned on service with the Idam session cookie from mfa turned off service
-    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService2.oauth2ClientId, mfaTurnedOffService2.activationRedirectUrl, scope, nonce, cookie);
-    expect(location).to.includes(`${mfaTurnedOffService2.activationRedirectUrl}/?code=`.toLowerCase());
+    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService2.clientId, mfaTurnedOffService2.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
+    expect(location).to.includes(`${mfaTurnedOffService2.hmctsAccess.postActivationRedirectUrl}/?code=`.toLowerCase());
 
     I.amOnPage(location);
-    I.waitForText(mfaTurnedOffService2.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOffService2.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaTurnedOffService2PageSource = await I.grabSource();
     const mfaTurnedOffService2Code = mfaTurnedOffService2PageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaTurnedOffService2AccessToken = await I.getAccessToken(mfaTurnedOffService2Code, mfaTurnedOffService2.oauth2ClientId, mfaTurnedOffService2.activationRedirectUrl, serviceClientSecret);
+    const mfaTurnedOffService2AccessToken = await I.getAccessToken(mfaTurnedOffService2Code, mfaTurnedOffService2.clientId, mfaTurnedOffService2.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaTurnedOffService2JwtDecode = await jwt_decode(mfaTurnedOffService2AccessToken);
 
@@ -599,13 +597,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
+Scenario('@functional @mfaLogin @wip As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const cookie = "invalidcookie" + randomData.getRandomString();
 
     // try authorizing to the mfa turned on service with the invalid Idam session cookie from mfa turned off service
-    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
-    expect(location).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
+    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
+    expect(location).to.includes(`/login?client_id=${mfaTurnedOnService1.clientId}&redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}`);
 
     I.amOnPage(location);
     I.waitForText('Sign in');
@@ -619,13 +617,13 @@ Scenario('@functional @mfaLogin As a user, I can login to the MFA turned on serv
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -660,8 +658,8 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     const cookie = "invalidcookie" + randomData.getRandomString();
 
     // try authorizing to the mfa turned off service with the invalid Idam session cookie from mfa turned on service
-    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, scope, nonce, cookie);
-    expect(location).to.includes(`/login?client_id=${mfaTurnedOffService1.oauth2ClientId}&redirect_uri=${mfaTurnedOffService1.activationRedirectUrl}`);
+    const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService1.clientId, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
+    expect(location).to.includes(`/login?client_id=${mfaTurnedOffService1.clientId}&redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}`);
 
     I.amOnPage(location);
     I.waitForText('Sign in');
@@ -669,13 +667,13 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText(mfaTurnedOffService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaturnedOffServicePageSource = await I.grabSource();
     const mfaturnedOffServiceCode = mfaturnedOffServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.oauth2ClientId, mfaTurnedOffService1.activationRedirectUrl, serviceClientSecret);
+    const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.clientId, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOffServiceJwtDecode = await jwt_decode(mfaturnedOffServiceAccessToken);
 
@@ -705,9 +703,9 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to the MFA turned on service and then authorize to the same service with prompt=login and login again', async ({ I }) => {
+Scenario('@functional @mfaLogin @wip @mfaSkipStepUpLogin As a user, I can login to the MFA turned on service and then authorize to the same service with prompt=login and login again', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}&client_id=${mfaTurnedOnService1.oauth2ClientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -721,13 +719,13 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
 
     I.fillField('code', otpCode);
     I.click('Continue');
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaturnedOnService1PageSource = await I.grabSource();
     const mfaturnedOnService1Code = mfaturnedOnService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService1JwtDecode = await jwt_decode(mfaturnedOnService1AccessToken);
 
@@ -739,8 +737,8 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     const idamSessionCookie = await I.grabCookie('Idam.Session');
     const cookie = idamSessionCookie.value;
 
-    const authLocation = await I.getWebPublicOidcAuthorizeWithLoginRequired(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie);
-    expect(authLocation).to.includes(`/login?client_id=${mfaTurnedOnService1.oauth2ClientId}&redirect_uri=${mfaTurnedOnService1.activationRedirectUrl}`);
+    const authLocation = await I.getWebPublicOidcAuthorizeWithLoginRequired(mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
+    expect(authLocation).to.includes(`/login?client_id=${mfaTurnedOnService1.clientId}&redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}`);
 
     I.amOnPage(authLocation);
     I.waitForText('Sign in');
@@ -753,13 +751,13 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
 
     I.fillField('code', otpCode2);
     I.click('Continue');
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaturnedOnService1PageSource2 = await I.grabSource();
     const mfaturnedOnService1Code2 = mfaturnedOnService1PageSource2.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaturnedOnService1AccessToken2 = await I.getAccessToken(mfaturnedOnService1Code2, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    const mfaturnedOnService1AccessToken2 = await I.getAccessToken(mfaturnedOnService1Code2, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService1JwtDecode2 = await jwt_decode(mfaturnedOnService1AccessToken2);
 
@@ -772,18 +770,18 @@ Scenario('@functional @mfaLogin @mfaSkipStepUpLogin As a user, I can login to th
     const cookie2 = idamSessionCookie2.value;
 
     // try authorizing to the mfa turned on service with the Idam session cookie and prompt not login
-    const location2 = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, scope, nonce, cookie2);
+    const location2 = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie2);
     console.log("Location: " + location2);
-    expect(location2).to.includes(`${mfaTurnedOnService1.activationRedirectUrl}/?code=`.toLowerCase());
+    expect(location2).to.includes(`${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}/?code=`.toLowerCase());
 
     I.amOnPage(location2);
-    I.waitForText(mfaTurnedOnService1.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const mfaTurnedOnService1PageSource3 = await I.grabSource();
     const mfaTurnedOnService1Code3 = mfaTurnedOnService1PageSource3.match(/\?code=([^&]*)(.*)/)[1];
-    const mfaTurnedOnService1AccessToken3 = await I.getAccessToken(mfaTurnedOnService1Code3, mfaTurnedOnService1.oauth2ClientId, mfaTurnedOnService1.activationRedirectUrl, serviceClientSecret);
+    const mfaTurnedOnService1AccessToken3 = await I.getAccessToken(mfaTurnedOnService1Code3, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService1JwtDecode3 = await jwt_decode(mfaTurnedOnService1AccessToken3);
 
