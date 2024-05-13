@@ -197,36 +197,6 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createRole(roleName, roleDescription, assignableRoles, api_auth_token) {
-        const roleId = uuid.v4();
-        const data = {
-            assignableRoles: [assignableRoles],
-            conflictingRoles: [],
-            description: roleDescription,
-            name: roleName,
-            id: roleId,
-        };
-
-        return fetch(`${TestData.IDAM_API}/roles`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
-        })
-            .then(res => {
-              //  console.trace(res);
-
-               // console.log("Response status code:", res.status); // Log the response status code
-                return res.json();
-            })
-            .then(json => {
-                console.trace(json);
-
-                return json;
-            })
-            .catch(err => err);
-    }
-
     createUserUsingTestingSupportService(accessToken, email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
         const userId = uuid.v4();
         const data = {
