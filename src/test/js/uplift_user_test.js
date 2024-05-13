@@ -35,16 +35,18 @@ BeforeSuite(async ({ I }) => {
     upliftAccountCreationStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     upliftLoginStaleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
 
-    const token = await I.getAuthToken();
-    serviceBetaRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_beta", 'beta description', '', token);
-    let serviceAdminRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description', serviceBetaRole.id, token);
-    let serviceSuperRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', serviceAdminRole.id, token);
+    const token = await I.getToken();
+    serviceBetaRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_beta", 'beta description', [], token);
+    let serviceAdminRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description',[serviceBetaRole.name], token);
+    let serviceSuperRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', [serviceAdminRole.name], token);
 
     let serviceRoleNames = [serviceBetaRole.name, serviceAdminRole.name, serviceSuperRole.name];
     let serviceRoleIds = [serviceBetaRole.id, serviceAdminRole.id, serviceSuperRole.id];
     roleNames.push(serviceRoleNames);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [serviceBetaRole.name], token,["openid", "profile", "roles"],[],false,TestData.SERVICE_REDIRECT_URI) ;
 
-    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, serviceBetaRole.id, token);
+   // await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, serviceBetaRole.id, token);
+
     serviceNames.push(serviceName);
 
     I.wait(0.5);
@@ -66,15 +68,13 @@ BeforeSuite(async ({ I }) => {
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 });
 
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
-});
 
 After(({ I }) => {
     I.resetRequestInterception();
 });
 
 Scenario('@functional @loginWithPin As a Defendant, I should be able to login with the pin received from the Claimant', async ({ I }) => {
+
     let pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/pin?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
     I.waitForText('Enter security code');
@@ -97,7 +97,7 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     I.cleanupLetterHolderRoles(accessTokenClientSecret,userInfo.roles)
 });
 
-Scenario('@functional @uplift @upliftvalid User Validation errors', ({ I }) => {
+Scenario('@functional @uplift @upliftvalid    User Validation errors', ({ I }) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in');
     I.click("Continue");
@@ -131,7 +131,7 @@ Scenario('@functional @uplift @upliftvalid User Validation errors', ({ I }) => {
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 
-Scenario('@functional @uplift I am able to use a pin to create an account as an uplift user', async ({ I }) => {
+Scenario('@functional @uplift  I am able to use a pin to create an account as an uplift user', async ({ I }) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in');
     I.fillField('#firstName', randomUserFirstName);
@@ -154,7 +154,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     await I.runAccessibilityTest();
 });
 
-Scenario('@functional @uplift User should receive You already have an account email for Uplift via register using an existing email and in different case', async ({ I }) => {
+Scenario('@functional @uplift  User should receive You already have an account email for Uplift via register using an existing email and in different case', async ({ I }) => {
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -171,7 +171,7 @@ Scenario('@functional @uplift User should receive You already have an account em
     expect(emailResponse.subject).to.equal('You already have an account');
 });
 
-Scenario('@functional @uplift @upliftLogin uplift a user via login journey', async ({ I }) => {
+Scenario('@functional @uplift @upliftLogin  uplift a user via login journey', async ({ I }) => {
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -190,7 +190,7 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 
-Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user registration for stale user uplift account creation', async ({ I }) => {
+Scenario('@functional @uplift @staleUserUpliftAccountCreation  Send stale user registration for stale user uplift account creation', async ({ I }) => {
     const newPassword = randomData.getRandomUserPassword();
     const pinUser = await I.getPinUser(randomUserFirstName, randomUserLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
