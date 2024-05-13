@@ -376,7 +376,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin @wip As a user, I can login to a mfa turned on service and then login to a mfa turned off service', async ({ I }) => {
+Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to a mfa turned on service and then login to a mfa turned off service', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
@@ -452,7 +452,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin @wip As a user, I can login to a
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin @wip As a user, I can login to a mfa turned on service and then login to a another mfa turned on service', async ({ I }) => {
+Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa turned on service and then login to a another mfa turned on service', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
@@ -528,7 +528,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin @wip As a user, I can login to a
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @mfaStepUpLogin @wip As a user, I can login to the MFA turned off service and then login to another MFA turned off service', async ({ I }) => {
+Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to the MFA turned off service and then login to another MFA turned off service', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
@@ -597,7 +597,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin @wip As a user, I can login to t
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @wip As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
+Scenario('@functional @mfaLogin  As a user, I can login to the MFA turned on service with invalid cookie', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const cookie = "invalidcookie" + randomData.getRandomString();
 
@@ -703,7 +703,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaLogin @wip @mfaSkipStepUpLogin As a user, I can login to the MFA turned on service and then authorize to the same service with prompt=login and login again', async ({ I }) => {
+Scenario('@functional @mfaLogin  @mfaSkipStepUpLogin As a user, I can login to the MFA turned on service and then authorize to the same service with prompt=login and login again', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
