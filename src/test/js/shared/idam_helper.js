@@ -904,14 +904,9 @@ class IdamHelper extends Helper {
 
     async createServiceUsingTestingSupportService(serviceName, serviceClientSecret, roleNames, token, scope = [], ssoProviders = [],mfaTurnedOn = false,redirectUrl = null) {
         let roles;
-        if (!roleNames || roleNames.length === 0) {
-            //roles = ['auto-private-beta_role'];
-        } else {
+        if (roleNames && roleNames.length > 0) {
             roles = [...roleNames.flat()];
-
-            // roles = [...roleNames.flat(), 'auto-admin_role', 'auto-private-beta_role'];
         }
-
         let url = redirectUrl || TestData.SERVICE_REDIRECT_URI;
 
         let data = {
@@ -940,7 +935,6 @@ class IdamHelper extends Helper {
                 refreshTokenLifetime: "PT0S"
             }
         };
-        // console.log(JSON.stringify(data));
 
 
         return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/services`, {
@@ -958,7 +952,7 @@ class IdamHelper extends Helper {
                 return response.json();
             }
         }).catch(err => {
-            console.error("Error:", err);
+            console.error("Error creating service:", err);
             throw err;
         });
     }
@@ -981,12 +975,8 @@ class IdamHelper extends Helper {
             });
             console.log(`*****createRoleUsingTestingSupportService response for role ${roleName}:*****`, response.status);
             if (!response.ok) {
-                console.log(JSON.stringify(data));
-                console.log("*****createRoleUsingTestingSupportService response:*****", response.status);
                 return response;
             }
-            console.log(JSON.stringify(data));
-
             const json = await response.json();
             return json;
         } catch (error) {
