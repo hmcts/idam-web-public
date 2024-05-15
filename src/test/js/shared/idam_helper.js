@@ -218,13 +218,13 @@ class IdamHelper extends Helper {
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken},
         }).then(res => {
-            console.log("****createUserUsingTestingSupportService :*****"+res.status); // Log the response data
+            console.debug("****createUserUsingTestingSupportService :*****"+res.status);
             return res.json();
         }).then(json => {
             return json;
         }).catch(err => {
-            console.error(err); // Log any errors that occur during the request
-            throw err; // Re-throw the error to propagate it to the caller
+            console.error(err);
+            throw err;
         });
     }
 
