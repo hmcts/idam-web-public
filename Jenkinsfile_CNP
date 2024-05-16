@@ -8,16 +8,10 @@ def product = "idam"
 
 def component = "web-public"
 
-env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
-env.PROD_ENVIRONMENT_NAME = 'idam-prod'
-env.DEMO_ENVIRONMENT_NAME = 'idam-demo'
-env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
-env.PERFTEST_ENVIRONMENT_NAME = 'idam-perftest'
-env.ITHC_ENVIRONMENT_NAME = 'idam-ithc'
 env.NO_SKIP_IMG_BUILD = 'true'
 
 def secrets = [
-    'idam-${env}': [
+    'idam-idam-${env}': [
         secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
         secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
         secret('notify-api-key', 'NOTIFY_API_KEY'),
@@ -40,53 +34,41 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 def branchesToSync = ['demo', 'perftest', 'ithc', 'nightly-dev']
 
 withPipeline(type, product, component) {
-    loadVaultSecrets(secrets)
     enableSlackNotifications('#idam_tech')
     enableAksStagingDeployment()
     disableLegacyDeployment()
     syncBranchesWithMaster(branchesToSync)
 
+    onPR() {
+        Map<String, String> vaultEnvironmentOverrides = ['aat':'preview']
+        overrideVaultEnvironments(vaultEnvironmentOverrides)
+        env.NONPROD_ENVIRONMENT_NAME = 'preview'
+    }
+    loadVaultSecrets(secrets)
+
     // AKS Callbacks
     before('akschartsinstall') {
-        env.PREVIEW_ENVIRONMENT_NAME = 'preview'
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
         println """\
                 Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
                 Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
 
-    before('smoketest:idam-preview') {
-        env.PREVIEW_ENVIRONMENT_NAME = 'preview'
-        env.NONPROD_ENVIRONMENT_NAME = 'preview'
+    before('smoketest:preview') {
         env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
         env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
-        println """\
-                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
-                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
-                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
 
-    before('functionalTest:idam-preview') {
-        env.PREVIEW_ENVIRONMENT_NAME = 'preview'
-        env.NONPROD_ENVIRONMENT_NAME = 'preview'
+    before('functionalTest:preview') {
         env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
         env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
-        println """\
-                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
-                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
-                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
 
-    before('smoketest:idam-aat') {
-        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+    before('smoketest:aat') {
         env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
-        println """\
-                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
-                Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
     }
 
-    before('functionalTest:idam-aat') {
-        env.NONPROD_ENVIRONMENT_NAME = 'aat'
+    before('functionalTest:aat') {
         env.RPE_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         env.REF_DATA_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
         env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
@@ -99,36 +81,6 @@ withPipeline(type, product, component) {
                 Using REF_DATA_URL: ${env.REF_DATA_URL}
                 Using IDAMAPI: ${env.IDAMAPI}
                 Using TESTING_SUPPORT_API_URL: ${env.TESTING_SUPPORT_API_URL}""".stripIndent()
-    }
-
-    before('buildinfra:idam-ithc') {
-        env.ITHC_ENVIRONMENT_NAME = 'ithc'
-        println """\
-                Using ITHC_ENVIRONMENT_NAME: ${env.ITHC_ENVIRONMENT_NAME}""".stripIndent()
-    }
-
-    afterAlways('akschartsinstall') {
-        env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
-        env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
-        println """\
-                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
-                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
-    }
-
-    afterAlways('smoketest:idam-preview') {
-        env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
-        env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
-        println """\
-                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
-                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
-    }
-
-    afterAlways('functionalTest:idam-preview') {
-        env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
-        env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
-        println """\
-                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
-                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
     }
     // End AKS Callbacks
 
@@ -144,7 +96,7 @@ withPipeline(type, product, component) {
 
     }
 
-    afterAlways('smoketest:idam-preview') {
+    afterAlways('smoketest:preview') {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
@@ -157,7 +109,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    afterAlways('smoketest:idam-aat') {
+    afterAlways('smoketest:aat') {
         archiveArtifacts '**/build/test-results/**/*'
 
         publishHTML target: [
@@ -170,7 +122,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    afterAlways('functionalTest:idam-preview') {
+    afterAlways('functionalTest:preview') {
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
         archiveArtifacts '**/output/**'
@@ -185,7 +137,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    afterAlways('functionalTest:idam-aat') {
+    afterAlways('functionalTest:aat') {
         env.TESTS_FOR_ACCESSIBILITY = false
         env.WAIT_FOR_ACTION_TIMEOUT = 500
         archiveArtifacts '**/build/test-results/**/*'
