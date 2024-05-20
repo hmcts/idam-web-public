@@ -36,37 +36,38 @@ BeforeSuite(async ({ I }) => {
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     previousUserEmail = 'user.' + randomData.getRandomEmailAddress();
     currentUserEmail = 'user.' + randomData.getRandomEmailAddress();
+    const testingToken= await I.getToken();
 
     apiAuthToken = await I.getAuthToken();
-    assignableRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix)  + "_assignable", 'assignable role', '', apiAuthToken);
-    let userRegRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix)  + "_usrReg", 'user reg role', assignableRole.id, apiAuthToken);
+    // assignableRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix)  + "_assignable", 'assignable role', '', apiAuthToken);
+    // let userRegRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix)  + "_usrReg", 'user reg role', assignableRole.id, apiAuthToken);
+    assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', [], testingToken);
+    let userRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_usrReg", 'user reg role', [assignableRole.name], testingToken);
 
     let serviceRoleNames = [assignableRole.name, userRegRole.name];
     let serviceRoleIds = [assignableRole.id, userRegRole.id];
     roleNames.push(serviceRoleNames);
+    let service = await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [serviceRoleNames], testingToken, ["openid", "profile", "roles", "manage-user", "create-user"], [],false,`https://www.${serviceName}.com`);
 
-    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, '', apiAuthToken, 'create-user manage-user');
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
     accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+
     await I.createUserUsingTestingSupportService(accessTokenClientSecret, adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, userPassword);
-    const code = await I.getAuthorizeCode(serviceName, TestData.SERVICE_REDIRECT_URI, 'create-user manage-user', base64);
-    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
+    const code = await I.getAuthorizeCode(serviceName, service.hmctsAccess.postActivationRedirectUrl, 'create-user manage-user', base64);
+    accessToken = await I.getAccessToken(code, serviceName, service.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     await I.registerUserWithId(accessToken, previousUserEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name);
     await I.registerUserWithId(accessToken, currentUserEmail, currentUserFirstName, currentUserLastName, userId, assignableRole.name)
 });
 
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
-});
 
-Scenario('@functional multiple users can be registered with same uuid but the previous user will be told their account is already active', async ({ I }) => {
+Scenario('@f1 multiple users can be registered with same uuid but the previous user will be told their account is already active', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
@@ -89,7 +90,6 @@ Scenario('@functional multiple users can be registered with same uuid but the pr
     expect(responseAfterCurrentUserActivation.surname).to.equal(currentUserLastName);
     expect(responseAfterCurrentUserActivation.email).to.equal(currentUserEmail);
     expect(responseAfterCurrentUserActivation.roles).to.eql([assignableRole.name]);
-
     const previousUserUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, previousUserEmail);
 
     I.amOnPage(previousUserUrl);

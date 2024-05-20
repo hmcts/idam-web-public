@@ -154,112 +154,6 @@ class IdamHelper extends Helper {
             });
     }
 
-    createService(serviceName, serviceClientSecret, roleId, token, scope = '', ssoProviders = '') {
-        let data;
-
-        if (roleId === '') {
-            data = {
-                label: serviceName,
-                description: serviceName,
-                oauth2ClientId: serviceName,
-                oauth2ClientSecret: serviceClientSecret,
-                oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
-                oauth2Scope: scope,
-                onboardingEndpoint: '/autotest',
-                onboardingRoles: ['auto-private-beta_role'],
-                activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
-                selfRegistrationAllowed: true,
-                ssoProviders: ssoProviders
-            };
-        } else {
-            data = {
-                label: serviceName,
-                description: serviceName,
-                oauth2ClientId: serviceName,
-                oauth2ClientSecret: serviceClientSecret,
-                oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
-                oauth2Scope: scope,
-                onboardingEndpoint: '/autotest',
-                onboardingRoles: ['auto-private-beta_role'],
-                allowedRoles: [roleId, 'auto-admin_role'],
-                activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
-                selfRegistrationAllowed: true,
-                ssoProviders: ssoProviders
-            };
-        }
-        return fetch(`${TestData.IDAM_API}/services`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token},
-        }).then(response => {
-            if (response.status !== 201) {
-                console.log(`Error creating service  ${serviceName}, response: ${response.status}`);
-            }
-            return response.json();
-        }).catch(err => {
-            console.log(err);
-        });
-    }
-
-    createServiceWithRoles(serviceName, serviceClientSecret, serviceRoles, betaRole, token, scope) {
-        if (scope == null) {
-            scope = ''
-        }
-        const data = {
-            label: serviceName,
-            description: serviceName,
-            oauth2ClientId: serviceName,
-            oauth2ClientSecret: serviceClientSecret,
-            oauth2RedirectUris: [TestData.SERVICE_REDIRECT_URI],
-            oauth2Scope: scope,
-            onboardingEndpoint: '/autotest',
-            onboardingRoles: [betaRole],
-            allowedRoles: serviceRoles,
-            activationRedirectUrl: TestData.SERVICE_REDIRECT_URI,
-            selfRegistrationAllowed: true
-        };
-        return fetch(`${TestData.IDAM_API}/services`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token},
-        }).then(res => res.json())
-            .then((json) => {
-                return json;
-            })
-            .catch(err => err);
-    }
-
-    createNewServiceWithRoles(serviceName, serviceClientSecret, serviceRoles, betaRole, token, scope) {
-        if (scope == null) {
-            scope = ''
-        }
-        const data = {
-            label: serviceName,
-            description: serviceName,
-            oauth2ClientId: serviceName,
-            oauth2ClientSecret: serviceClientSecret,
-            oauth2RedirectUris: [`https://www.${serviceName}.com`],
-            oauth2Scope: scope,
-            onboardingEndpoint: '/autotest',
-            onboardingRoles: [betaRole],
-            allowedRoles: serviceRoles,
-            activationRedirectUrl: `https://www.${serviceName}.com`,
-            selfRegistrationAllowed: true
-        };
-        return fetch(`${TestData.IDAM_API}/services`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + token},
-        }).then(res => res.json())
-            .then((json) => {
-                return json;
-            })
-            .catch(err => err);
-    }
-
     getAuthToken() {
         return fetch(`${TestData.IDAM_API}/loginUser?username=${TestData.SMOKE_TEST_USER_USERNAME}&password=${TestData.SMOKE_TEST_USER_PASSWORD}`, {
             agent: agent,
@@ -303,29 +197,6 @@ class IdamHelper extends Helper {
             .catch(err => err);
     }
 
-    createRole(roleName, roleDescription, assignableRoles, api_auth_token) {
-        const roleId = uuid.v4();
-        const data = {
-            assignableRoles: [assignableRoles],
-            conflictingRoles: [],
-            description: roleDescription,
-            name: roleName,
-            id: roleId,
-        };
-
-        return fetch(`${TestData.IDAM_API}/roles`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
-        })
-            .then(res => res.json())
-            .then((json) => {
-                return json;
-            })
-            .catch(err => err);
-    }
-
     createUserUsingTestingSupportService(accessToken, email, password, forename, userRoles, ssoProvider=null, ssoId=null) {
         const userId = uuid.v4();
         const data = {
@@ -346,13 +217,15 @@ class IdamHelper extends Helper {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken},
-        }).then(res => res.json())
-            .then((json) => {
-                return json;
-            })
-            .catch(err => {
-                console.log(err)
-            });
+        }).then(res => {
+            console.debug("****createUserUsingTestingSupportService :*****"+res.status);
+            return res.json();
+        }).then(json => {
+            return json;
+        }).catch(err => {
+            console.error(err);
+            throw err;
+        });
     }
 
     createPolicyForApplicationMfaTest(name, redirectUri, api_auth_token) {
@@ -383,9 +256,15 @@ class IdamHelper extends Helper {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'AdminApiAuthToken ' + api_auth_token},
+        }).then(res => {
+            console.log("CreateMFAPOLICY Response status code:", res.status);
+            return res.json();
         })
-            .then(res => res.json())
-            .catch(err => err);
+            .catch(err => {
+                console.error("Fetch error:", err); // Log any fetch errors
+                throw err; // Re-throw the error to propagate it to the caller
+            });
+
     }
 
 
@@ -845,6 +724,123 @@ class IdamHelper extends Helper {
         });
     }
 
+    async  getToken() {
+        try {
+            // Check if TestData.TOKEN is not empty or null
+
+            if (TestData.FUNCTIONAL_TEST_TOKEN && TestData.FUNCTIONAL_TEST_TOKEN.trim() !== "") {
+                return TestData.FUNCTIONAL_TEST_TOKEN;
+            }
+            console.log("FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET "+TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET)
+
+            const response = await fetch(`${TestData.IDAM_API}/o/token`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    grant_type: 'client_credentials',
+                    client_id: 'idam-functional-test-service',
+                    client_secret: TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET,
+                    scope: 'profile roles',
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch token');
+            }
+
+            const tokenData = await response.json();
+            TestData.FUNCTIONAL_TEST_TOKEN = tokenData.access_token;
+            return tokenData.access_token; // Assuming token is in the 'access_token' field
+        } catch (error) {
+            console.trace('Error fetching token:', error);
+            throw error;
+        }
+    }
+
+    async createServiceUsingTestingSupportService(serviceName, serviceClientSecret, roleNames, token, scope = [], ssoProviders = [],mfaTurnedOn = false,redirectUrl = null) {
+        let roles;
+        if (roleNames && roleNames.length > 0) {
+            roles = [...roleNames.flat()];
+        }
+        let url = redirectUrl || TestData.SERVICE_REDIRECT_URI;
+
+        let data = {
+            clientId: serviceName,
+            clientSecret: serviceClientSecret,
+            description: serviceName,
+            hmctsAccess: {
+                mfaRequired: mfaTurnedOn,
+                selfRegistrationAllowed: true,
+                postActivationRedirectUrl: url,
+                onboardingRoleNames: roles,
+                ssoProviders: ssoProviders
+            },
+            oauth2: {
+                issuerOverride: false,
+                grantTypes: [
+                    "authorization_code",
+                    "refresh_token",
+                    "password",
+                    "implicit",
+                    "client_credentials"
+                ],
+                scopes: scope,
+                redirectUris: [url],
+                accessTokenLifetime: "PT0S",
+                refreshTokenLifetime: "PT0S"
+            }
+        };
+
+
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/services`, {
+            agent: agent,
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+        }).then(response => {
+            if (response.ok) {
+                console.log(`Success code ${response.status} for service ${serviceName} in createServiceUsingTestingSupportService`);
+                return response.json();
+
+            } else {
+                console.log(`Error creating service ${serviceName}, response: ${response.status}`);
+                return response.json();
+            }
+        }).catch(err => {
+            console.error("Error creating service:", err);
+            throw err;
+        });
+    }
+
+    async  createRoleUsingTestingSupportService(roleName, roleDescription, assignableRoles, token) {
+        try {
+            const roleId = uuid.v4();
+            const data = {
+                assignableRoleNames: assignableRoles,
+                description: roleDescription,
+                name: roleName,
+                id: roleId,
+            };
+
+            const response = await fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/roles`, {
+                agent: agent,
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+            });
+            console.log(`*****createRoleUsingTestingSupportService response for role ${roleName}:*****`, response.status);
+            if (!response.ok) {
+                return response;
+            }
+            const json = await response.json();
+            return json;
+        } catch (error) {
+            console.error("Error creating role:", error);
+            throw error;
+        }
+    }
 
 }
 
