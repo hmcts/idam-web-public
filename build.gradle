@@ -151,7 +151,7 @@ allprojects {
       exclude module: 'junit'
     }
 
-    testImplementation 'com.github.hmcts:fortify-client:1.4.1:all'
+    testImplementation 'com.github.hmcts:fortify-client:1.4.2:all'
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
     testImplementation('pl.pragmatists:JUnitParams:1.1.1') {
