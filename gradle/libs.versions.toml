@@ -1,5 +1,5 @@
 [versions]
-api-spec = "4.0.8"
+api-spec = "4.1.0"
 commons-io = "2.16.1"
 commons-text = "1.12.0"
 commons-fileupload = "1.5"
