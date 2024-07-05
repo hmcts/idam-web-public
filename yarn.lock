@@ -514,9 +514,9 @@ axios@^0.26.0:
     follow-redirects "^1.14.8"
 
 axios@^1.6.1:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.1.tgz#522145622a09dfaf49359837db9649ff245a35b9"
-  integrity sha512-+LV37nQcd1EpFalkXksWNBiA17NZ5m5/WspmHGmZmdx1qBOg/VNq/c4eRJiA9VQQHBOs+N0ZhhdU10h2TyNK7Q==
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.2.tgz#b625db8a7051fbea61c35a3cbb3a1daa7b9c7621"
+  integrity sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
@@ -2930,9 +2930,9 @@ normalize-url@^8.0.0:
   integrity sha512-IO9QvjUMWxPQQhs60oOu10CRkWCiZzSUkzbXGGV9pviYl1fXYcvkzQ5jV9z8Y6un8ARoVRl4EtC6v6jNqbaJ/w==
 
 notifications-node-client@^8.0.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/notifications-node-client/-/notifications-node-client-8.1.0.tgz#aaf007ccb864eae56942a6fed176c4b310d4e975"
-  integrity sha512-2NJqPEcvlFRxuPMMWqoVXVUDz9EWl8dQVAhnLfRdv61PaHMqIRiQTdwn2qge8sC3kAsLnJoTl0qxhwDUarkYsQ==
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/notifications-node-client/-/notifications-node-client-8.2.0.tgz#1fe0814a0b5e6732939ca91c34b11e5c1176605f"
+  integrity sha512-XGmW2f2CroEwIUrPaTyShpF8pLlu79rBnwWns1uPGs27LbZdzNPJF1BzPl3cG3Tsu3nVlaWeXJJYAE+ALryalA==
   dependencies:
     axios "^1.6.1"
     jsonwebtoken "^9.0.0"
