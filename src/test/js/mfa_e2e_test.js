@@ -60,7 +60,7 @@ BeforeSuite(async ({ I }) => {
 
 Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRY--z-WfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -104,7 +104,7 @@ Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => 
 
 Scenario('@functional @mfaLogin  I am able to login with MFA and prompt = login', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=login`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRY--z-WfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=login`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -146,7 +146,7 @@ Scenario('@functional @mfaLogin  I am able to login with MFA and prompt = login'
 
 Scenario('@functional @mfaLogin @welshLanguage  I am able to login with MFA in Welsh', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6wtIgsUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=${scope}${Welsh.urlForceCy}`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRY--z-WfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=${scope}${Welsh.urlForceCy}`;
 
     I.amOnPage(loginUrl);
     I.waitForText(Welsh.signInOrCreateAccount);
@@ -259,7 +259,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
 
 Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I can login without mfa for the application with mfa turned on', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgtUVTGybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRY--z-WfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -308,7 +308,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
 
 Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MFA turned off service and then step-up login to the MFA turned on service', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService1.clientId}&state=44p4OfI5CXbdvMTpRY--z-WfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -378,7 +378,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
 
 Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to a mfa turned on service and then login to a mfa turned off service', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRY--z-WfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -454,7 +454,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to a mfa
 
 Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa turned on service and then login to a another mfa turned on service', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRY--z-WfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -530,7 +530,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
 
 Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to the MFA turned off service and then login to another MFA turned off service', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService1.clientId}&state=44p4OfI5CXbdvMTpRY--z-WfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -705,7 +705,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
 
 Scenario('@functional @mfaLogin  @mfaSkipStepUpLogin As a user, I can login to the MFA turned on service and then authorize to the same service with prompt=login and login again', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRY--z-WfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
