@@ -17,16 +17,18 @@ const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 
 BeforeSuite(async ({ I }) => {
-    const token = await I.getAuthToken();
-    await I.createService(serviceName, serviceClientSecret, '', token, 'openid profile roles', [TestData.EJUDICIARY_SSO_PROVIDER_KEY]);
+    const testingToken = await I.getToken();
+    const scopes = ['openid', 'profile', 'roles'];
+
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], testingToken, scopes, [TestData.EJUDICIARY_SSO_PROVIDER_KEY],false,);
+
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 });
 
 AfterSuite(async ({ I }) => {
-    I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
+    return await I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
 });
 
 Scenario('@ejudiciary As an ejudiciary user, I can login into idam through OIDC', async ({ I }) => {

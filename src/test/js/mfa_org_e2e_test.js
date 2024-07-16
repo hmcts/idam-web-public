@@ -27,23 +27,22 @@ let professionalUserMFADisabledFirstName;
 let professionalUserMFARequiredEmail;
 let professionalUserMFARequiredFirstName;
 let mfaTurnedOnService;
+let mfaTurnedOffService;
+
 let mfaApplicationPolicyName;
 let professionalRoleName;
 let accessTokenClientSecret;
 
 BeforeSuite(async ({ I }) => {
 
-    token = await I.getAuthToken();
-    const mfaTurnedOnServiceName = randomData.getRandomServiceName(testSuiteId);
-    mfaTurnedOnService = await I.createNewServiceWithRoles(mfaTurnedOnServiceName, serviceClientSecret,  [], '', token, scope);
-
-    mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService.oauth2ClientId}`;
-    await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService.activationRedirectUrl, token);
-
+    token = await I.getToken();
+    const mfaTurnedOnServiceName = randomData.getRandomServiceName(testSuiteId)+'ON';
+    const mfaTurnedOffServiceName = randomData.getRandomServiceName(testSuiteId)+'OFF';
+    mfaTurnedOnService = await I.createServiceUsingTestingSupportService(mfaTurnedOnServiceName, serviceClientSecret, [], token, ["openid", "profile", "roles", "manage-user", "create-user"],[],true,`https://www.${mfaTurnedOnServiceName}.com`);
+    mfaTurnedOffService = await I.createServiceUsingTestingSupportService(mfaTurnedOffServiceName, serviceClientSecret, [], token, ["openid", "profile", "roles", "manage-user", "create-user"],[],false,`https://www.${mfaTurnedOffServiceName}.com`);
     I.wait(0.5);
-
     professionalRoleName = randomData.getRandomRoleName(testSuiteId);
-    await I.createRole(professionalRoleName, 'professional description', '', token);
+    await I.createRoleUsingTestingSupportService(professionalRoleName, 'professional description', [], token);
 
     isRefDataEnabled = await I.refDataEnabled();
     if (isRefDataEnabled) {
@@ -108,16 +107,11 @@ BeforeSuite(async ({ I }) => {
 
 });
 
-AfterSuite(async ({ I }) => {
-    return Promise.all([
-        I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuiteId),
-        I.deletePolicy(mfaApplicationPolicyName, token),
-    ]);
-});
+
 
 Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of an organisation that has MFA disabled', async ({ I }) => {
 
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService.clientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -125,13 +119,13 @@ Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret);
+    const accessToken = await I.getAccessToken(code, mfaTurnedOffService.clientId, mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -156,9 +150,9 @@ Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaOrgLogin I am able to login with MFA as a member of an organisation that has MFA active', async ({ I }) => {
+Scenario('@functional @mfaOrgLogin  I am able to login with MFA as a member of an organisation that has MFA active', async ({ I }) => {
 
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService.clientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -173,13 +167,13 @@ Scenario('@functional @mfaOrgLogin I am able to login with MFA as a member of an
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.click('Continue');
-    I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret);
+    const accessToken = await I.getAccessToken(code, mfaTurnedOnService.clientId, mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 
@@ -204,9 +198,9 @@ Scenario('@functional @mfaOrgLogin I am able to login with MFA as a member of an
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @mfaOrgLogin am able to login without MFA as an idam-mfa-disabled role user but a member of an organisation that has MFA active', async ({ I }) => {
+Scenario('@functional @mfaOrgLogin  am able to login without MFA as an idam-mfa-disabled role user but a member of an organisation that has MFA active', async ({ I }) => {
 
-    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.activationRedirectUrl}&client_id=${mfaTurnedOnService.oauth2ClientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService.clientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -217,13 +211,13 @@ Scenario('@functional @mfaOrgLogin am able to login without MFA as an idam-mfa-d
     let currentUrl = await I.grabCurrentUrl();
     I.addMochawesomeContext('Url is ' + currentUrl);
     I.dontSeeInCurrentUrl("/verification");
-    I.waitForText(mfaTurnedOnService.activationRedirectUrl.toLowerCase());
+    I.waitForText(mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
 
     const pageSource = await I.grabSource();
     const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    const accessToken = await I.getAccessToken(code, mfaTurnedOnService.oauth2ClientId, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret);
+    const accessToken = await I.getAccessToken(code, mfaTurnedOnService.clientId, mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
 

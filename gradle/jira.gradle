@@ -22,7 +22,7 @@ buildscript {
     maven { url 'https://packages.atlassian.com/maven/repository/public' }
   }
   dependencies {
-    classpath 'com.atlassian.jira:jira-rest-java-client-app:5.2.7'
+    classpath 'com.atlassian.jira:jira-rest-java-client-app:6.0.1'
   }
 }
 

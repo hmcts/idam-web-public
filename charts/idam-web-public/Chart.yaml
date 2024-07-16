@@ -2,7 +2,7 @@ apiVersion: v2
 appVersion: "1.0"
 description: A Helm chart for CFT IDAM Public Web-App
 name: idam-web-public
-version: 0.4.0
+version: 0.4.1
 dependencies:
   - name: java
     version: ~5.2.0

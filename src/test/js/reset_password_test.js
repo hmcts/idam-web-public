@@ -24,6 +24,9 @@ const userPassword = randomData.getRandomUserPassword();
 const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=`;
 
 BeforeSuite(async ({ I }) => {
+    accessToken = await I.getToken();
+    const scopes = ['openid', 'profile', 'roles'];
+
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     diffCaseCitizenEmail = 'diffcase.' + randomData.getRandomEmailAddress();
@@ -34,13 +37,11 @@ BeforeSuite(async ({ I }) => {
     staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
     idamServiceAccountUserEmail = 'idamserviceaccount.' + randomData.getRandomEmailAddress();
     specialCharacterPassword = 'New&&&$$$%%%<>234';
-
-    await I.createServiceData(serviceName, serviceClientSecret);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], accessToken, scopes, []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
-    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
     await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'Citizen');
     await I.createUserUsingTestingSupportService(accessToken, diffCaseCitizenEmail, userPassword, randomUserFirstName + 'diffcase', ["citizen"]);

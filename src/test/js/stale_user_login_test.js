@@ -1,6 +1,7 @@
 const testData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 const Welsh = require('./shared/welsh_constants');
+const TestData = require("./config/test_data");
 
 Feature('Stale user login');
 
@@ -9,37 +10,35 @@ let staleUserEmail;
 let staleUserEmailWelsh;
 let userFirstNames = [];
 let serviceNames = [];
-let accessToken;
-
+let token;
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async({ I }) => {
+    token = await I.getToken();
+    const scopes = ['openid', 'profile', 'roles'];
 
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     staleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
     staleUserEmailWelsh = 'staleuser.' + randomData.getRandomEmailAddress();
 
-    await I.createServiceData(serviceName, serviceClientSecret);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], token, scopes, []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
-    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, staleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUser');
     await I.retireStaleUser(staleUserEmail);
 
-    await I.createUserUsingTestingSupportService(accessToken, staleUserEmailWelsh, userPassword, randomUserFirstName + 'StaleUserWelsh', ["citizen"]);
+    await I.createUserUsingTestingSupportService(token, staleUserEmailWelsh, userPassword, randomUserFirstName + 'StaleUserWelsh', ["citizen"]);
     userFirstNames.push(randomUserFirstName + 'StaleUserWelsh');
     await I.retireStaleUser(staleUserEmailWelsh);
 });
 
-AfterSuite(async({ I }) => {
-    I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
-});
+
 
 Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) => {
     const newPassword = randomData.getRandomUserPassword();
@@ -51,7 +50,7 @@ Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) =>
     I.fillField('#password', userPassword);
     I.click('Sign in');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
-    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(accessToken, staleUserEmail);
+    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(token, staleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);
@@ -83,7 +82,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.fillField('#password', userPassword);
     I.click(Welsh.signIn);
     I.waitForText(Welsh.staleUserErrorMessage);
-    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(accessToken, staleUserEmailWelsh);
+    const reRegistrationUrl = await I.extractUrlFromNotifyEmail(token, staleUserEmailWelsh);
     I.amOnPage(reRegistrationUrl);
     I.waitForText(Welsh.createAPassword);
     I.fillField('#password1', newPassword);

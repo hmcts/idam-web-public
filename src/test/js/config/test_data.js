@@ -18,5 +18,7 @@ module.exports = {
     TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
     TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
     RPE_AUTH_URL: process.env.RPE_AUTH_URL,
-    REF_DATA_URL: process.env.REF_DATA_URL
+    FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET: process.env.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET,
+    FUNCTIONAL_TEST_TOKEN:''
+
 };
