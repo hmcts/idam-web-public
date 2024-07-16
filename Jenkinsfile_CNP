@@ -46,14 +46,6 @@ withPipeline(type, product, component) {
     }
     loadVaultSecrets(secrets)
 
-    // AKS Callbacks
-    before('akschartsinstall') {
-        env.NONPROD_ENVIRONMENT_NAME = 'preview'
-        println """\
-                Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
-                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
-    }
-
     before('smoketest:preview') {
         env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
         env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
