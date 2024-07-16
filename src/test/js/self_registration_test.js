@@ -28,7 +28,9 @@ const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=$
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
-    await I.createServiceData(serviceName, serviceClientSecret);
+    const testingToken =  await I.getToken();
+
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
@@ -44,10 +46,6 @@ BeforeSuite(async ({ I }) => {
     await I.retireStaleUser(staleUserEmail)
     await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
     userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
-});
-
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @selfregister User Validation errors', async ({ I }) => {

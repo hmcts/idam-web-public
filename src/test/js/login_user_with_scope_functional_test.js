@@ -33,15 +33,14 @@ BeforeSuite(async ({ I }) => {
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
     respondentEmail = 'respondent.' + randomData.getRandomEmailAddress();
 
-    const token = await I.getAuthToken();
-    citizenUserDynamicRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix), '', '', token);
-    pinUserDynamicRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix), '', '', token);
+    const testingToken = await I.getToken();
+    citizenUserDynamicRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix), '', [], testingToken);
+    pinUserDynamicRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix), '', [], testingToken);
 
     let serviceRoleNames = [citizenUserDynamicRole.name, pinUserDynamicRole.name];
     let serviceRoleIds = [citizenUserDynamicRole.id, pinUserDynamicRole.id];
     roleNames.push(serviceRoleNames);
-
-    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, '', token, customScope);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,[],testingToken, ["openid", "profile", "roles", "manage-roles"],[])
     serviceNames.push(serviceName);
 
     I.wait(0.5);
@@ -52,10 +51,6 @@ BeforeSuite(async ({ I }) => {
 
     await I.createUserUsingTestingSupportService(accessToken, respondentEmail, userPassword, randomUserFirstName + 'Respondent', []);
     userFirstNames.push(randomUserFirstName + 'Respondent');
-});
-
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
 });
 
 Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async ({ I }) => {
@@ -83,6 +78,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on PIN user login', async ({ I }) => {
+
     let pinUser = await I.getPinUser(citizenFirstName, citizenLastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
     let code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
@@ -106,6 +102,6 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
     expect(userInfo.roles).to.deep.equalInAnyOrder([pinUserRole, citizenRole, pinUserDynamicRole.name]);
-
     I.resetRequestInterception();
+    I.cleanupLetterHolderRoles(accessToken,userInfo.roles)
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

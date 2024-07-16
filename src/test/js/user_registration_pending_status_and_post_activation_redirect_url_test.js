@@ -29,16 +29,16 @@ BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     userEmail = 'user.' + randomData.getRandomEmailAddress();
-
-    const apiAuthToken = await I.getAuthToken();
-    assignableRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', '', apiAuthToken);
-    let userRegRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix) + "_usrReg", 'user reg role', assignableRole.id, apiAuthToken);
+    let testingToken = await I.getToken();
+    assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix)+ "_assignable", 'assignable role', [], testingToken);
+    userRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix)+ "_usrReg", 'user reg role', [assignableRole.name], testingToken);
 
     let serviceRoleNames = [assignableRole.name, userRegRole.name];
-    let serviceRoleIds = [assignableRole.id, userRegRole.id];
     roleNames.push(serviceRoleNames);
 
-    await I.createServiceWithRoles(serviceName, serviceClientSecret, serviceRoleIds, '', apiAuthToken, 'create-user manage-user');
+
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,[serviceRoleNames], testingToken, ["openid", "profile", "roles", "manage-user", "create-user"],[],false,TestData.SERVICE_REDIRECT_URI);
+
     serviceNames.push(serviceName);
 
     I.wait(0.5);
@@ -54,11 +54,7 @@ BeforeSuite(async ({ I }) => {
     await I.registerUserWithId(accessToken, userEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name)
 });
 
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
-});
-
-Scenario('@functional user registration pending status and post activation redirect url test', async ({ I }) => {
+Scenario('@functional  user registration pending status and post activation redirect url test', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);

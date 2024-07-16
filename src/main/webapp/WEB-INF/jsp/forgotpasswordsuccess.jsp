@@ -44,8 +44,15 @@
                 <spring:message code="public.common.user.created.few.minutes"/>
             </p>
             <p>
-                <spring:message code="public.reset.password.stale.users.email.notarrived"/><a
-                href="/reset/forgotpassword"> <spring:message
+                <spring:message code="public.reset.password.stale.users.email.notarrived"/>
+                <c:url value="/reset/forgotpassword" var="passwordResetUrl">
+                    <c:param name="redirect_uri" value="${redirectUri}" />
+                    <c:param name="client_id" value="${client_id}" />
+                    <c:param name="state" value="${state}" />
+                    <c:param name="nonce" value="${nonce}" />
+                    <c:param name="scope" value="${scope}" />
+                </c:url>
+                <a href="${passwordResetUrl}"> <spring:message
                 code="public.reset.password.stale.users.email.tryagain.hyperlink"/></a><spring:message
                 code="public.reset.password.stale.users.email.tryagain.end"/>
             </p>
