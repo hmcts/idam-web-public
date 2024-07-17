@@ -21,7 +21,7 @@
                     <p>
                         <spring:message code="public.forgot.password.success.unconnected.account"/>
                         <c:url value="/users/selfRegister" var="selfRegisterUrl">
-                            <c:param name="redirect_uri" value="${redirectUri}" />
+                            <c:param name="redirectUri" value="${redirectUri}" />
                             <c:param name="client_id" value="${client_id}" />
                             <c:param name="state" value="${state}" />
                             <c:param name="nonce" value="${nonce}" />
