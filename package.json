@@ -20,7 +20,7 @@
     "notifications-node-client": "^8.0.0",
     "pa11y": "^8.0.0",
     "proxy-agent": "^6.0.0",
-    "puppeteer": "^22.14.0",
+    "puppeteer": "^22.13.1",
     "webdriverio": "^8.0.0",
     "html_codesniffer": "^2.5.1"
   },

@@ -704,13 +704,13 @@ class IdamHelper extends Helper {
     }
 
     async runAccessibilityTest() {
-        // if (!testConfig.TestForAccessibility) {
-        //     return;
-        // }
-        // const url = await this.helpers['Puppeteer'].grabCurrentUrl();
-        // const {page} = await this.helpers['Puppeteer'];
-        //
-        // await runAccessibility(url, page);
+        if (!testConfig.TestForAccessibility) {
+            return;
+        }
+        const url = await this.helpers['Puppeteer'].grabCurrentUrl();
+        const {page} = await this.helpers['Puppeteer'];
+
+        await runAccessibility(url, page);
     }
 
     async getDynatraceMonitorResponseStatus() {
