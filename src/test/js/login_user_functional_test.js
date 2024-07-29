@@ -137,6 +137,7 @@ Scenario('@functional @login As a user, I should see the error message displayed
     I.fillField('#username', '');
     I.fillField('#password', userPassword);
     I.click('Sign in');
+    I.wait('1');
     I.waitForText('There is a problem');
     I.waitForText('Email address cannot be blank');
     I.waitForText('Email address is not valid');
@@ -144,16 +145,19 @@ Scenario('@functional @login As a user, I should see the error message displayed
     I.fillField('#username', 'invalidemail@');
     I.fillField('#password', userPassword);
     I.click('Sign in');
+    I.wait('1');
     I.waitForText('There is a problem');
     I.waitForText('Email address is not valid');
     I.fillField('#username', 'invalidemail.com');
     I.fillField('#password', userPassword);
     I.click('Sign in');
+    I.wait('1');
     I.waitForText('There is a problem');
     I.waitForText('Email address is not valid');
     I.fillField('#username', 'invalid@email@hhh.com');
     I.fillField('#password', userPassword);
     I.click('Sign in');
+    I.wait('1');
     I.waitForText('There is a problem');
     I.waitForText('Email address is not valid');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

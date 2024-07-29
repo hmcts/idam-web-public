@@ -13,6 +13,7 @@ module.exports = function() {
         this.fillField('username', email);
         this.fillField('password', randomData.getRandomUserPassword());
         this.click('Sign in');
+        this.wait(2);
         this.waitForText('Incorrect email or password');
         // Second attempt
         this.clearField('username');
@@ -20,6 +21,7 @@ module.exports = function() {
         this.clearField('password');
         this.fillField('password', randomData.getRandomUserPassword());
         this.click('Sign in');
+        this.wait(2);
         this.waitForText('Incorrect email or password');
         // Third attempt
         this.clearField('username');
@@ -27,6 +29,7 @@ module.exports = function() {
         this.clearField('password');
         this.fillField('password', randomData.getRandomUserPassword());
         this.click('Sign in');
+        this.wait(2);
         this.waitForText('Incorrect email or password');
         // Fourth attempt
         this.clearField('username');
@@ -34,6 +37,7 @@ module.exports = function() {
         this.clearField('password');
         this.fillField('password', randomData.getRandomUserPassword());
         this.click('Sign in');
+        this.wait(2);
         this.waitForText('Incorrect email or password');
         // Fifth attempt
         this.clearField('username');
@@ -41,6 +45,7 @@ module.exports = function() {
         this.clearField('password');
         this.fillField('password', randomData.getRandomUserPassword());
         this.click('Sign in');
+        this.wait(2);
         this.waitForText('There is a problem with your account login details');
         this.see('Your account is locked due to too many unsuccessful attempts.');
         this.see('You can reset your password');

@@ -91,6 +91,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 
     I.interceptRequestsAfterSignin();
     I.click('.form input[type=submit]');
+    I.wait('1');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
 
