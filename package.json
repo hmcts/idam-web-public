@@ -29,6 +29,6 @@
     "test:crossbrowser": "runSauceLabsTests.sh"
   },
   "resolutions": {
-    "electron": "^31.0.0"
+    "electron": "^31.3.0"
   }
 }
