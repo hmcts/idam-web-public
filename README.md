@@ -142,6 +142,5 @@ For the versions available, see the tags on this repository.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
 
-
 # Functional test reports 
 functional-output folder required to generate the reports, so the folder with the test file created as empty folder is not allowed to push to git. 
