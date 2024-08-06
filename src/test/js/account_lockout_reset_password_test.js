@@ -33,10 +33,12 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.lockAccount(citizenEmail, serviceName);
     await I.runAccessibilityTest();
     I.click('reset your password');
+    I.wait(1);
     I.waitForText('Reset your password');
     I.fillField('#email', citizenEmail);
     await I.runAccessibilityTest();
     I.click('Submit');
+    I.wait(1);
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(testingToken, citizenEmail);
     const activationParams = resetPasswordUrl.match(/passwordReset\?(.*)/)[1];
@@ -48,11 +50,13 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.fillField('#password2', password);
     await I.runAccessibilityTest();
     I.click('Continue');
+    I.wait(1);
     I.waitForText('Your password has been changed');
     await I.runAccessibilityTest();
     I.see('You can now sign in with your new password.');
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
     I.click('Sign in to your account');
+    I.wait(1);
     I.waitInUrl('/login');
     I.waitForText('Sign in or create an account');
     I.fillField('#username', citizenEmail);
@@ -60,6 +64,7 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.scrollPageToBottom();
     I.interceptRequestsAfterSignin();
     I.click('Sign in');
+    I.wait(1);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
