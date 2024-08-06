@@ -732,6 +732,7 @@ class IdamHelper extends Helper {
                 return TestData.FUNCTIONAL_TEST_TOKEN;
             }
             console.log("FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET "+TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET)
+            console.log("Calling " + TestData.IDAM_API + "/o/token");
 
             const response = await fetch(`${TestData.IDAM_API}/o/token`, {
                 method: 'POST',
@@ -747,7 +748,7 @@ class IdamHelper extends Helper {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch token');
+                throw new Error('Failed to fetch token, response is ' + response.status + ', ' + response);
             }
 
             const tokenData = await response.json();
