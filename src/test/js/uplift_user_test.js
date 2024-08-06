@@ -139,6 +139,7 @@ Scenario('@functional @uplift  I am able to use a pin to create an account as an
     I.fillField('#username', citizenEmail);
     await I.runAccessibilityTest();
     I.click('.form input[type=submit]');
+    I.wait('1');
     I.waitForText('Check your email');
     let url = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, citizenEmail);
     if (url) {
@@ -149,6 +150,7 @@ Scenario('@functional @uplift  I am able to use a pin to create an account as an
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
     I.click('Continue');
+    I.wait('1');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
     await I.runAccessibilityTest();
