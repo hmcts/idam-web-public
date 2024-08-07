@@ -21,7 +21,7 @@
     "notifications-node-client": "^8.0.0",
     "pa11y": "^8.0.0",
     "proxy-agent": "^6.0.0",
-    "puppeteer": "^22.13.1",
+    "puppeteer": "^23.0.1",
     "webdriverio": "^8.0.0"
   },
   "scripts": {
