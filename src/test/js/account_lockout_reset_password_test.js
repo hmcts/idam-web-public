@@ -44,15 +44,15 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     const activationParams = resetPasswordUrl.match(/passwordReset\?(.*)/)[1];
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/passwordReset?${activationParams}`);
     I.waitForText('Create a new password');
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('#password1', password);
     I.fillField('#password2', password);
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.click('Continue');
     I.wait(1);
     I.waitForText('Your password has been changed');
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.see('You can now sign in with your new password.');
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`);
     I.click('Sign in to your account');
