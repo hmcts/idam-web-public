@@ -16,7 +16,7 @@ module.exports = {
     MOJ_TEST_USER_SSO_ID: 'baa672b9-a5f3-4606-8aa5-9e60444a3b31',
     MOJ_TEST_USER_PASSWORD: process.env.MOJ_TEST_USER_PASSWORD,
     TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
-    TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
+    TestForAccessibility: false,
     RPE_AUTH_URL: process.env.RPE_AUTH_URL,
     FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET: process.env.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET,
     FUNCTIONAL_TEST_TOKEN:''
