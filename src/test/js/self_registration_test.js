@@ -402,7 +402,7 @@ Scenario('@functional @selfregister I can create a password only once using the 
     await page2.goto(userActivationUrl);
     await page2.type('#password1', userPassword);
     await page2.type('#password2', userPassword);
-    await page2.clickWithWait('#activate');
+    await page2.click('#activate');
     await page2.waitForSelector('h1.heading-large');
     const accountCreatedMessage = "Account created";
     const page2Message = await page2.$eval('h1.heading-large', el => el.textContent.trim());
@@ -412,7 +412,7 @@ Scenario('@functional @selfregister I can create a password only once using the 
     // Try to activate the account again using the link already opened in 1st tab
     await page1.type('#password1', userPassword);
     await page1.type('#password2', userPassword);
-    await page1.clickWithWait('#activate');
+    await page1.click('#activate');
     await page1.waitForSelector('h1.heading-large');
     const accountAlreadyActivatedMessage = 'Your account is already activated.';
     const page1Message = await page1.$eval('h1.heading-large', el => el.textContent.trim());
