@@ -49,6 +49,10 @@ module.exports = function() {
         this.waitForText('There is a problem with your account login details');
         this.see('Your account is locked due to too many unsuccessful attempts.');
         this.see('You can reset your password');
+    },
+    clickWithWait : function(clickText) {
+        this.click(clickText);
+        this.wait(3);
     }
   })
 }
