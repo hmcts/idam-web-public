@@ -11,7 +11,7 @@ Scenario('@smoke Login Page', ({ I }) => {
 Scenario('@smoke after forgot password you do not see create an account options for invalid clients', ({ I }) => {
   I.amOnPage(TestData.WEB_PUBLIC_URL + '/login?client_id=abc&redirect_uri=xyz');
   I.waitForText('Sign in');
-  I.click('Forgotten password?');
+  I.clickWithWait('Forgotten password?');
   I.waitInUrl('/reset/forgotpassword');
   I.waitForElement('#email');
   I.fillField('#email', 'resetpasswordtest@mailtest.gov.uk');
