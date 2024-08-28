@@ -21,7 +21,7 @@ gitProperties {
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
+    languageVersion = JavaLanguageVersion.of(21)
   }
 }
 
@@ -36,8 +36,8 @@ allprojects {
   group = 'uk.gov.hmcts.reform.idam'
   description = 'idam-web-public'
 
-  sourceCompatibility = 17
-  targetCompatibility = 17
+  sourceCompatibility = 21
+  targetCompatibility = 21
 
   configurations.all {
     exclude group: "org.glassfish", module: "jakarta.el"
