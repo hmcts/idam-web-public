@@ -34,6 +34,7 @@ let professionalRoleName;
 let accessTokenClientSecret;
 
 BeforeSuite(async ({ I }) => {
+console.debug('userPassword',userPassword);
 
     token = await I.getToken();
     const mfaTurnedOnServiceName = randomData.getRandomServiceName(testSuiteId)+'ON';
@@ -72,44 +73,43 @@ BeforeSuite(async ({ I }) => {
         // create ref data admin user
         const prdAdminUserEmail = randomData.getRandomEmailAddress();
         await I.createUserUsingTestingSupportService(accessTokenClientSecret, prdAdminUserEmail, userPassword, randomData.getRandomUserName(testSuiteId), ['prd-admin']);
-        prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.label, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret, scope);
-
+        prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.clientId, mfaTurnedOnService.oauth2.redirectUris[0], serviceClientSecret, scope);
         serviceToken = await I.getServiceAuthToken();
 
         // create organisation with MFA disabled
         let orgMFADisabled = await I.getTestOrganisation(orgMFADisabledCompanyNumber);
         let orgMFADisabledDetails = await I.createOrganisation(orgMFADisabled, serviceToken, prdAuthToken);
         const orgMFADisabledId = orgMFADisabledDetails.organisationIdentifier;
+
         await I.updateOrganisation(orgMFADisabledId, orgMFADisabled, serviceToken, prdAuthToken);
         await I.updateOrganisationMFA(orgMFADisabledId, "NONE", serviceToken, prdAuthToken);
 
         // Add professional user to organisation with MFA disabled
         let userAddDetails = await I.addUserToOrganisation(orgMFADisabledId, professionalUserMFASkipEmail, "caseworker", serviceToken, prdAuthToken);
-        console.log("Added user to mfa disabled org: " + JSON.stringify(userAddDetails));
 
         // create organisation with MFA active
         let orgMFAActive = await I.getTestOrganisation(orgMFAActiveCompanyNumber);
         let orgMFAActiveDetails = await I.createOrganisation(orgMFAActive, serviceToken, prdAuthToken);
         const orgMFAActiveId = orgMFAActiveDetails.organisationIdentifier;
+
+
         await I.updateOrganisation(orgMFAActiveId, orgMFAActive, serviceToken, prdAuthToken);
         await I.updateOrganisationMFA(orgMFAActiveId, "EMAIL", serviceToken, prdAuthToken);
 
         // Add professional user to organisation with MFA enabled
         userAddDetails = await I.addUserToOrganisation(orgMFAActiveId, professionalUserMFARequiredEmail, "caseworker", serviceToken, prdAuthToken);
-        console.log("Added user to mfa active org: " + JSON.stringify(userAddDetails));
 
         // Add idam-mfa-disabled role professional user to organisation with MFA enabled
         userAddDetails = await I.addUserToOrganisation(orgMFAActiveId, professionalUserMFADisabledEmail, "caseworker", serviceToken, prdAuthToken);
-        console.log("Added mfa disabled user to mfa active org: " + JSON.stringify(userAddDetails));
     } else {
-        console.log("ref data integration is disabled");
+        console.debug("ref data integration is disabled");
     }
 
 });
 
 
 
-Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of an organisation that has MFA disabled', async ({ I }) => {
+Scenario('@functional @mfaOrgLogin @arun I am able to login without MFA as a member of an organisation that has MFA disabled', async ({ I }) => {
 
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService.clientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
