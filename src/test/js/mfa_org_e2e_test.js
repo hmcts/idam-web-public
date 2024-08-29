@@ -97,9 +97,11 @@ BeforeSuite(async ({ I }) => {
 
         // Add professional user to organisation with MFA enabled
         userAddDetails = await I.addUserToOrganisation(orgMFAActiveId, professionalUserMFARequiredEmail, "caseworker", serviceToken, prdAuthToken);
+        console.log("Added user to mfa active org: " + JSON.stringify(userAddDetails));
 
         // Add idam-mfa-disabled role professional user to organisation with MFA enabled
         userAddDetails = await I.addUserToOrganisation(orgMFAActiveId, professionalUserMFADisabledEmail, "caseworker", serviceToken, prdAuthToken);
+        console.log("Added mfa disabled user to mfa active org: " + JSON.stringify(userAddDetails));
     } else {
         console.log("ref data integration is disabled");
     }
