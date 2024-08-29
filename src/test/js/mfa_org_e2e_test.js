@@ -90,8 +90,6 @@ BeforeSuite(async ({ I }) => {
         let orgMFAActive = await I.getTestOrganisation(orgMFAActiveCompanyNumber);
         let orgMFAActiveDetails = await I.createOrganisation(orgMFAActive, serviceToken, prdAuthToken);
         const orgMFAActiveId = orgMFAActiveDetails.organisationIdentifier;
-
-
         await I.updateOrganisation(orgMFAActiveId, orgMFAActive, serviceToken, prdAuthToken);
         await I.updateOrganisationMFA(orgMFAActiveId, "EMAIL", serviceToken, prdAuthToken);
 
