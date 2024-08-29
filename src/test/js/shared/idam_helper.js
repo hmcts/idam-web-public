@@ -462,7 +462,6 @@ class IdamHelper extends Helper {
         searchParams.set('client_secret', clientSecret);
         searchParams.set('redirect_uri', serviceRedirect);
         searchParams.set('scope', scope);
-        console.debug('searchParams...',searchParams);
 
         return fetch(`${TestData.IDAM_API}/o/token`, {
             agent: agent,
