@@ -79,13 +79,12 @@ BeforeSuite(async ({ I }) => {
         let orgMFADisabled = await I.getTestOrganisation(orgMFADisabledCompanyNumber);
         let orgMFADisabledDetails = await I.createOrganisation(orgMFADisabled, serviceToken, prdAuthToken);
         const orgMFADisabledId = orgMFADisabledDetails.organisationIdentifier;
-
         await I.updateOrganisation(orgMFADisabledId, orgMFADisabled, serviceToken, prdAuthToken);
         await I.updateOrganisationMFA(orgMFADisabledId, "NONE", serviceToken, prdAuthToken);
 
         // Add professional user to organisation with MFA disabled
         let userAddDetails = await I.addUserToOrganisation(orgMFADisabledId, professionalUserMFASkipEmail, "caseworker", serviceToken, prdAuthToken);
-        console.debug("Added user to mfa disabled org: " + JSON.stringify(userAddDetails));
+        console.log("Added user to mfa disabled org: " + JSON.stringify(userAddDetails));
 
         // create organisation with MFA active
         let orgMFAActive = await I.getTestOrganisation(orgMFAActiveCompanyNumber);
@@ -102,7 +101,7 @@ BeforeSuite(async ({ I }) => {
         // Add idam-mfa-disabled role professional user to organisation with MFA enabled
         userAddDetails = await I.addUserToOrganisation(orgMFAActiveId, professionalUserMFADisabledEmail, "caseworker", serviceToken, prdAuthToken);
     } else {
-        console.debug("ref data integration is disabled");
+        console.log("ref data integration is disabled");
     }
 
 });
