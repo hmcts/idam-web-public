@@ -34,7 +34,6 @@ let professionalRoleName;
 let accessTokenClientSecret;
 
 BeforeSuite(async ({ I }) => {
-console.debug('userPassword',userPassword);
 
     token = await I.getToken();
     const mfaTurnedOnServiceName = randomData.getRandomServiceName(testSuiteId)+'ON';
@@ -109,7 +108,7 @@ console.debug('userPassword',userPassword);
 
 
 
-Scenario('@functional @mfaOrgLogin @arun I am able to login without MFA as a member of an organisation that has MFA disabled', async ({ I }) => {
+Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of an organisation that has MFA disabled', async ({ I }) => {
 
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService.clientId}&state=${state}&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
