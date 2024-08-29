@@ -85,6 +85,7 @@ BeforeSuite(async ({ I }) => {
 
         // Add professional user to organisation with MFA disabled
         let userAddDetails = await I.addUserToOrganisation(orgMFADisabledId, professionalUserMFASkipEmail, "caseworker", serviceToken, prdAuthToken);
+        console.debug("Added user to mfa disabled org: " + JSON.stringify(userAddDetails));
 
         // create organisation with MFA active
         let orgMFAActive = await I.getTestOrganisation(orgMFAActiveCompanyNumber);
