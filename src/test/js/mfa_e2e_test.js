@@ -66,14 +66,14 @@ Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => 
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
-    I.click('Continue');
+    I.clickWithWait('Continue');
     let currentUrl = await I.grabCurrentUrl();
     I.addMochawesomeContext('Url is ' + currentUrl);
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
@@ -110,14 +110,14 @@ Scenario('@functional @mfaLogin  I am able to login with MFA and prompt = login'
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -152,7 +152,7 @@ Scenario('@functional @mfaLogin @welshLanguage  I am able to login with MFA in W
     I.waitForText(Welsh.signInOrCreateAccount);
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
-    I.click(Welsh.signIn);
+    I.clickWithWait(Welsh.signIn);
     I.seeInCurrentUrl("/verification");
     I.waitForText(Welsh.verificationRequired);
     const otpEmailBody = await I.getEmailFromNotifyUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail);
@@ -161,7 +161,7 @@ Scenario('@functional @mfaLogin @welshLanguage  I am able to login with MFA in W
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
-    I.click(Welsh.submitBtn);
+    I.clickWithWait(Welsh.submitBtn);
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -196,7 +196,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitInUrl("/verification");
     I.waitForText('Verification required');
     await I.runAccessibilityTest();
@@ -205,40 +205,40 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     // empty field
     I.fillField('code', '');
     await I.runAccessibilityTest();
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Enter a correct verification code');
     // other than digits
     await I.runAccessibilityTest();
     I.fillField('code', '663h8w7g');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.see('Enter a correct verification code');
     // not 8 digit otp
     I.fillField('code', `1${otpCode}`);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.see('Enter a correct verification code');
     // invalid otp
     I.fillField('code', '12345678');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.see('Enter a correct verification code');
     // invalid otp
     I.fillField('code', '74646474');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.see('Enter a correct verification code');
 
     // invalid otp
     I.fillField('code', '94837292');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     // after 3 incorrect attempts, user should start the login/journey again.
     I.seeInCurrentUrl("/expiredcode");
     await I.runAccessibilityTest();
     I.see('We’ve been unable to sign you in because your verification code has expired.');
     I.see('You’ll need to start again.');
-    I.click('Continue');
+    I.clickWithWait('Continue');
 
     I.seeInCurrentUrl("/login");
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitInUrl('/verification');
     I.waitForText('Verification required');
 
@@ -246,11 +246,11 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
 
     // previously generated otp should be invalidated
     I.fillField('code', otpCode);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Enter a correct verification code');
     I.fillField('code', otpCodeLatest);
     I.interceptRequestsAfterSignin();
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -266,7 +266,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     I.fillField('#username', mfaDisabledUserEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     let currentUrl = await I.grabCurrentUrl();
     I.addMochawesomeContext('Url is ' + currentUrl);
     I.dontSeeInCurrentUrl("/verification");
@@ -315,7 +315,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -333,13 +333,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -385,13 +385,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to a mfa
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -461,13 +461,13 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -537,7 +537,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to the M
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -609,14 +609,14 @@ Scenario('@functional @mfaLogin  As a user, I can login to the MFA turned on ser
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -666,7 +666,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -712,13 +712,13 @@ Scenario('@functional @mfaLogin  @mfaSkipStepUpLogin As a user, I can login to t
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
     const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -744,13 +744,13 @@ Scenario('@functional @mfaLogin  @mfaSkipStepUpLogin As a user, I can login to t
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
     const otpCode2 = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
 
     I.fillField('code', otpCode2);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');

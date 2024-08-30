@@ -6,7 +6,7 @@ module.exports = {
     SMOKE_TEST_USER_PASSWORD: process.env.SMOKE_TEST_USER_PASSWORD,
     NOTIFY_API_KEY: process.env.NOTIFY_API_KEY,
     SCENARIO_RETRY_LIMIT: 3,
-    WAIT_FOR_ACTION_TIMEOUT: process.env.WAIT_FOR_ACTION_TIMEOUT || 500,
+    WAIT_FOR_ACTION_TIMEOUT: process.env.WAIT_FOR_ACTION_TIMEOUT || 2700,
     SERVICE_REDIRECT_URI: 'https://idam.testservice.gov.uk',
     EJUDICIARY_SSO_PROVIDER_KEY: 'ejudiciary-aad',
     EJUDICIARY_TEST_USER_USERNAME: 'SIDM_EJUD_TEST_A@ejudiciary.net',
@@ -19,6 +19,6 @@ module.exports = {
     TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
     RPE_AUTH_URL: process.env.RPE_AUTH_URL,
     FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET: process.env.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET,
-    FUNCTIONAL_TEST_TOKEN:''
-
+    FUNCTIONAL_TEST_TOKEN:'',
+    REF_DATA_URL: process.env.REF_DATA_URL
 };
