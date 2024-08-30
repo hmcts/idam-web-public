@@ -72,8 +72,7 @@ BeforeSuite(async ({ I }) => {
         // create ref data admin user
         const prdAdminUserEmail = randomData.getRandomEmailAddress();
         await I.createUserUsingTestingSupportService(accessTokenClientSecret, prdAdminUserEmail, userPassword, randomData.getRandomUserName(testSuiteId), ['prd-admin']);
-        prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.label, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret, scope);
-
+        prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.clientId, mfaTurnedOnService.oauth2.redirectUris[0], serviceClientSecret, scope);
         serviceToken = await I.getServiceAuthToken();
 
         // create organisation with MFA disabled

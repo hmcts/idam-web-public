@@ -19,6 +19,6 @@ module.exports = {
     TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
     RPE_AUTH_URL: process.env.RPE_AUTH_URL,
     FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET: process.env.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET,
-    FUNCTIONAL_TEST_TOKEN:''
-
+    FUNCTIONAL_TEST_TOKEN:'',
+    REF_DATA_URL: process.env.REF_DATA_URL
 };
