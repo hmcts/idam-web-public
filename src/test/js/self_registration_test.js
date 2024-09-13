@@ -54,7 +54,7 @@ Scenario('@functional @selfregister User Validation errors', async ({ I }) => {
     I.waitInUrl('users/selfRegister');
     I.waitForText('Create an account or sign in');
     I.see('Create an account');
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     await I.runAccessibilityTest();
     I.waitForText('There is a problem');
     I.see('You have not entered your first name');
@@ -62,28 +62,28 @@ Scenario('@functional @selfregister User Validation errors', async ({ I }) => {
     I.see('You have not entered your email address');
     await I.runAccessibilityTest();
     I.fillField('firstName', 'Lucy');
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.dontSee('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('lastName', 'Lu');
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.dontSee('You have not entered your first name');
     I.dontSee('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('email', '111');
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.see('Your email address is invalid');
     await I.runAccessibilityTest();
     I.fillField('firstName', 'L');
     I.fillField('lastName', '@@');
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.see('Your first name is invalid');
     I.see('First name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Your last name is invalid');
     I.see('Last name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Sign in to your account.');
-    I.click('Sign in to your account.');
+    I.clickWithWait('Sign in to your account.');
     I.waitForText('Sign in');
     I.see('Sign in');
     await I.runAccessibilityTest();
@@ -100,7 +100,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmail);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     await I.runAccessibilityTest();
     const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, citizenEmail);
@@ -122,7 +122,7 @@ Scenario('@functional @selfregister @welshLanguage Account already created (forc
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', citizenEmailWelsh);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText(Welsh.checkYourEmail);
     await I.runAccessibilityTest();
     const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, citizenEmailWelsh);
@@ -142,7 +142,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', email);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
@@ -150,7 +150,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
     await I.runAccessibilityTest();
@@ -162,7 +162,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.fillField('#password', userPassword);
     await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -182,7 +182,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', email);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText(Welsh.checkYourEmail);
     const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
@@ -190,7 +190,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.seeTitleEquals(Welsh.userActivationTitle);
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText(Welsh.accountCreated);
     I.see(Welsh.youCanNowSignIn);
     I.amOnPage(loginPage);
@@ -199,7 +199,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.fillField('#username', email);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -218,7 +218,7 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', email);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
@@ -226,7 +226,7 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
     I.wait(3);
@@ -255,7 +255,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.seeInField('lastName', randomUserLastName);
     I.seeInField('email', randomUserEmailAddress);
 
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, randomUserEmailAddress);
     I.amOnPage(userActivationUrl);
@@ -263,7 +263,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
@@ -272,7 +272,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.fillField('#username', randomUserEmailAddress);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -291,7 +291,7 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', email);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
@@ -299,7 +299,7 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
     I.amOnPage(loginPage);
@@ -308,7 +308,7 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.fillField('#username', email);
     I.fillField('#password', specialCharacterPassword);
     I.interceptRequestsAfterSignin();
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -326,7 +326,7 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', email);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
     I.amOnPage(userActivationUrl);
@@ -334,27 +334,27 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('password1', 'Passw0rd');
     I.fillField('password2', 'Passw0rd');
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('There is a problem');
     I.see("Your password is too easy to guess");
     I.fillField('password1', `${randomUserFirstName}Other6mKjmC`);
     I.fillField('password2', `${randomUserFirstName}Other6mKjmC`);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('There is a problem');
     I.see("Do not include your name or email in your password");
     I.fillField('password1', `${email}3ksTys`);
     I.fillField('password2', `${email}3ksTys`);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('There is a problem');
     I.see("Do not include your name or email in your password");
     I.fillField('password1', 'passwordidamtest');
     I.fillField('password2', 'passwordidamtest');
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('There is a problem');
     I.see('Your password didn\'t have all the required characters');
     I.fillField('password1', 'Lincoln1');
     I.fillField('password2', 'Lincoln1');
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('There is a problem');
     I.see("Your password is too easy to guess");
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -369,7 +369,7 @@ Scenario('@functional @selfregister @staleuserregister stale user should get you
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', staleUserEmail);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
 
     I.waitForText('Check your email');
 
@@ -389,7 +389,7 @@ Scenario('@functional @selfregister I can create a password only once using the 
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', email);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(accessToken, email);
 
@@ -427,7 +427,7 @@ Scenario('@functional @selfregister @idamserviceaccount Account already created 
     I.fillField('firstName', randomUserFirstName);
     I.fillField('lastName', randomUserLastName);
     I.fillField('email', idamServiceAccountUserEmail);
-    I.click(formSubmitButton);
+    I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessToken, idamServiceAccountUserEmail);
     assert.equal('You already have an account', emailResponse.subject);

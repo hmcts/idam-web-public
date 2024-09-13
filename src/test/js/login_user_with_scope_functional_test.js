@@ -60,7 +60,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     I.fillField('#password', userPassword);
 
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
 
@@ -90,8 +90,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     I.fillField('#password', userPassword);
 
     I.interceptRequestsAfterSignin();
-    I.click('.form input[type=submit]');
-    I.wait('1');
+    I.clickWithWait('.form input[type=submit]');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
 
