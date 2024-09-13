@@ -7,6 +7,7 @@ exports.config = {
     fullPageScreenshots: true,
     timeout: 90, // seconds
     bootstrap: false,
+    retry: 3,
     helpers: {
         Puppeteer: {
             // show: true,
