@@ -78,7 +78,7 @@ Scenario('@f1 multiple users can be registered with same uuid but the previous u
     I.waitForText('Create a password');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Account created');
     userFirstNames.push(currentUserFirstName);
 
