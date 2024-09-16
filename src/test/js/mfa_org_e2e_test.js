@@ -72,8 +72,7 @@ BeforeSuite(async ({ I }) => {
         // create ref data admin user
         const prdAdminUserEmail = randomData.getRandomEmailAddress();
         await I.createUserUsingTestingSupportService(accessTokenClientSecret, prdAdminUserEmail, userPassword, randomData.getRandomUserName(testSuiteId), ['prd-admin']);
-        prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.label, mfaTurnedOnService.activationRedirectUrl, serviceClientSecret, scope);
-
+        prdAuthToken = await I.getAccessTokenPasswordGrant(prdAdminUserEmail, userPassword, mfaTurnedOnService.clientId, mfaTurnedOnService.oauth2.redirectUris[0], serviceClientSecret, scope);
         serviceToken = await I.getServiceAuthToken();
 
         // create organisation with MFA disabled
@@ -118,7 +117,7 @@ Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of
     I.fillField('#username', professionalUserMFASkipEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -158,7 +157,7 @@ Scenario('@functional @mfaOrgLogin  I am able to login with MFA as a member of a
     I.waitForText('Sign in');
     I.fillField('#username', professionalUserMFARequiredEmail);
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.seeInCurrentUrl("/verification");
     I.waitForText('Verification required');
 
@@ -166,7 +165,7 @@ Scenario('@functional @mfaOrgLogin  I am able to login with MFA as a member of a
 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl.toLowerCase());
     I.see('code=');
     I.dontSee('error=');
@@ -207,7 +206,7 @@ Scenario('@functional @mfaOrgLogin  am able to login without MFA as an idam-mfa-
     I.fillField('#username', professionalUserMFADisabledEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     let currentUrl = await I.grabCurrentUrl();
     I.addMochawesomeContext('Url is ' + currentUrl);
     I.dontSeeInCurrentUrl("/verification");

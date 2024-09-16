@@ -9,41 +9,30 @@ module.exports = function() {
 
         // First attempt
         this.amOnPage(loginPage);
-        this.waitForText('Sign in');
+        this.see('Sign in');
         this.fillField('username', email);
         this.fillField('password', randomData.getRandomUserPassword());
-        this.click('Sign in');
+        this.clickWithWait('Sign in');
         this.waitForText('Incorrect email or password');
         // Second attempt
-        this.clearField('username');
-        this.fillField('username', email);
-        this.clearField('password');
         this.fillField('password', randomData.getRandomUserPassword());
-        this.click('Sign in');
-        this.waitForText('Incorrect email or password');
+        this.clickWithWait('Sign in');
         // Third attempt
-        this.clearField('username');
-        this.fillField('username', email);
-        this.clearField('password');
         this.fillField('password', randomData.getRandomUserPassword());
-        this.click('Sign in');
-        this.waitForText('Incorrect email or password');
+        this.clickWithWait('Sign in');
         // Fourth attempt
-        this.clearField('username');
-        this.fillField('username', email);
-        this.clearField('password');
         this.fillField('password', randomData.getRandomUserPassword());
-        this.click('Sign in');
-        this.waitForText('Incorrect email or password');
+        this.clickWithWait('Sign in');
         // Fifth attempt
-        this.clearField('username');
-        this.fillField('username', email);
-        this.clearField('password');
         this.fillField('password', randomData.getRandomUserPassword());
-        this.click('Sign in');
+        this.clickWithWait('Sign in');
         this.waitForText('There is a problem with your account login details');
         this.see('Your account is locked due to too many unsuccessful attempts.');
         this.see('You can reset your password');
+    },
+    clickWithWait : function(clickText) {
+        this.click(clickText);
+        this.wait(3);
     }
   })
 }

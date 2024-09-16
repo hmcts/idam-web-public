@@ -48,14 +48,14 @@ Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) =>
     I.waitForText('Sign in');
     I.fillField('#username', staleUserEmail.toUpperCase());
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(token, staleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);
     I.fillField('#password2', newPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
 
@@ -64,7 +64,7 @@ Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) =>
     I.fillField('#username', staleUserEmail.toUpperCase());
     I.fillField('#password', newPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(testData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -80,14 +80,14 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.waitForText(Welsh.signIn);
     I.fillField('#username', staleUserEmailWelsh);
     I.fillField('#password', userPassword);
-    I.click(Welsh.signIn);
+    I.clickWithWait(Welsh.signIn);
     I.waitForText(Welsh.staleUserErrorMessage);
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(token, staleUserEmailWelsh);
     I.amOnPage(reRegistrationUrl);
     I.waitForText(Welsh.createAPassword);
     I.fillField('#password1', newPassword);
     I.fillField('#password2', newPassword);
-    I.click(Welsh.continueBtn);
+    I.clickWithWait(Welsh.continueBtn);
     I.waitForText(Welsh.passwordChanged);
     I.waitForText(Welsh.youCanNowSignInWithYourNewPassword);
 
@@ -96,7 +96,7 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.fillField('#username', staleUserEmailWelsh);
     I.fillField('#password', newPassword);
     I.interceptRequestsAfterSignin();
-    I.click(Welsh.signIn);
+    I.clickWithWait(Welsh.signIn);
     I.waitForText(testData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
