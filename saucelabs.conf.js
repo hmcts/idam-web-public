@@ -40,7 +40,7 @@ const setupConfig = {
     helpers: {
         WebDriver: {
             url: process.env.TEST_URL,
-            browser: 'chrome',
+            browser: 'chromium',
             waitForTimeout,
             smartWait,
             cssSelectorsEnabled: 'true',
