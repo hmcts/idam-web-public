@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.idam.web.sso;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import com.netflix.zuul.monitoring.CounterFactory;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -17,22 +17,24 @@ import uk.gov.hmcts.reform.idam.web.helper.MvcKeys;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static  org.junit.jupiter.api.Assertions.assertEquals;
+import static  org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static  org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SSOZuulFilterTest {
 
     private SSOZuulFilter underTest;
@@ -51,14 +53,14 @@ public class SSOZuulFilterTest {
 
     private SSOService ssoService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         ssoService = spy(new SSOService(null));
         underTest = spy(new SSOZuulFilter(null, ssoService));
-        when(mockContext.getRequest()).thenReturn(request);
-        when(mockContext.getResponse()).thenReturn(response);
-        when(request.getSession()).thenReturn(session);
+        lenient().when(mockContext.getRequest()).thenReturn(request);
+        lenient().when(mockContext.getResponse()).thenReturn(response);
+        lenient().when(request.getSession()).thenReturn(session);
         RequestContext.testSetCurrentContext(mockContext);
         CounterFactory.initialize(new CounterFactory() {
             @Override
@@ -99,11 +101,16 @@ public class SSOZuulFilterTest {
         verify(response, atLeastOnce()).sendRedirect(anyString());
     }
 
-    @Test(expected = ZuulException.class)
-    public void run_shouldThrowZuulExceptionIfRedirectFails() throws IOException, ZuulException {
+    @Test
+    public void run_shouldThrowZuulExceptionIfRedirectFails() throws IOException {
         given(request.getParameter("login_hint")).willReturn("ejudiciary-aad");
         doThrow(new IOException()).when(response).sendRedirect(anyString());
-        underTest.run();
+
+
+        ZuulException expectedException =
+            assertThrows(
+                ZuulException.class,
+                () ->  underTest.run());
     }
 
     @Test

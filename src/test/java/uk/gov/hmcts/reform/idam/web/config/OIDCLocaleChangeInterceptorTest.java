@@ -1,16 +1,14 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,6 +19,7 @@ import uk.gov.hmcts.reform.idam.web.AppController;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.spy;
@@ -28,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(AppController.class)
-@RunWith(SpringRunner.class)
 @TestPropertySource(properties = "testing=true")
 public class OIDCLocaleChangeInterceptorTest {
 
@@ -55,7 +53,7 @@ public class OIDCLocaleChangeInterceptorTest {
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
 
         // should produce no cookie
-        Assert.assertTrue(cookieHeaders.stream().noneMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME)));
+        Assertions.assertTrue(cookieHeaders.stream().noneMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME)));
     }
 
     /**
@@ -72,8 +70,8 @@ public class OIDCLocaleChangeInterceptorTest {
         List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
         Object languageHeader = result.getResponse().getHeaderValue(LANGUAGE_HEADER_NAME);
 
-        Assert.assertEquals("en", languageHeader);
-        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
+        Assertions.assertEquals("en", languageHeader);
+        Assertions.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
     }
 
     /**
@@ -88,8 +86,8 @@ public class OIDCLocaleChangeInterceptorTest {
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
         final Object languageHeader = result.getResponse().getHeaderValue(LANGUAGE_HEADER_NAME);
 
-        Assert.assertEquals("cy", languageHeader);
-        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "cy")));
+        Assertions.assertEquals("cy", languageHeader);
+        Assertions.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "cy")));
     }
 
     /**
@@ -104,26 +102,31 @@ public class OIDCLocaleChangeInterceptorTest {
         final List<String> cookieHeaders = result.getResponse().getHeaders(COOKIE_HEADER_NAME);
         final Object languageHeader = result.getResponse().getHeaderValue(LANGUAGE_HEADER_NAME);
 
-        Assert.assertEquals("en", languageHeader);
-        Assert.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
+        Assertions.assertEquals("en", languageHeader);
+        Assertions.assertTrue(cookieHeaders.stream().anyMatch(h -> h.contains(IdamWebMvcConfiguration.IDAM_LOCALES_COOKIE_NAME + EQUALS + "en")));
     }
 
     /**
      * @verifies throw if ignore invalid locale is true
      * @see OIDCLocaleChangeInterceptor#handleException(String, IllegalArgumentException)
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void handleException_shouldThrowIfIgnoreInvalidLocaleIsTrue() {
         final OIDCLocaleChangeInterceptor interceptor = new OIDCLocaleChangeInterceptor(AVAILABLE_LOCALES);
         interceptor.setIgnoreInvalidLocale(false);
-        interceptor.handleException(null, new IllegalArgumentException());
+
+
+        IllegalArgumentException expectedException =
+            assertThrows(
+                IllegalArgumentException.class,
+                () ->  interceptor.handleException(null, new IllegalArgumentException()));
     }
 
     /**
      * @verifies not throw if ignore invalid locale is false
      * @see OIDCLocaleChangeInterceptor#handleException(String, IllegalArgumentException)
      */
-    @Test(expected = Test.None.class /* no exception expected */)
+    @Test
     public void handleException_shouldNotThrowIfIgnoreInvalidLocaleIsFalse() {
         final OIDCLocaleChangeInterceptor interceptor = new OIDCLocaleChangeInterceptor(AVAILABLE_LOCALES);
         interceptor.setIgnoreInvalidLocale(true);

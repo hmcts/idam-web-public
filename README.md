@@ -6,7 +6,7 @@ IdAM. This includes: login and sign-up page, page for requesting password reset.
 
 ### Prerequisites
 
-- [JDK 8](https://www.oracle.com/java)
+- [JDK 21](https://www.oracle.com/java)
 
 ### Building
 

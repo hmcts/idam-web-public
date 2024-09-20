@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.zuul.context.RequestContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProperties;
@@ -15,9 +15,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static  org.junit.jupiter.api.Assertions.assertEquals;
+import static  org.junit.jupiter.api.Assertions.assertFalse;
+import static  org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,13 +28,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class StepUpAuthenticationZuulFilterTest {
 
     private StepUpAuthenticationZuulFilter filter;
     private SPIService spiService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final ConfigurationProperties config = new ConfigurationProperties();
         final StrategicConfigurationProperties strategicProperties = new StrategicConfigurationProperties();

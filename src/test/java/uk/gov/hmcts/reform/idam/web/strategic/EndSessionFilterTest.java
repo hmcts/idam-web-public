@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.idam.web.strategic;
 import com.google.common.net.HttpHeaders;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -16,19 +16,19 @@ import uk.gov.hmcts.reform.idam.web.config.properties.StrategicConfigurationProp
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static  org.junit.jupiter.api.Assertions.assertEquals;
+import static  org.junit.jupiter.api.Assertions.assertFalse;
+import static  org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.POST_TYPE;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.SEND_RESPONSE_FILTER_ORDER;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EndSessionFilterTest {
 
     private EndSessionFilter underTest;
@@ -47,7 +47,7 @@ public class EndSessionFilterTest {
 
     private StrategicConfigurationProperties.Session sessionConfiguration;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final ConfigurationProperties config = new ConfigurationProperties();
         final StrategicConfigurationProperties strategicProperties = new StrategicConfigurationProperties();
@@ -59,9 +59,9 @@ public class EndSessionFilterTest {
 
         this.underTest = spy(new EndSessionFilter(config));
 
-        when(mockContext.getRequest()).thenReturn(httpRequest);
-        when(mockContext.getResponse()).thenReturn(httpResponse);
-        when(httpRequest.getSession(false)).thenReturn(httpSession);
+        lenient().when(mockContext.getRequest()).thenReturn(httpRequest);
+        lenient().when(mockContext.getResponse()).thenReturn(httpResponse);
+        lenient().when(httpRequest.getSession(false)).thenReturn(httpSession);
         RequestContext.testSetCurrentContext(mockContext);
     }
 
