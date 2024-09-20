@@ -24,6 +24,17 @@ const supportedBrowsers = {
       }
     }
   },
+  chrome: {
+    chrome_win_latest: {
+      browserName: 'chrome',
+      platformName: LATEST_WINDOWS,
+      browserVersion: 'latest',
+      'sauce:options': {
+        name: 'IDAM: Win_Chrome_latest'
+      }
+    }
+  },
+
   firefox: {
     firefox_win_latest: {
       browserName: 'firefox',
