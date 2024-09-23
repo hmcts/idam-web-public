@@ -2117,9 +2117,9 @@ camelcase@^6.0.0, camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001646:
-  version "1.0.30001660"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001660.tgz#31218de3463fabb44d0b7607b652e56edf2e2355"
-  integrity sha512-GacvNTTuATm26qC74pt+ad1fW15mlQ/zuTzzY1ZoIzECTP8HURDfF43kNxPgf7H1jmelCBQTTbBNxdSXOA7Bqg==
+  version "1.0.30001663"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001663.tgz#1529a723505e429fdfd49532e9fc42273ba7fed7"
+  integrity sha512-o9C3X27GLKbLeTYZ6HBOLU1tsAcBZsLis28wrVzddShCS16RujjHp9GDHKZqrB3meE0YjhawvMFsGb/igqiPzA==
 
 centra@^2.7.0:
   version "2.7.0"
@@ -2456,9 +2456,9 @@ clone@^1.0.2:
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
 
 codeceptjs@^3.6.4:
-  version "3.6.6"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-3.6.6.tgz#64785e4e15abf10e9ab01d7d5b061f884d4d1379"
-  integrity sha512-DSs7KWFFGWdPBITUBsHG4Js1Eix9apsmGoGdiyPuaU2BafePjkEJUYACR6Z8nGd33WjnGXkMEc9+WlcgZtKRsA==
+  version "3.6.7"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-3.6.7.tgz#805350f83c90b08235b06f8359de890aace3e0ff"
+  integrity sha512-gUA1kabCQYBDqypT632aHcO7PfFV7RVhZmv/vk7WwJC4DWCfV0EXiRDVOCPkLk6Es5c5RlR/2dKeHRE0+ze5wg==
   dependencies:
     "@codeceptjs/configure" "1.0.1"
     "@codeceptjs/helper" "2.0.4"
@@ -2482,7 +2482,7 @@ codeceptjs@^3.6.4:
     css-to-xpath "0.1.0"
     csstoxpath "1.6.0"
     devtools "8.40.2"
-    envinfo "7.11.1"
+    envinfo "7.14.0"
     escape-string-regexp "4.0.0"
     figures "3.2.0"
     fn-args "4.0.0"
@@ -3161,14 +3161,14 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 eight-colors@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/eight-colors/-/eight-colors-1.3.0.tgz#e66ac937ecd1fd7ca89be3e81f917a6ff9cb255f"
-  integrity sha512-hVoK898cR71ADj7L1LZWaECLaSkzzPtqGXIaKv4K6Pzb72QgjLVsQaNI+ELDQQshzFvgp5xTPkaYkPGqw3YR+g==
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/eight-colors/-/eight-colors-1.3.1.tgz#4041e0f99af83eadd917acce36e784dc1c7e3fb1"
+  integrity sha512-7nXPYDeKh6DgJDR/mpt2G7N/hCNSGwwoPVmoI3+4TEwOb07VFN1WMPG0DFf6nMEjrkgdj8Og7l7IaEEk3VE6Zg==
 
 electron-to-chromium@^1.5.4:
-  version "1.5.24"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.24.tgz#b3cd2f71b7a84bac340d862e3b7b0aadf48478de"
-  integrity sha512-0x0wLCmpdKFCi9ulhvYZebgcPmHTkFVUfU2wzDykadkslKwT4oAmDTHEKLnlrDsMGZe4B+ksn8quZfZjYsBetA==
+  version "1.5.27"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.27.tgz#5203ce5d6054857d84ba84d3681cbe59132ade78"
+  integrity sha512-o37j1vZqCoEgBuWWXLHQgTN/KDKe7zwpiY5CPeq2RvUqOyJw9xnrULzZAEVQ5p4h+zjMk7hgtOoPdnLxr7m/jw==
 
 electron@^2.0.18, electron@^32.0.0:
   version "32.1.1"
@@ -3231,15 +3231,15 @@ env-paths@^2.2.0, env-paths@^2.2.1:
   resolved "https://registry.yarnpkg.com/env-paths/-/env-paths-2.2.1.tgz#420399d416ce1fbe9bc0a07c62fa68d67fd0f8f2"
   integrity sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==
 
-envinfo@7.11.1, envinfo@~7.11.1:
-  version "7.11.1"
-  resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-7.11.1.tgz#2ffef77591057081b0129a8fd8cf6118da1b94e1"
-  integrity sha512-8PiZgZNIB4q/Lw4AhOvAfB/ityHAd2bli3lESSWmWSzSsl5dKpy5N1d1Rfkd2teq/g9xN90lc6o98DOjMeYHpg==
-
-envinfo@^7.10.0:
+envinfo@7.14.0, envinfo@^7.10.0:
   version "7.14.0"
   resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-7.14.0.tgz#26dac5db54418f2a4c1159153a0b2ae980838aae"
   integrity sha512-CO40UI41xDQzhLB1hWyqUKgFhs250pNcGbyGKe1l/e4FSaI/+YE4IMG76GDt0In67WLPACIITC+sOi08x4wIvg==
+
+envinfo@~7.11.1:
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-7.11.1.tgz#2ffef77591057081b0129a8fd8cf6118da1b94e1"
+  integrity sha512-8PiZgZNIB4q/Lw4AhOvAfB/ityHAd2bli3lESSWmWSzSsl5dKpy5N1d1Rfkd2teq/g9xN90lc6o98DOjMeYHpg==
 
 err-code@^1.0.0:
   version "1.1.2"
