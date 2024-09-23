@@ -1,6 +1,5 @@
-const LATEST_MAC = 'macOS 10.15';
-const LATEST_WINDOWS = 'Windows 10';
-
+const LATEST_MAC = 'macOS 13';
+const LATEST_WINDOWS = 'Windows 11';
 const supportedBrowsers = {
   microsoft: {
     edge: {
@@ -24,24 +23,27 @@ const supportedBrowsers = {
       }
     }
   },
-  chrome: {
-    chrome_win_latest: {
-      browserName: 'chrome',
-      platformName: LATEST_WINDOWS,
-      browserVersion: 'latest',
-      'sauce:options': {
-        name: 'Win_Chrome_latest'
-      }
+    chrome: {
+        chrome_win_latest: {
+            browserName: 'chrome',
+            platformName: LATEST_WINDOWS,
+            browserVersion: 'latest',
+            'sauce:options': {
+                name: 'IDAM: Win_Chrome_latest'
+            }
+        },
+        chrome_mac_latest: {
+            browserName: 'chrome',
+            platformName: LATEST_MAC,
+            browserVersion: 'latest',
+            'sauce:options': {
+                name: 'IDAM: Mac_Chrome_latest',
+                extendedDebugging: true,
+                capturePerformance: true
+            }
+        }
+
     },
-    // chrome_mac_latest: {
-    //   browserName: 'chrome',
-    //   platformName: LATEST_MAC,
-    //   browserVersion: 'latest',
-    //   'sauce:options': {
-    //     name: 'Mac_Chrome_latest'
-    //   }
-    // }
-  },
   firefox: {
     firefox_win_latest: {
       browserName: 'firefox',
