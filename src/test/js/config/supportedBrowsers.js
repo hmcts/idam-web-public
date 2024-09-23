@@ -33,14 +33,14 @@ const supportedBrowsers = {
         name: 'Win_Chrome_latest'
       }
     },
-    chrome_mac_latest: {
-      browserName: 'chrome',
-      platformName: LATEST_MAC,
-      browserVersion: 'latest',
-      'sauce:options': {
-        name: 'Mac_Chrome_latest'
-      }
-    }
+    // chrome_mac_latest: {
+    //   browserName: 'chrome',
+    //   platformName: LATEST_MAC,
+    //   browserVersion: 'latest',
+    //   'sauce:options': {
+    //     name: 'Mac_Chrome_latest'
+    //   }
+    // }
   },
   firefox: {
     firefox_win_latest: {
