@@ -1336,16 +1336,16 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "22.7.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.7.0.tgz#670aa1874bc836863e5c116f9f2c32416ff27e1f"
-  integrity sha512-MOdOibwBs6KW1vfqz2uKMlxq5xAfAZ98SZjO8e3XnAbFnTJtAspqhWk7hrdSAs9/Y14ZWMiy7/MxMUzAOadYEw==
+  version "22.7.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.7.2.tgz#80ed66c0a5025ffa037587fd69a816f29b54e4c7"
+  integrity sha512-866lXSrpGpgyHBZUa2m9YNWqHDjjM0aBTJlNtYaGEw4rqY/dcD7deRVTbBBAJelfA7oaGDbNftXF/TL/A6RgoA==
   dependencies:
     undici-types "~6.19.2"
 
 "@types/node@^20.1.0", "@types/node@^20.11.30":
-  version "20.16.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.16.7.tgz#0a245bf5805add998a22b8b5adac612ee70190bc"
-  integrity sha512-QkDQjAY3gkvJNcZOWwzy3BN34RweT0OQ9zJyvLCU0kSK22dO2QYh/NHGfbEAYylPYzRB1/iXcojS79wOg5gFSw==
+  version "20.16.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.16.9.tgz#1217c6cc77c4f3aaf4a6c76fb56b790e81e48120"
+  integrity sha512-rkvIVJxsOfBejxK7I0FO5sa2WxFmJCzoDwcd88+fq/CUfynNywTo/1/T6hyFz22CyztsnLS9nVlHOnTI36RH5w==
   dependencies:
     undici-types "~6.19.2"
 
@@ -7589,10 +7589,10 @@ web-streams-polyfill@^3.0.3:
   resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.3.3.tgz#2073b91a2fdb1fbfbd401e7de0ac9f8214cecb4b"
   integrity sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==
 
-webdriver@9.1.0:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/webdriver/-/webdriver-9.1.0.tgz#2a6a05a6d3b18bea33add5f778d8c6cc0578d0ba"
-  integrity sha512-cdTAJ3OFyAEsQVDNqwP8f21I/xaazIotSHrLGcIgIwgfe4rzQpnpXxz2UnXQTtSjjnVmVoYOUAmYhScO02+uww==
+webdriver@9.1.1:
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/webdriver/-/webdriver-9.1.1.tgz#e13c21343da6ce569fde0ff19f33709c0cd26bfc"
+  integrity sha512-XRZitu+W3xpnuA6gFgiSGBCt2P8m4g2Yzt+zXgPqlKiDGwr27F5m40pP2AnlQBlQO7hw0OJJa68QR1KW2D9cHA==
   dependencies:
     "@types/node" "^20.1.0"
     "@types/ws" "^8.5.3"
@@ -7605,9 +7605,9 @@ webdriver@9.1.0:
     ws "^8.8.0"
 
 webdriverio@^9.0.0:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-9.1.0.tgz#0e9deccdc4f92905af6a756c283b0dc0963f9c8e"
-  integrity sha512-6wJ7emnLhxJ3F10cUGaBjzgaabZCByAdNA59/J0Ctg/i40lOdsmHpoYVktlbXYUeOdqUC0raVLi6pngBOSqL1g==
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-9.1.1.tgz#e71e170a31b2fa88f4d5a5b45c78000df54156d9"
+  integrity sha512-jREz3Vy7ItpNn0HG/vh5oZYAzSv4PGGy8mxht7j4BXkcUjkPCBfHtAAXHRwwJVxu1rWJLzn4QhfjLIaEFe73NA==
   dependencies:
     "@types/node" "^20.11.30"
     "@types/sinonjs__fake-timers" "^8.1.5"
@@ -7635,7 +7635,7 @@ webdriverio@^9.0.0:
     rgb2hex "0.2.5"
     serialize-error "^11.0.3"
     urlpattern-polyfill "^10.0.0"
-    webdriver "9.1.0"
+    webdriver "9.1.1"
 
 webidl-conversions@^3.0.0:
   version "3.0.1"
