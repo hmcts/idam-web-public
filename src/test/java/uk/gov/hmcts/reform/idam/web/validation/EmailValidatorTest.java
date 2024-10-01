@@ -1,14 +1,14 @@
 package uk.gov.hmcts.reform.idam.web.validation;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EmailValidatorTest {
 
     private EmailValidator emailValidator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         emailValidator = new EmailValidator();
     }
@@ -20,7 +20,7 @@ public class EmailValidatorTest {
     @Test
     public void isValid_shouldReturnTrueForAValidEmailAddress() throws Exception {
         String validEmail = "john.doe@test.com";
-        Assert.assertTrue(emailValidator.isValid(validEmail, null));
+        Assertions.assertTrue(emailValidator.isValid(validEmail, null));
     }
 
     /**
@@ -30,7 +30,7 @@ public class EmailValidatorTest {
     @Test
     public void isValid_shouldReturnFalseIfTheEmailAddressContainsSpaces() throws Exception {
         String invalidEmail = "john doe@test.com";
-        Assert.assertFalse(emailValidator.isValid(invalidEmail, null));
+        Assertions.assertFalse(emailValidator.isValid(invalidEmail, null));
     }
 
     /**
@@ -40,7 +40,7 @@ public class EmailValidatorTest {
     @Test
     public void isValid_shouldReturnFalseIfTheEmailAddressIsEmpty() throws Exception {
         String emptyEmail = "";
-        Assert.assertFalse(emailValidator.isValid(emptyEmail, null));
+        Assertions.assertFalse(emailValidator.isValid(emptyEmail, null));
     }
 
     /**
@@ -50,7 +50,7 @@ public class EmailValidatorTest {
     @Test
     public void isValid_shouldReturnFalseIfTheEmailAddressDoesNotContainADot() throws Exception {
         String invalidEmail = "john@testcom";
-        Assert.assertFalse(emailValidator.isValid(invalidEmail, null));
+        Assertions.assertFalse(emailValidator.isValid(invalidEmail, null));
     }
 
     /**
@@ -60,7 +60,7 @@ public class EmailValidatorTest {
     @Test
     public void isValid_shouldReturnFalseIfTheEmailAddressEndsWithADot() throws Exception {
         String invalidEmail = "john.doe@test.";
-        Assert.assertFalse(emailValidator.isValid(invalidEmail, null));
+        Assertions.assertFalse(emailValidator.isValid(invalidEmail, null));
     }
 
     /**
@@ -70,6 +70,6 @@ public class EmailValidatorTest {
     @Test
     public void isValid_shouldReturnFalseIfTheEmailAddressDoesNotMatchThePattern() throws Exception {
         String invalidEmail = "johndoetest";
-        Assert.assertFalse(emailValidator.isValid(invalidEmail, null));
+        Assertions.assertFalse(emailValidator.isValid(invalidEmail, null));
     }
 }

@@ -1,30 +1,23 @@
 package uk.gov.hmcts.reform.idam.web.helper;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.web.Application;
 import uk.gov.hmcts.reform.idam.web.config.IdamWebMvcConfiguration;
 
-import javax.servlet.http.HttpServletRequest;
-import java.net.MalformedURLException;
 import java.util.Locale;
-import java.util.Map;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 @TestPropertySource(properties = "testing=true")
 // Disable Redis autoconfigure for test
 @TestPropertySource(properties = "SPRING_AUTOCONFIGURE_EXCLUDE=org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration")
@@ -37,7 +30,7 @@ public class JSPHelperTest {
     @Autowired
     ApplicationContext applicationContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Application.setContext(applicationContext);
     }
@@ -52,7 +45,7 @@ public class JSPHelperTest {
         UriComponentsBuilder testBuilder = UriComponentsBuilder.fromUriString(BASE_TEST_URI);
         testBuilder.replaceQuery("ui_locales=pl");
         final String rewrittenUrl = JSPHelper.overrideLocaleParameter(testBuilder, targetLocale);
-        Assert.assertEquals(CORRECT_BASE_TEST_URI + targetLocale, rewrittenUrl);
+        Assertions.assertEquals(CORRECT_BASE_TEST_URI + targetLocale, rewrittenUrl);
     }
 
     /**
@@ -64,7 +57,7 @@ public class JSPHelperTest {
         final String targetLocale = "en";
         UriComponentsBuilder testBuilder = UriComponentsBuilder.fromUriString(BASE_TEST_URI);
         final String rewrittenUrl = JSPHelper.overrideLocaleParameter(testBuilder, targetLocale);
-        Assert.assertEquals(CORRECT_BASE_TEST_URI + targetLocale, rewrittenUrl);
+        Assertions.assertEquals(CORRECT_BASE_TEST_URI + targetLocale, rewrittenUrl);
     }
 
     /**
@@ -75,14 +68,14 @@ public class JSPHelperTest {
     public void overrideLocaleParameter_shouldThrowOnAnyOfTheParametersBeingNull() {
         try {
             JSPHelper.overrideLocaleParameter(UriComponentsBuilder.newInstance(), null);
-            Assert.fail();
+            Assertions.fail();
         } catch (NullPointerException e) {
             // do nothing, expected
         }
 
         try {
             JSPHelper.overrideLocaleParameter(null, "en");
-            Assert.fail();
+            Assertions.fail();
         } catch (NullPointerException e) {
             // do nothing, expected
         }
@@ -95,7 +88,7 @@ public class JSPHelperTest {
     @Test
     public void getTargetLocale_shouldReturnEnIfCurrentLocaleIsWelsh() {
         LocaleContextHolder.setLocale(new Locale("cy"));
-        Assert.assertEquals("en", JSPHelper.getTargetLocale());
+        Assertions.assertEquals("en", JSPHelper.getTargetLocale());
     }
 
     /**
@@ -105,7 +98,7 @@ public class JSPHelperTest {
     @Test
     public void getTargetLocale_shouldReturnCyIfCurrentLocaleIsEnglish() {
         LocaleContextHolder.setLocale(new Locale("en"));
-        Assert.assertEquals("cy", JSPHelper.getTargetLocale());
+        Assertions.assertEquals("cy", JSPHelper.getTargetLocale());
     }
 
     /**
@@ -116,7 +109,7 @@ public class JSPHelperTest {
     public void getOtherLocaleUrl_shouldReturnCorrectUrlForEnglish() throws Exception {
         LocaleContextHolder.setLocale(new Locale("en"));
         final String otherLocaleUrl = JSPHelper.getOtherLocaleUrl();
-        Assert.assertTrue(otherLocaleUrl.endsWith("?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=cy"));
+        Assertions.assertTrue(otherLocaleUrl.endsWith("?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=cy"));
     }
 
     /**
@@ -127,29 +120,33 @@ public class JSPHelperTest {
     public void getOtherLocaleUrl_shouldReturnCorrectUrlForWelsh() throws Exception {
         LocaleContextHolder.setLocale(new Locale("cy"));
         final String otherLocaleUrl = JSPHelper.getOtherLocaleUrl();
-        Assert.assertTrue(otherLocaleUrl.endsWith("?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=en"));
+        Assertions.assertTrue(otherLocaleUrl.endsWith("?" + IdamWebMvcConfiguration.UI_LOCALES_PARAM_NAME + "=en"));
     }
 
     /**
      * @verifies throw if there is no request in context
      * @see JSPHelper#getOtherLocaleUrl()
      */
-    @Test(expected = IllegalStateException.class)
-    public void getOtherLocaleUrl_shouldThrowIfThereIsNoRequestInContext() throws Exception {
+    @Test
+    public void getOtherLocaleUrl_shouldThrowIfThereIsNoRequestInContext() {
         RequestContextHolder.resetRequestAttributes();
-        JSPHelper.getOtherLocaleUrl();
+
+        IllegalStateException expectedException =
+            assertThrows(
+                IllegalStateException.class,
+                () -> JSPHelper.getOtherLocaleUrl());
     }
 
     @Test
     public void isGTMEnabled_shouldReturnTrueWhenEnabled() {
         JSPHelper.setGTMEnabled(true);
-        Assert.assertTrue(JSPHelper.isGTMEnabled());
+        Assertions.assertTrue(JSPHelper.isGTMEnabled());
     }
 
     @Test
     public void isGTMEnabled_shouldReturnFalseWhenNotEnabled() {
         JSPHelper.setGTMEnabled(false);
-        Assert.assertFalse(JSPHelper.isGTMEnabled());
+        Assertions.assertFalse(JSPHelper.isGTMEnabled());
     }
 
 }
