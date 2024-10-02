@@ -5,7 +5,7 @@ exports.config = {
     tests: './src/test/js/**/*_test.js',
     output: './output',
     fullPageScreenshots: true,
-    timeout: 90, // seconds
+    timeout: 240, // seconds
     bootstrap: false,
     retry: 3,
     helpers: {

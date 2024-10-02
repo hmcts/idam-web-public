@@ -65,13 +65,13 @@ Scenario('@functional  user registration pending status and post activation redi
     I.waitForText('Create a password');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Account created');
     userFirstNames.push(randomUserFirstName);
     I.waitForText('You can now sign in to your account.');
     I.waitForText('Continue');
     I.interceptRequestsAfterSignin();
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
 
     const responseAfterActivation = await I.getUserById(userId, accessToken);
