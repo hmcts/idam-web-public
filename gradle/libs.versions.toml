@@ -12,7 +12,7 @@ spring-boot = "2.7.18"
 spring-cloud = "3.1.9"
 spring-security-oauth2 = "2.5.2.RELEASE"
 spring-security-oauth2-autoconfigure = "2.6.8"
-reform-logging = "6.1.6"
+reform-logging = "6.1.7"
 
 [libraries]
 reform-java-logging = { module = "com.github.hmcts.java-logging:logging", version.ref = "reform-logging"}
