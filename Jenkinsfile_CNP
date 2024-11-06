@@ -61,8 +61,8 @@ withPipeline(type, product, component) {
     }
 
     before('functionalTest:aat') {
-        //env.RPE_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-        //env.REF_DATA_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
+        env.RPE_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+        env.REF_DATA_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
         env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
         env.TESTING_SUPPORT_API_URL = 'https://idam-testing-support-api.aat.platform.hmcts.net'
         env.TESTS_FOR_ACCESSIBILITY = true
