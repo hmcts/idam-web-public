@@ -3,8 +3,6 @@ const randomData = require('./shared/random_data');
 
 Feature('I am able to register user dynamically');
 
-let userEmail;
-let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
 let testingToken;
@@ -12,13 +10,8 @@ let testingToken;
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
-const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
-    const randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
-    const randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
-    const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
-    userEmail = 'user.' + randomData.getRandomEmailAddress();
 
     testingToken= await I.getToken();
     let assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', [], testingToken);
@@ -32,20 +25,25 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
+});
+
+
+
+Scenario('@functional @dynamicuserreg Register User Dynamically', async ({ I }) => {
+
+    const randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
+    const randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    const adminEmail = 'admin.' + randomData.getRandomEmailAddress();
+    let userEmail = 'user.' + randomData.getRandomEmailAddress();
+    const userPassword = randomData.getRandomUserPassword();
+
     await I.createUserUsingTestingSupportService(testingToken, adminEmail, userPassword, randomUserFirstName + 'Admin', [dynamicUserRegRole.name]);
-    userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, userPassword);
     const code = await I.getAuthorizeCode(serviceName, TestData.SERVICE_REDIRECT_URI, 'create-user', base64);
     const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.registerUserWithRoles(accessToken, userEmail, randomUserFirstName + 'User', randomUserLastName, assignableRole.name);
-    userFirstNames.push(randomUserFirstName + 'User');
-});
-
-
-
-Scenario('@functional @dynamicuserreg Register User Dynamically', async ({ I }) => {
 
     let url = await I.extractUrlFromNotifyEmail(testingToken, userEmail);
     if (url) {

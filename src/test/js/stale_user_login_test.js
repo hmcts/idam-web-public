@@ -5,10 +5,6 @@ const TestData = require("./config/test_data");
 
 Feature('Stale user login');
 
-let randomUserFirstName;
-let staleUserEmail;
-let staleUserEmailWelsh;
-let userFirstNames = [];
 let serviceNames = [];
 let token;
 const testSuitePrefix = randomData.getRandomAlphabeticString();
@@ -20,27 +16,20 @@ BeforeSuite(async({ I }) => {
     token = await I.getToken();
     const scopes = ['openid', 'profile', 'roles'];
 
-    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
-    staleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
-    staleUserEmailWelsh = 'staleuser.' + randomData.getRandomEmailAddress();
-
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], token, scopes, []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
-    await I.createUserUsingTestingSupportService(token, staleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
-    userFirstNames.push(randomUserFirstName + 'StaleUser');
-    await I.retireStaleUser(staleUserEmail);
-
-    await I.createUserUsingTestingSupportService(token, staleUserEmailWelsh, userPassword, randomUserFirstName + 'StaleUserWelsh', ["citizen"]);
-    userFirstNames.push(randomUserFirstName + 'StaleUserWelsh');
-    await I.retireStaleUser(staleUserEmailWelsh);
 });
 
-
-
 Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) => {
+
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let staleUserEmail = 'staleuser.' + randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(token, staleUserEmail, userPassword, randomUserFirstName + 'StaleUser', ["citizen"]);
+    await I.retireStaleUser(staleUserEmail);
+
     const newPassword = randomData.getRandomUserPassword();
     const loginUrl = `${testData.WEB_PUBLIC_URL}/login?redirect_uri=${testData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
 
@@ -73,6 +62,13 @@ Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) =>
 
 
 Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh', async({ I }) => {
+
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let staleUserEmailWelsh = 'staleuser.' + randomData.getRandomEmailAddress();
+
+    await I.createUserUsingTestingSupportService(token, staleUserEmailWelsh, userPassword, randomUserFirstName + 'StaleUserWelsh', ["citizen"]);
+    await I.retireStaleUser(staleUserEmailWelsh);
+
     const newPassword = randomData.getRandomUserPassword();
     const loginUrl = `${testData.WEB_PUBLIC_URL}/login?redirect_uri=${testData.SERVICE_REDIRECT_URI}&client_id=${serviceName}${Welsh.urlForceCy}`;
 

@@ -15,9 +15,6 @@ const testSuitePrefix = randomData.getRandomAlphabeticString();
 const userPassword=randomData.getRandomUserPassword();
 const serviceClientSecret = randomData.getRandomClientSecret();
 let token;
-let mfaUserEmail;
-let mfaDisabledUserEmail;
-let randomUserFirstName;
 let mfaTurnedOnServiceRole;
 let mfaTurnedOffServiceRole;
 let mfaApplicationPolicyName;
@@ -29,9 +26,6 @@ let accessTokenClientSecret;
 let scopes = ["openid", "profile", "roles","manage-user","create-user" ];
 
 BeforeSuite(async ({ I }) => {
-    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
-    mfaUserEmail = randomData.getRandomEmailAddress();
-    mfaDisabledUserEmail = randomData.getRandomEmailAddress();
 
     token = await I.getToken();
 
@@ -47,11 +41,6 @@ BeforeSuite(async ({ I }) => {
     mfaTurnedOffService2 = await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [mfaTurnedOffServiceRole.name], token,scopes,[],false,`https://www.${serviceName}.com`) ;
 
     accessTokenClientSecret = await I.getAccessTokenClientSecret(mfaTurnedOnService1.clientId, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
-    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaDisabledUserEmail, userPassword, randomUserFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
-
-    // mfaApplicationPolicyName = `MfaByApplicationPolicy-${mfaTurnedOnService1.oauth2ClientId}`;
-    // await I.createPolicyForApplicationMfaTest(mfaApplicationPolicyName, mfaTurnedOnService1.activationRedirectUrl, token);
 
     I.wait(0.5);
 });
@@ -61,6 +50,11 @@ BeforeSuite(async ({ I }) => {
 Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -106,6 +100,10 @@ Scenario('@functional @mfaLogin  I am able to login with MFA and prompt = login'
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=login`;
 
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
@@ -147,6 +145,10 @@ Scenario('@functional @mfaLogin  I am able to login with MFA and prompt = login'
 Scenario('@functional @mfaLogin @welshLanguage  I am able to login with MFA in Welsh', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6wtIgsUVTGybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&prompt=&response_type=code&scope=${scope}${Welsh.urlForceCy}`;
+
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     I.amOnPage(loginUrl);
     I.waitForText(Welsh.signInOrCreateAccount);
@@ -191,6 +193,10 @@ Scenario('@functional @mfaLogin @welshLanguage  I am able to login with MFA in W
 Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp attempts otp expired message and continue button should be present', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTutbVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm5ed0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -261,6 +267,10 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgtUVTGybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
+    let randomNonMfaFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaDisabledUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaDisabledUserEmail, userPassword, randomNonMfaFirstName + "mfadisabled", [mfaTurnedOnServiceRole.name, "idam-mfa-disabled"]);
+
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaDisabledUserEmail);
@@ -309,6 +319,10 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
 Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MFA turned off service and then step-up login to the MFA turned on service', async ({ I }) => {
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -379,6 +393,10 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
 Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to a mfa turned on service and then login to a mfa turned off service', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -456,6 +474,10 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
@@ -532,6 +554,10 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to the M
     const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOffService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
 
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
@@ -605,6 +631,10 @@ Scenario('@functional @mfaLogin  As a user, I can login to the MFA turned on ser
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
     expect(location).to.includes(`/login?client_id=${mfaTurnedOnService1.clientId}&redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}`);
 
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+
     I.amOnPage(location);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
@@ -657,6 +687,10 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const cookie = "invalidcookie" + randomData.getRandomString();
 
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+
     // try authorizing to the mfa turned off service with the invalid Idam session cookie from mfa turned on service
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService1.clientId, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
     expect(location).to.includes(`/login?client_id=${mfaTurnedOffService1.clientId}&redirect_uri=${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}`);
@@ -706,6 +740,10 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
 Scenario('@functional @mfaLogin  @mfaSkipStepUpLogin As a user, I can login to the MFA turned on service and then authorize to the same service with prompt=login and login again', async ({ I }) => {
     const nonce = "0km9sBgZfnXv8e_O7U-XmSR6vtIgsUVTXybVUdoLV7g";
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+
+    let randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    let mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
