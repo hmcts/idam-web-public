@@ -179,7 +179,7 @@ Scenario('@functional @uplift @upliftLogin  uplift a user via login journey', as
 Scenario('@functional @uplift @staleUserUpliftAccountCreation  Send stale user registration for stale user uplift account creation', async ({ I }) => {
     const newPassword = randomData.getRandomUserPassword();
     let lastName = randomData.getRandomUserName(testSuitePrefix) + 'pinępinç';
-    let firstNAme = randomData.getRandomUserName(testSuitePrefix) + 'ępinçłpin';
+    let firstName = randomData.getRandomUserName(testSuitePrefix) + 'ępinçłpin';
     const pinUser = await I.getPinUser(firstName, lastName);
     let pinUserRole = pinUserRolePrefix + pinUser.userId;
 

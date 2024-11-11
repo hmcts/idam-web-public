@@ -3,9 +3,8 @@ const randomData = require('./shared/random_data');
 
 Feature('I am able to register user dynamically');
 
-let roleNames = [];
-let serviceNames = [];
 let testingToken;
+let dynamicUserRegRole;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -15,13 +14,11 @@ BeforeSuite(async ({ I }) => {
 
     testingToken= await I.getToken();
     let assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', [], testingToken);
-    let dynamicUserRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_dynUsrReg", 'dynamic user reg role', [assignableRole.name], testingToken);
+    dynamicUserRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_dynUsrReg", 'dynamic user reg role', [assignableRole.name], testingToken);
 
     let serviceRoleNames = [assignableRole.name, dynamicUserRegRole.name];
-    roleNames.push(serviceRoleNames);
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,[serviceRoleNames], testingToken, ["openid", "profile", "roles", "manage-user", "create-user"],[]);
-    serviceNames.push(serviceName);
 
     I.wait(0.5);
 

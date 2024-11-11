@@ -17,6 +17,7 @@ const citizenRole = 'citizen';
 const pinUserRolePrefix = 'letter-';
 let citizenUserDynamicRole;
 let pinUserDynamicRole;
+let accessToken;
 
 const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&scope=${customScope}`;
 
@@ -31,7 +32,7 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
 });
 
 Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async ({ I }) => {

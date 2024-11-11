@@ -298,7 +298,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
     expect(userInfo.active).to.equal(true);
     expect(userInfo.email).to.equal(mfaDisabledUserEmail);
-    expect(userInfo.forename).to.equal(randomUserFirstName + 'mfadisabled');
+    expect(userInfo.forename).to.equal(randomNonMfaFirstName + 'mfadisabled');
     expect(userInfo.id).to.not.equal(null);
     expect(userInfo.surname).to.equal('User');
     expect(userInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, 'idam-mfa-disabled']);
@@ -309,8 +309,8 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     expect(oidcUserInfo.uid).to.not.equal(null);
     expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, 'idam-mfa-disabled']);
 
-    expect(oidcUserInfo.name).to.equal(randomUserFirstName + 'mfadisabled' + ' User');
-    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'mfadisabled');
+    expect(oidcUserInfo.name).to.equal(randomNonMfaFirstName + 'mfadisabled' + ' User');
+    expect(oidcUserInfo.given_name).to.equal(randomNonMfaFirstName + 'mfadisabled');
     expect(oidcUserInfo.family_name).to.equal('User');
 
     I.resetRequestInterception();

@@ -26,7 +26,6 @@ BeforeSuite(async ({ I }) => {
     const testingToken =  await I.getToken();
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);
-    serviceNames.push(serviceName);
 
     I.wait(0.5);
 
