@@ -17,7 +17,7 @@ const citizenRole = 'citizen';
 const pinUserRolePrefix = 'letter-';
 let citizenUserDynamicRole;
 let pinUserDynamicRole;
-let accessToken;
+let testingAccessToken;
 
 const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&scope=${customScope}`;
 
@@ -32,13 +32,13 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+    testingAccessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
 });
 
 Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async ({ I }) => {
 
     let citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
-    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomData.getRandomUserName(testSuitePrefix) + 'Citizen', []);
+    await I.createUserUsingTestingSupportService(testingAccessToken, citizenEmail, userPassword, randomData.getRandomUserName(testSuitePrefix) + 'Citizen', []);
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -74,7 +74,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let respondentEmail = 'respondent.' + randomData.getRandomEmailAddress();
-    await I.createUserUsingTestingSupportService(accessToken, respondentEmail, userPassword, randomData.getRandomUserName(testSuitePrefix) + 'Respondent', []);
+    await I.createUserUsingTestingSupportService(testingAccessToken, respondentEmail, userPassword, randomData.getRandomUserName(testSuitePrefix) + 'Respondent', []);
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&scope=${customScope}&jwt=${accessToken}`)
     I.waitForText('Sign in or create an account');

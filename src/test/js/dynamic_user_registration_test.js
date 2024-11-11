@@ -5,6 +5,7 @@ Feature('I am able to register user dynamically');
 
 let testingToken;
 let dynamicUserRegRole;
+let assignableRole;
 
 const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -13,10 +14,8 @@ const serviceClientSecret = randomData.getRandomClientSecret();
 BeforeSuite(async ({ I }) => {
 
     testingToken= await I.getToken();
-    let assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', [], testingToken);
+    assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', [], testingToken);
     dynamicUserRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_dynUsrReg", 'dynamic user reg role', [assignableRole.name], testingToken);
-
-    let serviceRoleNames = [assignableRole.name, dynamicUserRegRole.name];
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,[serviceRoleNames], testingToken, ["openid", "profile", "roles", "manage-user", "create-user"],[]);
 
