@@ -43,11 +43,11 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.click('Forgotten password?');
+    I.clickWithWait('Forgotten password?');
     I.waitForText('Reset your password');
     I.fillField('#email', citizenEmail);
     await I.runAccessibilityTest();
-    I.click('Submit');
+    I.clickWithWait('Submit');
     I.waitForText('Check your email');
     await I.runAccessibilityTest();
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenEmail);
@@ -56,7 +56,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('#password1', resetPassword);
     I.fillField('#password2', resetPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     await I.runAccessibilityTest();
@@ -65,7 +65,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#username', citizenEmail);
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -80,10 +80,10 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
 
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.click('Forgotten password?');
+    I.clickWithWait('Forgotten password?');
     I.waitForText('Reset your password');
     I.fillField('#email', diffCaseCitizenEmail.toUpperCase());
-    I.click('Submit');
+    I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, diffCaseCitizenEmail);
     I.amOnPage(resetPasswordUrl);
@@ -91,7 +91,7 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('#password1', resetPassword);
     I.fillField('#password2', resetPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
@@ -99,7 +99,7 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
     I.fillField('#username', diffCaseCitizenEmail);
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -113,10 +113,10 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.click('Forgotten password?');
+    I.clickWithWait('Forgotten password?');
     I.waitForText('Reset your password');
     I.fillField('#email', plusCitizenEmail);
-    I.click('Submit');
+    I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, plusCitizenEmail);
     I.amOnPage(resetPasswordUrl);
@@ -124,7 +124,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('#password1', resetPassword);
     I.fillField('#password2', resetPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
@@ -132,7 +132,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.fillField('#username', plusCitizenEmail);
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -147,10 +147,10 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.click('Forgotten password?');
+    I.clickWithWait('Forgotten password?');
     I.waitForText('Reset your password');
     I.fillField('#email', apostropheCitizenEmail);
-    I.click('Submit');
+    I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, apostropheCitizenEmail);
     I.amOnPage(resetPasswordUrl);
@@ -158,7 +158,7 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('#password1', resetPassword);
     I.fillField('#password2', resetPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
@@ -166,7 +166,7 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     I.fillField('#username', apostropheCitizenEmail);
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -182,10 +182,10 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
 
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.click('Forgotten password?');
+    I.clickWithWait('Forgotten password?');
     I.waitForText('Reset your password');
     I.fillField('#email', otherCitizenEmail);
-    I.click('Submit');
+    I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, otherCitizenEmail);
     I.amOnPage(resetPasswordUrl);
@@ -193,30 +193,30 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('password1', 'Passw0rd');
     I.fillField('password2', 'Passw0rd');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('There is a problem');
     I.see("Your password is too easy to guess");
     await I.runAccessibilityTest();
     I.fillField('password1', `${randomUserFirstName}Other6mKjmC`);
     I.fillField('password2', `${randomUserFirstName}Other6mKjmC`);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('There is a problem');
     I.see("Do not include your name or email in your password");
     await I.runAccessibilityTest();
     I.fillField('password1', `${otherCitizenEmail}3ksTys`);
     I.fillField('password2', `${otherCitizenEmail}3ksTys`);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('There is a problem');
     I.see("Do not include your name or email in your password");
     I.fillField('password1', 'passwordidamtest');
     I.fillField('password2', 'passwordidamtest');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('There is a problem');
     I.see('Your password didn\'t have all the required characters');
     await I.runAccessibilityTest();
     I.fillField('password1', 'Lincoln1');
     I.fillField('password2', 'Lincoln1');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('There is a problem');
     I.see("Your password is too easy to guess");
 
@@ -231,10 +231,10 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
 
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.click('Forgotten password?');
+    I.clickWithWait('Forgotten password?');
     I.waitForText('Reset your password');
     I.fillField('#email', specialcharPwdResetCitizenEmail);
-    I.click('Submit');
+    I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, specialcharPwdResetCitizenEmail);
     I.amOnPage(resetPasswordUrl);
@@ -242,7 +242,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('#password1', specialCharacterPassword);
     I.fillField('#password2', specialCharacterPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
@@ -250,7 +250,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.fillField('#username', specialcharPwdResetCitizenEmail);
     I.fillField('#password', specialCharacterPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -267,10 +267,10 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.click('Forgotten password?');
+    I.clickWithWait('Forgotten password?');
     I.waitForText('Reset your password');
     I.fillField('#email', staleUserEmail);
-    I.click('Submit');
+    I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, staleUserEmail);
     I.amOnPage(resetPasswordUrl);
@@ -278,7 +278,7 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
     I.fillField('#password1', resetPassword);
     I.fillField('#password2', resetPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     I.amOnPage(loginPage);
@@ -286,7 +286,7 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.fillField('#username', staleUserEmail);
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -300,10 +300,10 @@ Scenario('@functional @resetpass @idamserviceaccount As a idam service account u
     const resetPassword = randomData.getRandomUserPassword();
     I.amOnPage(loginPage);
     I.waitForText('Sign in or create an account');
-    I.click('Forgotten password?');
+    I.clickWithWait('Forgotten password?');
     I.waitForText('Reset your password');
     I.fillField('#email', idamServiceAccountUserEmail);
-    I.click('Submit');
+    I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, idamServiceAccountUserEmail);
     I.amOnPage(resetPasswordUrl);
@@ -311,6 +311,6 @@ Scenario('@functional @resetpass @idamserviceaccount As a idam service account u
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
     I.fillField('#password1', resetPassword);
     I.fillField('#password2', resetPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
 });

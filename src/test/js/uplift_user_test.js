@@ -53,7 +53,7 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     I.fillField('#pin', pinUser.pin);
     await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
 
@@ -72,32 +72,32 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
 Scenario('@functional @uplift @upliftvalid    User Validation errors', ({ I }) => {
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in');
-    I.click("Continue");
+    I.clickWithWait("Continue");
     I.waitForText('There is a problem');
     I.see('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('firstName', 'Lucy');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.dontSee('You have not entered your first name');
     I.see('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('lastName', 'Lu');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.dontSee('You have not entered your first name');
     I.dontSee('You have not entered your last name');
     I.see('You have not entered your email address');
     I.fillField('email', '111');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.see('Your email address is invalid');
     I.fillField('firstName', 'L');
     I.fillField('lastName', '@@');
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.see('Your first name is invalid');
     I.see('First name has to be longer than 1 character and should not include digits nor any of these characters:')
     I.see('Your last name is invalid');
     I.see('Last name has to be longer than 1 character and should not include digits nor any of these characters:')
-    I.click('Sign in to your account.');
+    I.clickWithWait('Sign in to your account.');
     I.seeInCurrentUrl(`redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}`);
     I.seeInCurrentUrl('client_id=' + serviceName);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -113,7 +113,7 @@ Scenario('@functional @uplift  I am able to use a pin to create an account as an
     I.fillField('#lastName', randomData.getRandomUserName(testSuitePrefix) + 'pinępinç');
     I.fillField('#username', citizenEmail);
     await I.runAccessibilityTest();
-    I.click('.form input[type=submit]');
+    I.clickWithWait('.form input[type=submit]');
     I.wait('1');
     I.waitForText('Check your email');
     let url = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, citizenEmail);
@@ -124,7 +124,7 @@ Scenario('@functional @uplift  I am able to use a pin to create an account as an
     I.waitForText('Create a password');
     I.fillField('#password1', userPassword);
     I.fillField('#password2', userPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.wait('1');
     I.waitForText('Account created');
     I.see('You can now sign in to your account.');
@@ -147,7 +147,7 @@ Scenario('@functional @uplift  User should receive You already have an account e
     I.fillField('#lastName', lastName);
     console.log("email: " + existingCitizenEmail);
     I.fillField('#username', existingCitizenEmail.toUpperCase());
-    I.click('.form input[type=submit]');
+    I.clickWithWait('.form input[type=submit]');
     I.waitForText('Check your email');
     const emailResponse = await I.getEmailFromNotifyUsingTestingSupportService(accessTokenClientSecret, existingCitizenEmail.toUpperCase());
     expect(emailResponse.subject).to.equal('You already have an account');
@@ -164,12 +164,12 @@ Scenario('@functional @uplift @upliftLogin  uplift a user via login journey', as
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Sign in to your account.');
-    I.click('Sign in to your account.');
+    I.clickWithWait('Sign in to your account.');
     I.seeInCurrentUrl(`register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}`);
     I.fillField('#username', existingCitizenEmail);
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -199,7 +199,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation  Send stale user r
     I.fillField('#lastName', lastName);
     I.fillField('#username', upliftAccountCreationStaleUserEmail.toUpperCase());
     I.scrollPageToBottom();
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     await I.runAccessibilityTest();
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, upliftAccountCreationStaleUserEmail);
@@ -207,7 +207,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation  Send stale user r
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);
     I.fillField('#password2', newPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
     await I.runAccessibilityTest();
@@ -225,7 +225,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation  Send stale user r
     I.fillField('#username', upliftAccountCreationStaleUserEmail);
     I.fillField('#password', newPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
@@ -265,14 +265,14 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftLoginStaleUserEmail.toUpperCase());
     I.fillField('#password', userPassword);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, upliftLoginStaleUserEmail);
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);
     I.fillField('#password2', newPassword);
-    I.click('Continue');
+    I.clickWithWait('Continue');
     I.waitForText('Your password has been changed');
     I.see('You can now sign in with your new password.');
 
@@ -289,7 +289,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.fillField('#username', upliftLoginStaleUserEmail);
     I.fillField('#password', newPassword);
     I.interceptRequestsAfterSignin();
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText(TestData.SERVICE_REDIRECT_URI);
     I.see('code=');
     I.dontSee('error=');
