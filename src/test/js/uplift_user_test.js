@@ -8,9 +8,6 @@ const assert = require('assert');
 
 Feature('I am able to uplift a user');
 
-let accessToken;
-let roleNames = [];
-let serviceNames = [];
 const pinUserRolePrefix = 'letter-';
 let serviceBetaRole;
 let accessTokenClientSecret;
@@ -27,9 +24,6 @@ BeforeSuite(async ({ I }) => {
     let serviceAdminRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description',[serviceBetaRole.name], token);
     let serviceSuperRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', [serviceAdminRole.name], token);
 
-    let serviceRoleNames = [serviceBetaRole.name, serviceAdminRole.name, serviceSuperRole.name];
-    let serviceRoleIds = [serviceBetaRole.id, serviceAdminRole.id, serviceSuperRole.id];
-    roleNames.push(serviceRoleNames);
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [serviceBetaRole.name], token,["openid", "profile", "roles"],[],false,TestData.SERVICE_REDIRECT_URI) ;
 
     serviceNames.push(serviceName);
@@ -69,7 +63,7 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     I.cleanupLetterHolderRoles(accessTokenClientSecret,userInfo.roles)
 });
 
-Scenario('@functional @uplift @upliftvalid    User Validation errors', ({ I }) => {
+Scenario('@functional @uplift @upliftvalid    User Validation errors', async ({ I }) => {
     let lastName = randomData.getRandomUserName(testSuitePrefix) + 'pinępinç';
     let firstName = randomData.getRandomUserName(testSuitePrefix) + 'ępinçłpin';
     const pinUser = await I.getPinUser(firstName, lastName);
