@@ -17,7 +17,7 @@ BeforeSuite(async ({ I }) => {
     assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', [], testingToken);
     dynamicUserRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_dynUsrReg", 'dynamic user reg role', [assignableRole.name], testingToken);
 
-    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,[serviceRoleNames], testingToken, ["openid", "profile", "roles", "manage-user", "create-user"],[]);
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [assignableRole.name, dynamicUserRegRole.name], testingToken, ["openid", "profile", "roles", "manage-user", "create-user"],[]);
 
     I.wait(0.5);
 
