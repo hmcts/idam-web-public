@@ -26,8 +26,6 @@ BeforeSuite(async ({ I }) => {
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [serviceBetaRole.name], token,["openid", "profile", "roles"],[],false,TestData.SERVICE_REDIRECT_URI) ;
 
-    serviceNames.push(serviceName);
-
     I.wait(0.5);
 
     accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
