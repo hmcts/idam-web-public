@@ -70,6 +70,12 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
 });
 
 Scenario('@functional @uplift @upliftvalid    User Validation errors', ({ I }) => {
+    let lastName = randomData.getRandomUserName(testSuitePrefix) + 'pinępinç';
+    let firstName = randomData.getRandomUserName(testSuitePrefix) + 'ępinçłpin';
+    const pinUser = await I.getPinUser(firstName, lastName);
+    const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
+
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/login/uplift?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&jwt=${accessToken}`);
     I.waitForText('Create an account or sign in');
     I.clickWithWait("Continue");
@@ -104,6 +110,12 @@ Scenario('@functional @uplift @upliftvalid    User Validation errors', ({ I }) =
 
 
 Scenario('@functional @uplift  I am able to use a pin to create an account as an uplift user', async ({ I }) => {
+
+    let lastName = randomData.getRandomUserName(testSuitePrefix) + 'pinępinç';
+    let firstName = randomData.getRandomUserName(testSuitePrefix) + 'ępinçłpin';
+    const pinUser = await I.getPinUser(firstName, lastName);
+    const code = await I.loginAsPin(pinUser.pin, serviceName, TestData.SERVICE_REDIRECT_URI);
+    accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
