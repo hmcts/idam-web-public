@@ -26,8 +26,6 @@ BeforeSuite(async ({ I }) => {
     citizenUserDynamicRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix), '', [], testingToken);
     pinUserDynamicRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix), '', [], testingToken);
 
-    let serviceRoleNames = [citizenUserDynamicRole.name, pinUserDynamicRole.name];
-    let serviceRoleIds = [citizenUserDynamicRole.id, pinUserDynamicRole.id];
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,[],testingToken, ["openid", "profile", "roles", "manage-roles"],[])
 
     I.wait(0.5);

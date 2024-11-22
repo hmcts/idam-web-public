@@ -55,7 +55,6 @@ Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => 
     mfaUserEmail = randomData.getRandomEmailAddress();
     await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
 
-
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
     I.fillField('#username', mfaUserEmail);
