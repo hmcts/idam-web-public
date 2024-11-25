@@ -36,6 +36,6 @@ jmh = { id = "me.champeau.jmh", version = "0.7.2" }
 spring = { id = "io.spring.dependency-management", version = "1.1.6" }
 spring-framework = { id = "org.springframework.boot", version.ref = "spring-boot" }
 owasp = { id = "org.owasp.dependencycheck", version = "11.1.0" }
-sonarqube = { id = "org.sonarqube", version = "5.1.0.4882" }
+sonarqube = { id = "org.sonarqube", version = "6.0.0.5145" }
 pitest = { id = "info.solidsoft.pitest", version = "1.15.0" }
 git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.4.2" }
