@@ -11,16 +11,11 @@ const testSuitePrefix = randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
-const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
-const citizenEmailWelsh = 'citizen.' + randomData.getRandomEmailAddress();
+
 const formSubmitButton = '.form input[type=submit]';
-let staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
-let idamServiceAccountUserEmail = 'idamserviceaccount.' + randomData.getRandomEmailAddress();
+
 let randomUserFirstName;
 let randomUserLastName;
-let userFirstNames = [];
-let serviceNames = [];
-let specialCharacterPassword;
 let accessToken;
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
@@ -31,21 +26,11 @@ BeforeSuite(async ({ I }) => {
     const testingToken =  await I.getToken();
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);
-    serviceNames.push(serviceName);
 
     I.wait(0.5);
 
     accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
-    userFirstNames.push(randomUserFirstName);
-    await I.createUserUsingTestingSupportService(accessToken, citizenEmailWelsh, userPassword, randomUserFirstName + 'Welsh', ["citizen"]);
-    userFirstNames.push(randomUserFirstName + 'Welsh');
-    specialCharacterPassword = 'New%%%&&&234';
-    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
-    userFirstNames.push(randomUserFirstName + 'Stale');
-    await I.retireStaleUser(staleUserEmail)
-    await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
-    userFirstNames.push(randomUserFirstName + 'idamserviceaccount');
+
 });
 
 Scenario('@functional @selfregister User Validation errors', async ({ I }) => {
@@ -91,6 +76,9 @@ Scenario('@functional @selfregister User Validation errors', async ({ I }) => {
 
 Scenario('@functional @selfregister @welshLanguage Account already created (no language)', async ({ I }) => {
 
+    const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
+
     I.clearCookie(Welsh.localeCookie);
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister');
@@ -108,6 +96,9 @@ Scenario('@functional @selfregister @welshLanguage Account already created (no l
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @selfregister @welshLanguage Account already created (force Welsh)', async ({ I }) => {
+
+    const citizenEmailWelsh = 'citizen.' + randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessToken, citizenEmailWelsh, userPassword, randomUserFirstName + 'Welsh', ["citizen"]);
 
     I.clearCookie(Welsh.localeCookie);
     I.amOnPage(selfRegUrl + Welsh.urlForceCy);
@@ -281,6 +272,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
 
 Scenario('@functional @selfregister I can self register with repeated special characters in password', async ({ I }) => {
 
+    const specialCharacterPassword = 'New%%%&&&234';
     const email = 'test_citizen.' + randomData.getRandomEmailAddress();
     const loginPage = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&state=selfreg`;
 
@@ -361,6 +353,10 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
 
 Scenario('@functional @selfregister @staleuserregister stale user should get you already have an account email', async ({ I }) => {
 
+    let staleUserEmail = 'stale.' + randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessToken, staleUserEmail, userPassword, randomUserFirstName + 'Stale', ["citizen"]);
+    await I.retireStaleUser(staleUserEmail)
+
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister');
     I.waitForText('Create an account or sign in');
@@ -420,6 +416,10 @@ Scenario('@functional @selfregister I can create a password only once using the 
 });
 
 Scenario('@functional @selfregister @idamserviceaccount Account already created for idam service accont user', async ({ I }) => {
+
+    let idamServiceAccountUserEmail = 'idamserviceaccount.' + randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessToken, idamServiceAccountUserEmail, userPassword, randomUserFirstName + 'idamserviceaccount', ["idam-service-account"]);
+
     I.amOnPage(selfRegUrl);
     I.waitInUrl('users/selfRegister');
     I.waitForText('Create an account or sign in');
