@@ -218,6 +218,12 @@ class IdamHelper extends Helper {
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken},
         }).then(res => {
+            if (res.status !== 201 && res.status != 409) {
+                if (res.status === 401) {
+                    throw new Error('Unauthorized to create user, access token is' + accessToken);
+                }
+                throw new Error('Failed to create user ' + email + ', response is:' + res.status);
+            }
             console.debug("****createUserUsingTestingSupportService :*****"+res.status);
             return res.json();
         }).then(json => {
@@ -568,7 +574,7 @@ class IdamHelper extends Helper {
         }).then((response) => {
             if (response.status != 201) {
                 console.log('Error granting role', response.status);
-                throw new Error()
+                throw new Error('Failed to grant role ' + roleName + ' to user ' + userEmail + ' response is:' + response.status);
             }
         });
     }
@@ -590,7 +596,7 @@ class IdamHelper extends Helper {
             if (response.status != 200) {
                 console.log('Error registering user', response.status);
                 console.log(JSON.stringify(data));
-                throw new Error()
+                throw new Error('Failed to register user ' + userEmail + ' response is:' + response.status);
             }
         });
     }
@@ -613,7 +619,7 @@ class IdamHelper extends Helper {
             if (response.status != 200) {
                 console.log('Error registering user', response.status);
                 console.log(JSON.stringify(data))
-                throw new Error()
+                throw new Error('Failed to register user ' + userEmail + ' response is:' + response.status);
             }
         });
     }
@@ -806,7 +812,7 @@ class IdamHelper extends Helper {
 
             } else {
                 console.log(`Error creating service ${serviceName}, response: ${response.status}`);
-                return response.json();
+                throw new Error('Failed to create service ' + serviceName + ', response is: ' + response.status);
             }
         }).catch(err => {
             console.error("Error creating service:", err);
@@ -832,6 +838,7 @@ class IdamHelper extends Helper {
             });
             console.log(`*****createRoleUsingTestingSupportService response for role ${roleName}:*****`, response.status);
             if (!response.ok) {
+                throw new Error('Failed to create role ' +  roleName + ' response is:' + response.status);
                 return response;
             }
             const json = await response.json();
