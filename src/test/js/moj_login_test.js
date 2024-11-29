@@ -56,7 +56,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     I.clickWithWait('Sign in');
     I.waitForText('Stay signed in?');
 
-    if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging") || TestData.WEB_PUBLIC_URL.includes("preview")) {
+    if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
         I.clickWithWait('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
@@ -158,7 +158,7 @@ Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to M
 
     I.waitForText('Stay signed in?');
 
-    if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging") || TestData.WEB_PUBLIC_URL.includes("preview")) {
+    if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
         I.clickWithWait('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
