@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.idam.web.helper;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
@@ -24,14 +24,15 @@ public class LocalePassingInterceptorTest {
         interceptor.addMissingLanguageHeader(request);
 
         final List<String> acceptHeaders = request.getHeaders().get(HttpHeaders.ACCEPT_LANGUAGE);
-        Assert.assertNotNull(acceptHeaders);
-        Assert.assertEquals(1, acceptHeaders.size());
-        Assert.assertEquals(LocaleContextHolder.getLocale().toString(), acceptHeaders.get(0));
+        Assertions.assertNotNull(acceptHeaders);
+        Assertions.assertEquals(1, acceptHeaders.size());
+        Assertions.assertEquals(LocaleContextHolder.getLocale().toString(), acceptHeaders.get(0));
     }
 
     /**
-     * @verifies not modify existing language header
-     * @see LocalePassingInterceptor#addMissingLanguageHeader(HttpRequest)
+     * @verifies that when the Accept-Language HTTP header is not already present, the interceptor should add it
+     * with the value of the current locale
+     * @see LocalePassingInterceptor#intercept(HttpRequest, byte[], ClientHttpRequestExecution)
      */
     @Test
     public void addMissingLanguageHeader_shouldNotModifyExistingLanguageHeader() throws Exception {
@@ -43,8 +44,8 @@ public class LocalePassingInterceptorTest {
         interceptor.addMissingLanguageHeader(request);
 
         final List<String> acceptHeaders = request.getHeaders().get(HttpHeaders.ACCEPT_LANGUAGE);
-        Assert.assertNotNull(acceptHeaders);
-        Assert.assertEquals(1, acceptHeaders.size());
-        Assert.assertEquals(existingLanguageHeaderValue, acceptHeaders.get(0));
+        Assertions.assertNotNull(acceptHeaders);
+        Assertions.assertEquals(1, acceptHeaders.size());
+        Assertions.assertEquals(existingLanguageHeaderValue, acceptHeaders.get(0));
     }
 }

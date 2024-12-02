@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.idam.web.config;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static  org.junit.jupiter.api.Assertions.assertFalse;
+import static  org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -31,7 +31,7 @@ public class RequestMethodInterceptorTest {
 
                 assertFalse(interceptor.preHandle(request, response, handler));
             } catch (IOException e) {
-                Assert.fail("Exception should not be thrown here");
+                Assertions.fail("Exception should not be thrown here");
             }
         });
     }
@@ -50,7 +50,7 @@ public class RequestMethodInterceptorTest {
 
                 assertTrue(interceptor.preHandle(request, response, handler));
             } catch (IOException e) {
-                Assert.fail("Exception should not be thrown here");
+                Assertions.fail("Exception should not be thrown here");
             }
         });
     }
@@ -68,7 +68,7 @@ public class RequestMethodInterceptorTest {
 
             assertTrue(interceptor.preHandle(request, response, handler));
         } catch (IOException e) {
-            Assert.fail("Exception should not be thrown here");
+            Assertions.fail("Exception should not be thrown here");
         }
 
     }

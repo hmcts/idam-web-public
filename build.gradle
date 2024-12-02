@@ -152,12 +152,10 @@ allprojects {
       exclude module: 'junit'
     }
 
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'com.github.hmcts:fortify-client:1.4.4:all'
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
-    testImplementation('pl.pragmatists:JUnitParams:1.1.1') {
-      exclude(module: 'junit')
-    }
 
     testImplementation group: 'org.mockito', name: 'mockito-core'
     testImplementation group: 'org.springframework', name: 'spring-test'
@@ -166,7 +164,8 @@ allprojects {
       exclude(module: 'commons-logging')
     }
     testImplementation group: 'org.springframework.security', name: 'spring-security-test'
-    testImplementation group: 'junit', name: 'junit'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter'
   }
 
   task createAJiraTicket() {
@@ -268,6 +267,10 @@ sonarqube {
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco.xml"
   }
+}
+
+test {
+  useJUnitPlatform()
 }
 
 pitest {
