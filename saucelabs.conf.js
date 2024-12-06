@@ -73,13 +73,13 @@ const setupConfig = {
                 }
             },
             'mocha-junit-reporter': {
-                stdout: './functional-output/idam-web-public-mocha-stdout.log',
+                stdout: './functional-output/idam-web-public-mocha-stdout-cb.log',
                 options: {
-                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/functional/idam-web-public-integration-result.xml'
+                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/functional/idam-web-public-integration-result-cb.xml'
                 }
             },
             'mochawesome': {
-                stdout: `./functional-output/idam-web-public-mochawesome-stdout.log`,
+                stdout: `./functional-output/idam-web-public-mochawesome-stdout-cb.log`,
                 options: {
                     reportDir: 'functional-output',
                     inlineAssets: true,
