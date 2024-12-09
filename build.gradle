@@ -279,6 +279,8 @@ pitest {
   outputFormats = ['XML', 'HTML']
   timestampedReports = true
   mutationThreshold = 80
+  junit5PluginVersion = '1.2.1'
+  pitestVersion = '1.70.0'
 }
 
 jacocoTestReport {
