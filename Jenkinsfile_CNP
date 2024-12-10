@@ -36,6 +36,7 @@ def branchesToSync = ['demo', 'perftest', 'ithc', 'nightly-dev']
 withPipeline(type, product, component) {
     enableSlackNotifications('#idam_tech')
     enableAksStagingDeployment()
+    enableCrossBrowserTest()
     disableLegacyDeployment()
     syncBranchesWithMaster(branchesToSync)
 
