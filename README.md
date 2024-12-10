@@ -21,6 +21,7 @@ $ ./gradlew build
 
 ## Developing
 
+
 ### Unit tests
 
 To run all unit tests please execute the following command:
