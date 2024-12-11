@@ -40,6 +40,12 @@ BeforeSuite(async ({ I }) => {
 
 
 Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam through OIDC', async ({ I }) => {
+
+    if (TestData.WEB_PUBLIC_URL.includes("preview")) {
+        I.say('skipping test in this environment');
+        return;
+    }
+
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/authorize?login_hint=${TestData.MOJ_SSO_PROVIDER_KEY}&client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitInUrl('/login/oauth2/code/moj');
     I.waitForText('Sign in');
@@ -79,6 +85,12 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login through the Justice.gov.uk login link from idam', async ({ I }) => {
+
+    if (TestData.WEB_PUBLIC_URL.includes("preview")) {
+        I.say('skipping test in this environment');
+        return;
+    }
+
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
     I.waitForText('Log in with your Justice.gov.uk account');
@@ -122,6 +134,12 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to MoJ IDAM for login if I enter my username on the login screen', async ({ I }) => {
+
+    if (TestData.WEB_PUBLIC_URL.includes("preview")) {
+        I.say('skipping test in this environment');
+        return;
+    }
+
     await I.deleteUser(TestData.MOJ_TEST_USER_USERNAME);
     await I.createUserUsingTestingSupportService(accessToken, TestData.MOJ_TEST_USER_USERNAME, userPassword, randomUserFirstName, [mojUserRole.name], "moj", TestData.MOJ_TEST_USER_SSO_ID);
     //redirection verification
@@ -155,6 +173,12 @@ Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to M
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @moj As a Justice.gov.uk user, I should be able to SSO even if my SSO ID has changed', async ({ I }) => {
+
+    if (TestData.WEB_PUBLIC_URL.includes("preview")) {
+        I.say('skipping test in this environment');
+        return;
+    }
+
     await I.deleteUser(TestData.MOJ_TEST_USER_USERNAME);
 
     const oldSsoId = randomData.getRandomString()
