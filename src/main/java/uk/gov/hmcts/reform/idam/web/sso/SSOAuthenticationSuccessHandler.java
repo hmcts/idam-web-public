@@ -90,6 +90,7 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         );
 
         final String access_token = client.getAccessToken().getTokenValue();
+        log.info("The access_token from backend......." + access_token);
         String bearerToken = "Bearer " + access_token;
 
         User user = null;
