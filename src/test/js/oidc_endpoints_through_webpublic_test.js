@@ -3,7 +3,7 @@ const chai = require('chai');
 const { expect } = chai;
 const TestData = require('./config/test_data');
 
-Scenario('Verify OpenId connect endpoints config through web public', async ({ I }) => {
+Scenario('@smoke @oidcendpoints Verify OpenId connect endpoints config through web public', async ({ I }) => {
     let isHttp = TestData.IDAM_API.startsWith("http://");
     let expectedBaseUrl = isHttp ? TestData.WEB_PUBLIC_URL.replace("https://", "http://") : TestData.WEB_PUBLIC_URL;
     let response = await I.getOidcEndPointsConfig(TestData.WEB_PUBLIC_URL);
