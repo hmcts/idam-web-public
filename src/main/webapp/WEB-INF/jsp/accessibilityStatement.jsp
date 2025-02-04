@@ -80,6 +80,14 @@
             </li>
         </ul>
 
+        <h3 class="heading-small"><spring:message code="public.accessibility.statement.text_fprl_title" /></h3>
+        <ul class="list list-bullet">
+            <li>
+                <spring:message code="public.accessibility.statement.text_0017"/>
+                <a href='tel: <spring:message code="public.accessibility.statement.text_fprl_phone"/>'><spring:message code="public.accessibility.statement.text_fprl_phone" /></a>
+            </li>
+        </ul>
+
         <h3 class="heading-small"><spring:message code="public.accessibility.statement.text_fr_title" /></h3>
         <ul class="list list-bullet">
             <li>
@@ -100,14 +108,6 @@
             </li>
             <li>
                 <spring:message code="public.accessibility.statement.text_ftt_hours"/>
-            </li>
-        </ul>
-
-        <h3 class="heading-small"><spring:message code="public.accessibility.statement.text_fprl_title" /></h3>
-        <ul class="list list-bullet">
-            <li>
-                <spring:message code="public.accessibility.statement.text_0017"/>
-                <a href='tel: <spring:message code="public.accessibility.statement.text_fprl_phone"/>'><spring:message code="public.accessibility.statement.text_fprl_phone" /></a>
             </li>
         </ul>
 
