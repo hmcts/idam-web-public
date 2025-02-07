@@ -38,6 +38,13 @@
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0014" /></a> </li>
         </ul>
 
+        <h2 class="heading-medium"><spring:message code="public.contactus.text_0047" /></h2>
+        <ul class="list">
+            <li><spring:message code="public.contactus.text_0048" /></li>
+            <li><spring:message code="public.contactus.text_0049" htmlEscape="false" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0014" /></a> </li>
+        </ul>
+
         <h2 class="heading-medium"><spring:message code="public.contactus.text_0010_1" /></h2>
         <ul class="list">
             <li><spring:message code="public.contactus.text_0011_1" /></li>
