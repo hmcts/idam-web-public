@@ -45,56 +45,56 @@ BeforeSuite(async ({ I }) => {
     I.wait(0.5);
 });
 
-//
-//
-//Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => {
-//    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
-//    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
-//
-//    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
-//    mfaUserEmail = randomData.getRandomEmailAddress();
-//    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
-//
-//    I.amOnPage(loginUrl);
-//    I.waitForText('Sign in');
-//    I.fillField('#username', mfaUserEmail);
-//    I.fillField('#password', userPassword);
-//    I.clickWithWait('Sign in');
-//    I.seeInCurrentUrl("/verification");
-//    I.waitForText('Verification required');
-//    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
-//
-//    I.fillField('code', otpCode);
-//    I.interceptRequestsAfterSignin();
-//    I.clickWithWait('Continue');
-//    let currentUrl = await I.grabCurrentUrl();
-//    I.addMochawesomeContext('Url is ' + currentUrl);
-//    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-//    I.see('code=');
-//    I.dontSee('error=');
-//
-//    let pageSource = await I.grabSource();
-//    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-//    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
-//
-//    let jwtDecode = await jwt_decode(accessToken);
-//
-//    assert.equal("access_token", jwtDecode.tokenName);
-//    assert.equal(nonce, jwtDecode.nonce);
-//    assert.equal(1, jwtDecode.auth_level);
-//
-//    //Webpublic OIDC userinfo
-//    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
-//    expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
-//    expect(oidcUserInfo.uid).to.not.equal(null);
-//    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
-//    expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
-//    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
-//    expect(oidcUserInfo.family_name).to.equal('User');
-//
-//    I.resetRequestInterception();
-//}).retry(TestData.SCENARIO_RETRY_LIMIT);
-//
+
+
+Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => {
+    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
+    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=`;
+
+    randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
+    mfaUserEmail = randomData.getRandomEmailAddress();
+    await I.createUserUsingTestingSupportService(accessTokenClientSecret, mfaUserEmail, userPassword, randomUserFirstName, [mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+
+    I.amOnPage(loginUrl);
+    I.waitForText('Sign in');
+    I.fillField('#username', mfaUserEmail);
+    I.fillField('#password', userPassword);
+    I.clickWithWait('Sign in');
+    I.seeInCurrentUrl("/verification");
+    I.waitForText('Verification required');
+    const otpCode = await I.extractOtpFromNotifyEmail(accessTokenClientSecret, mfaUserEmail);
+
+    I.fillField('code', otpCode);
+    I.interceptRequestsAfterSignin();
+    I.clickWithWait('Continue');
+    let currentUrl = await I.grabCurrentUrl();
+    I.addMochawesomeContext('Url is ' + currentUrl);
+    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
+    I.see('code=');
+    I.dontSee('error=');
+
+    let pageSource = await I.grabSource();
+    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
+
+    let jwtDecode = await jwt_decode(accessToken);
+
+    assert.equal("access_token", jwtDecode.tokenName);
+    assert.equal(nonce, jwtDecode.nonce);
+    assert.equal(1, jwtDecode.auth_level);
+
+    //Webpublic OIDC userinfo
+    const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(accessToken);
+    expect(oidcUserInfo.sub.toUpperCase()).to.equal(mfaUserEmail.toUpperCase());
+    expect(oidcUserInfo.uid).to.not.equal(null);
+    expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([mfaTurnedOnServiceRole.name, mfaTurnedOffServiceRole.name]);
+    expect(oidcUserInfo.name).to.equal(randomUserFirstName + ' User');
+    expect(oidcUserInfo.given_name).to.equal(randomUserFirstName);
+    expect(oidcUserInfo.family_name).to.equal('User');
+
+    I.resetRequestInterception();
+}).retry(TestData.SCENARIO_RETRY_LIMIT);
+
 //Scenario('@functional @mfaLogin  I am able to login with MFA and prompt = login', async ({ I }) => {
 //    const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIhsUVTGybVUdoLV7g";
 //    const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}&client_id=${mfaTurnedOnService1.clientId}&state=44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU&nonce=${nonce}&response_type=code&scope=${scope}&prompt=login`;
