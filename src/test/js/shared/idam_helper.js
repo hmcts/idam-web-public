@@ -122,7 +122,7 @@ class IdamHelper extends Helper {
             redirect: 'manual'
         }).then(response => {
             let location = response.headers.get('Location');
-            console.log('Location from service call.........'+location);
+            console.log('Location from service call..........'+location);
             if (location.indexOf(TestData.WEB_PUBLIC_URL) < 0) {
                 location = location.replace(/http(s?):\/\/.*?\/login/, TestData.WEB_PUBLIC_URL + "/login");
             }
