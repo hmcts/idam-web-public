@@ -10,7 +10,7 @@
     "chai": "^4.4.1",
     "codeceptjs": "^3.6.4",
     "deep-equal-in-any-order": "^2.0.0",
-    "electron": "^33.0.0",
+    "electron": "^34.0.0",
     "html_codesniffer": "^2.5.1",
     "jwt-decode": "^3.1.2",
     "mocha-junit-reporter": "^2.0.0",
@@ -29,6 +29,6 @@
     "test:crossbrowser": "runSauceLabsTests.sh"
   },
   "resolutions": {
-    "electron": "^33.0.0"
+    "electron": "^34.0.0"
   }
 }
