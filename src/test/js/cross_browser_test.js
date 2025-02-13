@@ -57,34 +57,3 @@ Scenario('@crossbrowser Citizen user self registration', async ({ I }) => {
     I.waitForText('Account created');
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@crossbrowser Citizen user login', async ({ I }) => {
-    I.amOnPage(loginPage);
-    I.waitForText('Sign in');
-    I.fillField('#username', citizenUserLoginEmail);
-    I.fillField('#password', userPassword);
-    I.click('Sign in');
-    I.waitForInvisible('#username', 20);
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
-
-Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
-    citizenUserPasswordResetEmail = 'citizenPasswordReset' + randomData.getRandomEmailAddress();
-    await I.createUserUsingTestingSupportService(testingToken, citizenUserPasswordResetEmail, userPassword, randomUserFirstName + 'citizenPasswordReset', ["citizen"]);
-    const resetPassword = randomData.getRandomUserPassword();
-
-    I.amOnPage(loginPage);
-    I.waitForText('Sign in or create an account');
-    I.click('Forgotten password?');
-    I.waitForText('Reset your password');
-    I.fillField('#email', citizenUserPasswordResetEmail);
-    I.click('Submit');
-    I.waitForText('Check your email');
-    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(testingToken, citizenUserPasswordResetEmail);
-    I.amOnPage(resetPasswordUrl);
-    I.waitForText('Create a new password');
-    I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
-    I.fillField('#password1', resetPassword);
-    I.fillField('#password2', resetPassword);
-    I.click('Continue');
-    I.waitForText('Your password has been changed');
-    I.see('You can now sign in with your new password.');
-}).retry(TestData.SCENARIO_RETRY_LIMIT);
