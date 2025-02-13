@@ -143,7 +143,7 @@ allprojects {
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.99'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.98'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.99'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.2'
     implementation group: 'org.pitest', name: 'pitest', version: '1.18.0'
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
