@@ -1362,17 +1362,17 @@
   dependencies:
     undici-types "~6.20.0"
 
-"@types/node@^20.9.0":
-  version "20.17.19"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.17.19.tgz#0f2869555719bef266ca6e1827fcdca903c1a697"
-  integrity sha512-LEwC7o1ifqg/6r2gn9Dns0f1rhK+fPFDoMiceTJ6kWmVk6bgXBI/9IOWfVan4WiAavK9pIVWdX0/e3J+eEUh5A==
-  dependencies:
-    undici-types "~6.19.2"
-
 "@types/node@^22.2.0":
   version "22.13.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-22.13.2.tgz#6f401c5ccadac75354f5652128e9fcc3b0cf23b7"
   integrity sha512-Z+r8y3XL9ZpI2EY52YYygAFmo2/oWfNSj4BCpAXE2McAexDk8VcnBMGC9Djn9gTKt4d2T/hhXqmPzo4hfIXtTg==
+  dependencies:
+    undici-types "~6.20.0"
+
+"@types/node@^22.7.7":
+  version "22.13.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.13.9.tgz#5d9a8f7a975a5bd3ef267352deb96fb13ec02eca"
+  integrity sha512-acBjXdRJ3A6Pb3tqnw9HZmyR3Fiol3aGxRCK1x3d+6CDAMjl7I649wpSd+yNURCjbOUGu9tqtLKnTGxmK6CyGw==
   dependencies:
     undici-types "~6.20.0"
 
@@ -3062,13 +3062,13 @@ electron-to-chromium@^1.5.73:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.97.tgz#5c4a4744c79e7c85b187adf5160264ac130c776f"
   integrity sha512-HKLtaH02augM7ZOdYRuO19rWDeY+QSJ1VxnXFa/XDFLf07HvM90pALIJFgrO+UVaajI3+aJMMpojoUTLZyQ7JQ==
 
-electron@^2.0.18, electron@^34.0.0:
-  version "34.3.0"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-34.3.0.tgz#d52a5bd14c72a5811a0c0e233db5c20ad70ba078"
-  integrity sha512-I238qRnYTAsuwJ/rS7HGaFNY4NNKAcjX8nlj7mnNmj1TK3z4HvNoD1r7Zud81DYDFx8AITuLd76EPrEnnfF9Bg==
+electron@^2.0.18, electron@^35.0.0:
+  version "35.0.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-35.0.0.tgz#a9182cf6005abcbe782d29385ede74b1c76d3181"
+  integrity sha512-mwNQNktYLPnUWZVR8iNkfWCBjmM5e2/CmB1rhACwE9ASDbVU7CYPgp/jLUB3bj/LyQsfSuubD82OUite6SN8Uw==
   dependencies:
     "@electron/get" "^2.0.0"
-    "@types/node" "^20.9.0"
+    "@types/node" "^22.7.7"
     extract-zip "^2.0.1"
 
 emoji-regex@^8.0.0:
@@ -7143,11 +7143,6 @@ underscore@1.12.1:
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.12.1.tgz#7bb8cc9b3d397e201cf8553336d262544ead829e"
   integrity sha512-hEQt0+ZLDVUMhebKxL4x1BTtDY7bavVofhZ9KZ4aI26X9SRaE+Y3m83XUL1UP2jn8ynjndwCCpEHdUG+9pP1Tw==
-
-undici-types@~6.19.2:
-  version "6.19.8"
-  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.19.8.tgz#35111c9d1437ab83a7cdc0abae2f26d88eda0a02"
-  integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
 
 undici-types@~6.20.0:
   version "6.20.0"
