@@ -10,6 +10,7 @@ IdAM. This includes: login and sign-up page, page for requesting password reset.
 
 ### Building
 
+
 The project uses [Gradle](https://gradle.org) as a build tool but you don't have install it locally since there is a
 `./gradlew` wrapper script.  
 
