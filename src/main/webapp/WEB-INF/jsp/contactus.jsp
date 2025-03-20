@@ -30,18 +30,18 @@
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0008" /></a> </li>
         </ul>
 
+        <h2 class="heading-medium"><spring:message code="public.contactus.text_0047" /></h2>
+        <ul class="list">
+            <li><spring:message code="public.contactus.text_0048" /></li>
+            <li><spring:message code="public.contactus.text_0049" htmlEscape="false" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0014" /></a> </li>
+        </ul>
+
         <h2 class="heading-medium"><spring:message code="public.contactus.text_0010" /></h2>
         <ul class="list">
             <li><spring:message code="public.contactus.text_0011" /></li>
             <li><spring:message code="public.contactus.text_0012" /></li>
             <li><spring:message code="public.contactus.text_0013" htmlEscape="false" /></li>
-            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0014" /></a> </li>
-        </ul>
-
-        <h2 class="heading-medium"><spring:message code="public.contactus.text_0047" /></h2>
-        <ul class="list">
-            <li><spring:message code="public.contactus.text_0048" /></li>
-            <li><spring:message code="public.contactus.text_0049" htmlEscape="false" /></li>
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0014" /></a> </li>
         </ul>
 
@@ -102,6 +102,15 @@
             <li><spring:message code="public.contactus.text_0029" /></li>
             <li><spring:message code="public.contactus.text_0030" /></li>
             <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0031" /></a> </li>
+        </ul>
+
+        <h2 class="heading-medium"><spring:message code="public.contactus.text_0026_1" /></h2>
+        <ul class="list">
+            <li><spring:message code="public.contactus.text_0027_1" /></li>
+            <li><spring:message code="public.contactus.text_0028_1" /> </li>
+            <li><spring:message code="public.contactus.text_0029_1" /></li>
+            <li><spring:message code="public.contactus.text_0030_1" /></li>
+            <li> <a href="https://www.gov.uk/call-charges"><spring:message code="public.contactus.text_0031_1" /></a> </li>
         </ul>
 
         <h2 class="heading-medium"><spring:message code="public.contactus.text_0033" /></h2>
