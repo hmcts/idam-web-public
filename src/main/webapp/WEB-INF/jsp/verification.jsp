@@ -129,6 +129,7 @@
                             id="code" name="code" path="code" type="text" style="width:120px" value="" autocomplete="off"/>
                     </div>
                     <input class="button" type="submit" data-prevent-double-click="true"
+                        onclick="this.disabled = true; document.getElementsByName('verificationForm')[0].submit()"
                         value="<spring:message code="public.verification.form.submit" />">
                 </div>
             </div>
