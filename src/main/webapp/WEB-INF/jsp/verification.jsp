@@ -128,7 +128,8 @@
                             class="form-control${hasBindError? ' form-control-error' : ''}"
                             id="code" name="code" path="code" type="text" style="width:120px" value="" autocomplete="off"/>
                     </div>
-                    <input class="button" type="submit" value="<spring:message code="public.verification.form.submit" />">
+                    <input class="button" type="submit" data-prevent-double-click="true"
+                        value="<spring:message code="public.verification.form.submit" />">
                 </div>
             </div>
         </form:form>
