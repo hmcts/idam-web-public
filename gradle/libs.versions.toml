@@ -6,7 +6,7 @@ commons-fileupload = "1.5"
 feign = "13.5"
 feign-form = "3.8.0"
 findbugs = "3.0.2"
-guava = "33.4.0-jre"
+guava = "33.4.6-jre"
 snakeyaml = "2.4"
 spring-boot = "2.7.18"
 spring-cloud = "3.1.9"
@@ -38,4 +38,4 @@ spring-framework = { id = "org.springframework.boot", version.ref = "spring-boot
 owasp = { id = "org.owasp.dependencycheck", version = "12.1.0" }
 sonarqube = { id = "org.sonarqube", version = "6.0.1.5171" }
 pitest = { id = "info.solidsoft.pitest", version = "1.15.0" }
-git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.4.2" }
+git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.5.0" }
