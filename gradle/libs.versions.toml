@@ -1,6 +1,6 @@
 [versions]
 api-spec = "4.1.0"
-commons-io = "2.18.0"
+commons-io = "2.19.0"
 commons-text = "1.13.1"
 commons-fileupload = "1.5"
 feign = "13.6"
