@@ -15,12 +15,14 @@
         <gav regex="true">^.*org.springframework.*$</gav>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2020-5408</cve>
+        <cve>CVE-2024-38820</cve>
     </suppress>
 
     <!-- No fix till netty 5 release or fix applied to netty 4 -->
     <suppress base="true">
         <gav regex="true">^.*netty.*$</gav>
         <cve>CVE-2023-4586</cve>
+        <cve>CVE-2025-25193</cve>
     </suppress>
 
 
