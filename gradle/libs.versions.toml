@@ -1,12 +1,12 @@
 [versions]
 api-spec = "4.1.0"
-commons-io = "2.18.0"
+commons-io = "2.19.0"
 commons-text = "1.13.1"
 commons-fileupload = "1.5"
 feign = "13.6"
 feign-form = "3.8.0"
 findbugs = "3.0.2"
-guava = "33.4.7-jre"
+guava = "33.4.8-jre"
 snakeyaml = "2.4"
 spring-boot = "2.7.18"
 spring-cloud = "3.1.9"
@@ -36,6 +36,6 @@ jmh = { id = "me.champeau.jmh", version = "0.7.3" }
 spring = { id = "io.spring.dependency-management", version = "1.1.7" }
 spring-framework = { id = "org.springframework.boot", version.ref = "spring-boot" }
 owasp = { id = "org.owasp.dependencycheck", version = "12.1.1" }
-sonarqube = { id = "org.sonarqube", version = "6.0.1.5171" }
+sonarqube = { id = "org.sonarqube", version = "6.1.0.5360" }
 pitest = { id = "info.solidsoft.pitest", version = "1.15.0" }
 git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.5.0" }
