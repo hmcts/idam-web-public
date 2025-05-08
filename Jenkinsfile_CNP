@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@fix-npm-nagger")
 
 def type = "java"
 
