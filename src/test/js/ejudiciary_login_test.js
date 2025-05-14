@@ -39,17 +39,17 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
     I.click('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText('Stay signed in?');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
-        I.click('No');
+        I.clickWithWait('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
         I.interceptRequestsAfterSignin();
-        I.click('No');
+        I.clickWithWait('No');
         I.waitForText(TestData.SERVICE_REDIRECT_URI);
         I.see('code=');
         I.dontSee('error=');
@@ -74,18 +74,18 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
     I.waitForText('Log in with your eJudiciary account');
-    I.click('Log in with your eJudiciary account');
+    I.clickWithWait('Log in with your eJudiciary account');
     I.waitInUrl('/oauth2/authorize');
     I.waitForText('Sign in');
     I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
-    I.click('Next');
+    I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
 
     I.waitForText('Stay signed in?');
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
-        I.click('No');
+        I.clickWithWait('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
@@ -124,14 +124,14 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be redirected 
     I.waitForText('Sign in');
     I.fillField('#username', TestData.EJUDICIARY_TEST_USER_USERNAME);
     I.fillField('#password', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
 
     I.waitForText('Sign in');
     I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
-    I.click('Next');
+    I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
 
     I.waitForText('Stay signed in?');
 
@@ -142,7 +142,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be redirected 
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
         I.interceptRequestsAfterSignin();
-        I.click('No');
+        I.clickWithWait('No');
         I.waitForText(TestData.SERVICE_REDIRECT_URI);
         I.see('code=');
         I.resetRequestInterception();
