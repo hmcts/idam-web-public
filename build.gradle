@@ -54,7 +54,7 @@ allprojects {
   ext['okhttp.version'] = '4.11.0'
   ext['netty.version'] = '4.1.121.Final' // CVE-2023-44487
   ext['jackson.version'] = '2.16.2'
-  ext['spring-framework.version'] = '5.3.42'
+  ext['logbackVersion'] = '1.5.18' // because 'CVE-2015-0254 CVE-2023-6378, CVE-2023-6481 from dependency in org.springframework.boot:*:2.7.18'
 
   repositories {
     mavenCentral()
@@ -132,9 +132,18 @@ allprojects {
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.1'
     implementation group: 'org.springframework.security', name: 'spring-security-taglibs', version: '5.7.14'
 
-    // because 'CVE-2015-0254 CVE-2023-6378, CVE-2023-6481 from dependency in org.springframework.boot:*:2.7.18'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.18'
+    // because CVE-2024-38820
+    implementation group: 'org.springframework', name: 'spring-aop', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-beans', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-context', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-context-support', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-core', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-expression', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-jcl', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-oxm', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-tx', version: '5.3.39'
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: '5.3.39'
 
     compileOnly("org.projectlombok:lombok")
 
