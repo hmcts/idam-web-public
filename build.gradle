@@ -131,6 +131,9 @@ allprojects {
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.1'
     implementation group: 'org.springframework.security', name: 'spring-security-taglibs', version: '5.7.14'
 
+    // because 'CVE-2015-0254 CVE-2023-6378, CVE-2023-6481 from dependency in org.springframework.boot:spring-boot-starter-logging:2.7.18'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
+    
     compileOnly("org.projectlombok:lombok")
 
     annotationProcessor("org.projectlombok:lombok")
