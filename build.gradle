@@ -134,9 +134,7 @@ allprojects {
     // because 'CVE-2015-0254 CVE-2023-6378, CVE-2023-6481 from dependency in org.springframework.boot:*:2.7.18'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
     implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.18'
-
-    runtimeOnly group: 'org.apache.taglibs', name: 'taglibs-standard-impl', version: '1.2.5'
-
+    
     compileOnly("org.projectlombok:lombok")
 
     annotationProcessor("org.projectlombok:lombok")
