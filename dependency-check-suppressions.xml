@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
 
+    <!-- Until we can switch to spring 3+ these need to be suppressed -->
+    <suppress>
+        <gav regex="true">^.*org.springframework.*$</gav>
+        <cve>CVE-2016-1000027</cve>
+        <cve>CVE-2020-5408</cve>
+        <cve>CVE-2024-38820</cve>
+    </suppress>
 
 </suppressions>
