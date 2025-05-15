@@ -52,7 +52,7 @@ allprojects {
   }
 
   ext['okhttp.version'] = '4.11.0'
-  ext['netty.version'] = '4.1.100.Final' // CVE-2023-44487
+  ext['netty.version'] = '4.1.121.Final' // CVE-2023-44487
   ext['jackson.version'] = '2.16.2'
 
   repositories {
@@ -119,7 +119,7 @@ allprojects {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis-reactive'
     implementation group: 'org.springframework.session', name: 'spring-session-data-redis', version: '2.7.4'
-    implementation group: 'org.springframework.data', name: 'spring-data-redis', version: '2.6.4'
+    implementation group: 'org.springframework.data', name: 'spring-data-redis', version: '2.6.10'
 
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-zuul', version: '2.2.10.RELEASE') {
       exclude(module: 'rxnetty-contexts')
@@ -129,7 +129,7 @@ allprojects {
 
     implementation group: 'com.netflix.servo', name: 'servo-core', version: '0.13.2'
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.1'
-    implementation group: 'org.springframework.security', name: 'spring-security-taglibs'
+    implementation group: 'org.springframework.security', name: 'spring-security-taglibs', version: '5.7.14'
 
     compileOnly("org.projectlombok:lombok")
 
