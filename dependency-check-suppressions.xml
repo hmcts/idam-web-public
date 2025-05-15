@@ -18,4 +18,11 @@
         <cve>CVE-2024-38820</cve>
     </suppress>
 
+    <!-- cannot fix due to spring boot -->
+    <suppress base="true">
+        <gav regex="true">^.*logback.*$</gav>
+        <cve>CVE-2023-6378</cve>
+        <cve>CVE-2023-6481</cve>
+    </suppress>
+
 </suppressions>
