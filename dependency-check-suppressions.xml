@@ -1,48 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
 
-    <!-- This CVE is about JSTL in conjunction with XML/XSLT tags, we do not use these tags -->
-    <suppress>
-        <notes><![CDATA[
-   file name: jstl-1.2.jar
-   ]]></notes>
-        <gav regex="true">^.*$</gav>
-        <cve>CVE-2015-0254</cve>
-    </suppress>
-
-    <!-- Until we can switch to spring 3+ these need to be suppressed -->
-    <suppress>
-        <gav regex="true">^.*org.springframework.*$</gav>
-        <cve>CVE-2016-1000027</cve>
-        <cve>CVE-2020-5408</cve>
-        <cve>CVE-2024-38820</cve>
-    </suppress>
-
-    <!-- No fix till netty 5 release or fix applied to netty 4 -->
-    <suppress base="true">
-        <gav regex="true">^.*netty.*$</gav>
-        <cve>CVE-2023-4586</cve>
-        <cve>CVE-2025-25193</cve>
-    </suppress>
-
-
-    <!--
-    https://github.com/google/guava/issues/4011
-     There is no non-vulnerable upgrade path for this component/package.
-     We recommend investigating alternative components or replacing all usages of the deprecated
-     Files.createTempDir() method with a safer alternative, such as java.nio.file.Files.createTempDirectory()
-     for Java 7+.
-    -->
-    <suppress>
-        <gav regex="true">^.*com.google.guava.*$</gav>
-        <cve>CVE-2020-8908</cve>
-    </suppress>
-
-    <!-- cannot fix due to spring boot -->
-    <suppress base="true">
-        <gav regex="true">^.*logback.*$</gav>
-        <cve>CVE-2023-6378</cve>
-        <cve>CVE-2023-6481</cve>
-    </suppress>
 
 </suppressions>
