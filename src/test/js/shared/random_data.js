@@ -44,7 +44,7 @@ function shuffleArray(array) {
     return array;
 }
 
-function getBuildIdentifier(defaultValue = 'test') {
+function getBuildIdentifier(defaultValue = 'test', delimiter = '.') {
     const { BRANCH_NAME, BUILD_NUMBER } = process.env;
 
     let branch = BRANCH_NAME ? BRANCH_NAME.toLowerCase().replace(/[^a-z0-9]/g, '') : defaultValue;
@@ -54,7 +54,7 @@ function getBuildIdentifier(defaultValue = 'test') {
       return defaultValue;
     }
 
-    return `${branch}${build}`;
+    return `${branch}${delimiter}${build}`;
 }
 
 function getBranchIdentifier(defaultValue = 'test') {
@@ -78,7 +78,7 @@ module.exports = {
     getRandomUserPassword: () => generatePassword(12),
     getRandomClientSecret: () => generatePassword(12),
     getRandomTextFor11KB: () => createRandomString(1112150),
-    getRandomUserName: (testSuitePrefix) => testBasePrefix + "USER_" + testSuitePrefix + "_" + getBranchIdentifier("USER") + "_" + randomAlphabeticString(),
-    getRandomRoleName: (testSuitePrefix) => testBasePrefix + "ROLE_" + testSuitePrefix + "_" + getBuildIdentifier("ROLE") + "_" + randomString(),
-    getRandomServiceName: (testSuitePrefix) => testBasePrefix +  "SERVICE_" + testSuitePrefix + "_" + getBuildIdentifier("SVC") + "_" + randomString(),
+    getRandomUserName: (testSuitePrefix) => testBasePrefix + "USER_" + testSuitePrefix + "_" + randomAlphabeticString(),
+    getRandomRoleName: (testSuitePrefix) => testBasePrefix + "ROLE_" + testSuitePrefix + "_" + getBuildIdentifier("ROLE", "_") + "_" + randomString(),
+    getRandomServiceName: (testSuitePrefix) => testBasePrefix +  "SERVICE_" + testSuitePrefix + "_" + getBuildIdentifier("SVC", "_") + "_" + randomString(),
 };
