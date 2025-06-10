@@ -6,7 +6,7 @@ Feature('When I am locked out of my account, resetting my password unlocks it');
 let citizenEmail;
 let testingToken;
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "altest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();

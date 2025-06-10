@@ -7,7 +7,7 @@ const {expect} = chai;
 
 Feature('Self Registration');
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "srtest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();

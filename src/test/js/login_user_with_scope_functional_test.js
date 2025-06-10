@@ -9,7 +9,7 @@ const {expect} = chai;
 Feature('Service can request a scope on user authentication');
 
 const customScope = 'manage-roles';
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "luwstest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();

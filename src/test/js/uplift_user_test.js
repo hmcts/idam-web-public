@@ -12,7 +12,7 @@ const pinUserRolePrefix = 'letter-';
 let serviceBetaRole;
 let accessTokenClientSecret;
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "uutest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();

@@ -7,7 +7,7 @@ Feature('Stale user login');
 
 let serviceNames = [];
 let token;
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "sultest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();

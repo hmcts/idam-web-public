@@ -11,7 +11,7 @@ const {expect} = chai;
 Feature('I am able to login with MFA');
 
 const scope="openid profile roles manage-user create-user";
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "metest" + randomData.getRandomAlphabeticString();
 const userPassword=randomData.getRandomUserPassword();
 const serviceClientSecret = randomData.getRandomClientSecret();
 let token;

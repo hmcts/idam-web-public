@@ -11,7 +11,7 @@ Feature('I am able to login with MFA for my organisation');
 const scope = "openid profile roles manage-user create-user";
 const nonce = "0km9sBrZfnXv8e_O7U-XmSR6vtIgtUVTGybVUdoLV7g";
 const state = "44p4OfI5CXbdvMTpRYWfleNWIYm6qz0qNDgMOm2qgpU";
-const testSuiteId = randomData.getRandomAlphabeticString();
+const testSuiteId = "moetest" + randomData.getRandomAlphabeticString();
 const userPassword = randomData.getRandomUserPassword();
 const serviceClientSecret = randomData.getRandomClientSecret();
 const orgMFADisabledCompanyNumber = randomData.getRandomAlphabeticString(7);

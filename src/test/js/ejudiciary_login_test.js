@@ -12,7 +12,7 @@ if (isEnvtPerftest){
 
 let serviceNames = [];
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "eltest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 

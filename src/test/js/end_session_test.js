@@ -8,7 +8,7 @@ let citizenEmail;
 let serviceNames = [];
 let userFirstNames = [];
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "est" + randomData.getRandomAlphabeticString();
 const serviceName =  randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
