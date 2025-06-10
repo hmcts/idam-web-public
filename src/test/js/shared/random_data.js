@@ -44,17 +44,41 @@ function shuffleArray(array) {
     return array;
 }
 
+function getBuildIdentifier(defaultValue = 'test') {
+    const { BRANCH_NAME, BUILD_NUMBER } = process.env;
+
+    let branch = BRANCH_NAME ? BRANCH_NAME.toLowerCase().replace(/[^a-z0-9]/g, '') : defaultValue;
+    const build = BUILD_NUMBER ? BUILD_NUMBER : 'local';
+
+    if (!BRANCH_NAME && !BUILD_NUMBER) {
+      return defaultValue;
+    }
+
+    return `${branch}${build}`;
+}
+
+function getBranchIdentifier(defaultValue = 'test') {
+    const { BRANCH_NAME } = process.env;
+
+    let branch = BRANCH_NAME ? BRANCH_NAME.toLowerCase().replace(/[^a-z]/g, '') : defaultValue;
+
+    if (!BRANCH_NAME) {
+      return defaultValue;
+    }
+
+    return `${branch}`;
+}
 const testBasePrefix = "iwp_" ;
 
 module.exports = {
     getRandomString: randomString,
     getRandomAlphabeticString: randomAlphabeticString,
     TEST_BASE_PREFIX: testBasePrefix,
-    getRandomEmailAddress: () => randomString() + "@mailtest.gov.uk",
+    getRandomEmailAddress: () => randomString() + "@" + getBuildIdentifier() + ".local",
     getRandomUserPassword: () => generatePassword(12),
     getRandomClientSecret: () => generatePassword(12),
     getRandomTextFor11KB: () => createRandomString(1112150),
-    getRandomUserName: (testSuitePrefix) => testBasePrefix + "USER_"+ testSuitePrefix + "USER" + randomAlphabeticString(),
-    getRandomRoleName: (testSuitePrefix) => testBasePrefix + "ROLE_"+testSuitePrefix + "ROLE_" + randomString(),
-    getRandomServiceName: (testSuitePrefix) => testBasePrefix +  "SERVICE_" + testSuitePrefix + "SERVICE_" + randomString(),
+    getRandomUserName: (testSuitePrefix) => testBasePrefix + "USER_" + testSuitePrefix + "_" + getBranchIdentifier("USER") + "_" + randomAlphabeticString(),
+    getRandomRoleName: (testSuitePrefix) => testBasePrefix + "ROLE_" + testSuitePrefix + "_" + getBuildIdentifier("ROLE") + "_" + randomString(),
+    getRandomServiceName: (testSuitePrefix) => testBasePrefix +  "SERVICE_" + testSuitePrefix + "_" + getBuildIdentifier("SVC") + "_" + randomString(),
 };

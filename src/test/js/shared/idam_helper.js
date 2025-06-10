@@ -739,15 +739,15 @@ class IdamHelper extends Helper {
                 return TestData.FUNCTIONAL_TEST_TOKEN;
             }
             console.log("FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET "+TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET)
-            console.log("BRANCH_NAME" + process.env.BRANCH_NAME)
-            console.log("BUILD_NUMBER" + process.env.BUILD_NUMBER)
-            console.log("BUILD_ID" + process.env.BUILD_ID)
-            console.log("BUILD_DISPLAY_NAME" + process.env.BUILD_DISPLAY_NAME)
-            console.log("JOB_NAME" + process.env.JOB_NAME)
-            console.log("JOB_BASE_NAME" + process.env.JOB_BASE_NAME)
-            console.log("BUILD_TAG" + process.env.BUILD_TAG)
-            console.log("NODE_NAME" + process.env.NODE_NAME)
-            
+            console.log("BRANCH_NAME " + process.env.BRANCH_NAME)
+            console.log("BUILD_NUMBER " + process.env.BUILD_NUMBER)
+            console.log("BUILD_ID " + process.env.BUILD_ID)
+            console.log("BUILD_DISPLAY_NAME " + process.env.BUILD_DISPLAY_NAME)
+            console.log("JOB_NAME " + process.env.JOB_NAME)
+            console.log("JOB_BASE_NAME " + process.env.JOB_BASE_NAME)
+            console.log("BUILD_TAG " + process.env.BUILD_TAG)
+            console.log("NODE_NAME " + process.env.NODE_NAME)
+
             const response = await fetch(`${TestData.IDAM_API}/o/token`, {
                 method: 'POST',
                 headers: {
