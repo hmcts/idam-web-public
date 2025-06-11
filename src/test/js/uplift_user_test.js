@@ -68,7 +68,7 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     userIdsToCleanup.push(userInfo.id);
 
     const letterRole = userInfo.roles.find(role => /^letter/.test(role));
-    rolesToCleanup.push(letterTole);
+    rolesToCleanup.push(letterRole);
 
     expect(userInfo.roles).to.eql(['letter-holder']);
 
@@ -151,7 +151,7 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     userIdsToCleanup.push(userInfo.id);
 
     const letterRole = userInfo.roles.find(role => /^letter/.test(role));
-    rolesToCleanup.push(letterTole);
+    rolesToCleanup.push(letterRole);
 });
 
 Scenario('@functional @uplift User should receive You already have an account email for Uplift via register using an existing email and in different case', async ({ I }) => {
@@ -205,7 +205,7 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
     userIdsToCleanup.push(userInfo.id);
 
     const letterRole = userInfo.roles.find(role => /^letter/.test(role));
-    rolesToCleanup.push(letterTole);
+    rolesToCleanup.push(letterRole);
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
