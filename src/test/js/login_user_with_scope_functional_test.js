@@ -97,7 +97,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     await I.grantRoleToUser(pinUserDynamicRole.name, accessToken);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
-    rolesToCleanup.add(pinUserRole);
+    rolesToCleanup.push(pinUserRole);
     expect(userInfo.roles).to.deep.equalInAnyOrder([pinUserRole, citizenRole, pinUserDynamicRole.name]);
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

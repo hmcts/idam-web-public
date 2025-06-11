@@ -19,7 +19,6 @@ BeforeSuite(async ({ I }) => {
 Scenario('@functional @unlock My user account is unlocked when I reset my password - citizen', async ({ I }) => {
     const randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
-    testingToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
     await I.createUserUsingTestingSupportService(testingToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
 
     const password = randomData.getRandomUserPassword();

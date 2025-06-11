@@ -65,10 +65,10 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
-    userIdsToCleanup.add(userInfo.id);
+    userIdsToCleanup.push(userInfo.id);
 
     const letterRole = userInfo.roles.find(role => /^letter/.test(role));
-    rolesToCleanup.add(letterTole);
+    rolesToCleanup.push(letterTole);
 
     expect(userInfo.roles).to.eql(['letter-holder']);
 
@@ -148,10 +148,10 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     await I.runAccessibilityTest();
 
     let userInfo = await I.getUserByEmail(citizenEmail);
-    userIdsToCleanup.add(userInfo.id);
+    userIdsToCleanup.push(userInfo.id);
 
     const letterRole = userInfo.roles.find(role => /^letter/.test(role));
-    rolesToCleanup.add(letterTole);
+    rolesToCleanup.push(letterTole);
 });
 
 Scenario('@functional @uplift User should receive You already have an account email for Uplift via register using an existing email and in different case', async ({ I }) => {
@@ -202,10 +202,10 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
     let pageAccessToken = await I.getAccessToken(pageAccessCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(pageAccessToken);
-    userIdsToCleanup.add(userInfo.id);
+    userIdsToCleanup.push(userInfo.id);
 
     const letterRole = userInfo.roles.find(role => /^letter/.test(role));
-    rolesToCleanup.add(letterTole);
+    rolesToCleanup.push(letterTole);
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -269,7 +269,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
-    userIdsToCleanup.add(oidcUserInfo.id);
+    userIdsToCleanup.push(oidcUserInfo.id);
 
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftAccountCreationStaleUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.equal(userId);
@@ -278,7 +278,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     expect(oidcUserInfo.given_name).to.equal(firstName + 'StaleUser');
     expect(oidcUserInfo.family_name).to.equal('User');
 
-    rolesToCleanup.add(pinUserRole);
+    rolesToCleanup.push(pinUserRole);
 
     I.resetRequestInterception();
 });
@@ -337,7 +337,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
-    userIdsToCleanup.add(oidcUserInfo.id);
+    userIdsToCleanup.push(oidcUserInfo.id);
 
     expect(oidcUserInfo.sub.toUpperCase()).to.equal(upliftLoginStaleUserEmail.toUpperCase());
     expect(oidcUserInfo.uid).to.equal(userId);
@@ -346,7 +346,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     expect(oidcUserInfo.given_name).to.equal(firstName + 'StaleUser');
     expect(oidcUserInfo.family_name).to.equal('User');
 
-    rolesToCleanup.add(pinUserRole);
+    rolesToCleanup.push(pinUserRole);
 
     I.resetRequestInterception();
 });
