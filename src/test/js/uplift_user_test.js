@@ -27,7 +27,7 @@ BeforeSuite(async ({ I }) => {
     //let serviceAdminRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description',[serviceBetaRole.name], testingToken);
     //let serviceSuperRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', [serviceAdminRole.name], testingToken);
 
-    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [serviceBetaRole.name], token,["openid", "profile", "roles"],[],false,TestData.SERVICE_REDIRECT_URI) ;
+    await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [serviceBetaRole.name], testingToken, ["openid", "profile", "roles"],[],false,TestData.SERVICE_REDIRECT_URI) ;
 
     I.wait(0.5);
 
