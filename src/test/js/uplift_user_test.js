@@ -198,10 +198,10 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
     I.dontSee('error=');
 
     let pageSource = await I.grabSource();
-    let accessCode = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-    let accessToken = await I.getAccessToken(accessCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
+    let pageAccessCode = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let pageAccessToken = await I.getAccessToken(pageAccessCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
-    let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
+    let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(pageAccessToken);
     userIdsToCleanup.add(userInfo.id);
 
     const letterRole = userInfo.roles.find(role => /^letter/.test(role));
