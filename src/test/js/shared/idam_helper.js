@@ -81,6 +81,14 @@ class IdamHelper extends Helper {
         }
     }
 
+    async cleanupUser(token, userId) {
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/user/${userId}`, {
+            agent: agent,
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+        });
+    }
+
     getBase64(email_address, password) {
         console.log("BASE64-ENCODED " + Buffer.from(email_address + ":" + password).toString('base64'))
         return Buffer.from(email_address + ":" + password).toString('base64')

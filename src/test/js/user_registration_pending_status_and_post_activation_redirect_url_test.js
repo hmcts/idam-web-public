@@ -17,8 +17,9 @@ let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
 let accessTokenClientSecret;
+let testingToken;
 
-const testSuitePrefix = "urptest" + randomData.getRandomAlphabeticString();
+const testSuitePrefix = "urpsaparutest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
@@ -29,7 +30,7 @@ BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     userEmail = 'user.' + randomData.getRandomEmailAddress();
-    let testingToken = await I.getToken();
+    testingToken = await I.getToken();
     assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix)+ "_assignable", 'assignable role', [], testingToken);
     userRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix)+ "_usrReg", 'user reg role', [assignableRole.name], testingToken);
 
@@ -52,6 +53,10 @@ BeforeSuite(async ({ I }) => {
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.registerUserWithId(accessToken, userEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name)
+});
+
+AfterSuite(async ({ I }) => {
+    return await I.cleanupUser(testingToken, userId);
 });
 
 Scenario('@functional  user registration pending status and post activation redirect url test', async ({ I }) => {

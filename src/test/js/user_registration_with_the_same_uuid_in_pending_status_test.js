@@ -20,7 +20,7 @@ let assignableRole;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
-let accessTokenClientSecret;
+let testingToken;
 
 const testSuitePrefix = "urwtsuipstest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
@@ -36,11 +36,9 @@ BeforeSuite(async ({ I }) => {
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     previousUserEmail = 'user.' + randomData.getRandomEmailAddress();
     currentUserEmail = 'user.' + randomData.getRandomEmailAddress();
-    const testingToken= await I.getToken();
+    testingToken = await I.getToken();
 
     apiAuthToken = await I.getAuthToken();
-    // assignableRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix)  + "_assignable", 'assignable role', '', apiAuthToken);
-    // let userRegRole = await I.createRole(randomData.getRandomRoleName(testSuitePrefix)  + "_usrReg", 'user reg role', assignableRole.id, apiAuthToken);
     assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', [], testingToken);
     let userRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_usrReg", 'user reg role', [assignableRole.name], testingToken);
 
@@ -53,9 +51,7 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-
-    await I.createUserUsingTestingSupportService(accessTokenClientSecret, adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
+    await I.createUserUsingTestingSupportService(testingToken, adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, userPassword);
@@ -66,13 +62,16 @@ BeforeSuite(async ({ I }) => {
     await I.registerUserWithId(accessToken, currentUserEmail, currentUserFirstName, currentUserLastName, userId, assignableRole.name)
 });
 
+AfterSuite(async ({ I }) => {
+    return await I.cleanupUser(testingToken, userId);
+});
 
 Scenario('@f1 multiple users can be registered with same uuid but the previous user will be told their account is already active', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
-    const currentUserUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, currentUserEmail);
+    const currentUserUrl = await I.extractUrlFromNotifyEmail(testingToken, currentUserEmail);
 
     I.amOnPage(currentUserUrl);
     I.waitForText('Create a password');
@@ -90,7 +89,7 @@ Scenario('@f1 multiple users can be registered with same uuid but the previous u
     expect(responseAfterCurrentUserActivation.surname).to.equal(currentUserLastName);
     expect(responseAfterCurrentUserActivation.email).to.equal(currentUserEmail);
     expect(responseAfterCurrentUserActivation.roles).to.eql([assignableRole.name]);
-    const previousUserUrl = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, previousUserEmail);
+    const previousUserUrl = await I.extractUrlFromNotifyEmail(testingToken, previousUserEmail);
 
     I.amOnPage(previousUserUrl);
     I.waitForText('Your account is already activated.');
