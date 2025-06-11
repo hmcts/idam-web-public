@@ -17,26 +17,32 @@ const citizenRole = 'citizen';
 const pinUserRolePrefix = 'letter-';
 let citizenUserDynamicRole;
 let pinUserDynamicRole;
-let testingAccessToken;
+let testingToken;
+
+let rolesToCleanup = [];
 
 const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}&scope=${customScope}`;
 
 BeforeSuite(async ({ I }) => {
-    const testingToken = await I.getToken();
+    testingToken = await I.getToken();
     citizenUserDynamicRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix), '', [], testingToken);
     pinUserDynamicRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix), '', [], testingToken);
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,[],testingToken, ["openid", "profile", "roles", "manage-roles"],[])
 
     I.wait(0.5);
+});
 
-    testingAccessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
+AfterSuite(async ({ I }) => {
+    if (rolesToCleanup.length > 0) {
+        await I.cleanupLetterHolderRoles(testingToken, rolesToCleanup);
+    }
 });
 
 Scenario('@functional @loginuserwithscope As a service, I can request a custom scope on user login', async ({ I }) => {
 
     let citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
-    await I.createUserUsingTestingSupportService(testingAccessToken, citizenEmail, userPassword, randomData.getRandomUserName(testSuitePrefix) + 'Citizen', []);
+    await I.createUserUsingTestingSupportService(testingToken, citizenEmail, userPassword, randomData.getRandomUserName(testSuitePrefix) + 'Citizen', []);
 
     I.amOnPage(loginUrl);
     I.waitForText('Sign in');
@@ -72,7 +78,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let respondentEmail = 'respondent.' + randomData.getRandomEmailAddress();
-    await I.createUserUsingTestingSupportService(testingAccessToken, respondentEmail, userPassword, randomData.getRandomUserName(testSuitePrefix) + 'Respondent', []);
+    await I.createUserUsingTestingSupportService(testingToken, respondentEmail, userPassword, randomData.getRandomUserName(testSuitePrefix) + 'Respondent', []);
 
     I.amOnPage(`${TestData.WEB_PUBLIC_URL}/register?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&scope=${customScope}&jwt=${accessToken}`)
     I.waitForText('Sign in or create an account');
@@ -91,7 +97,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     await I.grantRoleToUser(pinUserDynamicRole.name, accessToken);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
+    rolesToCleanup.add(pinUserRole);
     expect(userInfo.roles).to.deep.equalInAnyOrder([pinUserRole, citizenRole, pinUserDynamicRole.name]);
     I.resetRequestInterception();
-    I.cleanupLetterHolderRoles(accessToken,userInfo.roles)
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

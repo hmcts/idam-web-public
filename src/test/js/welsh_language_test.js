@@ -16,19 +16,17 @@ let serviceNames = [];
 let randomUserFirstName;
 let randomUserLastName;
 let specialCharacterPassword;
-let accessToken;
 
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
-    const testingToken =  await I.getToken();
+    const testingToken = await I.getToken();
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);
     serviceNames.push(serviceName);
 
     I.wait(0.5);
 
-    accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
+    await I.createUserUsingTestingSupportService(testingToken, citizenEmail, userPassword, randomUserFirstName, ["citizen"]);
     userFirstNames.push(randomUserFirstName);
     specialCharacterPassword = 'New%%%&&&234';
 });
@@ -103,7 +101,7 @@ Scenario('@functional @welshLanguage I can reset my password in Welsh', async ({
     await I.runAccessibilityTest();
     I.clickWithWait(Welsh.submitBtn);
     I.waitForText(Welsh.checkYourEmail);
-    const userPwdResetUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenEmail);
+    const userPwdResetUrl = await I.extractUrlFromNotifyEmail(testingToken, citizenEmail);
     I.amOnPage(userPwdResetUrl);
     I.waitForText(Welsh.createANewPassword);
     I.fillField('#password1', specialCharacterPassword);
