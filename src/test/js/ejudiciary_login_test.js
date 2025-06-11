@@ -10,14 +10,15 @@ if (isEnvtPerftest){
     Feature('eJudiciary login tests');
 }
 
+let testingToken;
 let serviceNames = [];
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "eltest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 
 BeforeSuite(async ({ I }) => {
-    const testingToken = await I.getToken();
+    testingToken = await I.getToken();
     const scopes = ['openid', 'profile', 'roles'];
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], testingToken, scopes, [TestData.EJUDICIARY_SSO_PROVIDER_KEY],false,);
@@ -116,8 +117,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
 Scenario('@functional @ejudiciary As an ejudiciary user, I should be redirected to eJudiciary for login if I enter my username on the login screen', async ({ I }) => {
     await I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
 
-    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, TestData.EJUDICIARY_TEST_USER_USERNAME, TestData.EJUDICIARY_TEST_USER_PASSWORD, "Judge", [ ], "azure", randomData.getRandomString());
+    await I.createUserUsingTestingSupportService(testingToken, TestData.EJUDICIARY_TEST_USER_USERNAME, TestData.EJUDICIARY_TEST_USER_PASSWORD, "Judge", [ ], "azure", randomData.getRandomString());
 
     //redirection verification
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);

@@ -16,9 +16,9 @@ let assignableRole;
 let userFirstNames = [];
 let roleNames = [];
 let serviceNames = [];
-let accessTokenClientSecret;
+let testingToken;
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "urpsaparutest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
@@ -29,13 +29,12 @@ BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     adminEmail = 'admin.' + randomData.getRandomEmailAddress();
     userEmail = 'user.' + randomData.getRandomEmailAddress();
-    let testingToken = await I.getToken();
+    testingToken = await I.getToken();
     assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix)+ "_assignable", 'assignable role', [], testingToken);
     userRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix)+ "_usrReg", 'user reg role', [assignableRole.name], testingToken);
 
     let serviceRoleNames = [assignableRole.name, userRegRole.name];
     roleNames.push(serviceRoleNames);
-
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,[serviceRoleNames], testingToken, ["openid", "profile", "roles", "manage-user", "create-user"],[],false,TestData.SERVICE_REDIRECT_URI);
 
@@ -43,8 +42,7 @@ BeforeSuite(async ({ I }) => {
 
     I.wait(0.5);
 
-    accessTokenClientSecret = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessTokenClientSecret, adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
+    await I.createUserUsingTestingSupportService(testingToken, adminEmail, userPassword, randomUserFirstName + 'Admin', [userRegRole.name]);
     userFirstNames.push(randomUserFirstName + 'Admin');
 
     const base64 = await I.getBase64(adminEmail, userPassword);
@@ -54,12 +52,16 @@ BeforeSuite(async ({ I }) => {
     await I.registerUserWithId(accessToken, userEmail, randomUserFirstName, randomUserLastName, userId, assignableRole.name)
 });
 
+AfterSuite(async ({ I }) => {
+    return await I.cleanupUser(testingToken, userId);
+});
+
 Scenario('@functional  user registration pending status and post activation redirect url test', async ({ I }) => {
     const responseBeforeActivation = await I.getUserById(userId, accessToken);
     expect(responseBeforeActivation.id).to.equal(userId);
     expect(responseBeforeActivation.pending).to.equal(true);
 
-    const url = await I.extractUrlFromNotifyEmail(accessTokenClientSecret, userEmail);
+    const url = await I.extractUrlFromNotifyEmail(testingToken, userEmail);
 
     I.amOnPage(url);
     I.waitForText('Create a password');

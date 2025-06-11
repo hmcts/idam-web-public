@@ -6,7 +6,7 @@ Feature('When I am locked out of my account, resetting my password unlocks it');
 let citizenEmail;
 let testingToken;
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "altest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
@@ -19,7 +19,6 @@ BeforeSuite(async ({ I }) => {
 Scenario('@functional @unlock My user account is unlocked when I reset my password - citizen', async ({ I }) => {
     const randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
-    testingToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
     await I.createUserUsingTestingSupportService(testingToken, citizenEmail, userPassword, randomUserFirstName + 'Citizen', ["citizen"]);
 
     const password = randomData.getRandomUserPassword();

@@ -81,6 +81,14 @@ class IdamHelper extends Helper {
         }
     }
 
+    async cleanupUser(token, userId) {
+        return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/user/${userId}`, {
+            agent: agent,
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+        });
+    }
+
     getBase64(email_address, password) {
         console.log("BASE64-ENCODED " + Buffer.from(email_address + ":" + password).toString('base64'))
         return Buffer.from(email_address + ":" + password).toString('base64')
@@ -738,7 +746,7 @@ class IdamHelper extends Helper {
             if (TestData.FUNCTIONAL_TEST_TOKEN && TestData.FUNCTIONAL_TEST_TOKEN.trim() !== "") {
                 return TestData.FUNCTIONAL_TEST_TOKEN;
             }
-            console.log("FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET "+TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET)
+            console.log("FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET " + TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET);
 
             const response = await fetch(`${TestData.IDAM_API}/o/token`, {
                 method: 'POST',
