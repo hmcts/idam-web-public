@@ -10,6 +10,7 @@ if (isEnvtPerftest){
     Feature('eJudiciary login tests');
 }
 
+let testingToken;
 let serviceNames = [];
 
 const testSuitePrefix = "eltest" + randomData.getRandomAlphabeticString();
@@ -17,7 +18,7 @@ const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 
 BeforeSuite(async ({ I }) => {
-    const testingToken = await I.getToken();
+    testingToken = await I.getToken();
     const scopes = ['openid', 'profile', 'roles'];
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], testingToken, scopes, [TestData.EJUDICIARY_SSO_PROVIDER_KEY],false,);

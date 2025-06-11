@@ -17,6 +17,7 @@ const formSubmitButton = '.form input[type=submit]';
 let randomUserFirstName;
 let randomUserLastName;
 
+let testingToken;
 let userIdsToCleanup = [];
 
 const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
@@ -24,7 +25,7 @@ const selfRegUrl = `${TestData.WEB_PUBLIC_URL}/users/selfRegister?redirect_uri=$
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
-    const testingToken =  await I.getToken();
+    testingToken =  await I.getToken();
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);
 

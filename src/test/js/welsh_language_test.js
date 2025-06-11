@@ -11,6 +11,7 @@ const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
 const citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();
 
+let testingToken;
 let userFirstNames = [];
 let serviceNames = [];
 let randomUserFirstName;
@@ -20,7 +21,7 @@ let specialCharacterPassword;
 BeforeSuite(async ({ I }) => {
     randomUserFirstName = randomData.getRandomUserName(testSuitePrefix);
     randomUserLastName = randomData.getRandomUserName(testSuitePrefix);
-    const testingToken = await I.getToken();
+    testingToken = await I.getToken();
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret,'', testingToken, [], []);
     serviceNames.push(serviceName);
 

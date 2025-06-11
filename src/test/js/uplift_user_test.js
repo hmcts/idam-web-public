@@ -22,7 +22,7 @@ const userPassword = randomData.getRandomUserPassword();
 
 BeforeSuite(async ({ I }) => {
 
-    const testingToken = await I.getToken();
+    testingToken = await I.getToken();
     serviceBetaRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_beta", 'beta description', [], testingToken);
     //let serviceAdminRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_admin", 'admin description',[serviceBetaRole.name], testingToken);
     //let serviceSuperRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_super", 'super description', [serviceAdminRole.name], testingToken);
