@@ -54,6 +54,7 @@ allprojects {
   ext['okhttp.version'] = '4.11.0'
   ext['netty.version'] = '4.1.121.Final' // CVE-2023-44487
   ext['jackson.version'] = '2.16.2'
+  ext['spring-framework.version'] = '5.3.33'
 
   repositories {
     mavenCentral()
