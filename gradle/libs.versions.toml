@@ -2,7 +2,7 @@
 api-spec = "4.1.0"
 commons-io = "2.19.0"
 commons-text = "1.13.1"
-commons-fileupload = "1.5"
+commons-fileupload = "1.6.0"
 feign = "13.6"
 feign-form = "3.8.0"
 findbugs = "3.0.2"
