@@ -26,4 +26,19 @@
         <cve>CVE-2023-6481</cve>
     </suppress>
 
+    <suppress>
+        <notes><![CDATA[
+        Application does not evaluate user-supplied SpEL expressions. CVE-2024-38808 not exploitable in this context.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/.*@5\.3\.33$</packageUrl>
+        <cve>CVE-2024-38808</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Application does not evaluate user-supplied SpEL expressions. CVE-2024-38808 not exploitable in this context.
+        ]]></notes>
+        <cpe regex="true">^cpe:2\.3:[a|h]:(pivotal_software|springsource|vmware):spring_framework:5\.3\.33.*</cpe>
+        <cve>CVE-2024-38808</cve>
+    </suppress>
+
 </suppressions>
