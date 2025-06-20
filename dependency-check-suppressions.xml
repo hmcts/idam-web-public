@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
 
-    <!-- This CVE is about JSTL in conjunction with XML/XSLT tags, we do not use these tags -->
+    <!-- JSTL/ XML‐based tags not used -->
     <suppress>
         <notes><![CDATA[
         file name: jstl-1.2.jar
@@ -10,9 +9,9 @@
         <cve>CVE-2015-0254</cve>
     </suppress>
 
-    <!-- Until we can switch to spring 3+ these need to be suppressed -->
+    <!-- Spring 2.x vulnerabilities until we move to Spring 3+ -->
     <suppress>
-        <gav regex="true">^.*org.springframework.*$</gav>
+        <gav regex="true">^.*org\.springframework.*$</gav>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2024-38820</cve>
@@ -20,167 +19,44 @@
         <cve>CVE-2024-38808</cve>
     </suppress>
 
-    <!-- No fix till netty 5 release or fix applied to netty 4 -->
+    <!-- Netty issues: waiting on Netty 5 or patching 4.x -->
     <suppress base="true">
         <gav regex="true">^.*netty.*$</gav>
         <cve>CVE-2023-4586</cve>
+        <cve>CVE-2025-25193</cve>
     </suppress>
 
-    <!--
-    https://github.com/google/guava/issues/4011
-     There is no non-vulnerable upgrade path for this component/package.
-     We recommend investigating alternative components or replacing all usages of the deprecated
-     Files.createTempDir() method with a safer alternative, such as java.nio.file.Files.createTempDirectory()
-     for Java 7+.
-    -->
+    <!-- Guava Files.createTempDir() issue: no non-vulnerable upgrade path -->
     <suppress>
-        <gav regex="true">^.*com.google.guava.*$</gav>
+        <gav regex="true">^.*com\.google\.guava.*$</gav>
         <cve>CVE-2020-8908</cve>
     </suppress>
 
-    <!-- cannot fix due to spring boot -->
+    <!-- Logback CVEs blocked by Spring Boot version -->
     <suppress base="true">
         <gav regex="true">^.*logback.*$</gav>
         <cve>CVE-2023-6378</cve>
         <cve>CVE-2023-6481</cve>
     </suppress>
 
+    <!-- Tomcat-embed WebSocket & Jasper (11.0.3 / 9.0.99) -->
     <suppress>
-        <notes><![CDATA[
-        file name: netty-buffer-4.1.100.Final.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty-buffer@.*$</packageUrl>
-        <cve>CVE-2025-25193</cve>
-    </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-        file name: netty-codec-4.1.100.Final.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty-codec@.*$</packageUrl>
-        <cve>CVE-2025-25193</cve>
-    </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-        file name: netty-common-4.1.100.Final.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty-common@.*$</packageUrl>
-        <cve>CVE-2025-25193</cve>
-    </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-        file name: netty-handler-4.1.100.Final.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty-handler@.*$</packageUrl>
-        <cpe>cpe:/a:netty:netty</cpe>
-        <cve>CVE-2025-25193</cve>
-    </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-        file name: netty-resolver-4.1.100.Final.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty-resolver@.*$</packageUrl>
-        <cpe>cpe:/a:netty:netty</cpe>
-        <cve>CVE-2025-25193</cve>
-    </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-        file name: netty-transport-4.1.100.Final.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty-transport@.*$</packageUrl>
-        <cpe>cpe:/a:netty:netty</cpe>
-        <cve>CVE-2025-25193</cve>
-    </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-        file name: netty-transport-native-unix-common-4.1.100.Final.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty-transport-native-unix-common@.*$</packageUrl>
-        <cpe>cpe:/a:netty:netty</cpe>
-        <cve>CVE-2025-25193</cve>
-    </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-websocket-11.0.3.jar
-        ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-websocket@.*$</packageUrl>
         <cve>CVE-2025-31650</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-websocket-11.0.3.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-websocket@.*$</packageUrl>
         <cve>CVE-2025-31651</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-websocket-11.0.3.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-websocket@.*$</packageUrl>
         <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-websocket-11.0.3.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-websocket@.*$</packageUrl>
         <cpe>cpe:/a:apache:tomcat</cpe>
     </suppress>
     <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-jasper-9.0.99.jar
-        ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-jasper@.*$</packageUrl>
         <cve>CVE-2025-31650</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-jasper-9.0.99.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-jasper@.*$</packageUrl>
         <cve>CVE-2025-31651</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-jasper-9.0.99.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-jasper@.*$</packageUrl>
         <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-jasper-9.0.99.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-jasper@.*$</packageUrl>
         <cpe>cpe:/a:apache:tomcat</cpe>
     </suppress>
     <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-core-9.0.99.jar
-        ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-core@.*$</packageUrl>
         <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-core-9.0.99.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-core@.*$</packageUrl>
-        <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: tomcat-embed-core-9.0.99.jar
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-core@.*$</packageUrl>
         <cpe>cpe:/a:apache:tomcat</cpe>
     </suppress>
-
 </suppressions>
