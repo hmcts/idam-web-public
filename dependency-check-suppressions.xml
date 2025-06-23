@@ -19,44 +19,10 @@
         <cve>CVE-2024-38808</cve>
     </suppress>
 
-    <!-- Netty issues: waiting on Netty 5 or patching 4.x -->
-    <suppress base="true">
-        <gav regex="true">^.*netty.*$</gav>
-        <cve>CVE-2023-4586</cve>
-        <cve>CVE-2025-25193</cve>
-    </suppress>
-
-    <!-- Guava Files.createTempDir() issue: no non-vulnerable upgrade path -->
-    <suppress>
-        <gav regex="true">^.*com\.google\.guava.*$</gav>
-        <cve>CVE-2020-8908</cve>
-    </suppress>
-
     <!-- Logback CVEs blocked by Spring Boot version -->
     <suppress base="true">
         <gav regex="true">^.*logback.*$</gav>
         <cve>CVE-2023-6378</cve>
         <cve>CVE-2023-6481</cve>
-    </suppress>
-
-    <!-- Tomcat-embed WebSocket & Jasper (11.0.3 / 9.0.99) -->
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-websocket@.*$</packageUrl>
-        <cve>CVE-2025-31650</cve>
-        <cve>CVE-2025-31651</cve>
-        <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
-        <cpe>cpe:/a:apache:tomcat</cpe>
-    </suppress>
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-jasper@.*$</packageUrl>
-        <cve>CVE-2025-31650</cve>
-        <cve>CVE-2025-31651</cve>
-        <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
-        <cpe>cpe:/a:apache:tomcat</cpe>
-    </suppress>
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat-embed-core@.*$</packageUrl>
-        <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
-        <cpe>cpe:/a:apache:tomcat</cpe>
     </suppress>
 </suppressions>
