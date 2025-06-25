@@ -9,7 +9,7 @@ let roleNames = [];
 let serviceNames = [];
 let testingToken;
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "uetest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
@@ -23,8 +23,6 @@ BeforeSuite(async ({ I }) => {
     testingToken= await I.getToken();
     let assignableRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_assignable", 'assignable role', [], testingToken);
     let dynamicUserRegRole = await I.createRoleUsingTestingSupportService(randomData.getRandomRoleName(testSuitePrefix) + "_dynUsrReg", 'dynamic user reg role', [assignableRole.name], testingToken);
-
-
 
     let serviceRoleNames = [assignableRole.name, dynamicUserRegRole.name];
     roleNames.push(serviceRoleNames);

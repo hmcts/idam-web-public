@@ -14,7 +14,7 @@ let userFirstNames = [];
 let serviceNames = [];
 let accessToken;
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "rptest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();

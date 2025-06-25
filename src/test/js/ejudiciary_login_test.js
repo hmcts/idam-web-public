@@ -10,14 +10,15 @@ if (isEnvtPerftest){
     Feature('eJudiciary login tests');
 }
 
+let testingToken;
 let serviceNames = [];
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "eltest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 
 BeforeSuite(async ({ I }) => {
-    const testingToken = await I.getToken();
+    testingToken = await I.getToken();
     const scopes = ['openid', 'profile', 'roles'];
 
     await I.createServiceUsingTestingSupportService(serviceName, serviceClientSecret, [], testingToken, scopes, [TestData.EJUDICIARY_SSO_PROVIDER_KEY],false,);
@@ -31,7 +32,7 @@ AfterSuite(async ({ I }) => {
     return await I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
 });
 
-Scenario('@ejudiciary As an ejudiciary user, I can login into idam through OIDC', async ({ I }) => {
+Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam through OIDC', async ({ I }) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/authorize?login_hint=${TestData.EJUDICIARY_SSO_PROVIDER_KEY}&client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitInUrl('/login/oauth2/code/oidc');
     I.waitForText('Sign in');
@@ -39,17 +40,17 @@ Scenario('@ejudiciary As an ejudiciary user, I can login into idam through OIDC'
     I.click('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
     I.waitForText('Stay signed in?');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
-        I.click('No');
+        I.clickWithWait('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
         I.interceptRequestsAfterSignin();
-        I.click('No');
+        I.clickWithWait('No');
         I.waitForText(TestData.SERVICE_REDIRECT_URI);
         I.see('code=');
         I.dontSee('error=');
@@ -70,22 +71,22 @@ Scenario('@ejudiciary As an ejudiciary user, I can login into idam through OIDC'
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam', async ({ I }) => {
+Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam', async ({ I }) => {
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
     I.waitForText('Log in with your eJudiciary account');
-    I.click('Log in with your eJudiciary account');
+    I.clickWithWait('Log in with your eJudiciary account');
     I.waitInUrl('/oauth2/authorize');
     I.waitForText('Sign in');
     I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
-    I.click('Next');
+    I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
 
     I.waitForText('Stay signed in?');
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
-        I.click('No');
+        I.clickWithWait('No');
         // expected to be not redirected with the code for pr and staging urls as they're not registered with AAD.
         I.waitInUrl("/kmsi");
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
@@ -113,25 +114,24 @@ Scenario('@ejudiciary As an ejudiciary user, I should be able to login through t
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@ejudiciary As an ejudiciary user, I should be redirected to eJudiciary for login if I enter my username on the login screen', async ({ I }) => {
+Scenario('@functional @ejudiciary As an ejudiciary user, I should be redirected to eJudiciary for login if I enter my username on the login screen', async ({ I }) => {
     await I.deleteUser(TestData.EJUDICIARY_TEST_USER_USERNAME);
 
-    const accessToken = await I.getAccessTokenClientSecret(serviceName, serviceClientSecret);
-    await I.createUserUsingTestingSupportService(accessToken, TestData.EJUDICIARY_TEST_USER_USERNAME, TestData.EJUDICIARY_TEST_USER_PASSWORD, "Judge", [ ], "azure", randomData.getRandomString());
+    await I.createUserUsingTestingSupportService(testingToken, TestData.EJUDICIARY_TEST_USER_USERNAME, TestData.EJUDICIARY_TEST_USER_PASSWORD, "Judge", [ ], "azure", randomData.getRandomString());
 
     //redirection verification
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
     I.waitForText('Sign in');
     I.fillField('#username', TestData.EJUDICIARY_TEST_USER_USERNAME);
     I.fillField('#password', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
 
     I.waitForText('Sign in');
     I.fillField('loginfmt', TestData.EJUDICIARY_TEST_USER_USERNAME);
-    I.click('Next');
+    I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.EJUDICIARY_TEST_USER_PASSWORD);
-    I.click('Sign in');
+    I.clickWithWait('Sign in');
 
     I.waitForText('Stay signed in?');
 
@@ -142,7 +142,7 @@ Scenario('@ejudiciary As an ejudiciary user, I should be redirected to eJudiciar
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
         I.interceptRequestsAfterSignin();
-        I.click('No');
+        I.clickWithWait('No');
         I.waitForText(TestData.SERVICE_REDIRECT_URI);
         I.see('code=');
         I.resetRequestInterception();

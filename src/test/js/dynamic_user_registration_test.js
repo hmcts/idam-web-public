@@ -7,7 +7,7 @@ let testingToken;
 let dynamicUserRegRole;
 let assignableRole;
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "dutest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 
