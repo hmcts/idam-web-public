@@ -12,7 +12,7 @@ let serviceNames = [];
 let randomUserLastName;
 let testingToken;
 
-const testSuitePrefix = randomData.getRandomAlphabeticString();
+const testSuitePrefix = "cbtest" + randomData.getRandomAlphabeticString();
 const serviceName = randomData.getRandomServiceName(testSuitePrefix);
 const serviceClientSecret = randomData.getRandomClientSecret();
 const userPassword = randomData.getRandomUserPassword();
