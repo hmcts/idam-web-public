@@ -398,6 +398,8 @@ public class AppController {
         model.addAttribute(CLIENT_ID, request.getClient_id());
         model.addAttribute(REDIRECT_URI, request.getRedirect_uri());
         model.addAttribute(SCOPE, request.getScope());
+        model.addAttribute(CODE_CHALLENGE, request.getCode_challenge());
+        model.addAttribute(CODE_CHALLENGE_METHOD, request.getCode_challenge_method());
         model.addAttribute(SELF_REGISTRATION_ENABLED, request.isSelfRegistrationEnabled());
         if (configurationProperties.getFeatures().isFederatedSSO()) {
             if (request.isAzureLoginEnabled()) {
