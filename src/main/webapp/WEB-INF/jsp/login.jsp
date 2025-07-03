@@ -29,6 +29,9 @@
                 <c:param name="state" value="${state}"/>
                 <c:param name="nonce" value="${nonce}"/>
                 <c:param name="scope" value="${scope}"/>
+                <spring:param name="prompt" value="${prompt}"/>
+                <spring:param name="code_challenge" value="${code_challenge}"/>
+                <spring:param name="code_challenge_method" value="${code_challenge_method}"/>
             </c:url>
 
             <c:set var="azureLoginUrl">
@@ -39,6 +42,8 @@
                     <spring:param name="nonce" value="${nonce}"/>
                     <spring:param name="prompt" value="${prompt}"/>
                     <spring:param name="scope" value="${scope}"/>
+                    <spring:param name="code_challenge" value="${code_challenge}"/>
+                    <spring:param name="code_challenge_method" value="${code_challenge_method}"/>
                     <spring:param name="response_type" value="code"/>
                     <spring:param name="login_hint" value="ejudiciary-aad"/>
                 </spring:url>
@@ -53,6 +58,8 @@
                     <spring:param name="prompt" value="${prompt}"/>
                     <spring:param name="scope" value="${scope}"/>
                     <spring:param name="response_type" value="code"/>
+                    <spring:param name="code_challenge" value="${code_challenge}"/>
+                    <spring:param name="code_challenge_method" value="${code_challenge_method}"/>
                     <spring:param name="login_hint" value="moj"/>
                 </spring:url>
             </c:set>
