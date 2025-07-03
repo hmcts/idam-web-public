@@ -35,6 +35,10 @@ public class AuthorizeRequest {
 
     private String code;
 
+    private String code_challenge;
+
+    private String code_challenge_method;
+
     private boolean azureLoginEnabled;
 
     private boolean mojLoginEnabled;
