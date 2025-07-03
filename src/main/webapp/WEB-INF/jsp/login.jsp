@@ -29,9 +29,6 @@
                 <c:param name="state" value="${state}"/>
                 <c:param name="nonce" value="${nonce}"/>
                 <c:param name="scope" value="${scope}"/>
-                <spring:param name="prompt" value="${prompt}"/>
-                <spring:param name="code_challenge" value="${code_challenge}"/>
-                <spring:param name="code_challenge_method" value="${code_challenge_method}"/>
             </c:url>
 
             <c:set var="azureLoginUrl">
