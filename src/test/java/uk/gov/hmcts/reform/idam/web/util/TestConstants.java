@@ -125,6 +125,8 @@ public class TestConstants {
     public static final String USERNAME_PARAMETER = "username";
     public static final String PASSWORD_PARAMETER = "password";
     public static final String RESPONSE_TYPE_PARAMETER = "response_type";
+    public static final String CODE_CHALLENGE_PARAMETER = "code_challenge";
+    public static final String CODE_CHALLENGE_METHOD_PARAMETER = "code_challenge_method";
     public static final String PIN_PARAMETER = "pin";
     public static final String AUTHORIZATION_PARAMETER = "authorization";
 	public static final String SELF_REGISTRATION_ENABLED = "selfRegistrationEnabled";
@@ -180,6 +182,8 @@ public class TestConstants {
     public static final String NONCE_VALUE = "eshfwrhr09123rksdfnsad";
     public static final String PROMPT_VALUE = "login";
     public static final String CUSTOM_SCOPE = "manage-roles";
+    public static final String CODE_CHALLENGE = "j0SphbKM8YhKykPFvWhCCNQqs3VPwiJpAEPg0VuHf9A";
+    public static final String CODE_CHALLENGE_METHOD = "S256";
     public static final String INSECURE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT";
     public static final String AUTHENTICATE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT; Path=/; Secure; HttpOnly";
     public static final String AFFINITY_COOKIE = ARR_COOKIE_NAME + "=COOKIE_AFFINITY_IS_A_FAT_TIME";
