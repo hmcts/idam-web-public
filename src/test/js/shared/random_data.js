@@ -34,6 +34,26 @@ function generatePassword(passwordLength) {
     return shuffleArray(randPasswordArray.map(function(x) { return x[Math.floor(Math.random() * x.length)] })).join('');
 }
 
+function base64UrlEncode(buffer) {
+    return btoa(String.fromCharCode(...buffer))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+}
+
+function generateCodeVerifier(length = 128) {
+    const array = new Uint8Array(length);
+    crypto.getRandomValues(array);
+    return base64UrlEncode(array);
+}
+
+async function generateCodeChallenge(codeVerifier) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(codeVerifier);
+    const digest = await crypto.subtle.digest('SHA-256', data);
+    return base64UrlEncode(new Uint8Array(digest));
+}
+
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
@@ -81,4 +101,6 @@ module.exports = {
     getRandomUserName: (testSuitePrefix) => testBasePrefix + "USER_" + testSuitePrefix + "_" + randomAlphabeticString(),
     getRandomRoleName: (testSuitePrefix) => testBasePrefix + "ROLE_" + testSuitePrefix + "_" + getBuildIdentifier("ROLE", "_") + "_" + randomString(),
     getRandomServiceName: (testSuitePrefix) => testBasePrefix +  "SERVICE_" + testSuitePrefix + "_" + getBuildIdentifier("SVC", "_") + "_" + randomString(),
+    getCodeVerifier: generateCodeVerifier,
+    getCodeChallenge: generateCodeChallenge
 };

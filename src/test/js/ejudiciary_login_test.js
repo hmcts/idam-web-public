@@ -71,8 +71,12 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
-Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam', async ({ I }) => {
-    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles`);
+Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam using PKCE', async ({ I }) => {
+    const codeVerifier = randomData.getCodeVerifier();
+    console.log("*** CODE VERIFIER = " + codeVerifier)
+    const codeChallenge = await randomData.getCodeChallenge(codeVerifier);
+
+    I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles&code_challenge_method=S256&code_challenge=${codeChallenge}`);
     I.waitForText('Sign in');
     I.waitForText('Log in with your eJudiciary account');
     I.clickWithWait('Log in with your eJudiciary account');
@@ -92,14 +96,14 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
         I.interceptRequestsAfterSignin();
-        I.click('No');
+        I.clickWithWait('No');
         I.waitForText(TestData.SERVICE_REDIRECT_URI);
         I.see('code=');
         I.dontSee('error=');
 
         const pageSource = await I.grabSource();
         const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
-        const accessToken = await I.getAccessToken(code, serviceName.toUpperCase(), TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
+        const accessToken = await I.getAccessToken(code, serviceName.toUpperCase(), TestData.SERVICE_REDIRECT_URI, serviceClientSecret, codeVerifier);
 
         const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
         expect(userInfo.active).to.equal(true);
