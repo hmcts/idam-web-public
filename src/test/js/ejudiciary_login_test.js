@@ -73,7 +73,6 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
 
 Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam using PKCE', async ({ I }) => {
     const codeVerifier = randomData.getCodeVerifier();
-    console.log("*** CODE VERIFIER = " + codeVerifier)
     const codeChallenge = await randomData.getCodeChallenge(codeVerifier);
 
     I.amOnPage(TestData.WEB_PUBLIC_URL + `/login?client_id=${serviceName.toUpperCase()}&redirect_uri=${TestData.SERVICE_REDIRECT_URI}&response_type=code&scope=openid profile roles&code_challenge_method=S256&code_challenge=${codeChallenge}`);
