@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.idam.web.strategic.ApiAuthResult;
 import uk.gov.hmcts.reform.idam.web.strategic.EvaluatePoliciesAction;
 import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
+import uk.gov.hmcts.reform.idam.web.util.TestConstants;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -138,20 +139,24 @@ public class AppControllerTest {
         service.selfRegistrationAllowed(true);
         service.addSsoProvidersItem("moj");
 
-        given(spiService.getServiceByClientId(CLIENT_ID)).willReturn(Optional.of(service));
+        given(spiService.getServiceByClientId(TestConstants.CLIENT_ID)).willReturn(Optional.of(service));
 
         mockMvc.perform(get(LOGIN_ENDPOINT)
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(CODE_CHALLENGE_PARAMETER, CODE_CHALLENGE)
+            .param(CODE_CHALLENGE_METHOD_PARAMETER, CODE_CHALLENGE_METHOD))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(model().attribute(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE))
             .andExpect(model().attribute(STATE_PARAMETER, STATE))
             .andExpect(model().attribute(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(model().attribute(REDIRECT_URI, REDIRECT_URI))
-            .andExpect(view().name(LOGIN_VIEW));
+            .andExpect(model().attribute(CODE_CHALLENGE_PARAMETER, CODE_CHALLENGE))
+            .andExpect(model().attribute(CODE_CHALLENGE_METHOD_PARAMETER, CODE_CHALLENGE_METHOD))
+            .andExpect(view().name(MvcKeys.LOGIN_VIEW));
     }
 
     /**
@@ -216,13 +221,17 @@ public class AppControllerTest {
             .param(REDIRECT_URI, REDIRECT_URI)
             .param(STATE_PARAMETER, STATE)
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
-            .param(CLIENT_ID_PARAMETER, CLIENT_ID))
+            .param(CLIENT_ID_PARAMETER, CLIENT_ID)
+            .param(CODE_CHALLENGE_PARAMETER, CODE_CHALLENGE)
+            .param(CODE_CHALLENGE_METHOD_PARAMETER, CODE_CHALLENGE_METHOD))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(model().attribute(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE))
             .andExpect(model().attribute(STATE_PARAMETER, STATE))
             .andExpect(model().attribute(CLIENT_ID_PARAMETER, CLIENT_ID))
             .andExpect(model().attribute(REDIRECT_URI, REDIRECT_URI))
+            .andExpect(model().attribute(CODE_CHALLENGE_PARAMETER, CODE_CHALLENGE))
+            .andExpect(model().attribute(CODE_CHALLENGE_METHOD_PARAMETER, CODE_CHALLENGE_METHOD))
             .andExpect(model().attribute(AZURE_LOGIN_ENABLED, true))
             .andExpect(view().name(LOGIN_VIEW));
     }

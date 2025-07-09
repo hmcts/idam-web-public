@@ -27,6 +27,8 @@ public class MvcKeys {
     public static final String NONCE = "nonce";
     public static final String PROMPT = "prompt";
     public static final String SCOPE = "scope";
+    public static final String CODE_CHALLENGE = "code_challenge";
+    public static final String CODE_CHALLENGE_METHOD = "code_challenge_method";
     public static final String USERNAME = "username";
     public static final String CODE = "code";
     public static final String INVALID_PIN = "invalidPin";
