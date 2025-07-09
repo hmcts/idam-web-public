@@ -441,19 +441,23 @@ class IdamHelper extends Helper {
             });
     }
 
-    getAccessToken(code, serviceName, serviceRedirect, clientSecret) {
+    getAccessToken(code, serviceName, serviceRedirect, clientSecret, codeVerifier=null) {
         let searchParams = new URLSearchParams();
         searchParams.set('code', code);
         searchParams.set('redirect_uri', serviceRedirect);
+        searchParams.set('client_id', serviceName);
+        searchParams.set('client_secret', clientSecret);
+        if (codeVerifier != null) {
+            searchParams.set('code_verifier', codeVerifier)
+        }
         searchParams.set('grant_type', 'authorization_code')
 
-        return fetch(`${TestData.IDAM_API}/oauth2/token`, {
+        return fetch(`${TestData.IDAM_API}/o/token`, {
             agent: agent,
             method: 'POST',
             body: searchParams,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + this.getBase64(serviceName, clientSecret)
             }
         }).then(response => {
             //console.log(response)
