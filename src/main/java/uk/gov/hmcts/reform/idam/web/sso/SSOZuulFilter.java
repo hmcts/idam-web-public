@@ -15,6 +15,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 import static uk.gov.hmcts.reform.idam.web.sso.SSOService.LOGIN_HINT_PARAM;
 import static uk.gov.hmcts.reform.idam.web.sso.SSOService.PROVIDER_ATTR;
 import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_LOGIN_HINTS;
+import static uk.gov.hmcts.reform.idam.web.strategic.EndSessionFilter.OIDC_END_SESSION_ENDPOINT;
 
 @Component
 public class SSOZuulFilter extends ZuulFilter {
@@ -43,11 +44,18 @@ public class SSOZuulFilter extends ZuulFilter {
     @Override
     public boolean shouldFilter() {
         RequestContext ctx = RequestContext.getCurrentContext();
+        if (isSignOutRequest(ctx.getRequest())) {
+            return false;
+        }
         HttpSession session = ctx.getRequest().getSession(false);
         boolean existingSSOSession = session != null && session.getAttribute(PROVIDER_ATTR) != null;
         boolean ssoLoginInstruction = ctx.getRequest().getParameter(LOGIN_HINT_PARAM) != null
             && SSO_LOGIN_HINTS.containsKey(ctx.getRequest().getParameter(LOGIN_HINT_PARAM).toLowerCase());
         return existingSSOSession || (ssoLoginInstruction && isSSOEnabled());
+    }
+
+    private boolean isSignOutRequest(HttpServletRequest request) {
+        return request.getRequestURI().contains(OIDC_END_SESSION_ENDPOINT);
     }
 
     protected boolean isSSOEnabled() {

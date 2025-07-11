@@ -59,6 +59,7 @@ public class SSOZuulFilterTest {
         when(mockContext.getRequest()).thenReturn(request);
         when(mockContext.getResponse()).thenReturn(response);
         when(request.getSession()).thenReturn(session);
+        when(request.getRequestURI()).thenReturn("/o/authorize");
         RequestContext.testSetCurrentContext(mockContext);
         CounterFactory.initialize(new CounterFactory() {
             @Override
@@ -89,6 +90,12 @@ public class SSOZuulFilterTest {
     public void shouldFilterSSOOff() {
         given(request.getParameter("login_hint")).willReturn("ejudiciary-aad");
         doReturn(false).when(underTest).isSSOEnabled();
+        assertFalse(underTest.shouldFilter());
+    }
+
+    @Test
+    public void shouldNotFilterWhenSigningOut() {
+        given(request.getRequestURI()).willReturn("/o/endSession");
         assertFalse(underTest.shouldFilter());
     }
 
