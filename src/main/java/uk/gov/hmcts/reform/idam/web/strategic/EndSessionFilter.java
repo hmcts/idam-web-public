@@ -19,7 +19,6 @@ public class EndSessionFilter extends ZuulFilter {
     public static final String OIDC_END_SESSION_ENDPOINT = "/o/endSession";
 
     private final String idamSessionCookieName;
-    private final String idamSsoSessionCookieName;
 
     public EndSessionFilter(ConfigurationProperties configurationProperties) {
         this.idamSessionCookieName = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
