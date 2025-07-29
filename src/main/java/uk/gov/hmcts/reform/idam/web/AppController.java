@@ -429,7 +429,7 @@ public class AppController {
         }
 
         try {
-            final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
+            final String ipAddress = ObjectUtils.getIfNull(httpRequest.getHeader(X_FORWARDED_FOR), () -> httpRequest.getRemoteAddr());
             final String redirectUri = request.getRedirect_uri();
 
             final ApiAuthResult authenticationResult = spiService.authenticate(request.getUsername(), request.getPassword(), redirectUri, ipAddress);
@@ -633,7 +633,7 @@ public class AppController {
             return new ModelAndView(VERIFICATION_VIEW, model.asMap());
         }
 
-        final String ipAddress = ObjectUtils.defaultIfNull(httpRequest.getHeader(X_FORWARDED_FOR), httpRequest.getRemoteAddr());
+        final String ipAddress = ObjectUtils.getIfNull(httpRequest.getHeader(X_FORWARDED_FOR), () -> httpRequest.getRemoteAddr());
 
         final String idamSessionCookie = configurationProperties.getStrategic().getSession().getIdamSessionCookie();
         final List<String> cookies = Arrays.stream(ofNullable(httpRequest.getCookies()).orElse(new Cookie[]{}))
