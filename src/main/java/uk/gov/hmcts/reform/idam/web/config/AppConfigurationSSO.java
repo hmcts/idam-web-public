@@ -70,8 +70,8 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
             .headers()
                 .contentSecurityPolicy(
                 "default-src 'self'; " +
-                    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-                    "style-src 'self' 'unsafe-inline'; " +
+                    "script-src 'self'; " +
+                    "style-src 'self'; " +
                     "img-src 'self' data:; " +
                     "font-src 'self' data:; " +
                     "frame-ancestors 'none';")
