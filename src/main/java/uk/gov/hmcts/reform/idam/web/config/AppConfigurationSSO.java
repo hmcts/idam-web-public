@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
 import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
@@ -66,6 +67,27 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
             .ignoringAntMatchers(dynatraceMonitorEndpoint)
             .csrfTokenRepository(new CookieCsrfTokenRepository()).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .headers()
+                .contentSecurityPolicy(
+                "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+                    "style-src 'self' 'unsafe-inline'; " +
+                    "img-src 'self' data:; " +
+                    "font-src 'self' data:; " +
+                    "frame-ancestors 'none';")
+                .and()
+                .permissionsPolicy()
+                .policy(
+                    "camera=(), " +
+                    "geolocation=(), " +
+                    "microphone=()")
+                .and()
+                .referrerPolicy()
+                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+                .and()
+                .frameOptions()
+                .deny()
+                .and()
             .authorizeRequests()
             .antMatchers("/o/**").permitAll()
             .antMatchers("/resources/**").permitAll()
