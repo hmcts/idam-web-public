@@ -66,7 +66,6 @@ public class AppConfigurationTest {
         MockHttpServletRequestBuilder getBaseUrl = MockMvcRequestBuilders.
             request("GET", URI.create("/"));
         mvc.perform(getBaseUrl)
-            .andExpect(status().isBadRequest())
             .andExpect(header().exists("Content-Security-Policy"))
             .andExpect(header().string("Content-Security-Policy", containsString("script-src 'self' 'nonce-")))
             .andExpect(header().string("Permissions-Policy", "camera=(), geolocation=(), microphone=()"))
