@@ -29,14 +29,7 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
             .headers()
-                .contentSecurityPolicy(
-                "default-src 'self'; " +
-                    "script-src 'self'; " +
-                    "style-src 'self'; " +
-                    "img-src 'self' data:; " +
-                    "font-src 'self' data:; " +
-                    "frame-ancestors 'none';")
-                .and()
+                // CSP is handled by CspNonceFilter
                 .permissionsPolicy()
                 .policy(
                     "camera=(), " +

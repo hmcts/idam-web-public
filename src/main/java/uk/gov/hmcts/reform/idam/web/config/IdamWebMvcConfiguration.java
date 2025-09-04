@@ -6,6 +6,7 @@ import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.WebContentInterceptor;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.JSPHelper;
+import uk.gov.hmcts.reform.idam.web.security.CspNonceFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -101,6 +103,17 @@ public class IdamWebMvcConfiguration implements WebMvcConfigurer {
             }
         };
     }
+
+    @Bean
+    public FilterRegistrationBean<CspNonceFilter> cspNonceFilterRegistration() {
+        FilterRegistrationBean<CspNonceFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new CspNonceFilter());
+        registration.addUrlPatterns("/*");
+        registration.setOrder(1);
+        return registration;
+    }
+
+
     /**
      * return HTML by default when not sure.
      */

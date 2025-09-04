@@ -15,7 +15,7 @@
                     <spring:message code="${errorTitle}" />
                 </h2>
                 <c:if test="${invalidPin}">
-                  <script>
+                  <script nonce="${requestScope.cspNonce}">
                       sendEvent('Login With Pin', 'Error', 'Invalid pin');
                   </script>
                   <p>
@@ -42,7 +42,7 @@
                         <spring:message code="public.login.with.pin.form.security.code.label" />
                     </span>
                     <c:if test="${hasError}">
-                        <script>
+                        <script nonce="${requestScope.cspNonce}">
                             sendEvent('Login With Pin', 'Error', 'Security code error');
                         </script>
                         <span class="error-message">

@@ -30,7 +30,7 @@
             </c:otherwise>
         </c:choose>
     </article>
-    <script>
+    <script nonce="${requestScope.cspNonce}">
         sendEvent('User Activation', 'Success',  'User has been activated');
     </script>
 </t:wrapper>

@@ -49,7 +49,7 @@
             </p>
         </div>
     </article>
-    <script>
+    <script nonce="${requestScope.cspNonce}">
         sendEvent('User Created', 'Success', 'User has been created');
     </script>
 </t:wrapper>

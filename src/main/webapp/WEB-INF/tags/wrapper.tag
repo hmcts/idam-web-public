@@ -14,7 +14,7 @@
     <!-- Disable Search Engine Crawlers -->
     <meta name="robots" content="noindex">
 
-    <script>
+    <script nonce="${requestScope.cspNonce}"">
         function sendEvent(eventCategory, eventAction, eventLabel) {
             // disabled with ga
             //ga('send', 'event', eventCategory, eventAction, eventLabel);
@@ -67,7 +67,7 @@
 
     <c:if test="${gtmFlag}">
         <!-- Google Tag Manager -->
-        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        <script nonce="${requestScope.cspNonce}">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
@@ -82,14 +82,14 @@
                       height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 </c:if>
-<script>
+<script nonce="${requestScope.cspNonce}">
     document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
     $(document).ready(function () {
         $('body').find(':input.form-control-error:first').focus();
     });
 </script>
 <script src="/assets/javascripts/govuk-frontend-3.12.0.min.js"></script>
-<script>
+<script nonce="${requestScope.cspNonce}">
     window.GOVUKFrontend.initAll()
 </script>
 
@@ -287,6 +287,6 @@
 <script src="/assets/javascripts/govuk-template.js"></script>
 
 
-<script>if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled', '');</script>
+<script nonce="${requestScope.cspNonce}"t>if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled', '');</script>
 </body>
 </html>

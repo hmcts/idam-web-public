@@ -21,7 +21,7 @@
             </p>
         </div>
     </article>
-    <script>
+    <script nonce="${requestScope.cspNonce}">
         sendEvent('Generic Error', 'Error', 'Generic error page loaded');
     </script>
 </t:wrapper>

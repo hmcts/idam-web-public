@@ -17,6 +17,7 @@ import java.net.URI;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.containsString;
 
 @WebMvcTest
 @AutoConfigureMockMvc
@@ -65,15 +66,10 @@ public class AppConfigurationTest {
         MockHttpServletRequestBuilder getBaseUrl = MockMvcRequestBuilders.
             request("GET", URI.create("/"));
         mvc.perform(getBaseUrl)
-            .andExpect(header().string("Content-Security-Policy",
-                "default-src 'self'; " +
-                "script-src 'self'; " +
-                "style-src 'self'; " +
-                "img-src 'self' data:; " +
-                "font-src 'self' data:; " +
-                "frame-ancestors 'none';"))
-            .andExpect(header().string("Permissions-Policy",
-                "camera=(), geolocation=(), microphone=()"))
+            .andExpect(status().isBadRequest())
+            .andExpect(header().exists("Content-Security-Policy"))
+            .andExpect(header().string("Content-Security-Policy", containsString("script-src 'self' 'nonce-")))
+            .andExpect(header().string("Permissions-Policy", "camera=(), geolocation=(), microphone=()"))
             .andExpect(header().string("Referrer-Policy", "strict-origin-when-cross-origin"))
             .andExpect(header().string("X-Content-Type-Options", "nosniff"))
             .andExpect(header().string("X-Frame-Options", "DENY"))

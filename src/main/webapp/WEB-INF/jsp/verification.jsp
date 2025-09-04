@@ -16,7 +16,7 @@
 
             <spring:hasBindErrors name="authorizeCommand">
                 <c:set var="hasBindError" value="true" />
-                <script>
+                <script nonce="${requestScope.cspNonce}">
                     sendEvent('Authorization', 'Error', 'User one time password authorization has failed');
                 </script>
                 <div class="error-summary" role="alert"
@@ -35,7 +35,7 @@
                     </h2>
                     <c:choose>
                         <c:when test="${isCodeEmpty}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'One time password is empty');
                             </script>
                             <ul class="error-summary-list">
@@ -43,7 +43,7 @@
                             </ul>
                         </c:when>
                         <c:when test="${isCodePatternInvalid}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'One time password has invalid pattern');
                             </script>
                             <ul class="error-summary-list">
@@ -51,7 +51,7 @@
                             </ul>
                         </c:when>
                         <c:when test="${isCodeLengthInvalid}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'One time password has invalid length');
                             </script>
                             <ul class="error-summary-list">
@@ -59,7 +59,7 @@
                             </ul>
                         </c:when>
                         <c:when test="${hasOtpSessionExpired}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'One time password has expired');
                             </script>
                             <c:url value="/login" var="loginUrl">
@@ -81,7 +81,7 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'One time password is incorrect');
                             </script>
                             <ul class="error-summary-list">

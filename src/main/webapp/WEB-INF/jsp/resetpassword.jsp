@@ -12,7 +12,7 @@
         <form:form name="resetpassword" class="form form-section" novalidate="" method="post" _lpchecked="1"
                  action="/doResetPassword">
             <c:if test="${hasError}">
-                <script>
+                <script nonce="${requestScope.cspNonce}">
                     sendEvent('Reset Password', 'Error', 'Reset password error occurred');
                 </script>
                 <div class="error-summary" role="alert" aria-labelledby="validation-error-summary-heading" tabindex="-1">

@@ -11,7 +11,7 @@
         <c:set var="hasError" value="${error != null}" />
         <form:form name="useractivation" action="activate" class="form form-section" novalidate="" method="post" _lpchecked="1">
             <c:if test="${hasError}">
-                <script>
+                <script nonce="${requestScope.cspNonce}">
                     sendEvent('User activation', 'Error', 'An error occurred for create password');
                 </script>
                 <div class="error-summary" role="alert" aria-labelledby="validation-error-summary-heading" tabindex="-1">

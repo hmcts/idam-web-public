@@ -62,7 +62,7 @@
             </c:set>
 
             <spring:hasBindErrors name="authorizeCommand">
-                <script>
+                <script nonce="${requestScope.cspNonce}">
                     sendEvent('Authorization', 'Error', 'User authorization has failed');
                 </script>
                 <div class="error-summary" role="alert"
@@ -71,7 +71,7 @@
 
                     <c:choose>
                         <c:when test="${isAccountLocked}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'Account is locked');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -80,7 +80,7 @@
                             <p class="text"><spring:message code="public.login.error.locked.instruction" arguments="${forgotPasswordUrl}" htmlEscape="false"/></p>
                         </c:when>
                         <c:when test="${isAccountSuspended}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'Account is suspended');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -93,7 +93,7 @@
                             </div>
                         </c:when>
                         <c:when test="${isAccountSSOAccount}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'Account is SSO Linked Account');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -117,7 +117,7 @@
                             </div>
                         </c:when>
                         <c:when test="${isAccountRetired}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'Account is retired, stale user has been sent reregistration');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -126,7 +126,7 @@
                             <p class="text"><spring:message code="public.login.error.retired.instruction"/></p>
                         </c:when>
                         <c:when test="${hasPolicyCheckFailed}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'User policy check has failed');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -135,7 +135,7 @@
                             <p class="text"><spring:message code="public.login.error.policycheck.instruction"/></p>
                         </c:when>
                         <c:when test="${hasLoginFailed}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'User login has failed');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -144,7 +144,7 @@
                             <p class="text"><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:when>
                         <c:when test="${hasOtpCheckFailed}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'User verification code check has failed');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -153,7 +153,7 @@
                             <p class="text"><spring:message code="public.login.error.verificationcheck.instruction"/></p>
                         </c:when>
                         <c:when test="${missingAuthIdCookie}">
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'User missing AuthId cookie');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -162,7 +162,7 @@
                             <p class="text"><spring:message code="public.login.error.authidcookie.instruction"/></p>
                         </c:when>
                         <c:otherwise>
-                            <script>
+                            <script nonce="${requestScope.cspNonce}">
                                 sendEvent('Authorization', 'Error', 'User login has failed');
                             </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
@@ -173,12 +173,12 @@
                     </c:choose>
 
                     <c:if test="${isUsernameEmpty}">
-                        <script>
+                        <script nonce="${requestScope.cspNonce}">
                             sendEvent('Authorization', 'Error', 'Username is empty');
                         </script>
                     </c:if>
                     <c:if test="${isPasswordEmpty}">
-                        <script>
+                        <script nonce="${requestScope.cspNonce}">
                             sendEvent('Authorization', 'Error', 'Password is empty');
                         </script>
                     </c:if>

@@ -81,7 +81,7 @@
                                             <ul>
                                                 <c:forEach var="error" items="${status.errorCodes}">
                                                     <li><spring:message code="${error}${'.selfRegisterCommand.firstName'}"></spring:message></li>
-                                                    <script>
+                                                    <script nonce="${requestScope.cspNonce}">
                                                         sendEvent('Self Register', 'Error', 'First name error code: ${status.errorCode}');
                                                     </script>
                                                 </c:forEach>
@@ -107,7 +107,7 @@
                                             <ul>
                                                 <c:forEach var="error" items="${status.errorCodes}">
                                                     <li><spring:message code="${error}${'.selfRegisterCommand.lastName'}"></spring:message></li>
-                                                    <script>
+                                                    <script nonce="${requestScope.cspNonce}">
                                                         sendEvent('Self Register', 'Error', 'Last name error code: ${status.errorCode}');
                                                     </script>
                                                 </c:forEach>
@@ -128,13 +128,13 @@
                                 <label for="email">
                                     <span class="form-label-bold"><spring:message code="public.common.email.address.label"/></span>
                                     <c:if test="${status.error && not empty status.value}">
-                                        <script>
+                                        <script nonce="${requestScope.cspNonce}">
                                             sendEvent('Self Register', 'Error', 'Invalid email address');
                                         </script>
                                         <span class="error-message"><spring:message code="public.common.error.invalid.email"/></span>
                                     </c:if>
                                     <c:if test="${status.error && empty status.value}">
-                                        <script>
+                                        <script nonce="${requestScope.cspNonce}">
                                             sendEvent('Self Register', 'Error', 'Email address is empty');
                                         </script>
                                         <span class="error-message"><spring:message code="public.common.error.empty.email"/></span>
