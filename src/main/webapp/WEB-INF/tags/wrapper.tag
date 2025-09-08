@@ -280,6 +280,6 @@
 <script src="/assets/javascripts/govuk-template.js"></script>
 
 
-<script nonce="${requestScope.cspNonce}"t>if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled', '');</script>
+<script nonce="${requestScope.cspNonce}">if (typeof window.GOVUK === 'undefined') document.body.className = document.body.className.replace('js-enabled', '');</script>
 </body>
 </html>
