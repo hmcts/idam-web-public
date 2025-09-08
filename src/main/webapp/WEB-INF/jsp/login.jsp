@@ -62,27 +62,18 @@
             </c:set>
 
             <spring:hasBindErrors name="authorizeCommand">
-                <script nonce="${requestScope.cspNonce}">
-                    sendEvent('Authorization', 'Error', 'User authorization has failed');
-                </script>
                 <div class="error-summary" role="alert"
                      aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
 
                     <c:choose>
                         <c:when test="${isAccountLocked}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'Account is locked');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.locked.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.locked.instruction" arguments="${forgotPasswordUrl}" htmlEscape="false"/></p>
                         </c:when>
                         <c:when test="${isAccountSuspended}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'Account is suspended');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.suspended.title"/>
                             </h2>
@@ -93,9 +84,6 @@
                             </div>
                         </c:when>
                         <c:when test="${isAccountSSOAccount}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'Account is SSO Linked Account');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.linked.title"/>
                             </h2>
@@ -117,71 +105,42 @@
                             </div>
                         </c:when>
                         <c:when test="${isAccountRetired}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'Account is retired, stale user has been sent reregistration');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.retired.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.retired.instruction"/></p>
                         </c:when>
                         <c:when test="${hasPolicyCheckFailed}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'User policy check has failed');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.policycheck.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.policycheck.instruction"/></p>
                         </c:when>
                         <c:when test="${hasLoginFailed}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'User login has failed');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.failed.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:when>
                         <c:when test="${hasOtpCheckFailed}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'User verification code check has failed');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.verificationcheck.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.verificationcheck.instruction"/></p>
                         </c:when>
                         <c:when test="${missingAuthIdCookie}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'User missing AuthId cookie');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.authidcookie.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.authidcookie.instruction"/></p>
                         </c:when>
                         <c:otherwise>
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'User login has failed');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.common.error.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:otherwise>
                     </c:choose>
-
-                    <c:if test="${isUsernameEmpty}">
-                        <script nonce="${requestScope.cspNonce}">
-                            sendEvent('Authorization', 'Error', 'Username is empty');
-                        </script>
-                    </c:if>
-                    <c:if test="${isPasswordEmpty}">
-                        <script nonce="${requestScope.cspNonce}">
-                            sendEvent('Authorization', 'Error', 'Password is empty');
-                        </script>
-                    </c:if>
 
                     <ul class="error-summary-list">
                         <c:forEach var="error" items="${errors.fieldErrors}">

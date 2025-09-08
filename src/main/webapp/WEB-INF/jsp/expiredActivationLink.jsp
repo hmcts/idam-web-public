@@ -27,7 +27,4 @@
             </c:choose>
         </p>
     </article>
-    <script nonce="${requestScope.cspNonce}">
-        sendEvent('Expired Token', 'Expired', 'User activation token has expired');
-    </script>
 </t:wrapper>

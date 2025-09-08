@@ -14,13 +14,6 @@
     <!-- Disable Search Engine Crawlers -->
     <meta name="robots" content="noindex">
 
-    <script nonce="${requestScope.cspNonce}"">
-        function sendEvent(eventCategory, eventAction, eventLabel) {
-            // disabled with ga
-            //ga('send', 'event', eventCategory, eventAction, eventLabel);
-        }
-    </script>
-
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><spring:message code="${titleKey}"/> <spring:message code="public.common.title"/></title>
 

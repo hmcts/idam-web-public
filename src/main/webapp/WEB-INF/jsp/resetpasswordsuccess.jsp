@@ -21,7 +21,4 @@
             </p>
         </c:if>
     </article>
-    <script nonce="${requestScope.cspNonce}">
-        sendEvent('Reset Password', 'Success', 'Reset password email entry was successful');
-    </script>
 </t:wrapper>

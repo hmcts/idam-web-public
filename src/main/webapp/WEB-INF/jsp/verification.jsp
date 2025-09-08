@@ -16,9 +16,6 @@
 
             <spring:hasBindErrors name="authorizeCommand">
                 <c:set var="hasBindError" value="true" />
-                <script nonce="${requestScope.cspNonce}">
-                    sendEvent('Authorization', 'Error', 'User one time password authorization has failed');
-                </script>
                 <div class="error-summary" role="alert"
                      aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
@@ -35,33 +32,21 @@
                     </h2>
                     <c:choose>
                         <c:when test="${isCodeEmpty}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'One time password is empty');
-                            </script>
                             <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:when>
                         <c:when test="${isCodePatternInvalid}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'One time password has invalid pattern');
-                            </script>
                             <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:when>
                         <c:when test="${isCodeLengthInvalid}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'One time password has invalid length');
-                            </script>
                             <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:when>
                         <c:when test="${hasOtpSessionExpired}">
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'One time password has expired');
-                            </script>
                             <c:url value="/login" var="loginUrl">
                                 <c:param name="redirect_uri" value="${redirect_uri}"/>
                                 <c:param name="client_id" value="${client_id}"/>
@@ -81,9 +66,6 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <script nonce="${requestScope.cspNonce}">
-                                sendEvent('Authorization', 'Error', 'One time password is incorrect');
-                            </script>
                             <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
