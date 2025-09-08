@@ -222,7 +222,7 @@
 
                 <div class="login-list">
                     <input class="button" type="submit" name="save" data-prevent-double-click="true"
-                           onclick="document.getElementById('username').value = document.getElementById('username').value.trim(); this.disabled = true; document.getElementsByName('loginForm')[0].submit()"
+                           id="login-submit-btn"
                            value="<spring:message code="public.login.form.submit" />">
                     <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled"
                                 name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
@@ -268,6 +268,26 @@
                 </div>
                 </div>
             </c:if>
-        </form:form>
+    </form:form>
     </article>
+    <script nonce="${requestScope.cspNonce}">
+        document.addEventListener('DOMContentLoaded', function() {
+            var submitBtn = document.getElementById('login-submit-btn');
+            var usernameField = document.getElementById('username');
+            var loginForm = document.getElementsByName('loginForm')[0];
+
+            if (submitBtn && usernameField && loginForm) {
+                submitBtn.addEventListener('click', function(e) {
+                    // Trim the username value
+                    usernameField.value = usernameField.value.trim();
+
+                    // Disable the button to prevent double submission
+                    this.disabled = true;
+
+                    // Submit the form
+                    loginForm.submit();
+                });
+            }
+        });
+    </script>
 </t:wrapper>
