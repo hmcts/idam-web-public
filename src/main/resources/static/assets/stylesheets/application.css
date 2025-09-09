@@ -1540,7 +1540,7 @@ textarea {
 /* CSP Compliance Styles - Moved from inline style blocks */
 
 /* Privacy Policy Styles */
-.ui-state-active a {
+.privacy-policy-tabs .ui-state-active a {
     text-decoration: none;
     color: #0b0c0c;
     cursor: default;

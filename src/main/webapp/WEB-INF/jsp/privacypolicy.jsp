@@ -11,7 +11,7 @@
         <h1 class="heading-xlarge">
             <spring:message code="public.privacypolicy.text_0002" />
         </h1>
-        <div id="tabs" class="ui-tabs ui-corner-all ui-widget ui-widget-content">
+        <div id="tabs" class="ui-tabs ui-corner-all ui-widget ui-widget-content privacy-policy-tabs">
             <div id="nav-links">
 
                 <ol class="nav-list ui-tabs-nav ui-corner-all ui-helper-reset ui-helper-clearfix ui-widget-header" role="tablist">
