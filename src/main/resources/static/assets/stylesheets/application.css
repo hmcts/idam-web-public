@@ -1546,7 +1546,7 @@ textarea {
     cursor: default;
 }
 
-.active-tab {
+.privacy-policy-tabs .active-tab {
     display: block;
 }
 
