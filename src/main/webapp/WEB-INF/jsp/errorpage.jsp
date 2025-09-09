@@ -21,7 +21,4 @@
             </p>
         </div>
     </article>
-    <script>
-        sendEvent('Generic Error', 'Error', 'Generic error page loaded');
-    </script>
 </t:wrapper>

@@ -62,27 +62,18 @@
             </c:set>
 
             <spring:hasBindErrors name="authorizeCommand">
-                <script>
-                    sendEvent('Authorization', 'Error', 'User authorization has failed');
-                </script>
                 <div class="error-summary" role="alert"
                      aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
 
                     <c:choose>
                         <c:when test="${isAccountLocked}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'Account is locked');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.locked.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.locked.instruction" arguments="${forgotPasswordUrl}" htmlEscape="false"/></p>
                         </c:when>
                         <c:when test="${isAccountSuspended}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'Account is suspended');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.suspended.title"/>
                             </h2>
@@ -93,9 +84,6 @@
                             </div>
                         </c:when>
                         <c:when test="${isAccountSSOAccount}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'Account is SSO Linked Account');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.linked.title"/>
                             </h2>
@@ -117,71 +105,42 @@
                             </div>
                         </c:when>
                         <c:when test="${isAccountRetired}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'Account is retired, stale user has been sent reregistration');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.retired.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.retired.instruction"/></p>
                         </c:when>
                         <c:when test="${hasPolicyCheckFailed}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'User policy check has failed');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.policycheck.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.policycheck.instruction"/></p>
                         </c:when>
                         <c:when test="${hasLoginFailed}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'User login has failed');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.failed.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:when>
                         <c:when test="${hasOtpCheckFailed}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'User verification code check has failed');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.verificationcheck.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.verificationcheck.instruction"/></p>
                         </c:when>
                         <c:when test="${missingAuthIdCookie}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'User missing AuthId cookie');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.login.error.authidcookie.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.login.error.authidcookie.instruction"/></p>
                         </c:when>
                         <c:otherwise>
-                            <script>
-                                sendEvent('Authorization', 'Error', 'User login has failed');
-                            </script>
                             <h2 class="heading-medium error-summary-heading" id="validation-error-summary-heading">
                                 <spring:message code="public.common.error.title"/>
                             </h2>
                             <p class="text"><spring:message code="public.common.error.please.fix.following"/></p>
                         </c:otherwise>
                     </c:choose>
-
-                    <c:if test="${isUsernameEmpty}">
-                        <script>
-                            sendEvent('Authorization', 'Error', 'Username is empty');
-                        </script>
-                    </c:if>
-                    <c:if test="${isPasswordEmpty}">
-                        <script>
-                            sendEvent('Authorization', 'Error', 'Password is empty');
-                        </script>
-                    </c:if>
 
                     <ul class="error-summary-list">
                         <c:forEach var="error" items="${errors.fieldErrors}">
@@ -263,7 +222,7 @@
 
                 <div class="login-list">
                     <input class="button" type="submit" name="save" data-prevent-double-click="true"
-                           onclick="document.getElementById('username').value = document.getElementById('username').value.trim(); this.disabled = true; document.getElementsByName('loginForm')[0].submit()"
+                           id="login-submit-btn"
                            value="<spring:message code="public.login.form.submit" />">
                     <form:input path="selfRegistrationEnabled" type="hidden" id="selfRegistrationEnabled"
                                 name="selfRegistrationEnabled" value="${selfRegistrationEnabled}"/>
@@ -309,6 +268,26 @@
                 </div>
                 </div>
             </c:if>
-        </form:form>
+    </form:form>
     </article>
+    <script nonce="${requestScope.cspNonce}">
+        document.addEventListener('DOMContentLoaded', function() {
+            var submitBtn = document.getElementById('login-submit-btn');
+            var usernameField = document.getElementById('username');
+            var loginForm = document.getElementsByName('loginForm')[0];
+
+            if (submitBtn && usernameField && loginForm) {
+                submitBtn.addEventListener('click', function(e) {
+                    // Trim the username value
+                    usernameField.value = usernameField.value.trim();
+
+                    // Disable the button to prevent double submission
+                    this.disabled = true;
+
+                    // Submit the form
+                    loginForm.submit();
+                });
+            }
+        });
+    </script>
 </t:wrapper>

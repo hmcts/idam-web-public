@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 @Configuration
 @ConditionalOnMissingBean(AppConfigurationSSO.class)
@@ -22,8 +23,25 @@ public class AppConfiguration extends WebSecurityConfigurerAdapter {
             .csrf()
                 .ignoringAntMatchers("/o/**")
                 .ignoringAntMatchers(dynatraceMonitorEndpoint)
-            .csrfTokenRepository(new CookieCsrfTokenRepository()).and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .csrfTokenRepository(new CookieCsrfTokenRepository())
+                .and()
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+            .headers()
+                // CSP is handled by CspNonceFilter
+                .permissionsPolicy()
+                .policy(
+                    "camera=(), " +
+                    "geolocation=(), " +
+                    "microphone=()")
+                .and()
+                .referrerPolicy()
+                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+                .and()
+                .frameOptions()
+                .deny()
+                .and()
             .authorizeRequests()
                 .antMatchers("/o/**").permitAll()
                 .antMatchers("/resources/**").permitAll()

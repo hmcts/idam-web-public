@@ -15,7 +15,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.net.URI;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.containsString;
 
 @WebMvcTest
 @AutoConfigureMockMvc
@@ -57,5 +59,19 @@ public class AppConfigurationTest {
             request("DEBUG", URI.create("/"));
         mvc.perform(requestWithNotAllowedHttpMethod)
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void security_headers_should_be_present() throws Exception {
+        MockHttpServletRequestBuilder getBaseUrl = MockMvcRequestBuilders.
+            request("GET", URI.create("/"));
+        mvc.perform(getBaseUrl)
+            .andExpect(header().exists("Content-Security-Policy"))
+            .andExpect(header().string("Content-Security-Policy", containsString("script-src 'self' 'nonce-")))
+            .andExpect(header().string("Permissions-Policy", "camera=(), geolocation=(), microphone=()"))
+            .andExpect(header().string("Referrer-Policy", "strict-origin-when-cross-origin"))
+            .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+            .andExpect(header().string("X-Frame-Options", "DENY"))
+            .andExpect(header().string("X-XSS-Protection", "1; mode=block"));
     }
 }

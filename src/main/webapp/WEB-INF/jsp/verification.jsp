@@ -16,9 +16,6 @@
 
             <spring:hasBindErrors name="authorizeCommand">
                 <c:set var="hasBindError" value="true" />
-                <script>
-                    sendEvent('Authorization', 'Error', 'User one time password authorization has failed');
-                </script>
                 <div class="error-summary" role="alert"
                      aria-labelledby="validation-error-summary-heading"
                      tabindex="-1">
@@ -35,33 +32,21 @@
                     </h2>
                     <c:choose>
                         <c:when test="${isCodeEmpty}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'One time password is empty');
-                            </script>
                             <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:when>
                         <c:when test="${isCodePatternInvalid}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'One time password has invalid pattern');
-                            </script>
                             <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:when>
                         <c:when test="${isCodeLengthInvalid}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'One time password has invalid length');
-                            </script>
                             <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
                         </c:when>
                         <c:when test="${hasOtpSessionExpired}">
-                            <script>
-                                sendEvent('Authorization', 'Error', 'One time password has expired');
-                            </script>
                             <c:url value="/login" var="loginUrl">
                                 <c:param name="redirect_uri" value="${redirect_uri}"/>
                                 <c:param name="client_id" value="${client_id}"/>
@@ -81,9 +66,6 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <script>
-                                sendEvent('Authorization', 'Error', 'One time password is incorrect');
-                            </script>
                             <ul class="error-summary-list">
                                 <li><a href="#code"><spring:message code="public.login.error.verification.code.incorrect.instruction"/></a></li>
                             </ul>
@@ -128,11 +110,27 @@
                             class="form-control${hasBindError? ' form-control-error' : ''}"
                             id="code" name="code" path="code" type="text" style="width:120px" value="" autocomplete="off"/>
                     </div>
-                    <input class="button" type="submit" data-prevent-double-click="true"
-                        onclick="this.disabled = true; document.getElementsByName('verificationForm')[0].submit()"
+                    <input class="button" type="submit" data-prevent-double-click="true" id="verification-submit-btn"
                         value="<spring:message code="public.verification.form.submit" />">
                 </div>
             </div>
         </form:form>
+
+        <script nonce="${requestScope.cspNonce}">
+            document.addEventListener('DOMContentLoaded', function() {
+                var submitBtn = document.getElementById('verification-submit-btn');
+                var verificationForm = document.getElementsByName('verificationForm')[0];
+
+                if (submitBtn && verificationForm) {
+                    submitBtn.addEventListener('click', function(e) {
+                        // Disable the button to prevent double submission
+                        this.disabled = true;
+
+                        // Submit the form
+                        verificationForm.submit();
+                    });
+                }
+            });
+        </script>
     </article>
 </t:wrapper>
