@@ -76,7 +76,7 @@
 
             <h1 class="heading-large"><spring:message code="public.verification.subheading.verification.required"/></h1>
             <div class="form-section">
-                <div class="column-two-thirds" style="padding: 0;">
+                <div class="column-two-thirds verification-column">
                     <p><spring:message code="public.verification.p"/></p>
                     <p><spring:message htmlEscape="false" code="public.verification.check.inbox.instruction"/></p>
                     <div class="form-group ${hasBindError? 'form-group-error' : ''}">
@@ -107,8 +107,8 @@
                             </span>
                         </c:if>
                         <form:input
-                            class="form-control${hasBindError? ' form-control-error' : ''}"
-                            id="code" name="code" path="code" type="text" style="width:120px" value="" autocomplete="off"/>
+                            class="form-control verification-code-input${hasBindError? ' form-control-error' : ''}"
+                            id="code" name="code" path="code" type="text" value="" autocomplete="off"/>
                     </div>
                     <input class="button" type="submit" data-prevent-double-click="true" id="verification-submit-btn"
                         value="<spring:message code="public.verification.form.submit" />">

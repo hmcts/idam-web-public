@@ -183,7 +183,7 @@
 
                     <p><spring:message code="public.privacypolicy.text_0125" /></p>
                 </div>
-                <div id="tabs-2" aria-labelledby="ui-id-5" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" style="display: block;" aria-hidden="false">
+                <div id="tabs-2" aria-labelledby="ui-id-5" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content active-tab" aria-hidden="false">
                     <h2 class="heading-large"><spring:message code="public.privacypolicy.text_0126" /></h2>
                     <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0127" /></h2>
 
@@ -373,13 +373,6 @@
                 </div>
             </div>
         </div>
-        <style>
-            .ui-state-active a {
-                text-decoration: none;
-                color: #0b0c0c;
-                cursor: default;
-            }
-        </style>
 
         <script nonce="${requestScope.cspNonce}">
             document.addEventListener('DOMContentLoaded', function() {
