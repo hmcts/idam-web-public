@@ -53,10 +53,24 @@
                 <input class="form-control ${hasPassword2Error ? "form-control-error" : ""}" type="password" id="password2" name="password2" autocomplete="off">
             </div>
 
-            <input class="button" type="submit" value="<spring:message code="public.common.button.continue.text"/>" id="activate"
-                onclick="setTimeout(function () {document.getElementById('activate').disabled = true;document.getElementById('activate').style.opacity='0.5';}, 0);">
+            <input class="button" type="submit" value="<spring:message code="public.common.button.continue.text"/>" id="activate">
             <input type="hidden" id="token" name="token" value="${fn:escapeXml(token)}">
             <input type="hidden" id="code" name="code" value="${fn:escapeXml(code)}">
         </form:form>
+
+        <script nonce="${requestScope.cspNonce}">
+            document.addEventListener('DOMContentLoaded', function() {
+                var activateBtn = document.getElementById('activate');
+
+                if (activateBtn) {
+                    activateBtn.addEventListener('click', function(e) {
+                        setTimeout(function() {
+                            activateBtn.disabled = true;
+                            activateBtn.style.opacity = '0.5';
+                        }, 0);
+                    });
+                }
+            });
+        </script>
     </article>
 </t:wrapper>

@@ -58,10 +58,24 @@
             </div>
 
 
-            <input class="button" type="submit" value="<spring:message code="public.reset.password.form.submit"/>" id="reset-button"
-                   onclick="setTimeout(function () {document.getElementById('reset-button').disabled = true;document.getElementById('reset-button').style.opacity='0.5';}, 0);">
+            <input class="button" type="submit" value="<spring:message code="public.reset.password.form.submit"/>" id="reset-button">
             <input type="hidden" id="token" name="token" value="${fn:escapeXml(param.token)}"/>
             <input type="hidden" id="code" name="code" value="${fn:escapeXml(param.code)}"/>
         </form:form>
+
+        <script nonce="${requestScope.cspNonce}">
+            document.addEventListener('DOMContentLoaded', function() {
+                var resetBtn = document.getElementById('reset-button');
+
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', function(e) {
+                        setTimeout(function() {
+                            resetBtn.disabled = true;
+                            resetBtn.style.opacity = '0.5';
+                        }, 0);
+                    });
+                }
+            });
+        </script>
     </article>
 </t:wrapper>

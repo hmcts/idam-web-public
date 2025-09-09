@@ -110,11 +110,27 @@
                             class="form-control${hasBindError? ' form-control-error' : ''}"
                             id="code" name="code" path="code" type="text" style="width:120px" value="" autocomplete="off"/>
                     </div>
-                    <input class="button" type="submit" data-prevent-double-click="true"
-                        onclick="this.disabled = true; document.getElementsByName('verificationForm')[0].submit()"
+                    <input class="button" type="submit" data-prevent-double-click="true" id="verification-submit-btn"
                         value="<spring:message code="public.verification.form.submit" />">
                 </div>
             </div>
         </form:form>
+
+        <script nonce="${requestScope.cspNonce}">
+            document.addEventListener('DOMContentLoaded', function() {
+                var submitBtn = document.getElementById('verification-submit-btn');
+                var verificationForm = document.getElementsByName('verificationForm')[0];
+
+                if (submitBtn && verificationForm) {
+                    submitBtn.addEventListener('click', function(e) {
+                        // Disable the button to prevent double submission
+                        this.disabled = true;
+
+                        // Submit the form
+                        verificationForm.submit();
+                    });
+                }
+            });
+        </script>
     </article>
 </t:wrapper>

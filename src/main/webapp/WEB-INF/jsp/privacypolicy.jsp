@@ -126,13 +126,13 @@
                     <h2 id="otherservices" class="heading-medium"><spring:message code="public.privacypolicy.text_0088" /></h2>
                     <p><spring:message code="public.privacypolicy.text_0089" /></p>
                     <ul>
-                        <li><a onclick="window.location.reload().scrollTop(0);" href="#tabs-4"><spring:message code="public.privacypolicy.text_0090" /></a>  </li>
+                        <li><a class="tab-reload-link" href="#tabs-4"><spring:message code="public.privacypolicy.text_0090" /></a>  </li>
 
-                        <li><a onclick="window.location.reload().scrollTop(0);" href="#tabs-3"><spring:message code="public.privacypolicy.text_0091" /></a> </li>
+                        <li><a class="tab-reload-link" href="#tabs-3"><spring:message code="public.privacypolicy.text_0091" /></a> </li>
 
-                        <li><a onclick="window.location.reload().scrollTop(0);" href="#tabs-5"><spring:message code="public.privacypolicy.text_0092" /></a> </li>
+                        <li><a class="tab-reload-link" href="#tabs-5"><spring:message code="public.privacypolicy.text_0092" /></a> </li>
 
-                        <li><a onclick="window.location.reload().scrollTop(0);" href="#tabs-2"><spring:message code="public.privacypolicy.text_0093" /></a> </li>
+                        <li><a class="tab-reload-link" href="#tabs-2"><spring:message code="public.privacypolicy.text_0093" /></a> </li>
                     </ul>
                 </div>
 
@@ -380,5 +380,19 @@
                 cursor: default;
             }
         </style>
+
+        <script nonce="${requestScope.cspNonce}">
+            document.addEventListener('DOMContentLoaded', function() {
+                var tabReloadLinks = document.querySelectorAll('.tab-reload-link');
+
+                tabReloadLinks.forEach(function(link) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.location.reload();
+                        window.scrollTo(0, 0);
+                    });
+                });
+            });
+        </script>
     </article>
 </t:wrapper>
