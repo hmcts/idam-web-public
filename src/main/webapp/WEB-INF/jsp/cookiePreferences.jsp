@@ -7,7 +7,7 @@
 
 <t:wrapper titleKey="public.template.footer.support.link.cookies">
     <article class="content__body">
-        <a href="javascript:history.go(-1)" class="link-back"><spring:message code="public.cookie.preferences.text_0000"/></a>
+        <a href="#" class="link-back" id="back-link"><spring:message code="public.cookie.preferences.text_0000"/></a>
 
         <div class="govuk-visually-hidden" id="cookie-preference-success">
             <div class="gem-c-success-alert govuk-notification-banner govuk-notification-banner--success" role="alert" tabindex="-1" aria-labelledby="govuk-notification-banner-title-64523f81" data-module="initial-focus">
@@ -217,5 +217,17 @@
                 <script src="/assets/javascripts/cookie-manager.js"></script>
             </div>
         </div>
+        <script nonce="${requestScope.cspNonce}">
+            document.addEventListener('DOMContentLoaded', function() {
+                var backLink = document.getElementById('back-link');
+
+                if (backLink) {
+                    backLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        history.go(-1);
+                    });
+                }
+            });
+        </script>
     </article>
 </t:wrapper>
