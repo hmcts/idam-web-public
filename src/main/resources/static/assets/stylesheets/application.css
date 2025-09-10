@@ -1536,3 +1536,31 @@ textarea {
 .govuk-h-size-override {
     font-size: 2.25rem !important;
 }
+
+/* CSP Compliance Styles - Moved from inline style blocks */
+
+/* Privacy Policy Styles */
+.privacy-policy-tabs .ui-state-active a {
+    text-decoration: none;
+    color: #0b0c0c;
+    cursor: default;
+}
+
+.privacy-policy-tabs .active-tab {
+    display: block;
+}
+
+/* Verification Page Styles */
+.verification-column {
+    padding: 0;
+}
+
+.verification-code-input {
+    width: 120px;
+}
+
+/* Google Tag Manager Styles */
+.gtm-noscript-iframe {
+    display: none;
+    visibility: hidden;
+}

@@ -63,7 +63,8 @@
         <script nonce="${requestScope.cspNonce}">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;var n=d.querySelector('[nonce]');
+            n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-54HWQKQ');</script>
         <!-- End Google Tag Manager -->
     </c:if>
@@ -72,7 +73,7 @@
 <c:if test="${gtmFlag}">
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src=https://www.googletagmanager.com/ns.html?id=GTM-54HWQKQ
-                      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+                      height="0" width="0" class="gtm-noscript-iframe"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 </c:if>
 <script nonce="${requestScope.cspNonce}">
@@ -85,6 +86,7 @@
 <script nonce="${requestScope.cspNonce}">
     window.GOVUKFrontend.initAll()
 </script>
+
 
 <div class="govuk-visually-hidden govuk-cookie-banner govuk-!-display-none " data-nosnippet role="region"
      aria-label="<spring:message code="public.cookie.banner.text_0005"/>" id="reject-all-cookies-success">
