@@ -1552,11 +1552,11 @@ textarea {
 
 /* Verification Page Styles */
 .verification-column {
-    padding: 0;
+    padding: 0 !important;
 }
 
 .verification-code-input {
-    width: 120px;
+    width: 120px !important;
 }
 
 /* Google Tag Manager Styles */
