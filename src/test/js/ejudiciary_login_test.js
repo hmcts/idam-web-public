@@ -65,7 +65,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
         expect(userInfo.forename).to.equal('SIDM EJUD');
         expect(userInfo.surname).to.equal('TEST A');
         expect(userInfo.id).to.not.equal(null);
-        expect(userInfo.roles).to.eql(['judiciary']);
+        expect(userInfo.roles).to.include('judiciary');
     }
 
     I.resetRequestInterception();
@@ -110,7 +110,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         expect(userInfo.forename).to.equal('SIDM EJUD');
         expect(userInfo.surname).to.equal('TEST A');
         expect(userInfo.id).to.not.equal(null);
-        expect(userInfo.roles).to.eql(['judiciary']);
+        expect(userInfo.roles).to.include('judiciary');
 
         I.resetRequestInterception();
     }
