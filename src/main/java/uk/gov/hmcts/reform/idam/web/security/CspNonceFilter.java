@@ -43,7 +43,7 @@ public class CspNonceFilter implements Filter {
         // Update CSP header with the generated nonce
         String cspPolicy = "default-src 'self'; " +
                           "script-src 'self' 'nonce-" + nonce + "' https://www.googletagmanager.com; " +
-                          "style-src 'self' 'unsafe-inline'; " +
+                          "style-src 'self' 'nonce-" + nonce + "'; " +
                           "img-src 'self' data: https://www.googletagmanager.com; " +
                           "font-src 'self' data:; " +
                           "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; " +

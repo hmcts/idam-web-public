@@ -75,7 +75,7 @@ public class CspNonceFilterTest {
         assertNotNull(cspHeader, "CSP header should not be null");
         assertTrue(cspHeader.contains("default-src 'self'"), "CSP should contain default-src directive");
         assertTrue(cspHeader.contains("script-src 'self' 'nonce-"), "CSP should contain script-src with nonce");
-        assertTrue(cspHeader.contains("style-src 'self' 'unsafe-inline'"), "CSP should contain style-src directive");
+        assertTrue(cspHeader.contains("style-src 'self' 'nonce-"), "CSP should contain style-src directive");
         assertTrue(cspHeader.contains("frame-ancestors 'none'"), "CSP should contain frame-ancestors directive");
     }
 
