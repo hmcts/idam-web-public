@@ -1,0 +1,49 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+functional-output/
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### Fortify Client ###
+Fortify Scan/
+lib/FodUpload.jar
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+.DS_Store
+node_modules/
+build
+.gradle
+out
+output/
+
+**/application-local*.yaml
+
+### VS Code ###
+bin
+
+### Terraform ###
+.terraform
+
+### Helm ###
+**/charts/*.tgz
+charts/*/requirements.lock
+
+### Jenkins Additions ###
+init.gradle

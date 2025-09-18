@@ -1,0 +1,162 @@
+server:
+  port: 80
+  connectionTimeout: 10000
+  connectionRequestTimeout: 10000
+  readTimeout: 60000
+  maxConnectionIdleTime: 20
+  maxConnectionsPerRoute: 200
+  maxConnectionsTotal: 200
+  servlet:
+    session:
+      timeout: 600m
+    context_parameters:
+      defaultHtmlEscape: true
+  tomcat:
+    remote-ip-header: x-forwarded-for
+    protocol-header: x-forwarded-proto
+  max-http-header-size: 24KB
+
+zuul:
+  routes:
+    open-id-connect:
+      path: /o/**
+      sensitiveHeaders: Set-Cookie
+      url: ${strategic.service.url}/o
+
+ribbon:
+  ConnectTimeout: 10000
+  ReadTimeout: 10000
+
+management:
+  # Enable the info and health endpoints
+  # A given environment (such as prod) might disable all endpoints,
+  # but info and health should still be enabled
+  health:
+    redis:
+      enabled: false
+  endpoint:
+    health:
+      show-details: "always"
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health,info,prometheus
+
+spring:
+  application:
+    name: IDAM Web Public
+  # docker run --name web-public-redis -d -p 6379:6379 redis
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    timeout: 1000ms
+    custom:
+      command:
+        timeout: 11000ms
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  session:
+    redis:
+      flush-mode: ON_SAVE
+      namespace: spring:session
+      cleanup-cron: 0 * * *
+    store-type: redis
+    timeout: 432000s
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: https://sts.windows.net/723e4557-2f17-43ed-9e71-f1beb253e546/
+          moj:
+            issuer-uri: https://sts.windows.net/34c125c9-c7f3-486f-a78c-cf762c718831/
+        registration:
+          oidc:
+            client-id: placeholder
+            client-secret: placeholder
+            client-authentication-method: basic
+            scope: openid
+          moj:
+            client-id: placeholder
+            client-secret: placeholder
+            client-authentication-method: basic
+            scope: openid
+  config:
+    import: "optional:configtree:/mnt/secrets/idam-idam/"
+
+authentication:
+  useOAuth2: true
+  secureCookie: true
+
+strategic:
+  service:
+    url: https://idam-api
+    oidcprefix: /o
+  endpoint:
+    authorize: authenticate
+    loginWithPin: pin
+    uplift: login/uplift
+    forgotPassword: forgotPassword
+    resetPassword: resetPassword
+    validateResetPasswordToken: validateResetPasswordToken
+    users: users
+    validateActivationToken: validate
+    activation: activate
+    userrole: users/{userId}/roles/{roleId}
+    search: users
+    authorizeOauth2: o/authorize
+    selfRegisterUser: users/self
+    selfRegistration: users/selfregister
+    details: details
+    services: services
+    health: health
+    evaluatePolicies: api/v1/policies/evaluate
+  policies:
+    applicationName: HmctsPolicySet
+    privateIpsFilterPattern: "10\\.\\d+\\.\\d+\\.\\d+"
+  session:
+    idamSessionCookie: Idam.Session
+  language:
+    supportedLocales: en,cy
+
+validation:
+  password:
+    minLength: 8
+    maxLength: 256
+
+logging:
+  level:
+    ROOT: INFO
+    org:
+      springframework:
+        security:
+          web:
+            csrf: DEBUG
+
+azure:
+  application-insights:
+    instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
+
+features:
+  external-cookie-page:
+    enabled: false
+    url: https://www.placeholder.com
+  external-contact-page:
+    enabled: false
+    url: path-to-gov-uk-page
+  federated-s-s-o: ${federated.sso:true}
+  sso-auto-login-redirect: true
+  step-up-authentication: ${step.up.authentication:true}
+  google-tag-manager: false
+  dynatrace:
+    monitor:
+      endpoint: "/rb_bf24054dsx"
+
+ssoEmailDomains:
+  dummy: dummy
+# re-enable only when SSO feature is enabled for everyone
+#  ejudiciary.net: ejudiciary-aad

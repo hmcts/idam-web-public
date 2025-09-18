@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>hmcts/.github:renovate-config",
+    "local>hmcts/.github//renovate/automerge-all"
+  ],
+  "ignoreDeps": ["org.pitest:pitest", "com.nimbusds:nimbus-jose-jwt"],
+  "baseBranch":  "preview",
+  "schedule": "after 4pm and before 7pm every weekday"
+}

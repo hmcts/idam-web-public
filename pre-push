@@ -1,0 +1,29 @@
+# This script will stop a push if your commit message contains a backslash
+# Add it to your .git/hooks folder and chmod +x .git/hooks/pre-commit
+
+remote="$1"
+url="$2"
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+z40=0000000000000000000000000000000000000000
+
+while read local_ref local_sha remote_ref remote_sha
+do
+    if [ "$local_sha" = $z40 ]
+    then
+        # Handle delete
+        :
+    else
+        # Check for \ commit
+        echo "hook running on branch $branch"
+        commit=$(git log --walk-reflogs $branch | grep '\\')
+        if [ -n "$commit" ]
+        then
+            echo "error found"
+            echo >&2 "Found \ commit in $local_ref, not pushing"
+            exit 1
+        fi
+    fi
+done
+
+exit 0

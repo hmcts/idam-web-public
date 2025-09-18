@@ -1,0 +1,43 @@
+[versions]
+api-spec = "4.1.0"
+commons-io = "2.20.0"
+commons-lang3 = "3.18.0"
+commons-text = "1.14.0"
+commons-fileupload = "1.6.0"
+feign = "13.6"
+feign-form = "3.8.0"
+findbugs = "3.0.2"
+guava = "33.4.8-jre"
+snakeyaml = "2.4"
+spring-boot = "2.7.18"
+spring-cloud = "3.1.9"
+spring-security-oauth2 = "2.5.2.RELEASE"
+spring-security-oauth2-autoconfigure = "2.6.8"
+reform-logging = "6.1.9"
+
+[libraries]
+reform-java-logging = { module = "com.github.hmcts.java-logging:logging", version.ref = "reform-logging"}
+commons-fileupload = { module = " commons-fileupload:commons-fileupload", version.ref = "commons-fileupload" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
+commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
+feign-jackson = { module = "io.github.openfeign:feign-jackson", version.ref = "feign" }
+feign-okhttp = { module = "io.github.openfeign:feign-okhttp", version.ref = "feign" }
+findbugs-jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "findbugs" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+idam-api-spec = { module = "com.github.hmcts:idam-api-spec", version.ref = "api-spec" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+spring-cloud-openfeign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign", version.ref = "spring-cloud" }
+
+[bundles]
+applicationinsights = ["reform-java-logging"]
+feign = ["feign-jackson", "feign-okhttp", "spring-cloud-openfeign"]
+
+[plugins]
+jmh = { id = "me.champeau.jmh", version = "0.7.3" }
+spring = { id = "io.spring.dependency-management", version = "1.1.7" }
+spring-framework = { id = "org.springframework.boot", version.ref = "spring-boot" }
+owasp = { id = "org.owasp.dependencycheck", version = "12.1.3" }
+sonarqube = { id = "org.sonarqube", version = "6.3.1.5724" }
+pitest = { id = "info.solidsoft.pitest", version = "1.15.0" }
+git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.5.3" }

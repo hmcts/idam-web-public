@@ -1,0 +1,134 @@
+#!groovy
+
+@Library('Infrastructure')
+
+def type = "java"
+def product = "idam"
+def component = "web-public"
+def secrets = [
+    'idam-idam-${env}': [
+        secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
+        secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
+        secret('notify-api-key', 'NOTIFY_API_KEY')
+    ]
+]
+
+properties([
+    parameters([
+        choice(name: 'ENVIRONMENT', choices: 'idam-sandbox\npreview', description: 'Environment where code should be build and deployed'),
+        choice(name: 'SUBSCRIPTION', choices: 'sandbox\nnonprod', description: 'Azure subscriptions available to build in')
+    ])
+])
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+    [$class     : 'AzureKeyVaultSecret',
+     secretType : 'Secret',
+     name       : secretName,
+     version    : '',
+     envVariable: envVar
+    ]
+}
+
+withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.SUBSCRIPTION){
+  loadVaultSecrets(secrets)
+  enableSlackNotifications('#idam_tech')
+  enableAksStagingDeployment()
+  disableLegacyDeployment()
+
+  // AKS Callbacks
+  before('akschartsinstall') {
+    env.PREVIEW_ENVIRONMENT_NAME = 'preview'
+    env.NONPROD_ENVIRONMENT_NAME = 'preview'
+    println """\
+            Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+            Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
+  }
+  
+  before('smoketest:idam-preview') {
+    env.PREVIEW_ENVIRONMENT_NAME = 'preview'   
+    env.NONPROD_ENVIRONMENT_NAME = 'preview'
+    env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
+    println """\
+            Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+            Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+            Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+  }
+
+  before('functionalTest:idam-preview') {
+    env.PREVIEW_ENVIRONMENT_NAME = 'preview'
+    env.NONPROD_ENVIRONMENT_NAME = 'preview'
+    env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
+    println """\
+            Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+            Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+            Using IDAMAPI: ${env.IDAMAPI}""".stripIndent()
+  }
+
+  afterAlways('akschartsinstall') {
+    env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+    env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+    println """\
+            Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+            Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
+  }
+  
+  afterAlways('smoketest:idam-preview') {
+    env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+    env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+    println """\
+            Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+            Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
+  }
+
+  afterAlways('functionalTest:idam-preview') {
+    env.PREVIEW_ENVIRONMENT_NAME = 'idam-preview'
+    env.NONPROD_ENVIRONMENT_NAME = 'idam-aat'
+    println """\
+            Using PREVIEW_ENVIRONMENT_NAME: ${env.PREVIEW_ENVIRONMENT_NAME}
+            Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}""".stripIndent()
+  }
+  // End AKS Callbacks
+  
+  afterAlways('test') {
+    publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/jacoco",
+        reportFiles          : "index.html",
+        reportName           : "IdAM Web Public Code Coverage Report"
+    ]
+
+  }
+
+  afterAlways('smoketest:idam-preview') {
+    archiveArtifacts '**/build/test-results/**/*'
+
+    publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "output",
+        reportFiles          : "idam-web-public-e2e-result.html",
+        reportName           : "IDAM Web Public E2E smoke tests result"
+    ]
+  }
+
+  afterAlways('functionalTest:idam-preview') {
+    archiveArtifacts '**/build/test-results/**/*'
+    archiveArtifacts '**/functional-output/**/*'
+
+    publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "output",
+        reportFiles          : "idam-web-public-e2e-result.html",
+        reportName           : "IDAM Web Public E2E functional tests result"
+    ]
+  }
+  
+  before('buildinfra:idam-prod') {
+      error('Stopping pipeline before Prod stages')
+  }
+}

@@ -1,0 +1,148 @@
+#!groovy
+
+@Library("Infrastructure")
+
+def type = "java"
+
+def product = "idam"
+
+def component = "web-public"
+
+env.NO_SKIP_IMG_BUILD = 'true'
+
+def secrets = [
+    'idam-idam-${env}': [
+        secret('smoke-test-user-username', 'SMOKE_TEST_USER_USERNAME'),
+        secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
+        secret('notify-api-key', 'NOTIFY_API_KEY'),
+        secret('EJUDICIARY-TEST-USER-PASSWORD', 'EJUDICIARY_TEST_USER_PASSWORD'),
+        secret('MOJ-TEST-USER-PASSWORD', 'MOJ_TEST_USER_PASSWORD'),
+        secret('idam-functional-test-service-client-secret', 'FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET')
+
+    ]
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+    [$class     : 'AzureKeyVaultSecret',
+     secretType : 'Secret',
+     name       : secretName,
+     version    : '',
+     envVariable: envVar
+    ]
+}
+
+def branchesToSync = ['demo', 'perftest', 'ithc', 'nightly-dev']
+
+withPipeline(type, product, component) {
+    enableSlackNotifications('#idam_tech')
+    enableAksStagingDeployment()
+    enableCrossBrowserTest()
+    disableLegacyDeployment()
+    syncBranchesWithMaster(branchesToSync)
+
+    onPR() {
+        Map<String, String> vaultEnvironmentOverrides = ['aat':'preview']
+        overrideVaultEnvironments(vaultEnvironmentOverrides)
+        env.NONPROD_ENVIRONMENT_NAME = 'preview'
+    }
+    loadVaultSecrets(secrets)
+
+    before('smoketest:preview') {
+        env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
+        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
+    }
+
+    before('functionalTest:preview') {
+        env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
+        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
+    }
+
+    before('smoketest:aat') {
+        env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
+    }
+
+    before('functionalTest:aat') {
+        env.RPE_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+        env.REF_DATA_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
+        env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
+        env.TESTING_SUPPORT_API_URL = 'https://idam-testing-support-api.aat.platform.hmcts.net'
+        env.TESTS_FOR_ACCESSIBILITY = false
+        env.WAIT_FOR_ACTION_TIMEOUT = 2000
+        println """\
+                Using NONPROD_ENVIRONMENT_NAME: ${env.NONPROD_ENVIRONMENT_NAME}
+                Using RPE_AUTH_URL: ${env.RPE_AUTH_URL}
+                Using REF_DATA_URL: ${env.REF_DATA_URL}
+                Using IDAMAPI: ${env.IDAMAPI}
+                Using TESTING_SUPPORT_API_URL: ${env.TESTING_SUPPORT_API_URL}""".stripIndent()
+    }
+    // End AKS Callbacks
+
+    afterAlways('test') {
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/jacoco",
+            reportFiles          : "index.html",
+            reportName           : "IdAM Web Public Code Coverage Report"
+        ]
+
+    }
+
+    afterAlways('smoketest:preview') {
+        archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E smoke tests result"
+        ]
+    }
+
+    afterAlways('smoketest:aat') {
+        archiveArtifacts '**/build/test-results/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E smoke tests result"
+        ]
+    }
+
+    afterAlways('functionalTest:preview') {
+        archiveArtifacts '**/build/test-results/**/*'
+        archiveArtifacts '**/functional-output/**/*'
+        archiveArtifacts '**/output/**'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E functional tests result"
+        ]
+    }
+
+    afterAlways('functionalTest:aat') {
+        env.TESTS_FOR_ACCESSIBILITY = false
+        env.WAIT_FOR_ACTION_TIMEOUT = 500
+        archiveArtifacts '**/build/test-results/**/*'
+        archiveArtifacts '**/functional-output/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "output",
+            reportFiles          : "idam-web-public-e2e-result.html",
+            reportName           : "IDAM Web Public E2E functional tests result"
+        ]
+    }
+}
