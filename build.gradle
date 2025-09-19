@@ -152,7 +152,7 @@ allprojects {
         strictly "9.0.108" // CVE-2025-48989
       }
     }
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.10'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.11'
     implementation group: 'org.pitest', name: 'pitest', version: '1.16.3'
 
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
