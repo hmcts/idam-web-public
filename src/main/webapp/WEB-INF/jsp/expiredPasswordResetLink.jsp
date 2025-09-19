@@ -28,7 +28,4 @@
             <spring:message code="public.user.password.reset.expired.link.text.end"/>
         </p>
     </article>
-    <script>
-        sendEvent('Expired Token', 'Expired', 'Password Reset token has expired');
-    </script>
 </t:wrapper>

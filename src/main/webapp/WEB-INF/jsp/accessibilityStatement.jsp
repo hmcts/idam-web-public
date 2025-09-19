@@ -7,7 +7,7 @@
 
 <t:wrapper titleKey="public.template.footer.support.link.accessibility.statement">
     <article class="content__body">
-        <a href="javascript:history.go(-1)" class="link-back"><spring:message code="public.accessibility.statement.text_0000" /></a>
+        <a href="#" class="link-back" id="back-link"><spring:message code="public.accessibility.statement.text_0000" /></a>
 
         <h1 class="heading-large"><spring:message code="public.accessibility.statement.text_0001" /></h1>
         <p><spring:message htmlEscape="false" code="public.accessibility.statement.text_0002" /></p>
@@ -205,4 +205,16 @@
             </li>
         </ul>
     </article>
+    <script nonce="${requestScope.cspNonce}">
+        document.addEventListener('DOMContentLoaded', function() {
+            var backLink = document.getElementById('back-link');
+
+            if (backLink) {
+                backLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    history.go(-1);
+                });
+            }
+        });
+    </script>
 </t:wrapper>

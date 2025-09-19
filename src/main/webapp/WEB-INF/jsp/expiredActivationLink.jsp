@@ -27,7 +27,4 @@
             </c:choose>
         </p>
     </article>
-    <script>
-        sendEvent('Expired Token', 'Expired', 'User activation token has expired');
-    </script>
 </t:wrapper>

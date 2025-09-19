@@ -7,7 +7,7 @@
 
 <t:wrapper titleKey="public.template.footer.support.link.cookies">
     <article class="content__body">
-        <a href="javascript:history.go(-1)" class="link-back"><spring:message code="public.cookies.text_0001"/></a>
+        <a href="#" class="link-back" id="back-link"><spring:message code="public.cookies.text_0001"/></a>
         <h1 class="heading-xlarge">
             <spring:message code="public.cookies.text_0002"/>
         </h1>
@@ -531,4 +531,16 @@
             </div>
         </div>
     </article>
+    <script nonce="${requestScope.cspNonce}">
+        document.addEventListener('DOMContentLoaded', function() {
+            var backLink = document.getElementById('back-link');
+
+            if (backLink) {
+                backLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    history.go(-1);
+                });
+            }
+        });
+    </script>
 </t:wrapper>

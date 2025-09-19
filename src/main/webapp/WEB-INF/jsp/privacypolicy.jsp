@@ -7,11 +7,11 @@
 
 <t:wrapper titleKey="public.template.footer.support.link.privacy.policy">
     <article class="content__body">
-        <a href="javascript:history.go(-1)" class="link-back"><spring:message code="public.privacypolicy.text_0001" /></a>
+        <a href="#" class="link-back" id="back-link"><spring:message code="public.privacypolicy.text_0001" /></a>
         <h1 class="heading-xlarge">
             <spring:message code="public.privacypolicy.text_0002" />
         </h1>
-        <div id="tabs" class="ui-tabs ui-corner-all ui-widget ui-widget-content">
+        <div id="tabs" class="ui-tabs ui-corner-all ui-widget ui-widget-content privacy-policy-tabs">
             <div id="nav-links">
 
                 <ol class="nav-list ui-tabs-nav ui-corner-all ui-helper-reset ui-helper-clearfix ui-widget-header" role="tablist">
@@ -126,13 +126,13 @@
                     <h2 id="otherservices" class="heading-medium"><spring:message code="public.privacypolicy.text_0088" /></h2>
                     <p><spring:message code="public.privacypolicy.text_0089" /></p>
                     <ul>
-                        <li><a onclick="window.location.reload().scrollTop(0);" href="#tabs-4"><spring:message code="public.privacypolicy.text_0090" /></a>  </li>
+                        <li><a class="tab-reload-link" href="#tabs-4"><spring:message code="public.privacypolicy.text_0090" /></a>  </li>
 
-                        <li><a onclick="window.location.reload().scrollTop(0);" href="#tabs-3"><spring:message code="public.privacypolicy.text_0091" /></a> </li>
+                        <li><a class="tab-reload-link" href="#tabs-3"><spring:message code="public.privacypolicy.text_0091" /></a> </li>
 
-                        <li><a onclick="window.location.reload().scrollTop(0);" href="#tabs-5"><spring:message code="public.privacypolicy.text_0092" /></a> </li>
+                        <li><a class="tab-reload-link" href="#tabs-5"><spring:message code="public.privacypolicy.text_0092" /></a> </li>
 
-                        <li><a onclick="window.location.reload().scrollTop(0);" href="#tabs-2"><spring:message code="public.privacypolicy.text_0093" /></a> </li>
+                        <li><a class="tab-reload-link" href="#tabs-2"><spring:message code="public.privacypolicy.text_0093" /></a> </li>
                     </ul>
                 </div>
 
@@ -183,7 +183,7 @@
 
                     <p><spring:message code="public.privacypolicy.text_0125" /></p>
                 </div>
-                <div id="tabs-2" aria-labelledby="ui-id-5" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content" style="display: block;" aria-hidden="false">
+                <div id="tabs-2" aria-labelledby="ui-id-5" role="tabpanel" class="ui-tabs-panel ui-corner-bottom ui-widget-content active-tab" aria-hidden="false">
                     <h2 class="heading-large"><spring:message code="public.privacypolicy.text_0126" /></h2>
                     <h2 class="heading-medium"><spring:message code="public.privacypolicy.text_0127" /></h2>
 
@@ -373,12 +373,26 @@
                 </div>
             </div>
         </div>
-        <style>
-            .ui-state-active a {
-                text-decoration: none;
-                color: #0b0c0c;
-                cursor: default;
-            }
-        </style>
+
+        <script nonce="${requestScope.cspNonce}">
+            document.addEventListener('DOMContentLoaded', function() {
+                var tabReloadLinks = document.querySelectorAll('.tab-reload-link');
+                tabReloadLinks.forEach(function(link) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.location.reload();
+                        window.scrollTo(0, 0);
+                    });
+                });
+
+                var backLink = document.getElementById('back-link');
+                if (backLink) {
+                    backLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        history.go(-1);
+                    });
+                }
+            });
+        </script>
     </article>
 </t:wrapper>

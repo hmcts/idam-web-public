@@ -49,7 +49,4 @@
             </p>
         </div>
     </article>
-    <script>
-        sendEvent('User Created', 'Success', 'User has been created');
-    </script>
 </t:wrapper>
