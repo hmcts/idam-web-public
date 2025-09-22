@@ -47,8 +47,8 @@ public class CspNonceFilter implements Filter {
                           "img-src 'self' data: https://www.googletagmanager.com; " +
                           "font-src 'self' data:; " +
                           "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; " +
-                          "form-action 'self'; " +
-                          "base-uri 'self'; " +
+                          //"form-action 'self'; " +
+                          //"base-uri 'self'; " +
                           "frame-src https://www.googletagmanager.com; " +
                           "frame-ancestors 'none';";
 
