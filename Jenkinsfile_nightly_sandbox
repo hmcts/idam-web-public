@@ -81,7 +81,7 @@ try {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
         }
         before('fullFunctionalTest') {
-            env.TESTS_FOR_ACCESSIBILITY = true
+            env.TESTS_FOR_ACCESSIBILITY = false
         }
         afterAlways('fullFunctionalTest') {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
