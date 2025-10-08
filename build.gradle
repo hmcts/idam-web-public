@@ -146,7 +146,7 @@ allprojects {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.109'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.110'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.109' // CVE-2025-48989
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.110' // CVE-2025-48989
     implementation("org.apache.tomcat:tomcat-annotations-api") {
       version {
         strictly "9.0.108" // CVE-2025-48989
