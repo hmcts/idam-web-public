@@ -144,9 +144,9 @@ allprojects {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.110'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.111'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.111'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.110' 
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.111' 
     implementation("org.apache.tomcat:tomcat-annotations-api") {
       version {
         strictly "9.0.110" 
