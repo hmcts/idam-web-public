@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.idam.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.CharEncoding;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -20,7 +19,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -72,6 +70,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
@@ -125,6 +124,7 @@ public class AppControllerTest {
         mockMvc.perform(get("/"))
             .andDo(print())
             .andExpect(status().is3xxRedirection())
+            .andExpect(cookie().exists(IDAM_UI_COOKIE_NAME))
             .andExpect(redirectedUrl("login"));
     }
 
@@ -156,7 +156,8 @@ public class AppControllerTest {
             .andExpect(model().attribute(REDIRECT_URI, REDIRECT_URI))
             .andExpect(model().attribute(CODE_CHALLENGE_PARAMETER, CODE_CHALLENGE))
             .andExpect(model().attribute(CODE_CHALLENGE_METHOD_PARAMETER, CODE_CHALLENGE_METHOD))
-            .andExpect(view().name(MvcKeys.LOGIN_VIEW));
+            .andExpect(view().name(MvcKeys.LOGIN_VIEW))
+            .andExpect(cookie().exists(IDAM_UI_COOKIE_NAME));
     }
 
     /**
@@ -2583,7 +2584,7 @@ public class AppControllerTest {
             .param(RESPONSE_TYPE_PARAMETER, RESPONSE_TYPE)
             .param(CLIENT_ID_PARAMETER, CLIENT_ID)
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
-            .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.SET_COOKIE, AUTHENTICATE_SESSION_COOKE))
+            .andExpect(cookie().exists(IDAM_SESSION_COOKIE_NAME))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrlPattern("/verification*"))
             .andExpect(model().attributeDoesNotExist(USERNAME))
