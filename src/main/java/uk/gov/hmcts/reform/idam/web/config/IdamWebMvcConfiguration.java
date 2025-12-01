@@ -25,7 +25,9 @@ import org.springframework.web.servlet.mvc.WebContentInterceptor;
 import uk.gov.hmcts.reform.idam.web.config.properties.ConfigurationProperties;
 import uk.gov.hmcts.reform.idam.web.helper.JSPHelper;
 import uk.gov.hmcts.reform.idam.web.security.CspNonceFilter;
+import uk.gov.hmcts.reform.idam.web.security.IdamUiCookieFilter;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -109,10 +111,19 @@ public class IdamWebMvcConfiguration implements WebMvcConfigurer {
         FilterRegistrationBean<CspNonceFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new CspNonceFilter());
         registration.addUrlPatterns("/*");
-        registration.setOrder(1);
+        registration.setOrder(2);
         return registration;
     }
 
+    @Bean
+    public FilterRegistrationBean<IdamUiCookieFilter> uiModeCookieFilterRegistration() {
+        FilterRegistrationBean<IdamUiCookieFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new IdamUiCookieFilter());
+        registration.addUrlPatterns("/*");
+        registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ERROR);
+        registration.setOrder(1); // ensure it runs before other filters
+        return registration;
+    }
 
     /**
      * return HTML by default when not sure.
