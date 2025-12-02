@@ -52,7 +52,7 @@ public class IdamUiCookieFilterTest {
         assertEquals(IdamUiCookieFilter.COOKIE_VALUE, cookie.getValue());
         assertEquals("/", cookie.getPath());
         assertTrue(cookie.getSecure(), "Cookie should be Secure");
-        assertFalse(cookie.isHttpOnly(), "Cookie should not be HttpOnly");
+        assertTrue(cookie.isHttpOnly(), "Cookie should be HttpOnly");
         assertEquals(-1, cookie.getMaxAge(), "Cookie should be a session cookie");
 
         verify(filterChain).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
