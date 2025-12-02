@@ -39,8 +39,7 @@ public class IdamUiCookieFilter implements Filter {
         Cookie cookie = new Cookie(COOKIE_NAME, COOKIE_VALUE);
         cookie.setPath("/");
         cookie.setSecure(true);
-        // Not HttpOnly so that client code could potentially read it if needed
-        cookie.setHttpOnly(false);
+        cookie.setHttpOnly(true);
         // Session cookie by default (maxAge -1)
         cookie.setMaxAge(-1);
         response.addCookie(cookie);
