@@ -24,4 +24,4 @@ CMD [ \
      "idam-web-public.war" \
      ]
 
-EXPOSE 8080/tcp
+EXPOSE 9090/tcp
