@@ -52,7 +52,7 @@ allprojects {
   }
 
   ext['okhttp.version'] = '4.11.0'
-  ext['netty.version'] = '4.1.125.Final'
+  ext['netty.version'] = '4.1.129.Final'
   ext['jackson.version'] = '2.16.2'
   ext['spring-framework.version'] = '5.3.39'
 
