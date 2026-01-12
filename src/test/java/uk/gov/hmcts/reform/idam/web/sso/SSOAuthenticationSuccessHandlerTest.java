@@ -162,6 +162,14 @@ public class SSOAuthenticationSuccessHandlerTest {
         verify(response, atLeastOnce()).sendRedirect(any());
     }
 
+    @Test
+    public void onAuthenticationSuccess_shouldRedirectToLoginOnPreconditionFailed() throws IOException {
+        given(federationApi.updateFederatedUser(anyString()))
+            .willThrow(restException("", HttpStatus.PRECONDITION_FAILED, new HttpHeaders(), null));
+        underTest.onAuthenticationSuccess(request, response, authentication);
+        verify(response, atLeastOnce()).sendRedirect(any());
+    }
+
     @Test(expected = HttpStatusCodeException.class)
     public void onAuthenticationSuccess_shouldThrowExceptionIfLocationHeaderIsEmpty() throws IOException {
         Map<String, Collection<String>> headers = ImmutableMap.of(SET_COOKIE, List.of("Idam.Session=abcdefg"));

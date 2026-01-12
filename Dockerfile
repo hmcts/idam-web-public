@@ -17,6 +17,8 @@ ENV SERVER_PORT=8080
 ADD --chown=hmcts:hmcts build/libs/idam-web-public.war \
                         lib/applicationinsights.json /opt/app/
 
+USER hmcts
+
 CMD [ \
      "-Dspring.profiles.active=docker,local", \
      "--add-opens", "java.base/java.lang=ALL-UNNAMED", \
