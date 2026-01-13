@@ -55,6 +55,7 @@ allprojects {
   ext['netty.version'] = '4.1.129.Final'
   ext['jackson.version'] = '2.16.2'
   ext['spring-framework.version'] = '5.3.39'
+  ext['log4j2.version'] = '2.25.3' // CVE-2025-68161
 
   repositories {
     mavenCentral()
