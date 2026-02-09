@@ -117,7 +117,7 @@ public class AppConfigurationSSO extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationSuccessHandler myAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository) {
         return new SSOAuthenticationSuccessHandler(repository, ssoFederationApi, oidcApi,
-            configurationProperties.getStrategic().getSession(), authHelper, ssoService);
+            configurationProperties.getStrategic().getSession(), configurationProperties.getStrategic(), authHelper, ssoService);
     }
 
 }

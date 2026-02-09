@@ -56,6 +56,10 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
         I.dontSee('error=');
 
         const pageSource = await I.grabSource();
+        const issMatch = pageSource.match(/&amp;iss=([^&]*)(.*)/);
+        const iss = issMatch ? decodeURIComponent(issMatch[1]) : '';
+        expect(['', TestData.WEB_PUBLIC_URL]).to.include(iss);
+
         const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
         const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
