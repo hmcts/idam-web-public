@@ -31,6 +31,8 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
@@ -70,6 +72,12 @@ public class SSOAuthenticationSuccessHandlerTest {
     private StrategicConfigurationProperties.Session sessionProperties;
 
     @Mock
+    private StrategicConfigurationProperties strategicProperties;
+
+    @Mock
+    private StrategicConfigurationProperties.ServiceConfigurationProperties serviceProperties;
+
+    @Mock
     private HttpSession session;
 
     @Mock
@@ -82,7 +90,9 @@ public class SSOAuthenticationSuccessHandlerTest {
         given(repository.loadAuthorizedClient(any(), any(), any())).willReturn(client);
         given(client.getAccessToken().getTokenValue()).willReturn("an_access_token");
         given(sessionProperties.getIdamSessionCookie()).willReturn("Idam.Session");
-        underTest = new SSOAuthenticationSuccessHandler(repository, federationApi, oidcApi, sessionProperties, authHelper, ssoService);
+        given(strategicProperties.getService()).willReturn(serviceProperties);
+        given(serviceProperties.getOidcprefix()).willReturn("/someprefix");
+        underTest = new SSOAuthenticationSuccessHandler(repository, federationApi, oidcApi, sessionProperties, strategicProperties, authHelper, ssoService);
     }
 
     @Test
@@ -100,7 +110,7 @@ public class SSOAuthenticationSuccessHandlerTest {
         Response feignResponse2 = Response.builder()
             .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
             .headers(feignHeaders).build();
-        given(oidcApi.oauth2AuthorizePost(any(), any())).willReturn(feignResponse2);
+        given(oidcApi.oauth2AuthorizePost(anyString(), anyString(), anyString(), anyString(), org.mockito.ArgumentMatchers.<String, Object>anyMap())).willReturn(feignResponse2);
         given(ssoService.computeProviderSessionAttribute(request, true, null, "ejudiciary-aad")).willReturn("ejudiciary-aad");
         underTest.onAuthenticationSuccess(request, response, authentication);
         verify(response, atLeastOnce()).sendRedirect(any());
@@ -123,7 +133,7 @@ public class SSOAuthenticationSuccessHandlerTest {
         Response feignResponse2 = Response.builder()
             .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
             .headers(feignHeaders).build();
-        given(oidcApi.oauth2AuthorizePost(any(), any())).willReturn(feignResponse2);
+        given(oidcApi.oauth2AuthorizePost(anyString(), anyString(), anyString(), anyString(), org.mockito.ArgumentMatchers.<String, Object>anyMap())).willReturn(feignResponse2);
         underTest.onAuthenticationSuccess(request, response, authentication);
         verify(federationApi, atLeastOnce()).createFederatedUser(anyString());
     }
@@ -142,7 +152,7 @@ public class SSOAuthenticationSuccessHandlerTest {
         Response feignResponse2 = Response.builder()
             .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
             .headers(feignHeaders).build();
-        given(oidcApi.oauth2AuthorizePost(any(), any())).willReturn(feignResponse2);
+        given(oidcApi.oauth2AuthorizePost(anyString(), anyString(), anyString(), anyString(), org.mockito.ArgumentMatchers.<String, Object>anyMap())).willReturn(feignResponse2);
         given(response.isCommitted()).willReturn(true);
         underTest.onAuthenticationSuccess(request, response, authentication);
     }
@@ -184,7 +194,7 @@ public class SSOAuthenticationSuccessHandlerTest {
         Response feignResponse2 = Response.builder()
             .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
             .headers(feignHeaders).build();
-        given(oidcApi.oauth2AuthorizePost(any(), any())).willReturn(feignResponse2);
+        given(oidcApi.oauth2AuthorizePost(anyString(), anyString(), anyString(), anyString(), org.mockito.ArgumentMatchers.<String, Object>anyMap())).willReturn(feignResponse2);
         underTest.onAuthenticationSuccess(request, response, authentication);
     }
 
@@ -202,7 +212,7 @@ public class SSOAuthenticationSuccessHandlerTest {
         Response feignResponse2 = Response.builder()
             .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
             .headers(feignHeaders).build();
-        given(oidcApi.oauth2AuthorizePost(any(), any())).willReturn(feignResponse2);
+        given(oidcApi.oauth2AuthorizePost(anyString(), anyString(), anyString(), anyString(), anyMap())).willReturn(feignResponse2);
         underTest.onAuthenticationSuccess(request, response, authentication);
     }
 
@@ -239,4 +249,56 @@ public class SSOAuthenticationSuccessHandlerTest {
         given(federationApi.federationAuthenticate(anyString())).willReturn(feignResponse1);
         underTest.onAuthenticationSuccess(request, response, authentication);
     }
+
+    @Test
+    public void authoriseUser_shouldSendEmptyXForwardedWhenRequestUrlInvalid() throws IOException {
+        Map<String, Collection<String>> headers = ImmutableMap.of(SET_COOKIE, List.of("Idam.Session=abcdefg"));
+        final Map<String, String[]> paramMap = ImmutableMap.of("some_param", new String[] {"some_value"});
+        Map<String, Collection<String>> feignHeaders = ImmutableMap.of(LOCATION, List.of("http://some_url"));
+
+        given(request.getSession()).willReturn(session);
+        given(session.getAttribute(anyString())).willReturn(paramMap);
+        // Make URL parsing throw NPE by returning null
+        given(request.getRequestURL()).willReturn(null);
+
+        Response feignResponse1 = Response.builder()
+            .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
+            .headers(headers).build();
+        given(federationApi.federationAuthenticate(anyString())).willReturn(feignResponse1);
+
+        Response feignResponse2 = Response.builder()
+            .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
+            .headers(feignHeaders).build();
+        given(oidcApi.oauth2AuthorizePost(anyString(), anyString(), anyString(), anyString(), org.mockito.ArgumentMatchers.<String, Object>anyMap())).willReturn(feignResponse2);
+
+        underTest.onAuthenticationSuccess(request, response, authentication);
+
+        verify(oidcApi, atLeastOnce()).oauth2AuthorizePost(anyString(), eq(""), eq(""), eq("/someprefix"), anyMap());
+    }
+
+    @Test
+    public void authoriseUser_shouldSendParsedXForwardedWhenRequestUrlValid() throws IOException {
+        Map<String, Collection<String>> headers = ImmutableMap.of(SET_COOKIE, List.of("Idam.Session=abcdefg"));
+        final Map<String, String[]> paramMap = ImmutableMap.of("some_param", new String[] {"some_value"});
+        Map<String, Collection<String>> feignHeaders = ImmutableMap.of(LOCATION, List.of("http://some_url"));
+
+        given(request.getSession()).willReturn(session);
+        given(session.getAttribute(anyString())).willReturn(paramMap);
+        given(request.getRequestURL()).willReturn(new StringBuffer("https://example.com/some/path"));
+
+        Response feignResponse1 = Response.builder()
+            .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
+            .headers(headers).build();
+        given(federationApi.federationAuthenticate(anyString())).willReturn(feignResponse1);
+
+        Response feignResponse2 = Response.builder()
+            .request(Request.create(Request.HttpMethod.CONNECT, "some_url", feignHeaders, (Request.Body) null, null))
+            .headers(feignHeaders).build();
+        given(oidcApi.oauth2AuthorizePost(anyString(), anyString(), anyString(), anyString(), org.mockito.ArgumentMatchers.<String, Object>anyMap())).willReturn(feignResponse2);
+
+        underTest.onAuthenticationSuccess(request, response, authentication);
+
+        verify(oidcApi, atLeastOnce()).oauth2AuthorizePost(anyString(), eq("https"), eq("example.com"), eq("/someprefix"), anyMap());
+    }
 }
+

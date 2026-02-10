@@ -14,7 +14,14 @@ public interface OidcApi {
     @Headers({
         "Content-Type: application/x-www-form-urlencoded",
         "Accept: application/json",
-        "Cookie: {cookie}"
+        "Cookie: {cookie}",
+        "x-forwarded-proto: {xForwardedProto}",
+        "x-forwarded-host: {xForwardedHost}",
+        "x-forwarded-prefix: {xForwardedPrefix}"
     })
-    Response oauth2AuthorizePost(@Param("cookie") String cookie, @QueryMap Map<String, Object> queryParams);
+    Response oauth2AuthorizePost(@Param("cookie") String cookie,
+                                 @Param("xForwardedProto") String xForwardedProto,
+                                 @Param("xForwardedHost") String xForwardedHost,
+                                 @Param("xForwardedPrefix") String xForwardedPrefix,
+                                 @QueryMap Map<String, Object> queryParams);
 }
