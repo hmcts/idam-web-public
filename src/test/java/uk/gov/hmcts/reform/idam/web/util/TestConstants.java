@@ -108,6 +108,7 @@ public class TestConstants {
 
     //Parameters
     public static final String IDAM_SESSION_COOKIE_NAME = "Idam.Session";
+    public static final String IDAM_UI_COOKIE_NAME = "Idam.UI";
     public static final String ARR_COOKIE_NAME = "ARRAffinity";
     public static final String ACTION_PARAMETER = "action";
     public static final String TOKEN_PARAMETER = "token";

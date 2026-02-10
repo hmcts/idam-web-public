@@ -1,5 +1,5 @@
  # renovate: datasource=github-releases depName=microsoft/ApplicationInsights-Java
-ARG APP_INSIGHTS_AGENT_VERSION=3.7.6
+ARG APP_INSIGHTS_AGENT_VERSION=3.7.7
 
 # Application image
 FROM hmctspublic.azurecr.io/base/java:21-distroless
@@ -16,6 +16,8 @@ ENV SERVER_PORT=8080
 
 ADD --chown=hmcts:hmcts build/libs/idam-web-public.war \
                         lib/applicationinsights.json /opt/app/
+
+USER hmcts
 
 CMD [ \
      "-Dspring.profiles.active=docker,local", \

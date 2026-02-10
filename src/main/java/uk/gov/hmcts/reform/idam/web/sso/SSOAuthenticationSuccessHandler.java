@@ -16,6 +16,8 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.idam.api.shared.model.User;
 import uk.gov.hmcts.reform.idam.web.client.OidcApi;
 import uk.gov.hmcts.reform.idam.web.client.SsoFederationApi;
@@ -53,6 +55,8 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     private final StrategicConfigurationProperties.Session sessionProperties;
 
+    private final StrategicConfigurationProperties strategicProperties;
+
     private final AuthHelper authHelper;
 
     private final SSOService ssoService;
@@ -60,11 +64,13 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
     public SSOAuthenticationSuccessHandler(OAuth2AuthorizedClientRepository repository,
                                            SsoFederationApi federationApi, OidcApi oidcApi,
                                            StrategicConfigurationProperties.Session sessionProperties,
+                                           StrategicConfigurationProperties strategicProperties,
                                            AuthHelper authHelper, SSOService ssoService) {
         this.repository = repository;
         this.federationApi = federationApi;
         this.oidcApi = oidcApi;
         this.sessionProperties = sessionProperties;
+        this.strategicProperties = strategicProperties;
         this.authHelper = authHelper;
         this.ssoService = ssoService;
     }
@@ -96,7 +102,7 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         try {
             user = updateOrCreateUser(bearerToken);
         } catch (HttpStatusCodeException e) {
-            if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
+            if (HttpStatus.FORBIDDEN.equals(e.getStatusCode()) || HttpStatus.PRECONDITION_FAILED.equals(e.getStatusCode())) {
                 response.setStatus(403);
                 redirectStrategy.sendRedirect(request, response, "/login");
                 return;
@@ -126,7 +132,7 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
                 HttpStatus.FORBIDDEN.getReasonPhrase(), "Only federated logins allowed.");
         }
 
-        final String responseUrl = authoriseUser(Collections.singletonList(sessionCookie), paramMap);
+        final String responseUrl = authoriseUser(request, Collections.singletonList(sessionCookie), paramMap);
 
         if (response.isCommitted()) {
             throw restException(null, HttpStatus.INTERNAL_SERVER_ERROR, new HttpHeaders(),
@@ -166,7 +172,7 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         }
     }
 
-    private String authoriseUser(List<String> cookies, Map<String, String[]> paramMap) {
+    private String authoriseUser(HttpServletRequest request, List<String> cookies, Map<String, String[]> paramMap) {
         Map<String, Object> params = new HashMap<>();
 
         paramMap.forEach((key, values) -> {
@@ -179,8 +185,22 @@ public class SSOAuthenticationSuccessHandler implements AuthenticationSuccessHan
         // ignore prompt as we don't want a federated user that is successfully authenticated to land on the login page
         params.remove("prompt");
 
+        String xForwardedProto = "";
+        String xForwardedHost = "";
+        String xForwardedPrefix = strategicProperties.getService().getOidcprefix();
+        try {
+            UriComponents uriComponents = UriComponentsBuilder.fromUriString(request.getRequestURL().toString()).build();
+            xForwardedProto = StringUtils.defaultString(uriComponents.getScheme());
+            xForwardedHost = StringUtils.defaultString(uriComponents.getHost());
+        } catch (Exception e) {
+            log.info("Ignoring exception while parsing request URL to extract x-forwarded headers: {}", e.getMessage());
+        }
+
         Response response = oidcApi.oauth2AuthorizePost(
             StringUtils.join(cookies, ";"),
+            xForwardedProto,
+            xForwardedHost,
+            xForwardedPrefix,
             params
         );
 
