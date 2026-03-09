@@ -62,6 +62,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -2686,9 +2687,7 @@ public class AppControllerTest {
 
         given(ssoService.isSSOEmail(USER_EMAIL)).willReturn(true);
 
-
-        Mockito.doAnswer(redirectToExternalProvider())
-            .when(ssoService).redirectToExternalProvider(any(), any(), any());
+        given(ssoService.computeProviderSessionAttribute(any(), eq(false), eq(USER_EMAIL),  isNull())).willReturn("test-provider");
 
         mockMvc.perform(post(LOGIN_ENDPOINT).with(csrf())
             .header(X_FORWARDED_FOR, USER_IP_ADDRESS)
@@ -2701,7 +2700,7 @@ public class AppControllerTest {
             .param(AZURE_LOGIN_ENABLED, "true")
             .param(SCOPE_PARAMETER, CUSTOM_SCOPE))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("mockRedirect"));
+            .andExpect(redirectedUrl("/o/authorize?response_type=response+type&state=state+test&client_id=client_id&redirect_uri=redirect_uri&scope=manage-roles&login_hint=test-provider"));
     }
 
     @Test
