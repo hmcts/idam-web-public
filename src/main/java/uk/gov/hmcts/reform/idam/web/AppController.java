@@ -66,6 +66,7 @@ import static uk.gov.hmcts.reform.idam.api.internal.model.ErrorResponse.CodeEnum
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.UserController.GENERIC_SUB_ERROR_KEY;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.*;
+import static uk.gov.hmcts.reform.idam.web.sso.SSOService.LOGIN_HINT_PARAM;
 import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_IDAM_API_PROVIDER_MAP;
 import static uk.gov.hmcts.reform.idam.web.sso.SSOService.SSO_LOGIN_HINTS;
 
@@ -424,8 +425,10 @@ public class AppController {
 
         // automatically redirect SSO users
         if (configurationProperties.getFeatures().isFederatedSSO() && ssoService.isSSOEmail(request.getUsername())) {
-            ssoService.redirectToExternalProvider(httpRequest, response, request.getUsername());
-            return null;
+            final String provider = ssoService.computeProviderSessionAttribute(
+                httpRequest, false, request.getUsername(), httpRequest.getParameter(LOGIN_HINT_PARAM));
+            Map<String, Object> redirectParams = setUpSSOParams(model, provider);
+            return new ModelAndView(REDIRECT_OIDC_AUTHORIZE, redirectParams);
         }
 
         try {
@@ -530,6 +533,10 @@ public class AppController {
     }
 
     private Map<String, Object> setUpSSOParams(Model model, ApiAuthResult authenticationResult) {
+        return setUpSSOParams(model, authenticationResult.getErrorInfo());
+    }
+
+    private Map<String, Object> setUpSSOParams(Model model, String provider) {
         Map<String, Object> redirectParams = model.asMap();
         redirectParams.remove(USERNAME);
         redirectParams.remove(PASSWORD);
@@ -538,8 +545,7 @@ public class AppController {
         redirectParams.remove(MOJ_LOGIN_ENABLED);
         redirectParams.putIfAbsent(RESPONSE_TYPE, CODE);
         redirectParams.putIfAbsent(SCOPE, "openid roles profile");
-        redirectParams.put("login_hint", SSO_IDAM_API_PROVIDER_MAP
-            .getOrDefault(authenticationResult.getErrorInfo(), authenticationResult.getErrorInfo()));
+        redirectParams.put("login_hint", SSO_IDAM_API_PROVIDER_MAP.getOrDefault(provider, provider));
         return redirectParams;
     }
 
