@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -265,7 +266,11 @@ public class UserController {
         model.put("code", code);
         try {
             if (validationService.validatePassword(password1, password2, model)) {
-                String activation = "{\"token\":\"" + token + "\",\"code\":\"" + code + "\",\"password\":\"" + password1 + "\"}";
+                Map<String, String> activationRequest = new LinkedHashMap<>();
+                activationRequest.put("token", token);
+                activationRequest.put("code", code);
+                activationRequest.put("password", password1);
+                String activation = mapper.writeValueAsString(activationRequest);
                 ResponseEntity<ActivationResult> response = spiService.activateUser(activation);
                 ActivationResult activationResult = Optional.ofNullable(response.getBody()).orElseThrow();
                 // don't expose parameters other than the url to a GET request
