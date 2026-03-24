@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -391,6 +393,35 @@ public class UserControllerTest {
             .andExpect(status().isOk())
             .andExpect(model().attribute(ERROR_MSG, ALREADY_ACTIVATED_KEY))
             .andExpect(view().name(ERROR_VIEW_NAME));
+    }
+
+    /**
+     * @verifies escape JSON-special characters in activation payload
+     * @see UserController#activateUser(String, String, String, String, Map)
+     */
+    @Test
+    public void activateUser_shouldEscapeJsonSpecialCharactersInPayload() throws Exception {
+        String token = "abc\"},\"admin\":true,\"x\":\"";
+        String code = "c\\d";
+        String password = "p\"},\"role\":\"admin\"";
+
+        given(validationService.validatePassword(eq(password), eq(password), any(Map.class))).willReturn(true);
+        given(spiService.activateUser(any())).willReturn(ResponseEntity.ok(new ActivationResult()));
+
+        mockMvc.perform(getActivateUserPostRequest(token, code, password, password))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(view().name(USER_ACTIVATED_VIEW_NAME));
+
+        ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        verify(spiService).activateUser(payloadCaptor.capture());
+
+        JsonNode payload = mapper.readTree(payloadCaptor.getValue());
+        assertEquals(token, payload.get("token").asText());
+        assertEquals(code, payload.get("code").asText());
+        assertEquals(password, payload.get("password").asText());
+        assertNull(payload.get("admin"));
+        assertNull(payload.get("role"));
+        assertEquals(3, payload.size());
     }
 
     /**
