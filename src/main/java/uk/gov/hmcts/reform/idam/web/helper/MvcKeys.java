@@ -47,6 +47,7 @@ public class MvcKeys {
     public static final String EXPIRED_ACTIVATION_LINK_VIEW = "expiredActivationLink";
     public static final String FORGOTPASSWORD_VIEW = "forgotpassword";
     public static final String FORGOTPASSWORDSUCCESS_VIEW = "forgotpasswordsuccess";
+    public static final String ENTER_EMAIL_VIEW = "enterEmail";
     public static final String LOGIN_VIEW = "login";
     public static final String VERIFICATION_VIEW = "verification";
     public static final String LOGIN_WITH_PIN_VIEW = "loginWithPin";
