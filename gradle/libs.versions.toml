@@ -4,7 +4,7 @@ commons-io = "2.21.0"
 commons-lang3 = "3.20.0"
 commons-text = "1.15.0"
 commons-fileupload = "1.6.0"
-feign = "13.6"
+feign = "13.11"
 feign-form = "3.8.0"
 findbugs = "3.0.2"
 guava = "33.5.0-jre"
@@ -39,5 +39,5 @@ spring = { id = "io.spring.dependency-management", version = "1.1.7" }
 spring-framework = { id = "org.springframework.boot", version.ref = "spring-boot" }
 owasp = { id = "org.owasp.dependencycheck", version = "12.1.6" }
 sonarqube = { id = "org.sonarqube", version = "7.2.3.7755" }
-pitest = { id = "info.solidsoft.pitest", version = "1.15.0" }
+pitest = { id = "info.solidsoft.pitest", version = "1.19.0" }
 git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.5.7" }

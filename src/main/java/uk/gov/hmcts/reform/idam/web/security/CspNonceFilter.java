@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.idam.web.security;
 
-import org.springframework.http.HttpHeaders;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -47,7 +45,7 @@ public class CspNonceFilter implements Filter {
                           "img-src 'self' data: https://www.googletagmanager.com; " +
                           "font-src 'self' data:; " +
                           "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; " +
-                          "form-action https: http:; " +
+                          "form-action https:; " +
                           "base-uri 'self'; " +
                           "frame-src https://www.googletagmanager.com; " +
                           "frame-ancestors 'none';";

@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.idam.web;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.idam.web.strategic.SPIService;
 import uk.gov.hmcts.reform.idam.web.strategic.ValidationService;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -257,7 +260,7 @@ public class UserControllerTest {
         activationResult.setRedirectUri(REDIRECT_URI );
 
         given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
-        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willReturn(ResponseEntity.ok(activationResult));
+        given(spiService.activateUser(eq(getActivationRequestJson()))).willReturn(ResponseEntity.ok(activationResult));
 
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
             .andExpect(status().is3xxRedirection())
@@ -272,7 +275,7 @@ public class UserControllerTest {
     @Test
     public void activateUser_shouldReturnUseractivationViewAndBlacklistedPasswordErrorInModelIfHttpClientErrorExceptionOccursAndHttpStatusIs400AndPasswordIsBlacklisted() throws Exception {
         given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
-        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", PASSWORD_BLACKLISTED_RESPONSE.getBytes(), null));
+        given(spiService.activateUser(eq(getActivationRequestJson()))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", PASSWORD_BLACKLISTED_RESPONSE.getBytes(), null));
         given(validationService.isErrorInResponse(eq(PASSWORD_BLACKLISTED_RESPONSE), eq(ErrorResponse.CodeEnum.PASSWORD_BLACKLISTED))).willReturn(true);
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
             .andExpect(status().isOk())
@@ -291,7 +294,7 @@ public class UserControllerTest {
     @Test
     public void activateUser_shouldReturnUseractivationViewAndPasswordContainsPersonalInfoErrorInModelIfHttpClientErrorExceptionOccursAndHttpStatusIs400AndPasswordContainsPersonalInfo() throws Exception {
         given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
-        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}")))
+        given(spiService.activateUser(eq(getActivationRequestJson())))
             .willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE.getBytes(), null));
         given(validationService.isErrorInResponse(eq(PASSWORD_CONTAINS_PERSONAL_INFO_RESPONSE), eq(ErrorResponse.CodeEnum.PASSWORD_CONTAINS_PERSONAL_INFO)))
             .willReturn(true);
@@ -312,7 +315,7 @@ public class UserControllerTest {
     @Test
     public void activateUser_shouldReturnExpiredtokenViewIfHttpClientErrorExceptionOccursAndHttpStatusIs400AndTokenIsInvalid() throws Exception {
         given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
-        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", TOKEN_INVALID_RESPONSE.getBytes(), null));
+        given(spiService.activateUser(eq(getActivationRequestJson()))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request", TOKEN_INVALID_RESPONSE.getBytes(), null));
         given(validationService.isErrorInResponse(eq(TOKEN_INVALID_RESPONSE), eq(ErrorResponse.CodeEnum.TOKEN_INVALID))).willReturn(true);
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
             .andExpect(status().is3xxRedirection())
@@ -326,7 +329,7 @@ public class UserControllerTest {
     @Test
     public void activateUser_shouldReturnUseractivationViewAndInvalidPassowrdErrorInModelIfHttpClientErrorExceptionOccursAndHttpStatusIs400AndPasswordIsNotBlacklisted() throws Exception {
         given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
-        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+        given(spiService.activateUser(eq(getActivationRequestJson()))).willThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
             .andExpect(status().isOk())
@@ -345,7 +348,7 @@ public class UserControllerTest {
     @Test
     public void activateUser_shouldReturnRedirectExpiredtokenPageIfSelfRegisterUserServiceThrowsHttpClientErrorExceptionAndHttpCodeIs404() throws Exception {
         given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
-        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+        given(spiService.activateUser(eq(getActivationRequestJson()))).willThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
             .andExpect(status().is3xxRedirection())
@@ -366,7 +369,7 @@ public class UserControllerTest {
         activationResult.setStaleUserActivated(true);
 
         given(validationService.validatePassword(eq(USER_PASSWORD), eq(USER_PASSWORD), any(Map.class))).willReturn(true);
-        given(spiService.activateUser(eq("{\"token\":\"" + USER_ACTIVATION_TOKEN + "\",\"code\":\"" + USER_ACTIVATION_CODE + "\",\"password\":\"" + USER_PASSWORD + "\"}"))).willReturn(ResponseEntity.ok(activationResult));
+        given(spiService.activateUser(eq(getActivationRequestJson()))).willReturn(ResponseEntity.ok(activationResult));
 
         mockMvc.perform(getActivateUserPostRequest(USER_ACTIVATION_TOKEN, USER_ACTIVATION_CODE, USER_PASSWORD, USER_PASSWORD))
             .andExpect(status().is3xxRedirection())
@@ -393,6 +396,35 @@ public class UserControllerTest {
     }
 
     /**
+     * @verifies escape JSON-special characters in activation payload
+     * @see UserController#activateUser(String, String, String, String, Map)
+     */
+    @Test
+    public void activateUser_shouldEscapeJsonSpecialCharactersInPayload() throws Exception {
+        String token = "abc\"},\"admin\":true,\"x\":\"";
+        String code = "c\\d";
+        String password = "p\"},\"role\":\"admin\"";
+
+        given(validationService.validatePassword(eq(password), eq(password), any(Map.class))).willReturn(true);
+        given(spiService.activateUser(any())).willReturn(ResponseEntity.ok(new ActivationResult()));
+
+        mockMvc.perform(getActivateUserPostRequest(token, code, password, password))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(view().name(USER_ACTIVATED_VIEW_NAME));
+
+        ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        verify(spiService).activateUser(payloadCaptor.capture());
+
+        JsonNode payload = mapper.readTree(payloadCaptor.getValue());
+        assertEquals(token, payload.get("token").asText());
+        assertEquals(code, payload.get("code").asText());
+        assertEquals(password, payload.get("password").asText());
+        assertNull(payload.get("admin"));
+        assertNull(payload.get("role"));
+        assertEquals(3, payload.size());
+    }
+
+    /**
      * @verifies return users view
      * @see UserController#users(Map)
      */
@@ -401,6 +433,14 @@ public class UserControllerTest {
         mockMvc.perform(get(USERS_ENDPOINT))
             .andExpect(status().isOk())
             .andExpect(view().name(USERS_VIEW_NAME));
+    }
+
+    private String getActivationRequestJson() throws Exception {
+        Map<String, String> activationRequest = new LinkedHashMap<>();
+        activationRequest.put("token", USER_ACTIVATION_TOKEN);
+        activationRequest.put("code", USER_ACTIVATION_CODE);
+        activationRequest.put("password", USER_PASSWORD);
+        return mapper.writeValueAsString(activationRequest);
     }
 
 
