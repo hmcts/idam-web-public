@@ -83,6 +83,7 @@ import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.AZURE_LOGIN_ENABLED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.CONTACT_US_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIES_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.COOKIE_PREFERENCES_VIEW;
+import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.ENTER_EMAIL_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.EXPIRED_CODE_VIEW;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.HAS_OTP_CHECK_FAILED;
 import static uk.gov.hmcts.reform.idam.web.helper.MvcKeys.PASSWORD;
@@ -1969,6 +1970,18 @@ public class AppControllerTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(view().name(ACCESSIBILITY_STATEMENT_VIEW));
+    }
+
+    /**
+     * @verifies return enter email error page view
+     * @see AppController#enterEmailView()
+     */
+    @Test
+    public void enterEmailView_shouldReturnViewWithErrorMessage() throws Exception {
+        mockMvc.perform(get("/enter-email"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(view().name(ENTER_EMAIL_VIEW));
     }
 
     /**

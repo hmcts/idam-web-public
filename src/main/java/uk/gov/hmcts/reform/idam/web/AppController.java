@@ -313,6 +313,14 @@ public class AppController {
     }
 
     /**
+     * @should return enter email view with an error message
+     */
+    @GetMapping("/enter-email")
+    public String enterEmailView() {
+        return ENTER_EMAIL_VIEW;
+    }
+
+    /**
      * @should put correct data in model and return login view
      * @should set self registration to false if disabled for the service
      * @should set self registration to false if the clientId is invalid
