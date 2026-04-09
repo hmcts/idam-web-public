@@ -708,20 +708,6 @@ class IdamHelper extends Helper {
         });
     }
 
-    deleteAllTestData(testDataPrefix = '', userNames = [], roleNames = [], serviceNames = [], async = false) {
-        return fetch(`${TestData.IDAM_API}/testing-support/test-data?async=${async}&userNames=${userNames.join(',')}&roleNames=${roleNames.join(',')}&testDataPrefix=${testDataPrefix}&serviceNames=${serviceNames.join(',')}`, {
-            agent: agent,
-            method: 'DELETE'
-        }).then(response => {
-            if (response.status !== 200) {
-                console.log(`Error deleting test data with prefix ${testDataPrefix}, response: ${response.status}`);
-            }
-            return response.json();
-        }).catch(err => {
-            console.log(err);
-        });
-    }
-
     async runAccessibilityTest() {
         if (!testConfig.TestForAccessibility) {
             return;
