@@ -13,11 +13,18 @@ import java.io.IOException;
 public class CspNonceFilter implements Filter {
 
     private static final String CSP_NONCE_ATTRIBUTE = "cspNonce";
+    private static final String DEFAULT_FORM_ACTION = "https:";
 
     private final CspNonceService cspNonceService;
+    private final String formAction;
 
     public CspNonceFilter() {
+        this(DEFAULT_FORM_ACTION);
+    }
+
+    public CspNonceFilter(String formAction) {
         this.cspNonceService = new CspNonceService();
+        this.formAction = formAction;
     }
 
     @Override
@@ -45,7 +52,7 @@ public class CspNonceFilter implements Filter {
                           "img-src 'self' data: https://www.googletagmanager.com; " +
                           "font-src 'self' data:; " +
                           "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; " +
-                          "form-action https:; " +
+                          "form-action " + formAction + "; " +
                           "base-uri 'self'; " +
                           "frame-src https://www.googletagmanager.com; " +
                           "frame-ancestors 'none';";
