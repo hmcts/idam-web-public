@@ -55,6 +55,8 @@ withPipeline(type, product, component) {
     before('functionalTest:preview') {
         env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
         env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
+        env.TESTS_FOR_ACCESSIBILITY = false
+        env.WAIT_FOR_ACTION_TIMEOUT = 1500
     }
 
     before('smoketest:aat') {
