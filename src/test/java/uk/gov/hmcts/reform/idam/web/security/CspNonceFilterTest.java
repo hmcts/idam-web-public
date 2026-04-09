@@ -84,6 +84,20 @@ public class CspNonceFilterTest {
     }
 
     @Test
+    public void doFilter_shouldUseConfiguredFormActionValue() throws ServletException, IOException {
+        cspNonceFilter = new CspNonceFilter("'self' https://example.com");
+        ArgumentCaptor<String> cspHeaderCaptor = ArgumentCaptor.forClass(String.class);
+
+        cspNonceFilter.doFilter(httpRequest, httpResponse, filterChain);
+
+        verify(httpResponse).setHeader(eq("Content-Security-Policy"), cspHeaderCaptor.capture());
+        String cspHeader = cspHeaderCaptor.getValue();
+
+        assertTrue(cspHeader.contains("form-action 'self' https://example.com;"),
+            "CSP should use the configured form-action directive value");
+    }
+
+    @Test
     public void doFilter_shouldIncludeNonceInCspHeader() throws ServletException, IOException {
         ArgumentCaptor<String> nonceCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> cspHeaderCaptor = ArgumentCaptor.forClass(String.class);
