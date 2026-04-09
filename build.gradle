@@ -109,7 +109,7 @@ allprojects {
     }
     implementation libs.bundles.applicationinsights
 
-    implementation group: 'com.squareup.okio', name: 'okio', version: '3.17.0'
+    implementation group: 'com.squareup.okio', name: 'okio', version: '3.16.4'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -146,15 +146,15 @@ allprojects {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.117'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.117'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.117'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.115'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.115'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.115'
     implementation("org.apache.tomcat:tomcat-annotations-api") {
       version {
         strictly "9.0.111" 
       }
     }
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.21'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.18'
     implementation group: 'org.pitest', name: 'pitest', version: '1.16.3'
 
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'
@@ -228,7 +228,7 @@ allprojects {
 
   task codeceptFunctional(type: Exec, dependsOn :'yarnInstall') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@moj', '--verbose', '--reporter', 'mocha-multi'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
 
   task smokeSauce(dependsOn: ':codeceptSmokeSauce') {
@@ -248,7 +248,7 @@ allprojects {
 
   task codeceptFunctionalSauce(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@moj', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
   }
 
 }
