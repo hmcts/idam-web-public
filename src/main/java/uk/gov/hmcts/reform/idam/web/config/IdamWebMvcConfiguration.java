@@ -38,6 +38,9 @@ public class IdamWebMvcConfiguration implements WebMvcConfigurer {
 
     public static final String UI_LOCALES_PARAM_NAME = "ui_locales";
     public static final String IDAM_LOCALES_COOKIE_NAME = "idam_ui_locales";
+    @Value("${strategic.content-security-policy.form-action}")
+    private String cspFormAction;
+
     @Value("${features.google-tag-manager:true}")
     public void setGoogleTagManagerFeatureFlag(boolean value) {
         JSPHelper.setGTMEnabled(value);
@@ -109,7 +112,7 @@ public class IdamWebMvcConfiguration implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<CspNonceFilter> cspNonceFilterRegistration() {
         FilterRegistrationBean<CspNonceFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new CspNonceFilter());
+        registration.setFilter(new CspNonceFilter(cspFormAction));
         registration.addUrlPatterns("/*");
         registration.setOrder(2);
         return registration;
