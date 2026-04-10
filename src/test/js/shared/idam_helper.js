@@ -813,6 +813,9 @@ class IdamHelper extends Helper {
                 onboardingRoleNames: roles,
                 ssoProviders: ssoProviders
             },
+            oidc: {
+                postLogoutRedirectUris: [url],
+            }
             oauth2: {
                 issuerOverride: false,
                 grantTypes: [
