@@ -36,10 +36,10 @@
     <!-- False positive: CVE applies to Go distribution, not Netflix Java stats jar -->
     <suppress>
         <notes><![CDATA[
-        False positive: CVE-2026-33540 applies to github.com/distribution/distribution (Go),
-        not pkg:maven/com.netflix.netflix-commons/netflix-statistics.
+        False positive: netflix-statistics is a Maven Java artifact. CVE-2026-33540 applies
+        to github.com/distribution/distribution (Go), not this package.
         ]]></notes>
-        <gav regex="true">^com\.netflix\.netflix-commons:netflix-statistics$</gav>
-        <cve>CVE-2026-33540</cve>
+        <packageUrl regex="true">^pkg:maven/com\.netflix\.netflix-commons/netflix-statistics@.*$</packageUrl>
+        <cpe regex="true">^cpe:2\.3:a:distribution_project:distribution:.*$</cpe>
     </suppress>
 </suppressions>
