@@ -32,4 +32,14 @@
         <gav regex="true">^.*commons-configuration.*$</gav>
         <cve>CVE-2025-46392</cve>
     </suppress>
+
+    <!-- False positive: CVE applies to Go distribution, not Netflix Java stats jar -->
+    <suppress>
+        <notes><![CDATA[
+        False positive: CVE-2026-33540 applies to github.com/distribution/distribution (Go),
+        not pkg:maven/com.netflix.netflix-commons/netflix-statistics.
+        ]]></notes>
+        <gav regex="true">^com\.netflix\.netflix-commons:netflix-statistics$</gav>
+        <cve>CVE-2026-33540</cve>
+    </suppress>
 </suppressions>
