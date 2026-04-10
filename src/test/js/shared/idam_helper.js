@@ -815,7 +815,7 @@ class IdamHelper extends Helper {
             },
             oidc: {
                 postLogoutRedirectUris: [url],
-            }
+            },
             oauth2: {
                 issuerOverride: false,
                 grantTypes: [
