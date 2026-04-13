@@ -32,7 +32,7 @@ module.exports = function() {
     },
     clickWithWait : function(clickText) {
         this.click(clickText);
-        this.wait(3);
+        this.wait(1);
     }
   })
 }

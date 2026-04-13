@@ -472,6 +472,37 @@ class IdamHelper extends Helper {
         });
     }
 
+        getIdToken(code, serviceName, serviceRedirect, clientSecret, codeVerifier=null) {
+            let searchParams = new URLSearchParams();
+            searchParams.set('code', code);
+            searchParams.set('redirect_uri', serviceRedirect);
+            searchParams.set('client_id', serviceName);
+            searchParams.set('client_secret', clientSecret);
+            if (codeVerifier != null) {
+                searchParams.set('code_verifier', codeVerifier)
+            }
+            searchParams.set('grant_type', 'authorization_code')
+
+            return fetch(`${TestData.IDAM_API}/o/token`, {
+                agent: agent,
+                method: 'POST',
+                body: searchParams,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            }).then(response => {
+                //console.log(response)
+                return response.json();
+            }).then((json) => {
+                console.log("ID Token: " + json.id_token);
+                return json.id_token;
+            }).catch(err => {
+                console.log(err)
+                let browser = this.helpers['Puppeteer'].browser;
+                browser.close();
+            });
+        }
+
     getAccessTokenPasswordGrant(username, password, serviceName, serviceRedirect, clientSecret, scope) {
         let searchParams = new URLSearchParams();
         searchParams.set('grant_type', 'password');
@@ -708,20 +739,6 @@ class IdamHelper extends Helper {
         });
     }
 
-    deleteAllTestData(testDataPrefix = '', userNames = [], roleNames = [], serviceNames = [], async = false) {
-        return fetch(`${TestData.IDAM_API}/testing-support/test-data?async=${async}&userNames=${userNames.join(',')}&roleNames=${roleNames.join(',')}&testDataPrefix=${testDataPrefix}&serviceNames=${serviceNames.join(',')}`, {
-            agent: agent,
-            method: 'DELETE'
-        }).then(response => {
-            if (response.status !== 200) {
-                console.log(`Error deleting test data with prefix ${testDataPrefix}, response: ${response.status}`);
-            }
-            return response.json();
-        }).catch(err => {
-            console.log(err);
-        });
-    }
-
     async runAccessibilityTest() {
         if (!testConfig.TestForAccessibility) {
             return;
@@ -795,6 +812,9 @@ class IdamHelper extends Helper {
                 postActivationRedirectUrl: url,
                 onboardingRoleNames: roles,
                 ssoProviders: ssoProviders
+            },
+            oidc: {
+                postLogoutRedirectUris: [url],
             },
             oauth2: {
                 issuerOverride: false,
