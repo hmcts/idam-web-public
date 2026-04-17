@@ -43,4 +43,15 @@
         <sha1>12F6E48253F9CAFA0E24D7D232FF504C52143212</sha1>
         <cve>CVE-2026-33540</cve>
     </suppress>
+
+    <!--
+    Spring's advisory for CVE-2026-22732 lists 5.7.22 as the fixed 5.7.x release, but that line is
+    enterprise-support-only. This application applies Spring's documented workaround by forcing eager
+    header writing in both security configurations, which addresses the vulnerable behavior while the
+    project remains on the public Spring Boot 2.7 / Spring Security 5.7 line.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.security:spring-security-.*$</gav>
+        <cve>CVE-2026-22732</cve>
+    </suppress>
 </suppressions>
