@@ -54,4 +54,38 @@
         <gav regex="true">^.*org\.springframework\.security:spring-security-.*$</gav>
         <cve>CVE-2026-22732</cve>
     </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-22733 requires a protected
+    application endpoint to be mounted under the Cloud Foundry actuator path, for example
+    /cloudfoundryapplication/**. This application does not expose Cloud Foundry actuator endpoints,
+    only exposes health/info/prometheus under the root actuator base path, and does not mount any
+    application endpoints beneath a Cloud Foundry actuator path.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.boot:.*$</gav>
+        <cve>CVE-2026-22733</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-22735 requires Server-Sent
+    Events (SSE) usage that streams attacker-controlled plain text to other users. This application
+    does not use SSE: there are no SseEmitter, ServerSentEvent, or text/event-stream handlers in the
+    codebase.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-22735</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-22737 requires ScriptTemplate
+    views (for example JRuby or Jython) together with a /** mapping that renders an implicit view.
+    This application uses JSP views under /WEB-INF/jsp and does not configure ScriptTemplate view
+    rendering or a catch-all /** controller mapping.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-22737</cve>
+    </suppress>
 </suppressions>
