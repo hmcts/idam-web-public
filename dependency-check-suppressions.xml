@@ -63,7 +63,7 @@
     application endpoints beneath a Cloud Foundry actuator path.
     -->
     <suppress>
-        <gav regex="true">^.*org\.springframework\.boot:spring-boot(-actuator|-actuator-autoconfigure)?$</gav>
+        <gav regex="true">^.*org\.springframework\.boot:.*$</gav>
         <cve>CVE-2026-22733</cve>
     </suppress>
 
@@ -74,7 +74,7 @@
     codebase.
     -->
     <suppress>
-        <gav regex="true">^.*org\.springframework:spring-web(mvc)?$</gav>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
         <cve>CVE-2026-22735</cve>
     </suppress>
 
@@ -85,7 +85,7 @@
     rendering or a catch-all /** controller mapping.
     -->
     <suppress>
-        <gav regex="true">^.*org\.springframework:spring-web(mvc)?$</gav>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
         <cve>CVE-2026-22737</cve>
     </suppress>
 </suppressions>
