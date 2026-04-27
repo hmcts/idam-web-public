@@ -37,15 +37,14 @@ BeforeSuite(async ({ I }) => {
 Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
     I.amOnPage(loginUrl);
-    const [page] = await I.getCurrentPage()
 
    //Set around 11 kb of cookie
-    page.setCookie({
-                name: 'cookieName',
-                value: largeCookieValue,
-                path: '/', // Add path parameter if necessary
-                expires: Math.floor(Date.now() / 1000) + 60 * 60, // Example expiration time (1 hour from now)
-            });
+    I.setCookie({
+        name: 'cookieName',
+        value: largeCookieValue,
+        url: TestData.WEB_PUBLIC_URL,
+        expires: Math.floor(Date.now() / 1000) + 60 * 60,
+    });
     I.waitForText('Cookies on hmcts-access.service.gov.uk');
     await I.runAccessibilityTest();
     I.click('Accept additional cookies');

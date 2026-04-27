@@ -9,16 +9,17 @@ exports.config = {
     bootstrap: false,
     retry: 3,
     helpers: {
-        Puppeteer: {
-            // show: true,
+        Playwright: {
+            show: false,
             url: TestData.WEB_PUBLIC_URL,
+            browser: process.env.BROWSER || 'chromium',
             waitForTimeout: 60000,
             waitForAction: TestData.WAIT_FOR_ACTION_TIMEOUT,
             windowSize: "1280x960",
             getPageTimeout: 20000,
-            chrome: {
-                //args: ["--proxy-server=" + process.env.PROXY_SERVER],
-                ignoreHTTPSErrors: true
+            ignoreHTTPSErrors: true,
+            chromium: {
+                args: ["--no-sandbox"]
             }
         },
         idam_helper: {

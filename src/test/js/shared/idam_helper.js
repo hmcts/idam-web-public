@@ -38,13 +38,18 @@ const URLSearchParams = require('url').URLSearchParams;
 class IdamHelper extends Helper {
 
     async createNewPage() {
-        const {browser} = this.helpers['Puppeteer'];
-        return await browser.newPage();
+        const {browserContext} = this.helpers['Playwright'];
+        return await browserContext.newPage();
     }
 
     async getCurrentPage() {
-        const {browser} = this.helpers['Puppeteer'];
-        return await browser.pages();
+        const {page} = this.helpers['Playwright'];
+        return [page];
+    }
+
+    handleBrowserError(err) {
+        console.log(err);
+        throw err;
     }
 
     async createServiceData(serviceName, serviceClientSecret) {
@@ -137,9 +142,7 @@ class IdamHelper extends Helper {
             return location;
         })
             .catch(err => {
-                console.log(err);
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
     }
 
@@ -157,9 +160,7 @@ class IdamHelper extends Helper {
             return location;
         })
             .catch(err => {
-                console.log(err);
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
     }
 
@@ -378,28 +379,37 @@ class IdamHelper extends Helper {
         return otp;
     }
 
-    interceptRequestsAfterSignin() {
-        const helper = this.helpers['Puppeteer'];
-        helper.page.setRequestInterception(true);
+    async interceptRequestsAfterSignin() {
+        const {page} = this.helpers['Playwright'];
         const pages = ["/login", "/register", "/activate", "/verification", "/useractivated", "/o/authorize", "/o/endSession"];
 
-        helper.page.on('request', request => {
+        if (this.signinRouteHandler) {
+            await page.unroute('**/*', this.signinRouteHandler);
+        }
+
+        this.signinRouteHandler = async route => {
+            const request = route.request();
             if (pages.some(v => request.url().includes(v))) {
                 console.log("During intercept: " + request.url());
-                request.continue();
+                await route.continue();
             } else {
-                request.respond({
+                await route.fulfill({
                     status: 200,
                     contentType: 'application/javascript; charset=utf-8',
                     body: request.url()
                 });
             }
-        });
+        };
+
+        await page.route('**/*', this.signinRouteHandler);
     }
 
     async resetRequestInterception() {
-        const helper = this.helpers['Puppeteer'];
-        await helper.page.setRequestInterception(false);
+        const {page} = this.helpers['Playwright'];
+        if (this.signinRouteHandler) {
+            await page.unroute('**/*', this.signinRouteHandler);
+            this.signinRouteHandler = null;
+        }
     }
 
     getPinUser(firstname, lastname) {
@@ -417,9 +427,7 @@ class IdamHelper extends Helper {
                 return json;
             })
             .catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
     }
 
@@ -435,9 +443,7 @@ class IdamHelper extends Helper {
             return code[0];
         })
             .catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
     }
 
@@ -466,9 +472,7 @@ class IdamHelper extends Helper {
             console.log("Token: " + json.access_token);
             return json.access_token;
         }).catch(err => {
-            console.log(err)
-            let browser = this.helpers['Puppeteer'].browser;
-            browser.close();
+            this.handleBrowserError(err);
         });
     }
 
@@ -497,9 +501,7 @@ class IdamHelper extends Helper {
                 console.log("ID Token: " + json.id_token);
                 return json.id_token;
             }).catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
         }
 
@@ -525,9 +527,7 @@ class IdamHelper extends Helper {
         }).then((json) => {
             return json.access_token;
         }).catch(err => {
-            console.log(err)
-            let browser = this.helpers['Puppeteer'].browser;
-            browser.close();
+            this.handleBrowserError(err);
         });
     }
 
@@ -550,9 +550,7 @@ class IdamHelper extends Helper {
         }).then((json) => {
             return json.access_token;
         }).catch(err => {
-            console.log(err)
-            let browser = this.helpers['Puppeteer'].browser;
-            browser.close();
+            this.handleBrowserError(err);
         });
     }
 
@@ -743,8 +741,8 @@ class IdamHelper extends Helper {
         if (!testConfig.TestForAccessibility) {
             return;
         }
-        const url = await this.helpers['Puppeteer'].grabCurrentUrl();
-        const {page} = await this.helpers['Puppeteer'];
+        const url = await this.helpers['Playwright'].grabCurrentUrl();
+        const {page} = this.helpers['Playwright'];
 
         await runAccessibility(url, page);
     }

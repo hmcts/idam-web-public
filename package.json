@@ -7,7 +7,7 @@
     "node": ">=12.20.0"
   },
   "devDependencies": {
-    "chai": "^6.0.0",
+    "chai": "^4.5.0",
     "codeceptjs": "^3.6.4",
     "deep-equal-in-any-order": "^2.0.0",
     "electron": "^41.0.0",
@@ -20,13 +20,13 @@
     "node-fetch": "^2.6.1",
     "notifications-node-client": "^8.0.0",
     "pa11y": "^9.0.0",
+    "playwright": "^1.56.1",
     "proxy-agent": "^8.0.0",
-    "puppeteer": "^23.0.1",
     "webdriverio": "^8.0.0"
   },
   "scripts": {
-    "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c saucelabs.conf.js --steps --grep '@crossbrowser' --reporter mochawesome",
-    "test:crossbrowser": "runSauceLabsTests.sh"
+    "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c codecept.crossbrowser.conf.js --steps --grep '@crossbrowser' --reporter mochawesome",
+    "test:crossbrowser": "NODE_PATH=. codeceptjs run-multiple --all -c codecept.crossbrowser.conf.js --steps --grep '@crossbrowser' --reporter mochawesome"
   },
   "resolutions": {
     "electron": "^41.0.0"

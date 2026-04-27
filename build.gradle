@@ -216,17 +216,22 @@ allprojects {
     commandLine 'yarn', 'install'
   }
 
+  task playwrightInstall(type: Exec, dependsOn: ':yarnInstall') {
+    workingDir '.'
+    commandLine 'node_modules/.bin/playwright', 'install', 'chromium', 'firefox', 'webkit'
+  }
+
   task notifyClientInstall(type: Exec) {
     workingDir '.'
     commandLine 'yarn', 'add', 'notifications-node-client'
   }
 
-  task codeceptSmoke(type: Exec, dependsOn: ':yarnInstall') {
+  task codeceptSmoke(type: Exec, dependsOn: ':playwrightInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi', '-c', 'codecept.smoke.conf.js'
   }
 
-  task codeceptFunctional(type: Exec, dependsOn :'yarnInstall') {
+  task codeceptFunctional(type: Exec, dependsOn: ':playwrightInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
@@ -241,9 +246,14 @@ allprojects {
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js', '--steps', '--grep', '@smoke', '--verbose', '--debug', '--reporter', 'mochawesome'
   }
 
-  task crossbrowser(dependsOn: ':codeceptFunctionalSauce') {
+  task crossbrowser(dependsOn: ':codeceptFunctionalCrossBrowser') {
     group = 'Delivery pipeline'
-    description = 'Execute cross browser tests on saucelabs'
+    description = 'Execute cross browser tests with Playwright browsers'
+  }
+
+  task codeceptFunctionalCrossBrowser(type: Exec, dependsOn: ':playwrightInstall') {
+    workingDir '.'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'codecept.crossbrowser.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
   }
 
   task codeceptFunctionalSauce(type: Exec, dependsOn: ':yarnInstall') {
