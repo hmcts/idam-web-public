@@ -32,4 +32,15 @@
         <gav regex="true">^.*commons-configuration.*$</gav>
         <cve>CVE-2025-46392</cve>
     </suppress>
+
+    <!-- False positive: CVE applies to Go distribution, not Netflix Java stats jar -->
+    <suppress>
+        <notes><![CDATA[
+        False positive: netflix-statistics-0.1.1.jar is a Maven Java artifact. CVE-2026-33540
+        applies to github.com/distribution/distribution (Go), not this package. Suppressed by
+        exact SHA-1 to avoid CPE matcher differences.
+        ]]></notes>
+        <sha1>12F6E48253F9CAFA0E24D7D232FF504C52143212</sha1>
+        <cve>CVE-2026-33540</cve>
+    </suppress>
 </suppressions>

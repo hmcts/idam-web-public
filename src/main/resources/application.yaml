@@ -122,6 +122,8 @@ strategic:
     idamSessionCookie: Idam.Session
   language:
     supportedLocales: en,cy
+  content-security-policy:
+    form-action: "https:"
 
 validation:
   password:

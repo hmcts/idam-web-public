@@ -31,10 +31,6 @@ BeforeSuite(async ({ I }) => {
 
 });
 
-AfterSuite(async ({ I }) => {
-    return await I.deleteAllTestData(randomData.TEST_BASE_PREFIX + testSuitePrefix);
-});
-
 Scenario('@functional @resetpass As a citizen user I can reset my password', async ({ I }) => {
 
     let citizenEmail = 'citizen.' + randomData.getRandomEmailAddress();

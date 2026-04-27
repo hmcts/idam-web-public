@@ -88,8 +88,8 @@ allprojects {
       exclude group:"org.bouncycastle", module: "bcpkix-jdk15on"
     }
 
-    implementation 'org.bouncycastle:bcprov-jdk18on:1.83'
-    implementation 'org.bouncycastle:bcpkix-jdk18on:1.83'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.84'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.84'
     implementation 'org.bouncycastle:bcutil-jdk18on:1.83'
 
     implementation (libs.idam.api.spec) {
@@ -146,15 +146,15 @@ allprojects {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient'
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.116'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.116'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.117'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.117'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.117'
     implementation("org.apache.tomcat:tomcat-annotations-api") {
       version {
         strictly "9.0.111" 
       }
     }
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.20'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.21'
     implementation group: 'org.pitest', name: 'pitest', version: '1.16.3'
 
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'

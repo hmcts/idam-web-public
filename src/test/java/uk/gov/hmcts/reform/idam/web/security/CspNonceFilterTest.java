@@ -77,8 +77,24 @@ public class CspNonceFilterTest {
         assertTrue(cspHeader.contains("script-src 'self' 'nonce-"), "CSP should contain script-src with nonce");
         assertTrue(cspHeader.contains("style-src 'self' 'nonce-"), "CSP should contain style-src directive");
         assertTrue(cspHeader.contains("frame-ancestors 'none'"), "CSP should contain frame-ancestors directive");
-        assertTrue(cspHeader.contains("form-action https: http:"), "CSP should contain form-action directive");
+        assertTrue(cspHeader.contains("form-action https:"), "CSP should contain https-only form-action directive");
+        assertFalse(cspHeader.contains("form-action https: http:"), "CSP should not allow http form actions");
+        assertFalse(cspHeader.contains("http:"), "CSP should not allow cleartext form actions by default");
         assertTrue(cspHeader.contains("base-uri 'self'"), "CSP should contain base-uri directive");
+    }
+
+    @Test
+    public void doFilter_shouldUseConfiguredFormActionValue() throws ServletException, IOException {
+        cspNonceFilter = new CspNonceFilter("'self' https://example.com");
+        ArgumentCaptor<String> cspHeaderCaptor = ArgumentCaptor.forClass(String.class);
+
+        cspNonceFilter.doFilter(httpRequest, httpResponse, filterChain);
+
+        verify(httpResponse).setHeader(eq("Content-Security-Policy"), cspHeaderCaptor.capture());
+        String cspHeader = cspHeaderCaptor.getValue();
+
+        assertTrue(cspHeader.contains("form-action 'self' https://example.com;"),
+            "CSP should use the configured form-action directive value");
     }
 
     @Test
