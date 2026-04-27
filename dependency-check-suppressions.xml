@@ -56,6 +56,28 @@
     </suppress>
 
     <!--
+    Spring's advisory for CVE-2026-22746 lists 5.7.23 as the fixed 5.7.x release, but that line is
+    enterprise-support-only. There is no public OSS Spring Security 5.7 upgrade path while this
+    project remains on Spring Boot 2.7 / Spring Security 5.7. A dependency-level fix requires either
+    enterprise-supported Spring Security 5.x artifacts or a Spring Boot 3 / Spring Security 6+ upgrade.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.security:spring-security-.*$</gav>
+        <cve>CVE-2026-22746</cve>
+    </suppress>
+
+    <!--
+    Spring's advisory for CVE-2026-22748 does not provide a public OSS Spring Security 5.7 fix.
+    The public fixed versions are on supported Spring Security 6.5 and 7.0 lines, so resolving this
+    at dependency level requires either enterprise-supported Spring Security 5.x artifacts or a
+    Spring Boot 3 / Spring Security 6+ upgrade.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.security:spring-security-.*$</gav>
+        <cve>CVE-2026-22748</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisory for CVE-2026-22733 requires a protected
     application endpoint to be mounted under the Cloud Foundry actuator path, for example
     /cloudfoundryapplication/**. This application does not expose Cloud Foundry actuator endpoints,
