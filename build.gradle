@@ -55,7 +55,7 @@ allprojects {
   ext['netty.version'] = '4.1.132.Final' // CVE-2026-33871, CVE-2026-33870
   ext['jackson.version'] = '2.18.3'
   ext['spring-framework.version'] = '5.3.39'
-  ext['log4j2.version'] = '2.25.3' // CVE-2025-68161
+  ext['log4j2.version'] = '2.25.4' // CVE-2026-34481, CVE-2026-22748, CVE-2026-34480 etc.
   ext['kotlin.version'] = '2.2.21' // CVE-2020-29582
 
   repositories {
