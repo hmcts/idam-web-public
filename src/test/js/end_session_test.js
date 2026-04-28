@@ -57,6 +57,9 @@ Scenario('@functional @endSession End Session', async ({ I }) => {
         TestData.SERVICE_REDIRECT_URI
     );
 
+    I.amOnPage('/cookies');
+    I.waitForText('Cookies', 10, 'h1');
+
     I.amOnPage(authorizeEndpointUrl);
     if (!page.url().includes(TestData.WEB_PUBLIC_URL)) {
         // then idam-api is configured to redirect to a different idam-web-public on authorize request
