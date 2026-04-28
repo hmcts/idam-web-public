@@ -162,12 +162,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     await I.runAccessibilityTest();
     I.interceptRequestsAfterSignin();
     I.clickWithWait(formSubmitButton);
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
@@ -207,12 +202,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait(formSubmitButton);
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
@@ -291,12 +281,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait(formSubmitButton);
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
@@ -336,12 +321,7 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.fillField('#password', specialCharacterPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait(formSubmitButton);
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);

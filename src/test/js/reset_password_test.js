@@ -62,9 +62,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     I.resetRequestInterception();
 });
  //NOTE: Retrying this scenario is problematic.
@@ -96,9 +94,7 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     I.resetRequestInterception();
 });
 
@@ -129,9 +125,7 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     I.resetRequestInterception();
 });
 
@@ -163,9 +157,7 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     I.resetRequestInterception();
 });
 
@@ -247,9 +239,7 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.fillField('#password', specialCharacterPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     I.resetRequestInterception();
 });
 
@@ -283,9 +273,7 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.fillField('#password', resetPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     I.resetRequestInterception();
 });
 

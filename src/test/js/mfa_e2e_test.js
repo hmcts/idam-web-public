@@ -64,14 +64,8 @@ Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => 
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Continue');
-    let currentUrl = await I.grabCurrentUrl();
-    I.addMochawesomeContext('Url is ' + currentUrl);
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {redirectUrl, code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
+    I.addMochawesomeContext('Url is ' + redirectUrl);
     let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -112,12 +106,7 @@ Scenario('@functional @mfaLogin  I am able to login with MFA and prompt = login'
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Continue');
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -160,12 +149,7 @@ Scenario('@functional @mfaLogin @welshLanguage  I am able to login with MFA in W
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.clickWithWait(Welsh.submitBtn);
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -253,9 +237,7 @@ Scenario('@functional @mfaLogin Validate verification code and 3 incorrect otp a
     I.fillField('code', otpCodeLatest);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Continue');
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -273,15 +255,9 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    let currentUrl = await I.grabCurrentUrl();
-    I.addMochawesomeContext('Url is ' + currentUrl);
     I.dontSeeInCurrentUrl("/verification");
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {redirectUrl, code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
+    I.addMochawesomeContext('Url is ' + redirectUrl);
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -326,9 +302,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl);
 
     I.amOnPage(loginUrl);
     const idamSessionCookie = await I.grabCookie('Idam.Session');
@@ -350,12 +324,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to the MF
 
     I.fillField('code', otpCode);
     I.clickWithWait('Continue');
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -406,12 +375,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to a mfa
 
     I.fillField('code', otpCode);
     I.clickWithWait('Continue');
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaturnedOnServicePageSource = await I.grabSource();
-    const mfaturnedOnServiceCode = mfaturnedOnServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code: mfaturnedOnServiceCode} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     const mfaturnedOnServiceAccessToken = await I.getAccessToken(mfaturnedOnServiceCode, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnServiceJwtDecode = await jwt_decode(mfaturnedOnServiceAccessToken);
@@ -429,13 +393,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to a mfa
     console.log("Location: " + location);
     expect(location).to.includes(`${mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl}/?code=`.toLowerCase());
 
-    I.amOnPage(location);
-    I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaturnedOffServicePageSource = await I.grabSource();
-    const mfaturnedOffServiceCode = mfaturnedOffServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const mfaturnedOffServiceCode = await I.getCodeFromRedirectUrl(location, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl);
     const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.clientId, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOffServiceJwtDecode = await jwt_decode(mfaturnedOffServiceAccessToken);
@@ -486,12 +444,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
 
     I.fillField('code', otpCode);
     I.clickWithWait('Continue');
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaturnedOnService1PageSource = await I.grabSource();
-    const mfaturnedOnService1Code = mfaturnedOnService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code: mfaturnedOnService1Code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService1JwtDecode = await jwt_decode(mfaturnedOnService1AccessToken);
@@ -509,13 +462,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin As a user, I can login to a mfa 
     console.log("Location: " + location);
     expect(location).to.includes(`${mfaTurnedOnService2.hmctsAccess.postActivationRedirectUrl}/?code=`.toLowerCase());
 
-    I.amOnPage(location);
-    I.waitForText(mfaTurnedOnService2.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaTurnedOnService2PageSource = await I.grabSource();
-    const mfaTurnedOnService2Code = mfaTurnedOnService2PageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const mfaTurnedOnService2Code = await I.getCodeFromRedirectUrl(location, mfaTurnedOnService2.hmctsAccess.postActivationRedirectUrl);
     const mfaTurnedOnService2AccessToken = await I.getAccessToken(mfaTurnedOnService2Code, mfaTurnedOnService2.clientId, mfaTurnedOnService2.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService2JwtDecode = await jwt_decode(mfaTurnedOnService2AccessToken);
@@ -560,12 +507,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to the M
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaTurnedOffService1PageSource = await I.grabSource();
-    const mfaTurnedOffService1Code = mfaTurnedOffService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code: mfaTurnedOffService1Code} = await I.waitForRedirectWithCodeTo(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl);
     const mfaTurnedOffService1AccessToken = await I.getAccessToken(mfaTurnedOffService1Code, mfaTurnedOffService1.clientId, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaTurnedOffService1JwtDecode = await jwt_decode(mfaTurnedOffService1AccessToken);
@@ -582,13 +524,7 @@ Scenario('@functional @mfaLogin @mfaStepUpLogin  As a user, I can login to the M
     const location = await I.getWebPublicOidcAuthorize(mfaTurnedOffService2.clientId, mfaTurnedOffService2.hmctsAccess.postActivationRedirectUrl, scope, nonce, cookie);
     expect(location).to.includes(`${mfaTurnedOffService2.hmctsAccess.postActivationRedirectUrl}/?code=`.toLowerCase());
 
-    I.amOnPage(location);
-    I.waitForText(mfaTurnedOffService2.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaTurnedOffService2PageSource = await I.grabSource();
-    const mfaTurnedOffService2Code = mfaTurnedOffService2PageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const mfaTurnedOffService2Code = await I.getCodeFromRedirectUrl(location, mfaTurnedOffService2.hmctsAccess.postActivationRedirectUrl);
     const mfaTurnedOffService2AccessToken = await I.getAccessToken(mfaTurnedOffService2Code, mfaTurnedOffService2.clientId, mfaTurnedOffService2.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaTurnedOffService2JwtDecode = await jwt_decode(mfaTurnedOffService2AccessToken);
@@ -643,12 +579,7 @@ Scenario('@functional @mfaLogin  As a user, I can login to the MFA turned on ser
     I.fillField('code', otpCode);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Continue');
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -697,12 +628,7 @@ Scenario('@functional @mfaLogin As a user, I can login to the mfa turned off ser
     I.fillField('#password', userPassword);
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaturnedOffServicePageSource = await I.grabSource();
-    const mfaturnedOffServiceCode = mfaturnedOffServicePageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code: mfaturnedOffServiceCode} = await I.waitForRedirectWithCodeTo(mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl);
     const mfaturnedOffServiceAccessToken = await I.getAccessToken(mfaturnedOffServiceCode, mfaTurnedOffService1.clientId, mfaTurnedOffService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOffServiceJwtDecode = await jwt_decode(mfaturnedOffServiceAccessToken);
@@ -753,12 +679,7 @@ Scenario('@functional @mfaLogin  @mfaSkipStepUpLogin As a user, I can login to t
 
     I.fillField('code', otpCode);
     I.clickWithWait('Continue');
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaturnedOnService1PageSource = await I.grabSource();
-    const mfaturnedOnService1Code = mfaturnedOnService1PageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code: mfaturnedOnService1Code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     const mfaturnedOnService1AccessToken = await I.getAccessToken(mfaturnedOnService1Code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService1JwtDecode = await jwt_decode(mfaturnedOnService1AccessToken);
@@ -785,12 +706,7 @@ Scenario('@functional @mfaLogin  @mfaSkipStepUpLogin As a user, I can login to t
 
     I.fillField('code', otpCode2);
     I.clickWithWait('Continue');
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaturnedOnService1PageSource2 = await I.grabSource();
-    const mfaturnedOnService1Code2 = mfaturnedOnService1PageSource2.match(/\?code=([^&]*)(.*)/)[1];
+    const {code: mfaturnedOnService1Code2} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     const mfaturnedOnService1AccessToken2 = await I.getAccessToken(mfaturnedOnService1Code2, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService1JwtDecode2 = await jwt_decode(mfaturnedOnService1AccessToken2);
@@ -808,13 +724,7 @@ Scenario('@functional @mfaLogin  @mfaSkipStepUpLogin As a user, I can login to t
     console.log("Location: " + location2);
     expect(location2).to.includes(`${mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl}/?code=`.toLowerCase());
 
-    I.amOnPage(location2);
-    I.waitForText(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const mfaTurnedOnService1PageSource3 = await I.grabSource();
-    const mfaTurnedOnService1Code3 = mfaTurnedOnService1PageSource3.match(/\?code=([^&]*)(.*)/)[1];
+    const mfaTurnedOnService1Code3 = await I.getCodeFromRedirectUrl(location2, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
     const mfaTurnedOnService1AccessToken3 = await I.getAccessToken(mfaTurnedOnService1Code3, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let mfaturnedOnService1JwtDecode3 = await jwt_decode(mfaTurnedOnService1AccessToken3);

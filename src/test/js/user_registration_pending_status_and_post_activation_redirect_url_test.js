@@ -74,7 +74,7 @@ Scenario('@functional  user registration pending status and post activation redi
     I.waitForText('Continue');
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Continue');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
 
     const responseAfterActivation = await I.getUserById(userId, accessToken);
     expect(responseAfterActivation.id).to.equal(userId);

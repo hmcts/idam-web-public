@@ -52,8 +52,6 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.scrollPageToBottom();
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     I.resetRequestInterception();
 });

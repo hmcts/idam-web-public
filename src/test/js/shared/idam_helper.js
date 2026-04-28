@@ -381,27 +381,16 @@ class IdamHelper extends Helper {
 
     async interceptRequestsAfterSignin() {
         const {page} = this.helpers['Playwright'];
-        const pages = ["/login", "/register", "/activate", "/verification", "/useractivated", "/o/authorize", "/o/endSession"];
+        await this.resetRequestInterception();
 
-        if (this.signinRouteHandler) {
-            await page.unroute('**/*', this.signinRouteHandler);
-        }
-
-        this.signinRouteHandler = async route => {
-            const request = route.request();
-            if (pages.some(v => request.url().includes(v))) {
-                console.log("During intercept: " + request.url());
-                await route.continue();
-            } else {
-                await route.fulfill({
-                    status: 200,
-                    contentType: 'application/javascript; charset=utf-8',
-                    body: request.url()
-                });
-            }
+        this.redirectRequestsAfterSignin = [];
+        this.signinRequestHandler = request => {
+            const requestUrl = request.url();
+            console.log("Request after signin: " + requestUrl);
+            this.redirectRequestsAfterSignin.push(requestUrl);
         };
 
-        await page.route('**/*', this.signinRouteHandler);
+        page.on('request', this.signinRequestHandler);
     }
 
     async resetRequestInterception() {
@@ -410,6 +399,95 @@ class IdamHelper extends Helper {
             await page.unroute('**/*', this.signinRouteHandler);
             this.signinRouteHandler = null;
         }
+        if (this.signinRequestHandler) {
+            page.off('request', this.signinRequestHandler);
+            this.signinRequestHandler = null;
+        }
+        this.redirectRequestsAfterSignin = [];
+    }
+
+    async waitForRedirectTo(expectedBaseUrl, timeout = 20) {
+        const expectedBaseUrlLowerCase = expectedBaseUrl.toLowerCase();
+        const timeoutAt = Date.now() + timeout * 1000;
+
+        while (Date.now() < timeoutAt) {
+            const redirectRequests = this.redirectRequestsAfterSignin || [];
+            const redirectIndex = redirectRequests.findIndex(requestUrl =>
+                requestUrl.toLowerCase().startsWith(expectedBaseUrlLowerCase)
+            );
+
+            if (redirectIndex >= 0) {
+                const redirectUrl = redirectRequests[redirectIndex];
+                this.redirectRequestsAfterSignin = redirectRequests.slice(redirectIndex + 1);
+                return redirectUrl;
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        const observedRequests = (this.redirectRequestsAfterSignin || []).slice(-20).join('\n');
+        throw new Error(`Timed out waiting for redirect to ${expectedBaseUrl}. Observed requests:\n${observedRequests}`);
+    }
+
+    async waitForRedirectWithCodeTo(expectedBaseUrl, timeout = 20) {
+        const redirectUrl = await this.waitForRedirectTo(expectedBaseUrl, timeout);
+        const error = this.getRedirectQueryParamValue(redirectUrl, 'error');
+
+        if (error) {
+            throw new Error(`Expected redirect code but received error "${error}" in ${redirectUrl}`);
+        }
+
+        const code = this.getRedirectQueryParamValue(redirectUrl, 'code');
+        if (!code) {
+            throw new Error(`Expected redirect code in ${redirectUrl}`);
+        }
+
+        return {redirectUrl, code};
+    }
+
+    async waitForRedirectWithoutCodeTo(expectedBaseUrl, timeout = 20) {
+        const redirectUrl = await this.waitForRedirectTo(expectedBaseUrl, timeout);
+        const code = this.getRedirectQueryParamValue(redirectUrl, 'code');
+
+        if (code) {
+            throw new Error(`Expected redirect without code but received code in ${redirectUrl}`);
+        }
+
+        return redirectUrl;
+    }
+
+    async getCodeFromRedirectUrl(redirectUrl, expectedBaseUrl) {
+        if (expectedBaseUrl && !redirectUrl.toLowerCase().startsWith(expectedBaseUrl.toLowerCase())) {
+            throw new Error(`Expected redirect to ${expectedBaseUrl} but received ${redirectUrl}`);
+        }
+
+        const error = this.getRedirectQueryParamValue(redirectUrl, 'error');
+        if (error) {
+            throw new Error(`Expected redirect code but received error "${error}" in ${redirectUrl}`);
+        }
+
+        const code = this.getRedirectQueryParamValue(redirectUrl, 'code');
+        if (!code) {
+            throw new Error(`Expected redirect code in ${redirectUrl}`);
+        }
+
+        return code;
+    }
+
+    async getRedirectQueryParam(redirectUrl, paramName) {
+        return this.getRedirectQueryParamValue(redirectUrl, paramName);
+    }
+
+    getRedirectQueryParamValue(redirectUrl, paramName) {
+        const queryParamMatch = redirectUrl.match(new RegExp(`[?&]${paramName}=([^&#]*)`));
+        return queryParamMatch ? decodeURIComponent(queryParamMatch[1]) : '';
+    }
+
+    async addCookie(cookieName, cookieValue) {
+        const {page} = this.helpers['Playwright'];
+        await page.evaluate(({name, value}) => {
+            window.document.cookie = `${name}=${value};path=/`;
+        }, {name: cookieName, value: cookieValue});
     }
 
     getPinUser(firstname, lastname) {

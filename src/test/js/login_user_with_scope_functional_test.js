@@ -51,11 +51,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 
     I.interceptRequestsAfterSignin();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.grantRoleToUser(citizenUserDynamicRole.name, accessToken);
@@ -87,11 +83,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
 
     I.interceptRequestsAfterSignin();
     I.clickWithWait('.form input[type=submit]');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-
-    let pageSource = await I.grabSource();
-    code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    ({code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI));
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.grantRoleToUser(pinUserDynamicRole.name, accessToken);
