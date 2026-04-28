@@ -456,6 +456,45 @@ class IdamHelper extends Helper {
         return redirectUrl;
     }
 
+    async navigateToRedirectWithCodeTo(gotoUrl, expectedBaseUrl, timeout = 20) {
+        const redirectUrl = await this.navigateToRedirectTo(gotoUrl, expectedBaseUrl, timeout);
+        const code = await this.getCodeFromRedirectUrl(redirectUrl, expectedBaseUrl);
+
+        return {redirectUrl, code};
+    }
+
+    async navigateToRedirectWithoutCodeTo(gotoUrl, expectedBaseUrl, timeout = 20) {
+        const redirectUrl = await this.navigateToRedirectTo(gotoUrl, expectedBaseUrl, timeout);
+        const code = this.getRedirectQueryParamValue(redirectUrl, 'code');
+
+        if (code) {
+            throw new Error(`Expected redirect without code but received code in ${redirectUrl}`);
+        }
+
+        return redirectUrl;
+    }
+
+    async navigateToRedirectTo(gotoUrl, expectedBaseUrl, timeout = 20) {
+        const {page} = this.helpers['Playwright'];
+        await this.interceptRequestsAfterSignin();
+
+        let navigationError;
+        try {
+            await page.goto(gotoUrl);
+        } catch (err) {
+            navigationError = err;
+        }
+
+        try {
+            return await this.waitForRedirectTo(expectedBaseUrl, timeout);
+        } catch (redirectError) {
+            if (navigationError) {
+                throw navigationError;
+            }
+            throw redirectError;
+        }
+    }
+
     async getCodeFromRedirectUrl(redirectUrl, expectedBaseUrl) {
         if (expectedBaseUrl && !redirectUrl.toLowerCase().startsWith(expectedBaseUrl.toLowerCase())) {
             throw new Error(`Expected redirect to ${expectedBaseUrl} but received ${redirectUrl}`);
