@@ -39,7 +39,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     I.amOnPage(loginUrl);
 
     // Set around 11 kb of cookie.
-    await I.addCookie('cookieName', largeCookieValue);
+    await I.addCookie('idam.request', largeCookieValue);
     I.waitForText('Cookies on hmcts-access.service.gov.uk');
     await I.runAccessibilityTest();
     I.click('Accept additional cookies');

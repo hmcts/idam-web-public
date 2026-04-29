@@ -21,6 +21,7 @@ exports.config = {
             windowSize: '1280x960',
             getPageTimeout: 20000,
             ignoreHTTPSErrors: true,
+            bypassCSP: true,
             chromium: {
                 args: ['--no-sandbox']
             }
@@ -59,7 +60,7 @@ exports.config = {
             'mocha-junit-reporter': {
                 stdout: path.join(output, 'idam-web-public-cross-browser-stdout.log'),
                 options: {
-                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/functional/idam-web-public-cross-browser-result.xml'
+                    mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/functional/idam-web-public-cross-browser-result-[hash].xml'
                 }
             },
             mochawesome: {

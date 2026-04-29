@@ -90,7 +90,7 @@ allprojects {
 
     implementation 'org.bouncycastle:bcprov-jdk18on:1.83'
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.83'
-    implementation 'org.bouncycastle:bcutil-jdk18on:1.84'
+    implementation 'org.bouncycastle:bcutil-jdk18on:1.83'
 
     implementation (libs.idam.api.spec) {
       exclude module: 'springfox-swagger2'
@@ -236,16 +236,6 @@ allprojects {
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
 
-  task smokeSauce(dependsOn: ':codeceptSmokeSauce') {
-    group = 'Delivery pipeline'
-    description = 'Executes non-destructive smoke tests against a running instance'
-  }
-
-  task codeceptSmokeSauce(type: Exec, dependsOn: ':yarnInstall') {
-    workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js', '--steps', '--grep', '@smoke', '--verbose', '--debug', '--reporter', 'mochawesome'
-  }
-
   task crossbrowser(dependsOn: ':codeceptFunctionalCrossBrowser') {
     group = 'Delivery pipeline'
     description = 'Execute cross browser tests with Playwright browsers'
@@ -254,11 +244,6 @@ allprojects {
   task codeceptFunctionalCrossBrowser(type: Exec, dependsOn: ':playwrightInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'codecept.crossbrowser.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
-  }
-
-  task codeceptFunctionalSauce(type: Exec, dependsOn: ':yarnInstall') {
-    workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
   }
 
 }

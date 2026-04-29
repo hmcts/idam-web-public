@@ -524,9 +524,9 @@ class IdamHelper extends Helper {
         return queryParamMatch ? decodeURIComponent(queryParamMatch[1]) : '';
     }
 
+    // If the cookie value exceeds 10KB, Playwright limits the cookie value, so JavaScript is used to set the cookie explicitly.
     async addCookie(cookieName, cookieValue) {
-        const {page} = this.helpers['Playwright'];
-        await page.evaluate(({name, value}) => {
+        await this.executeScript(({name, value}) => {
             window.document.cookie = `${name}=${value};path=/`;
         }, {name: cookieName, value: cookieValue});
     }
