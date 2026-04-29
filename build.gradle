@@ -256,6 +256,11 @@ allprojects {
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'codecept.crossbrowser.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
   }
 
+  if (System.getenv('RUN_CROSS_BROWSER_IN_PR') == 'true') {
+    // Temporary: include cross-browser coverage in PR functional tests to validate the migration.
+    functional.dependsOn ':codeceptFunctionalCrossBrowser'
+  }
+
   task codeceptFunctionalSauce(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
