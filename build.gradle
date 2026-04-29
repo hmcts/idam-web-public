@@ -221,17 +221,22 @@ allprojects {
     commandLine 'node_modules/.bin/playwright', 'install', 'chromium', 'firefox', 'webkit'
   }
 
+  task playwrightInstallChromium(type: Exec, dependsOn: ':yarnInstall') {
+    workingDir '.'
+    commandLine 'node_modules/.bin/playwright', 'install', 'chromium'
+  }
+
   task notifyClientInstall(type: Exec) {
     workingDir '.'
     commandLine 'yarn', 'add', 'notifications-node-client'
   }
 
-  task codeceptSmoke(type: Exec, dependsOn: ':playwrightInstall') {
+  task codeceptSmoke(type: Exec, dependsOn: ':playwrightInstallChromium') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi', '-c', 'codecept.smoke.conf.js'
   }
 
-  task codeceptFunctional(type: Exec, dependsOn: ':playwrightInstall') {
+  task codeceptFunctional(type: Exec, dependsOn: ':playwrightInstallChromium') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
