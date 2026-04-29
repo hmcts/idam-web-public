@@ -44,8 +44,6 @@ withPipeline(type, product, component) {
         Map<String, String> vaultEnvironmentOverrides = ['aat':'preview']
         overrideVaultEnvironments(vaultEnvironmentOverrides)
         env.NONPROD_ENVIRONMENT_NAME = 'preview'
-        // Temporary: run Playwright cross-browser tests in this PR to validate the migration.
-        env.RUN_CROSS_BROWSER_IN_PR = 'true'
     }
     loadVaultSecrets(secrets)
 
