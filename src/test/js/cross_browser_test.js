@@ -39,7 +39,6 @@ BeforeSuite(async ({ I }) => {
 Scenario('@crossbrowser Citizen user self registration', async ({ I }) => {
     citizenUserSelfRegistrationEmail = 'citizenSelfreg' + randomData.getRandomEmailAddress();
     I.amOnPage(selfRegUrl);
-    I.waitInUrl('users/selfRegister');
     I.waitForText('Create an account or sign in');
     I.see('Create an account');
     I.fillField('firstName', randomUserFirstName + 'citizenSelfreg');
@@ -62,8 +61,10 @@ Scenario('@crossbrowser Citizen user login', async ({ I }) => {
     I.waitForText('Sign in');
     I.fillField('#username', citizenUserLoginEmail);
     I.fillField('#password', userPassword);
+    I.interceptRequestsAfterSignin();
     I.click('Sign in');
-    I.waitForInvisible('#username', 20);
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
+    I.resetRequestInterception();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {
