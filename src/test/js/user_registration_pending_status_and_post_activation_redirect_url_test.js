@@ -72,7 +72,7 @@ Scenario('@functional  user registration pending status and post activation redi
     userFirstNames.push(randomUserFirstName);
     I.waitForText('You can now sign in to your account.');
     I.waitForText('Continue');
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Continue');
     await I.waitForRedirectWithoutCodeTo(TestData.SERVICE_REDIRECT_URI);
 
@@ -84,5 +84,5 @@ Scenario('@functional  user registration pending status and post activation redi
     expect(responseAfterActivation.email).to.equal(userEmail);
     expect(responseAfterActivation.roles).to.eql([assignableRole.name]);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });

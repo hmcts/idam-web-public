@@ -84,15 +84,27 @@ try {
             env.TESTS_FOR_ACCESSIBILITY = false
         }
         afterAlways('fullFunctionalTest') {
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/functional/reports/**/*'
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
             env.TESTS_FOR_ACCESSIBILITY = false
             publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
                 keepAll              : true,
-                reportDir            : "output",
-                reportFiles          : "idam-web-public-e2e-result.html",
-                reportName           : "IDAM Web Public E2E functional tests result"
+                reportDir            : "functional-output/functional/allure",
+                reportFiles          : "index.html",
+                reportName           : "Functional Test Report"
+            ]
+        }
+        afterAlways('crossBrowserTest') {
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/cross-browser/reports/**/*'
+            publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "functional-output/cross-browser/allure",
+                reportFiles          : "index.html",
+                reportName           : "Cross Browser Test Report"
             ]
         }
     }

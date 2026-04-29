@@ -45,7 +45,7 @@ AfterSuite(async ({ I }) => {
 });
 
 After(({ I }) => {
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @loginWithPin As a Defendant, I should be able to login with the pin received from the Claimant', async ({ I }) => {
@@ -55,7 +55,7 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     I.waitForText('Enter security code');
     I.fillField('#pin', pinUser.pin);
     await I.runAccessibilityTest();
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Continue');
     let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -187,7 +187,7 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
     I.seeInCurrentUrl(`register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}`);
     I.fillField('#username', existingCitizenEmail);
     I.fillField('#password', userPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
     const {code: pageAccessCode} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let pageAccessToken = await I.getAccessToken(pageAccessCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -249,7 +249,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftAccountCreationStaleUserEmail);
     I.fillField('#password', newPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
     const {code: loginCode} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -266,7 +266,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
 
     rolesToCleanup.push(pinUserRole);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift login', async ({ I }) => {
@@ -312,7 +312,7 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftLoginStaleUserEmail);
     I.fillField('#password', newPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
     const {code: loginCode} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -329,5 +329,5 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
 
     rolesToCleanup.push(pinUserRole);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });

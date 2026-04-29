@@ -33,6 +33,12 @@ module.exports = function() {
     clickWithWait : function(clickText) {
         this.click(clickText);
         this.wait(1);
+    },
+    // If the cookie value exceeds 10KB, Playwright limits the cookie value, so JavaScript is used to set the cookie explicitly.
+    addCookie: async function(cookieName, cookieValue) {
+        await this.executeScript(({name, value}) => {
+            window.document.cookie = `${name}=${value};path=/`;
+        }, {name: cookieName, value: cookieValue});
     }
   })
 }

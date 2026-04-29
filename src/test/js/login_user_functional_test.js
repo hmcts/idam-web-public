@@ -48,7 +48,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
     I.fillField('#password', userPassword);
     await I.runAccessibilityTest();
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
     const {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -71,7 +71,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'Citizen');
     expect(oidcUserInfo.family_name).to.equal('User');
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
     I.clearCookie();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -86,7 +86,7 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
     I.fillField('#username', citizenEmail);
     I.fillField('#password', userPassword);
     await I.runAccessibilityTest();
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
     const {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -109,7 +109,7 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'Citizen');
     expect(oidcUserInfo.family_name).to.equal('User');
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
     I.clearCookie();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 

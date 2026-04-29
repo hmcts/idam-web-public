@@ -61,10 +61,10 @@ Scenario('@crossbrowser Citizen user login', async ({ I }) => {
     I.waitForText('Sign in');
     I.fillField('#username', citizenUserLoginEmail);
     I.fillField('#password', userPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.click('Sign in');
     await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@crossbrowser Citizen user password reset', async ({ I }) => {

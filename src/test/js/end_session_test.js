@@ -43,7 +43,7 @@ Scenario('@functional @endSession End Session', async ({ I }) => {
     I.waitForText('Sign in');
     I.fillField('#username', citizenEmail);
     I.fillField('#password', userPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.click('Sign in');
 
     await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
@@ -69,6 +69,6 @@ Scenario('@functional @endSession End Session', async ({ I }) => {
     }
     I.waitForText('Sign in');
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

@@ -379,9 +379,9 @@ class IdamHelper extends Helper {
         return otp;
     }
 
-    async interceptRequestsAfterSignin() {
+    async startRedirectRequestTracking() {
         const {page} = this.helpers['Playwright'];
-        await this.resetRequestInterception();
+        await this.stopRedirectRequestTracking();
 
         this.redirectRequestsAfterSignin = [];
         this.signinRequestHandler = request => {
@@ -393,12 +393,8 @@ class IdamHelper extends Helper {
         page.on('request', this.signinRequestHandler);
     }
 
-    async resetRequestInterception() {
+    async stopRedirectRequestTracking() {
         const {page} = this.helpers['Playwright'];
-        if (this.signinRouteHandler) {
-            await page.unroute('**/*', this.signinRouteHandler);
-            this.signinRouteHandler = null;
-        }
         if (this.signinRequestHandler) {
             page.off('request', this.signinRequestHandler);
             this.signinRequestHandler = null;
@@ -476,7 +472,7 @@ class IdamHelper extends Helper {
 
     async navigateToRedirectTo(gotoUrl, expectedBaseUrl, timeout = 20) {
         const {page} = this.helpers['Playwright'];
-        await this.interceptRequestsAfterSignin();
+        await this.startRedirectRequestTracking();
 
         let navigationError;
         const navigationPromise = page.goto(gotoUrl).catch(err => {
@@ -522,13 +518,6 @@ class IdamHelper extends Helper {
     getRedirectQueryParamValue(redirectUrl, paramName) {
         const queryParamMatch = redirectUrl.match(new RegExp(`[?&]${paramName}=([^&#]*)`));
         return queryParamMatch ? decodeURIComponent(queryParamMatch[1]) : '';
-    }
-
-    // If the cookie value exceeds 10KB, Playwright limits the cookie value, so JavaScript is used to set the cookie explicitly.
-    async addCookie(cookieName, cookieValue) {
-        await this.executeScript(({name, value}) => {
-            window.document.cookie = `${name}=${value};path=/`;
-        }, {name: cookieName, value: cookieValue});
     }
 
     getPinUser(firstname, lastname) {

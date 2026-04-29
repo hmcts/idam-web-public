@@ -48,7 +48,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
@@ -76,7 +76,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
         expect(userInfo.roles.length).to.be.greaterThan(0);
     }
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login through the Justice.gov.uk login link from idam', async ({ I }) => {
@@ -91,7 +91,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
     I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
@@ -108,7 +108,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
         expect(userInfo.surname).to.not.equal(null);
         expect(userInfo.roles.length).to.be.greaterThan(0);
 
-        I.resetRequestInterception();
+        I.stopRedirectRequestTracking();
     }
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -129,7 +129,7 @@ Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to M
     I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
@@ -158,7 +158,7 @@ Scenario('@functional @moj As a Justice.gov.uk user, I should be able to SSO eve
     I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
@@ -172,7 +172,7 @@ Scenario('@functional @moj As a Justice.gov.uk user, I should be able to SSO eve
         expect(newSsoId).to.equal(TestData.MOJ_TEST_USER_SSO_ID);
         expect(getUserByEmailResponse.ssoProvider).to.equal("moj");
 
-        I.resetRequestInterception();
+        I.stopRedirectRequestTracking();
     }
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

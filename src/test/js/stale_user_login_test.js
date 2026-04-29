@@ -52,10 +52,10 @@ Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) =>
     I.waitForText('Sign in');
     I.fillField('#username', staleUserEmail.toUpperCase());
     I.fillField('#password', newPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
     await I.waitForRedirectWithCodeTo(testData.SERVICE_REDIRECT_URI);
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });
 
 
@@ -89,8 +89,8 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.waitForText(Welsh.signIn);
     I.fillField('#username', staleUserEmailWelsh);
     I.fillField('#password', newPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait(Welsh.signIn);
     await I.waitForRedirectWithCodeTo(testData.SERVICE_REDIRECT_URI);
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });

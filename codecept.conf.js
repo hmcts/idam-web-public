@@ -1,9 +1,12 @@
-const TestData = require('./src/test/js/config/test_data')
+const path = require('path');
+const TestData = require('./src/test/js/config/test_data');
+
+const functionalOutput = path.join(process.cwd(), 'functional-output', 'functional', 'reports');
 
 exports.config = {
     name: 'idam-web-public',
     tests: './src/test/js/**/*_test.js',
-    output: './output',
+    output: functionalOutput,
     fullPageScreenshots: true,
     timeout: 240, // seconds
     bootstrap: false,
@@ -37,6 +40,12 @@ exports.config = {
     },
     "include": {
         "I": "./src/test/js/shared/custom_steps.js"
+    },
+    plugins: {
+        allure: {
+            enabled: true,
+            require: '@codeceptjs/allure-legacy'
+        }
     },
     mocha: {
         reporterOptions: {

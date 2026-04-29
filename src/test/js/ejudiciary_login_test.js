@@ -49,7 +49,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
         I.waitInUrl("/kmsi");
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
-        I.interceptRequestsAfterSignin();
+        I.startRedirectRequestTracking();
         I.clickWithWait('No');
         const {redirectUrl, code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
 
@@ -73,7 +73,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I can login into idam t
         expect(userInfo.roles).to.include('judiciary');
     }
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to login through the ejudiciary login link from idam using PKCE', async ({ I }) => {
@@ -99,7 +99,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         I.waitInUrl("/kmsi");
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
-        I.interceptRequestsAfterSignin();
+        I.startRedirectRequestTracking();
         I.clickWithWait('No');
         const {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
         const accessToken = await I.getAccessToken(code, serviceName.toUpperCase(), TestData.SERVICE_REDIRECT_URI, serviceClientSecret, codeVerifier);
@@ -112,7 +112,7 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be able to log
         expect(userInfo.id).to.not.equal(null);
         expect(userInfo.roles).to.include('judiciary');
 
-        I.resetRequestInterception();
+        I.stopRedirectRequestTracking();
     }
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -144,10 +144,10 @@ Scenario('@functional @ejudiciary As an ejudiciary user, I should be redirected 
         I.waitInUrl("/kmsi");
         I.see("Make sure the redirect URI sent in the request matches one added to your application in the Azure portal");
     } else {
-        I.interceptRequestsAfterSignin();
+        I.startRedirectRequestTracking();
         I.clickWithWait('No');
         await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
-        I.resetRequestInterception();
+        I.stopRedirectRequestTracking();
     }
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

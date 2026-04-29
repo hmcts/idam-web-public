@@ -126,9 +126,9 @@ withPipeline(type, product, component) {
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
             keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-public-e2e-result.html",
-            reportName           : "IDAM Web Public E2E functional tests result"
+            reportDir            : "functional-output/functional/allure",
+            reportFiles          : "index.html",
+            reportName           : "Functional Test Report"
         ]
     }
 
@@ -142,9 +142,22 @@ withPipeline(type, product, component) {
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
             keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-public-e2e-result.html",
-            reportName           : "IDAM Web Public E2E functional tests result"
+            reportDir            : "functional-output/functional/allure",
+            reportFiles          : "index.html",
+            reportName           : "Functional Test Report"
+        ]
+    }
+
+    afterAlways('crossBrowserTest:aat') {
+        archiveArtifacts '**/functional-output/cross-browser/reports/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "functional-output/cross-browser/allure",
+            reportFiles          : "index.html",
+            reportName           : "Cross Browser Test Report"
         ]
     }
 }

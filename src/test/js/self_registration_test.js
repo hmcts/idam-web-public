@@ -160,7 +160,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.fillField('#username', email);
     I.fillField('#password', userPassword);
     await I.runAccessibilityTest();
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait(formSubmitButton);
     let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -168,7 +168,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
     userIdsToCleanup.push(userInfo.id);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)', async ({ I }) => {
@@ -200,7 +200,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.waitForText(Welsh.signInOrCreateAccount);
     I.fillField('#username', email);
     I.fillField('#password', userPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait(formSubmitButton);
     let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -208,7 +208,7 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
     userIdsToCleanup.push(userInfo.id);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @selfregister I can self register and cannot use activation link again', async ({ I }) => {
@@ -279,7 +279,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.waitForText('Sign in or create an account');
     I.fillField('#username', randomUserEmailAddress);
     I.fillField('#password', userPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait(formSubmitButton);
     let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -287,7 +287,7 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
     userIdsToCleanup.push(userInfo.id);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @selfregister I can self register with repeated special characters in password', async ({ I }) => {
@@ -319,7 +319,7 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.waitForText('Sign in or create an account');
     I.fillField('#username', email);
     I.fillField('#password', specialCharacterPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait(formSubmitButton);
     let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -327,7 +327,7 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
     userIdsToCleanup.push(userInfo.id);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @selfregister @passwordvalidation Validation displayed when I try to create my password with a blacklisted/invalid password', async ({ I }) => {

@@ -49,7 +49,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     I.fillField('#username', citizenEmail);
     I.fillField('#password', userPassword);
 
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
     let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -59,7 +59,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let userInfo = await I.getUserInfo(accessToken);
     expect(userInfo.roles).to.deep.equal([citizenUserDynamicRole.name]);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -81,7 +81,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     I.fillField('#username', respondentEmail);
     I.fillField('#password', userPassword);
 
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('.form input[type=submit]');
     ({code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI));
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
@@ -91,5 +91,5 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
     rolesToCleanup.push(pinUserRole);
     expect(userInfo.roles).to.deep.equalInAnyOrder([pinUserRole, citizenRole, pinUserDynamicRole.name]);
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

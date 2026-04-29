@@ -122,9 +122,9 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
         allowMissing         : true,
         alwaysLinkToLastBuild: true,
         keepAll              : true,
-        reportDir            : "output",
-        reportFiles          : "idam-web-public-e2e-result.html",
-        reportName           : "IDAM Web Public E2E functional tests result"
+        reportDir            : "functional-output/functional/allure",
+        reportFiles          : "index.html",
+        reportName           : "Functional Test Report"
     ]
   }
   

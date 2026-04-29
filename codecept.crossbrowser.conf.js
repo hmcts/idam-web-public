@@ -1,5 +1,6 @@
 const path = require('path');
 const TestData = require('./src/test/js/config/test_data');
+const {container, event} = require('codeceptjs');
 
 const output = path.join(process.cwd(), 'functional-output', 'cross-browser', 'reports');
 
@@ -37,6 +38,10 @@ exports.config = {
         }
     },
     plugins: {
+        allure: {
+            enabled: true,
+            require: '@codeceptjs/allure-legacy'
+        },
         retryFailedStep: {
             enabled: true,
             retries: 2
@@ -85,3 +90,11 @@ exports.config = {
         }
     }
 };
+
+event.dispatcher.on(event.test.after, () => {
+    const browser = container.helpers().Playwright.browser._initializer;
+    const {allure} = container.plugins();
+    allure.epic(browser.name);
+    allure.addParameter('environment', 'Browser', browser.name);
+    allure.addParameter('environment', 'Version', browser.version);
+});

@@ -34,6 +34,12 @@ exports.config = {
     "include": {
         "I": "./src/test/js/shared/custom_steps.js"
     },
+    plugins: {
+        allure: {
+            enabled: true,
+            require: '@codeceptjs/allure-legacy'
+        }
+    },
     mocha: {
         reporterOptions: {
             'codeceptjs-cli-reporter': {

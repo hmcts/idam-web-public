@@ -206,7 +206,7 @@ allprojects {
     description = 'Executes non-destructive smoke tests against a running instance'
   }
 
-  task functional(dependsOn: ':codeceptFunctional') {
+  task functional(dependsOn: ':codeceptFunctionalReport') {
     group = 'Delivery pipeline'
     description = 'Executes functional tests against a running instance'
   }
@@ -241,7 +241,12 @@ allprojects {
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
 
-  task crossbrowser(dependsOn: ':codeceptFunctionalCrossBrowser') {
+  task codeceptFunctionalReport(type: Exec, dependsOn: ':codeceptFunctional') {
+    workingDir '.'
+    commandLine 'node_modules/.bin/allure', 'generate', 'functional-output/functional/reports', '-c', '-o', 'functional-output/functional/allure'
+  }
+
+  task crossbrowser(dependsOn: ':codeceptFunctionalCrossBrowserReport') {
     group = 'Delivery pipeline'
     description = 'Execute cross browser tests with Playwright browsers'
   }
@@ -249,6 +254,11 @@ allprojects {
   task codeceptFunctionalCrossBrowser(type: Exec, dependsOn: ':playwrightInstall') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'codecept.crossbrowser.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
+  }
+
+  task codeceptFunctionalCrossBrowserReport(type: Exec, dependsOn: ':codeceptFunctionalCrossBrowser') {
+    workingDir '.'
+    commandLine 'node_modules/.bin/allure', 'generate', 'functional-output/cross-browser/reports', '-c', '-o', 'functional-output/cross-browser/allure'
   }
 
 }
