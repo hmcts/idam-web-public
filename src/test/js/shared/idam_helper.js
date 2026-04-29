@@ -479,15 +479,17 @@ class IdamHelper extends Helper {
         await this.interceptRequestsAfterSignin();
 
         let navigationError;
-        try {
-            await page.goto(gotoUrl);
-        } catch (err) {
+        const navigationPromise = page.goto(gotoUrl).catch(err => {
             navigationError = err;
-        }
+        });
 
         try {
-            return await this.waitForRedirectTo(expectedBaseUrl, timeout);
+            const redirectUrl = await this.waitForRedirectTo(expectedBaseUrl, timeout);
+            await page.evaluate(() => window.stop()).catch(() => {});
+            await navigationPromise;
+            return redirectUrl;
         } catch (redirectError) {
+            await navigationPromise;
             if (navigationError) {
                 throw navigationError;
             }
