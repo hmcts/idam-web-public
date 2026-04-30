@@ -258,7 +258,7 @@ allprojects {
 
   task codeceptFunctionalCrossBrowserReport(type: Exec, dependsOn: ':codeceptFunctionalCrossBrowser') {
     workingDir '.'
-    commandLine 'node_modules/.bin/allure', 'generate', 'functional-output/cross-browser/reports', '-c', '-o', 'functional-output/cross-browser/allure'
+    commandLine '/bin/sh', '-c', 'node_modules/.bin/allure generate functional-output/cross-browser/reports/* -c -o functional-output/cross-browser/allure'
   }
 
 }

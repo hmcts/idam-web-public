@@ -92,9 +92,14 @@ exports.config = {
 };
 
 event.dispatcher.on(event.test.after, () => {
-    const browser = container.helpers().Playwright.browser._initializer;
-    const {allure} = container.plugins();
-    allure.epic(browser.name);
-    allure.addParameter('environment', 'Browser', browser.name);
-    allure.addParameter('environment', 'Version', browser.version);
+    try {
+        const {allure} = container.plugins();
+        const browser = container.helpers().Playwright.browser._initializer;
+
+        allure.epic(browser.name);
+        allure.addParameter('environment', 'Browser', browser.name);
+        allure.addParameter('environment', 'Version', browser.version);
+    } catch (error) {
+        console.log(`Unable to add Allure browser metadata: ${error.message}`);
+    }
 });

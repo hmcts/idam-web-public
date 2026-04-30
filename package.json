@@ -25,7 +25,7 @@
   },
   "scripts": {
     "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c codecept.crossbrowser.conf.js --steps --grep '@crossbrowser' --reporter mochawesome",
-    "test-crossbrowser-report": "allure generate functional-output/cross-browser/reports -c -o functional-output/cross-browser/allure",
+    "test-crossbrowser-report": "allure generate functional-output/cross-browser/reports/* -c -o functional-output/cross-browser/allure",
     "test-functional-report": "allure generate functional-output/functional/reports -c -o functional-output/functional/allure",
     "test:crossbrowser": "yarn test-crossbrowser-e2e && yarn test-crossbrowser-report"
   }
