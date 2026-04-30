@@ -45,7 +45,7 @@ AfterSuite(async ({ I }) => {
 });
 
 After(({ I }) => {
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @loginWithPin As a Defendant, I should be able to login with the pin received from the Claimant', async ({ I }) => {
@@ -55,13 +55,9 @@ Scenario('@functional @loginWithPin As a Defendant, I should be able to login wi
     I.waitForText('Enter security code');
     I.fillField('#pin', pinUser.pin);
     await I.runAccessibilityTest();
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Continue');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(accessToken);
@@ -191,14 +187,9 @@ Scenario('@functional @uplift @upliftLogin uplift a user via login journey', asy
     I.seeInCurrentUrl(`register?redirect_uri=${encodeURIComponent(TestData.SERVICE_REDIRECT_URI).toLowerCase()}&client_id=${serviceName}`);
     I.fillField('#username', existingCitizenEmail);
     I.fillField('#password', userPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-
-    let pageSource = await I.grabSource();
-    let pageAccessCode = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code: pageAccessCode} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let pageAccessToken = await I.getAccessToken(pageAccessCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getOidcUserInfo(pageAccessToken);
@@ -258,14 +249,9 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftAccountCreationStaleUserEmail);
     I.fillField('#password', newPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const loginCode = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code: loginCode} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
@@ -280,7 +266,7 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
 
     rolesToCleanup.push(pinUserRole);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration for stale user uplift login', async ({ I }) => {
@@ -326,14 +312,9 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.waitForText('Sign in or create an account');
     I.fillField('#username', upliftLoginStaleUserEmail);
     I.fillField('#password', newPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const loginCode = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code: loginCode} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     const loginAccessToken = await I.getAccessToken(loginCode, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     const oidcUserInfo = await I.retry({retries: 3, minTimeout: 10000}).getWebpublicOidcUserInfo(loginAccessToken);
@@ -348,5 +329,5 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
 
     rolesToCleanup.push(pinUserRole);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 });

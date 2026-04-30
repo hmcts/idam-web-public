@@ -55,7 +55,7 @@ Scenario('@functional @welshLanguage There is a language switch that is working'
 Scenario('@functional @welshLanguage I can set the language with a cookie', async ({ I }) => {
 
     I.amOnPage(Welsh.pageUrl);
-    I.setCookie({name: Welsh.localeCookie, value: 'cy'});
+    I.setCookie({name: Welsh.localeCookie, value: 'cy', url: TestData.WEB_PUBLIC_URL});
     I.amOnPage(Welsh.pageUrl);
     I.waitForText(Welsh.accessDeniedWelsh);
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

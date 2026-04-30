@@ -38,13 +38,18 @@ const URLSearchParams = require('url').URLSearchParams;
 class IdamHelper extends Helper {
 
     async createNewPage() {
-        const {browser} = this.helpers['Puppeteer'];
-        return await browser.newPage();
+        const {browserContext} = this.helpers['Playwright'];
+        return await browserContext.newPage();
     }
 
     async getCurrentPage() {
-        const {browser} = this.helpers['Puppeteer'];
-        return await browser.pages();
+        const {page} = this.helpers['Playwright'];
+        return [page];
+    }
+
+    handleBrowserError(err) {
+        console.log(err);
+        throw err;
     }
 
     async createServiceData(serviceName, serviceClientSecret) {
@@ -137,9 +142,7 @@ class IdamHelper extends Helper {
             return location;
         })
             .catch(err => {
-                console.log(err);
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
     }
 
@@ -157,9 +160,7 @@ class IdamHelper extends Helper {
             return location;
         })
             .catch(err => {
-                console.log(err);
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
     }
 
@@ -378,28 +379,145 @@ class IdamHelper extends Helper {
         return otp;
     }
 
-    interceptRequestsAfterSignin() {
-        const helper = this.helpers['Puppeteer'];
-        helper.page.setRequestInterception(true);
-        const pages = ["/login", "/register", "/activate", "/verification", "/useractivated", "/o/authorize", "/o/endSession"];
+    async startRedirectRequestTracking() {
+        const {page} = this.helpers['Playwright'];
+        await this.stopRedirectRequestTracking();
 
-        helper.page.on('request', request => {
-            if (pages.some(v => request.url().includes(v))) {
-                console.log("During intercept: " + request.url());
-                request.continue();
-            } else {
-                request.respond({
-                    status: 200,
-                    contentType: 'application/javascript; charset=utf-8',
-                    body: request.url()
-                });
-            }
-        });
+        this.redirectRequestsAfterSignin = [];
+        this.signinRequestHandler = request => {
+            const requestUrl = request.url();
+            console.log("Request after signin: " + requestUrl);
+            this.redirectRequestsAfterSignin.push(requestUrl);
+        };
+
+        page.on('request', this.signinRequestHandler);
     }
 
-    async resetRequestInterception() {
-        const helper = this.helpers['Puppeteer'];
-        await helper.page.setRequestInterception(false);
+    async stopRedirectRequestTracking() {
+        const {page} = this.helpers['Playwright'];
+        if (this.signinRequestHandler) {
+            page.off('request', this.signinRequestHandler);
+            this.signinRequestHandler = null;
+        }
+        this.redirectRequestsAfterSignin = [];
+    }
+
+    async waitForRedirectTo(expectedBaseUrl, timeout = 20) {
+        const expectedBaseUrlLowerCase = expectedBaseUrl.toLowerCase();
+        const timeoutAt = Date.now() + timeout * 1000;
+
+        while (Date.now() < timeoutAt) {
+            const redirectRequests = this.redirectRequestsAfterSignin || [];
+            const redirectIndex = redirectRequests.findIndex(requestUrl =>
+                requestUrl.toLowerCase().startsWith(expectedBaseUrlLowerCase)
+            );
+
+            if (redirectIndex >= 0) {
+                const redirectUrl = redirectRequests[redirectIndex];
+                this.redirectRequestsAfterSignin = redirectRequests.slice(redirectIndex + 1);
+                return redirectUrl;
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        const observedRequests = (this.redirectRequestsAfterSignin || []).slice(-20).join('\n');
+        throw new Error(`Timed out waiting for redirect to ${expectedBaseUrl}. Observed requests:\n${observedRequests}`);
+    }
+
+    async waitForRedirectWithCodeTo(expectedBaseUrl, timeout = 20) {
+        const redirectUrl = await this.waitForRedirectTo(expectedBaseUrl, timeout);
+        const error = this.getRedirectQueryParamValue(redirectUrl, 'error');
+
+        if (error) {
+            throw new Error(`Expected redirect code but received error "${error}" in ${redirectUrl}`);
+        }
+
+        const code = this.getRedirectQueryParamValue(redirectUrl, 'code');
+        if (!code) {
+            throw new Error(`Expected redirect code in ${redirectUrl}`);
+        }
+
+        return {redirectUrl, code};
+    }
+
+    async waitForRedirectWithoutCodeTo(expectedBaseUrl, timeout = 20) {
+        const redirectUrl = await this.waitForRedirectTo(expectedBaseUrl, timeout);
+        const code = this.getRedirectQueryParamValue(redirectUrl, 'code');
+
+        if (code) {
+            throw new Error(`Expected redirect without code but received code in ${redirectUrl}`);
+        }
+
+        return redirectUrl;
+    }
+
+    async navigateToRedirectWithCodeTo(gotoUrl, expectedBaseUrl, timeout = 20) {
+        const redirectUrl = await this.navigateToRedirectTo(gotoUrl, expectedBaseUrl, timeout);
+        const code = await this.getCodeFromRedirectUrl(redirectUrl, expectedBaseUrl);
+
+        return {redirectUrl, code};
+    }
+
+    async navigateToRedirectWithoutCodeTo(gotoUrl, expectedBaseUrl, timeout = 20) {
+        const redirectUrl = await this.navigateToRedirectTo(gotoUrl, expectedBaseUrl, timeout);
+        const code = this.getRedirectQueryParamValue(redirectUrl, 'code');
+
+        if (code) {
+            throw new Error(`Expected redirect without code but received code in ${redirectUrl}`);
+        }
+
+        return redirectUrl;
+    }
+
+    async navigateToRedirectTo(gotoUrl, expectedBaseUrl, timeout = 20) {
+        const {page} = this.helpers['Playwright'];
+        await this.startRedirectRequestTracking();
+
+        let navigationError;
+        const navigationPromise = page.goto(gotoUrl).catch(err => {
+            navigationError = err;
+        });
+
+        try {
+            const redirectUrl = await this.waitForRedirectTo(expectedBaseUrl, timeout);
+            await page.evaluate(() => window.stop()).catch(() => {});
+            await navigationPromise;
+            return redirectUrl;
+        } catch (redirectError) {
+            await navigationPromise;
+            if (navigationError) {
+                throw navigationError;
+            }
+            throw redirectError;
+        }
+    }
+
+    async getCodeFromRedirectUrl(redirectUrl, expectedBaseUrl) {
+        if (expectedBaseUrl && !redirectUrl.toLowerCase().startsWith(expectedBaseUrl.toLowerCase())) {
+            throw new Error(`Expected redirect to ${expectedBaseUrl} but received ${redirectUrl}`);
+        }
+
+        const error = this.getRedirectQueryParamValue(redirectUrl, 'error');
+        if (error) {
+            throw new Error(`Expected redirect code but received error "${error}" in ${redirectUrl}`);
+        }
+
+        const code = this.getRedirectQueryParamValue(redirectUrl, 'code');
+        if (!code) {
+            throw new Error(`Expected redirect code in ${redirectUrl}`);
+        }
+
+        return code;
+    }
+
+    async getRedirectQueryParam(redirectUrl, paramName) {
+        return this.getRedirectQueryParamValue(redirectUrl, paramName);
+    }
+
+    getRedirectQueryParamValue(redirectUrl, paramName) {
+        const queryParamMatch = redirectUrl.match(new RegExp(`[?&]${paramName}=([^&#]*)`));
+        return queryParamMatch ? decodeURIComponent(queryParamMatch[1]) : '';
     }
 
     getPinUser(firstname, lastname) {
@@ -417,9 +535,7 @@ class IdamHelper extends Helper {
                 return json;
             })
             .catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
     }
 
@@ -435,9 +551,7 @@ class IdamHelper extends Helper {
             return code[0];
         })
             .catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
     }
 
@@ -466,9 +580,7 @@ class IdamHelper extends Helper {
             console.log("Token: " + json.access_token);
             return json.access_token;
         }).catch(err => {
-            console.log(err)
-            let browser = this.helpers['Puppeteer'].browser;
-            browser.close();
+            this.handleBrowserError(err);
         });
     }
 
@@ -497,9 +609,7 @@ class IdamHelper extends Helper {
                 console.log("ID Token: " + json.id_token);
                 return json.id_token;
             }).catch(err => {
-                console.log(err)
-                let browser = this.helpers['Puppeteer'].browser;
-                browser.close();
+                this.handleBrowserError(err);
             });
         }
 
@@ -525,9 +635,7 @@ class IdamHelper extends Helper {
         }).then((json) => {
             return json.access_token;
         }).catch(err => {
-            console.log(err)
-            let browser = this.helpers['Puppeteer'].browser;
-            browser.close();
+            this.handleBrowserError(err);
         });
     }
 
@@ -550,9 +658,7 @@ class IdamHelper extends Helper {
         }).then((json) => {
             return json.access_token;
         }).catch(err => {
-            console.log(err)
-            let browser = this.helpers['Puppeteer'].browser;
-            browser.close();
+            this.handleBrowserError(err);
         });
     }
 
@@ -743,8 +849,8 @@ class IdamHelper extends Helper {
         if (!testConfig.TestForAccessibility) {
             return;
         }
-        const url = await this.helpers['Puppeteer'].grabCurrentUrl();
-        const {page} = await this.helpers['Puppeteer'];
+        const url = await this.helpers['Playwright'].grabCurrentUrl();
+        const {page} = this.helpers['Playwright'];
 
         await runAccessibility(url, page);
     }

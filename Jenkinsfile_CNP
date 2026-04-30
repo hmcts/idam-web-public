@@ -92,32 +92,37 @@ withPipeline(type, product, component) {
     }
 
     afterAlways('smoketest:preview') {
+        sh './gradlew codeceptSmokeReport'
         archiveArtifacts '**/build/test-results/**/*'
+        archiveArtifacts allowEmptyArchive: true, artifacts: '**/functional-output/smoke/reports/**/*'
 
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
             keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-public-e2e-result.html",
-            reportName           : "IDAM Web Public E2E smoke tests result"
+            reportDir            : "functional-output/smoke/allure",
+            reportFiles          : "index.html",
+            reportName           : "Smoke Test Report"
         ]
     }
 
     afterAlways('smoketest:aat') {
+        sh './gradlew codeceptSmokeReport'
         archiveArtifacts '**/build/test-results/**/*'
+        archiveArtifacts allowEmptyArchive: true, artifacts: '**/functional-output/smoke/reports/**/*'
 
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
             keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-public-e2e-result.html",
-            reportName           : "IDAM Web Public E2E smoke tests result"
+            reportDir            : "functional-output/smoke/allure",
+            reportFiles          : "index.html",
+            reportName           : "Smoke Test Report"
         ]
     }
 
     afterAlways('functionalTest:preview') {
+        sh './gradlew codeceptFunctionalReport'
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
         archiveArtifacts '**/output/**'
@@ -126,15 +131,16 @@ withPipeline(type, product, component) {
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
             keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-public-e2e-result.html",
-            reportName           : "IDAM Web Public E2E functional tests result"
+            reportDir            : "functional-output/functional/allure",
+            reportFiles          : "index.html",
+            reportName           : "Functional Test Report"
         ]
     }
 
     afterAlways('functionalTest:aat') {
         env.TESTS_FOR_ACCESSIBILITY = false
         env.WAIT_FOR_ACTION_TIMEOUT = 500
+        sh './gradlew codeceptFunctionalReport'
         archiveArtifacts '**/build/test-results/**/*'
         archiveArtifacts '**/functional-output/**/*'
 
@@ -142,9 +148,23 @@ withPipeline(type, product, component) {
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
             keepAll              : true,
-            reportDir            : "output",
-            reportFiles          : "idam-web-public-e2e-result.html",
-            reportName           : "IDAM Web Public E2E functional tests result"
+            reportDir            : "functional-output/functional/allure",
+            reportFiles          : "index.html",
+            reportName           : "Functional Test Report"
+        ]
+    }
+
+    afterAlways('crossBrowserTest:aat') {
+        sh './gradlew codeceptFunctionalCrossBrowserReport'
+        archiveArtifacts '**/functional-output/cross-browser/reports/**/*'
+
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "functional-output/cross-browser/allure",
+            reportFiles          : "index.html",
+            reportName           : "Cross Browser Test Report"
         ]
     }
 }

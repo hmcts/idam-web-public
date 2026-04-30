@@ -90,7 +90,7 @@ allprojects {
 
     implementation 'org.bouncycastle:bcprov-jdk18on:1.83'
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.83'
-    implementation 'org.bouncycastle:bcutil-jdk18on:1.84'
+    implementation 'org.bouncycastle:bcutil-jdk18on:1.83'
 
     implementation (libs.idam.api.spec) {
       exclude module: 'springfox-swagger2'
@@ -216,39 +216,94 @@ allprojects {
     commandLine 'yarn', 'install'
   }
 
+  task playwrightInstall(type: Exec, dependsOn: ':yarnInstall') {
+    workingDir '.'
+    commandLine 'node_modules/.bin/playwright', 'install', 'chromium', 'firefox', 'webkit'
+  }
+
+  task playwrightInstallChromium(type: Exec, dependsOn: ':yarnInstall') {
+    workingDir '.'
+    commandLine 'node_modules/.bin/playwright', 'install', 'chromium'
+  }
+
   task notifyClientInstall(type: Exec) {
     workingDir '.'
     commandLine 'yarn', 'add', 'notifications-node-client'
   }
 
-  task codeceptSmoke(type: Exec, dependsOn: ':yarnInstall') {
+  task codeceptSmoke(type: Exec, dependsOn: ':playwrightInstallChromium') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi', '-c', 'codecept.smoke.conf.js'
   }
 
-  task codeceptFunctional(type: Exec, dependsOn :'yarnInstall') {
+  task codeceptSmokeReport(type: Exec) {
+    workingDir '.'
+    onlyIf {
+      def hasAllure = file('node_modules/.bin/allure').exists()
+      def hasResults = file('functional-output/smoke/reports').exists() && !fileTree('functional-output/smoke/reports').files.empty
+
+      if (!hasAllure) {
+        logger.lifecycle('Skipping smoke Allure report generation; Allure binary not found.')
+      }
+      if (!hasResults) {
+        logger.lifecycle('Skipping smoke Allure report generation; no results found.')
+      }
+
+      hasAllure && hasResults
+    }
+    commandLine 'yarn', 'test-smoke-report'
+  }
+
+  task codeceptFunctional(type: Exec, dependsOn: ':playwrightInstallChromium') {
     workingDir '.'
     commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
 
-  task smokeSauce(dependsOn: ':codeceptSmokeSauce') {
-    group = 'Delivery pipeline'
-    description = 'Executes non-destructive smoke tests against a running instance'
-  }
-
-  task codeceptSmokeSauce(type: Exec, dependsOn: ':yarnInstall') {
+  task codeceptFunctionalReport(type: Exec) {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--config', 'saucelabs.conf.js', '--steps', '--grep', '@smoke', '--verbose', '--debug', '--reporter', 'mochawesome'
+    onlyIf {
+      def hasAllure = file('node_modules/.bin/allure').exists()
+      def hasResults = file('functional-output/functional/reports').exists() && !fileTree('functional-output/functional/reports').files.empty
+
+      if (!hasAllure) {
+        logger.lifecycle('Skipping functional Allure report generation; Allure binary not found.')
+      }
+      if (!hasResults) {
+        logger.lifecycle('Skipping functional Allure report generation; no results found.')
+      }
+
+      hasAllure && hasResults
+    }
+    commandLine 'yarn', 'test-functional-report'
   }
 
-  task crossbrowser(dependsOn: ':codeceptFunctionalSauce') {
+  task crossbrowser(dependsOn: ':codeceptFunctionalCrossBrowser') {
     group = 'Delivery pipeline'
-    description = 'Execute cross browser tests on saucelabs'
+    description = 'Execute cross browser tests with Playwright browsers'
   }
 
-  task codeceptFunctionalSauce(type: Exec, dependsOn: ':yarnInstall') {
+  task codeceptFunctionalCrossBrowser(type: Exec, dependsOn: ':playwrightInstall') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'saucelabs.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'codecept.crossbrowser.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
+  }
+
+  task codeceptFunctionalCrossBrowserReport(type: Exec) {
+    workingDir '.'
+    onlyIf {
+      def hasAllure = file('node_modules/.bin/allure').exists()
+      def reportsDir = file('functional-output/cross-browser/reports')
+      def hasResults = reportsDir.exists() && !fileTree(reportsDir).files.empty
+
+      if (!hasAllure) {
+        logger.lifecycle('Skipping cross-browser Allure report generation; Allure binary not found.')
+      }
+      if (!hasResults) {
+        logger.lifecycle('Skipping cross-browser Allure report generation; no results found.')
+      }
+
+      hasAllure && hasResults
+    }
+    commandLine 'yarn', 'test-crossbrowser-report'
   }
 
 }

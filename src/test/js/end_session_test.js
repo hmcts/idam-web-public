@@ -43,26 +43,22 @@ Scenario('@functional @endSession End Session', async ({ I }) => {
     I.waitForText('Sign in');
     I.fillField('#username', citizenEmail);
     I.fillField('#password', userPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.click('Sign in');
 
-    I.waitInUrl(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
 
-    I.amOnPage(authorizeEndpointUrl);
-    I.dontSee('Sign in');
-    I.waitInUrl(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
+    const {code} = await I.navigateToRedirectWithCodeTo(authorizeEndpointUrl, TestData.SERVICE_REDIRECT_URI);
 
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
     const idToken = await I.getIdToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
-    I.amOnPage(TestData.WEB_PUBLIC_URL + `/o/endSession?post_logout_redirect_uri=${TestData.SERVICE_REDIRECT_URI}&id_token_hint=${idToken}`);
-    I.waitInUrl(TestData.SERVICE_REDIRECT_URI);
-    I.dontSee('code=');
+    await I.navigateToRedirectWithoutCodeTo(
+        TestData.WEB_PUBLIC_URL + `/o/endSession?post_logout_redirect_uri=${TestData.SERVICE_REDIRECT_URI}&id_token_hint=${idToken}`,
+        TestData.SERVICE_REDIRECT_URI
+    );
+
+    I.amOnPage('/cookies');
+    I.waitForText('Cookies', 10, 'h1');
 
     I.amOnPage(authorizeEndpointUrl);
     if (!page.url().includes(TestData.WEB_PUBLIC_URL)) {
@@ -73,6 +69,6 @@ Scenario('@functional @endSession End Session', async ({ I }) => {
     }
     I.waitForText('Sign in');
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
