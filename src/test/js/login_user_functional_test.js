@@ -37,15 +37,9 @@ BeforeSuite(async ({ I }) => {
 Scenario('@functional @login As a citizen user I can login with spaces in uppercase email', async ({ I }) => {
     const loginUrl = `${TestData.WEB_PUBLIC_URL}/login?redirect_uri=${TestData.SERVICE_REDIRECT_URI}&client_id=${serviceName}`;
     I.amOnPage(loginUrl);
-    const [page] = await I.getCurrentPage()
 
-   //Set around 11 kb of cookie
-    page.setCookie({
-                name: 'cookieName',
-                value: largeCookieValue,
-                path: '/', // Add path parameter if necessary
-                expires: Math.floor(Date.now() / 1000) + 60 * 60, // Example expiration time (1 hour from now)
-            });
+    // Set around 11 kb of cookie.
+    await I.addCookie('idam.request', largeCookieValue);
     I.waitForText('Cookies on hmcts-access.service.gov.uk');
     await I.runAccessibilityTest();
     I.click('Accept additional cookies');
@@ -54,14 +48,9 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     I.fillField('#username', ' ' + citizenEmail.toUpperCase() + '  ');
     I.fillField('#password', userPassword);
     await I.runAccessibilityTest();
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     //Details api
@@ -82,7 +71,7 @@ Scenario('@functional @login As a citizen user I can login with spaces in upperc
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'Citizen');
     expect(oidcUserInfo.family_name).to.equal('User');
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
     I.clearCookie();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -97,14 +86,9 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
     I.fillField('#username', citizenEmail);
     I.fillField('#password', userPassword);
     await I.runAccessibilityTest();
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     //Details api
@@ -125,7 +109,7 @@ Scenario('@functional @loginWithPrompt As a citizen user I can login with prompt
     expect(oidcUserInfo.given_name).to.equal(randomUserFirstName + 'Citizen');
     expect(oidcUserInfo.family_name).to.equal('User');
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
     I.clearCookie();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 

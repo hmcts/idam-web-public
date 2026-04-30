@@ -60,12 +60,10 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.waitForText('Sign in or create an account');
     I.fillField('#username', citizenEmail);
     I.fillField('#password', resetPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-    I.resetRequestInterception();
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
+    I.stopRedirectRequestTracking();
 });
  //NOTE: Retrying this scenario is problematic.
 
@@ -94,12 +92,10 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
     I.waitForText('Sign in or create an account');
     I.fillField('#username', diffCaseCitizenEmail);
     I.fillField('#password', resetPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-    I.resetRequestInterception();
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @resetpass As a citizen user with a plus email I can reset my password', async ({ I }) => {
@@ -127,12 +123,10 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.waitForText('Sign in or create an account');
     I.fillField('#username', plusCitizenEmail);
     I.fillField('#password', resetPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-    I.resetRequestInterception();
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @resetpass As a citizen user with an apostrophe email I can reset my password', async ({ I }) => {
@@ -161,12 +155,10 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     I.waitForText('Sign in or create an account');
     I.fillField('#username', apostropheCitizenEmail);
     I.fillField('#password', resetPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-    I.resetRequestInterception();
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @resetpass @passwordvalidation Validation displayed when I try to reset my password with a blacklisted/invalid password', async ({ I }) => {
@@ -245,12 +237,10 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.waitForText('Sign in or create an account');
     I.fillField('#username', specialcharPwdResetCitizenEmail);
     I.fillField('#password', specialCharacterPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-    I.resetRequestInterception();
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
+    I.stopRedirectRequestTracking();
 });
 
 
@@ -281,12 +271,10 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.waitForText('Sign in or create an account');
     I.fillField('#username', staleUserEmail);
     I.fillField('#password', resetPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-    I.resetRequestInterception();
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
+    I.stopRedirectRequestTracking();
 });
 
 Scenario('@functional @resetpass @idamserviceaccount As a idam service account user I can reset my password', async ({ I }) => {
