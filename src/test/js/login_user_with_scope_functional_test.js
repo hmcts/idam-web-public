@@ -49,13 +49,9 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     I.fillField('#username', citizenEmail);
     I.fillField('#password', userPassword);
 
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-
-    let pageSource = await I.grabSource();
-    let code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.grantRoleToUser(citizenUserDynamicRole.name, accessToken);
@@ -63,7 +59,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let userInfo = await I.getUserInfo(accessToken);
     expect(userInfo.roles).to.deep.equal([citizenUserDynamicRole.name]);
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -85,13 +81,9 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     I.fillField('#username', respondentEmail);
     I.fillField('#password', userPassword);
 
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('.form input[type=submit]');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-
-    let pageSource = await I.grabSource();
-    code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    ({code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI));
     accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     await I.grantRoleToUser(pinUserDynamicRole.name, accessToken);
@@ -99,5 +91,5 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
     rolesToCleanup.push(pinUserRole);
     expect(userInfo.roles).to.deep.equalInAnyOrder([pinUserRole, citizenRole, pinUserDynamicRole.name]);
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
