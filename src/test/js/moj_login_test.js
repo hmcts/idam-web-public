@@ -48,19 +48,15 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
     I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
             I.say('skipping further steps in this environment');
     } else {
-        I.waitForText(TestData.SERVICE_REDIRECT_URI);
-        I.see('code=');
-        I.dontSee('error=');
+        const {redirectUrl, code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
 
-        const pageSource = await I.grabSource();
-        const issMatch = pageSource.match(/&amp;iss=([^&]*)(.*)/);
-        const iss = issMatch ? decodeURIComponent(issMatch[1]) : '';
+        const iss = await I.getRedirectQueryParam(redirectUrl, 'iss');
         const allowedIssValues = ['', TestData.WEB_PUBLIC_URL + "/o"];
         expect(
             allowedIssValues,
@@ -69,7 +65,6 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
             `Actual iss: "${iss}"`
         ).to.include(iss);
 
-        const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
         const accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
         const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
@@ -81,7 +76,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I can login into idam thro
         expect(userInfo.roles.length).to.be.greaterThan(0);
     }
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
 Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login through the Justice.gov.uk login link from idam', async ({ I }) => {
@@ -96,18 +91,13 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
     I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
             I.say('skipping further steps in this environment');
     } else {
-        I.waitForText(TestData.SERVICE_REDIRECT_URI);
-        I.see('code=');
-        I.dontSee('error=');
-
-        const pageSource = await I.grabSource();
-        const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+        const {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
         const accessToken = await I.getAccessToken(code, serviceName.toUpperCase(), TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
         const userInfo = await I.retry({retries: 3, minTimeout: 10000}).getUserInfo(accessToken);
@@ -118,7 +108,7 @@ Scenario('@functional @moj As an Justice.gov.uk user, I should be able to login 
         expect(userInfo.surname).to.not.equal(null);
         expect(userInfo.roles.length).to.be.greaterThan(0);
 
-        I.resetRequestInterception();
+        I.stopRedirectRequestTracking();
     }
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -139,14 +129,13 @@ Scenario('@functional @moj As a Justice.gov.uk user, I should be redirected to M
     I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
             I.say('skipping further steps in this environment');
     } else {
-        I.waitForText(TestData.SERVICE_REDIRECT_URI);
-        I.see('code=');
+        await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     }
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
@@ -169,15 +158,13 @@ Scenario('@functional @moj As a Justice.gov.uk user, I should be able to SSO eve
     I.clickWithWait('Next');
     I.waitForText('Enter password');
     I.fillField('passwd', TestData.MOJ_TEST_USER_PASSWORD);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
 
     if (TestData.WEB_PUBLIC_URL.includes("-pr-") || TestData.WEB_PUBLIC_URL.includes("staging")) {
             I.say('skipping further steps in this environment');
     } else {
-        I.waitForText(TestData.SERVICE_REDIRECT_URI);
-        I.see('code=');
-        I.dontSee('error=');
+        await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
 
         const getUserByEmailResponse = await I.getUserByEmail(TestData.MOJ_TEST_USER_USERNAME);
         const newSsoId = getUserByEmailResponse.ssoId;
@@ -185,7 +172,7 @@ Scenario('@functional @moj As a Justice.gov.uk user, I should be able to SSO eve
         expect(newSsoId).to.equal(TestData.MOJ_TEST_USER_SSO_ID);
         expect(getUserByEmailResponse.ssoProvider).to.equal("moj");
 
-        I.resetRequestInterception();
+        I.stopRedirectRequestTracking();
     }
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);

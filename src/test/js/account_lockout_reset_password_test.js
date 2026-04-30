@@ -50,10 +50,8 @@ Scenario('@functional @unlock My user account is unlocked when I reset my passwo
     I.fillField('#username', citizenEmail);
     I.fillField('#password', password);
     I.scrollPageToBottom();
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(TestData.SERVICE_REDIRECT_URI);
-    I.see('code=');
-    I.dontSee('error=');
-    I.resetRequestInterception();
+    await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
+    I.stopRedirectRequestTracking();
 });

@@ -111,14 +111,9 @@ Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of
     I.waitForText('Sign in');
     I.fillField('#username', professionalUserMFASkipEmail);
     I.fillField('#password', userPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    I.waitForText(mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code} = await I.waitForRedirectWithCodeTo(mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl);
     const accessToken = await I.getAccessToken(code, mfaTurnedOffService.clientId, mfaTurnedOffService.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -140,7 +135,7 @@ Scenario('@functional @mfaOrgLogin I am able to login without MFA as a member of
         expect(oidcUserInfo.roles[0]).to.equal(professionalRoleName);
     }
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -159,14 +154,9 @@ Scenario('@functional @mfaOrgLogin  I am able to login with MFA as a member of a
     const otpCode = await I.extractOtpFromNotifyEmail(testingToken, professionalUserMFARequiredEmail);
 
     I.fillField('code', otpCode);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Continue');
-    I.waitForText(mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl);
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService.clientId, mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -188,7 +178,7 @@ Scenario('@functional @mfaOrgLogin  I am able to login with MFA as a member of a
         expect(oidcUserInfo.roles[0]).to.equal(professionalRoleName);
     }
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
 
@@ -200,17 +190,11 @@ Scenario('@functional @mfaOrgLogin  am able to login without MFA as an idam-mfa-
     I.waitForText('Sign in');
     I.fillField('#username', professionalUserMFADisabledEmail);
     I.fillField('#password', userPassword);
-    I.interceptRequestsAfterSignin();
+    I.startRedirectRequestTracking();
     I.clickWithWait('Sign in');
-    let currentUrl = await I.grabCurrentUrl();
-    I.addMochawesomeContext('Url is ' + currentUrl);
     I.dontSeeInCurrentUrl("/verification");
-    I.waitForText(mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl.toLowerCase());
-    I.see('code=');
-    I.dontSee('error=');
-
-    const pageSource = await I.grabSource();
-    const code = pageSource.match(/\?code=([^&]*)(.*)/)[1];
+    const {redirectUrl, code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl);
+    I.addReportContext('Url is ' + redirectUrl);
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService.clientId, mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -232,6 +216,6 @@ Scenario('@functional @mfaOrgLogin  am able to login without MFA as an idam-mfa-
         expect(oidcUserInfo.roles).to.deep.equalInAnyOrder([professionalRoleName, 'idam-mfa-disabled']);
     }
 
-    I.resetRequestInterception();
+    I.stopRedirectRequestTracking();
 
 }).retry(TestData.SCENARIO_RETRY_LIMIT);
