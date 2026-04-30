@@ -65,7 +65,7 @@ Scenario('@functional @mfaLogin  I am able to login with MFA', async ({ I }) => 
     I.startRedirectRequestTracking();
     I.clickWithWait('Continue');
     let {redirectUrl, code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
-    I.addMochawesomeContext('Url is ' + redirectUrl);
+    I.addReportContext('Url is ' + redirectUrl);
     let accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);
@@ -257,7 +257,7 @@ Scenario('@functional @mfaLogin @mfaDisabledUserLogin As a mfa disabled user I c
     I.clickWithWait('Sign in');
     I.dontSeeInCurrentUrl("/verification");
     const {redirectUrl, code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl);
-    I.addMochawesomeContext('Url is ' + redirectUrl);
+    I.addReportContext('Url is ' + redirectUrl);
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService1.clientId, mfaTurnedOnService1.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);

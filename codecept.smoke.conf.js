@@ -1,9 +1,12 @@
-const TestData = require('./src/test/js/config/test_data')
+const path = require('path');
+const TestData = require('./src/test/js/config/test_data');
+
+const smokeOutput = path.join(process.cwd(), 'functional-output', 'smoke', 'reports');
 
 exports.config = {
     name: 'idam-web-public',
     tests: './src/test/js/**/*_test.js',
-    output: './output',
+    output: smokeOutput,
     fullPageScreenshots: true,
     timeout: 180000,
     bootstrap: false,
@@ -52,15 +55,6 @@ exports.config = {
                 stdout: './output/idam-web-public-mocha-stdout.log',
                 options: {
                     mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/smoke/idam-web-public-integration-result.xml'
-                }
-            },
-            'mochawesome': {
-                stdout: `./output/idam-web-public-mochawesome-stdout.log`,
-                options: {
-                    reportDir: 'output',
-                    reportFilename: 'idam-web-public-e2e-result',
-                    inlineAssets: true,
-                    reportTitle: `IDAM Web Public E2E tests result`
                 }
             }
         }

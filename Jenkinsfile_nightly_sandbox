@@ -82,6 +82,7 @@ try {
             env.TESTS_FOR_ACCESSIBILITY = false  // Disabled due to html_codesniffer package issues
         }
         afterAlways('fullFunctionalTest') {
+            steps.sh './gradlew codeceptFunctionalReport'
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/functional/reports/**/*'
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
             env.TESTS_FOR_ACCESSIBILITY = false
@@ -95,6 +96,7 @@ try {
             ]
         }
         afterAlways('crossBrowserTest') {
+            steps.sh './gradlew codeceptFunctionalCrossBrowserReport'
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/cross-browser/reports/**/*'
             publishHTML target: [
                 allowMissing         : true,

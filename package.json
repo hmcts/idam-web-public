@@ -16,7 +16,6 @@
     "jwt-decode": "^3.1.2",
     "mocha-junit-reporter": "^2.0.0",
     "mocha-multi": "^1.1.3",
-    "mochawesome": "^7.0.0",
     "node-fetch": "^2.6.1",
     "notifications-node-client": "^8.0.0",
     "pa11y": "^9.0.0",
@@ -24,9 +23,10 @@
     "proxy-agent": "^8.0.0"
   },
   "scripts": {
-    "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c codecept.crossbrowser.conf.js --steps --grep '@crossbrowser' --reporter mochawesome",
+    "test-crossbrowser-e2e": "NODE_PATH=. codeceptjs run-multiple --all -c codecept.crossbrowser.conf.js --steps --grep '@crossbrowser' --reporter mocha-multi",
     "test-crossbrowser-report": "allure generate functional-output/cross-browser/reports/* -c -o functional-output/cross-browser/allure",
     "test-functional-report": "allure generate functional-output/functional/reports -c -o functional-output/functional/allure",
+    "test-smoke-report": "allure generate functional-output/smoke/reports -c -o functional-output/smoke/allure",
     "test:crossbrowser": "yarn test-crossbrowser-e2e && yarn test-crossbrowser-report"
   }
 }

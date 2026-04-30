@@ -33,9 +33,6 @@ exports.config = {
         },
         GenerateReportHelper: {
             require: "./src/test/js/shared/generate_report_helper.js"
-        },
-        Mochawesome: {
-            uniqueScreenshotNames: true
         }
     },
     "include": {
@@ -61,15 +58,6 @@ exports.config = {
                 options: {
                     mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/functional/idam-web-public-integration-result.xml',
                     attachments: true
-                }
-            },
-            'mochawesome': {
-                stdout: './output/idam-web-public-mochawesome-stdout.log',
-                options: {
-                    reportDir: 'output',
-                    reportFilename: 'idam-web-public-e2e-result',
-                    inlineAssets: true,
-                    reportTitle: `IDAM Web Public E2E tests result`
                 }
             }
         }

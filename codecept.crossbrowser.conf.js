@@ -32,9 +32,6 @@ exports.config = {
         },
         GenerateReportHelper: {
             require: './src/test/js/shared/generate_report_helper.js'
-        },
-        Mochawesome: {
-            uniqueScreenshotNames: true
         }
     },
     plugins: {
@@ -66,14 +63,6 @@ exports.config = {
                 stdout: path.join(output, 'idam-web-public-cross-browser-stdout.log'),
                 options: {
                     mochaFile: process.env.MOCHA_JUNIT_FILE_LOCATION || './build/test-results/functional/idam-web-public-cross-browser-result-[hash].xml'
-                }
-            },
-            mochawesome: {
-                stdout: path.join(output, 'idam-web-public-cross-browser-mochawesome-stdout.log'),
-                options: {
-                    reportDir: output,
-                    inlineAssets: true,
-                    reportTitle: 'IDAM Web Public cross-browser tests result'
                 }
             }
         }

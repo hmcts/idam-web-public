@@ -194,7 +194,7 @@ Scenario('@functional @mfaOrgLogin  am able to login without MFA as an idam-mfa-
     I.clickWithWait('Sign in');
     I.dontSeeInCurrentUrl("/verification");
     const {redirectUrl, code} = await I.waitForRedirectWithCodeTo(mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl);
-    I.addMochawesomeContext('Url is ' + redirectUrl);
+    I.addReportContext('Url is ' + redirectUrl);
     const accessToken = await I.getAccessToken(code, mfaTurnedOnService.clientId, mfaTurnedOnService.hmctsAccess.postActivationRedirectUrl, serviceClientSecret);
 
     let jwtDecode = await jwt_decode(accessToken);

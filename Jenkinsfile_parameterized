@@ -102,19 +102,22 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
   }
 
   afterAlways('smoketest:idam-preview') {
+    sh './gradlew codeceptSmokeReport'
     archiveArtifacts '**/build/test-results/**/*'
+    archiveArtifacts allowEmptyArchive: true, artifacts: '**/functional-output/smoke/reports/**/*'
 
     publishHTML target: [
         allowMissing         : true,
         alwaysLinkToLastBuild: true,
         keepAll              : true,
-        reportDir            : "output",
-        reportFiles          : "idam-web-public-e2e-result.html",
-        reportName           : "IDAM Web Public E2E smoke tests result"
+        reportDir            : "functional-output/smoke/allure",
+        reportFiles          : "index.html",
+        reportName           : "Smoke Test Report"
     ]
   }
 
   afterAlways('functionalTest:idam-preview') {
+    sh './gradlew codeceptFunctionalReport'
     archiveArtifacts '**/build/test-results/**/*'
     archiveArtifacts '**/functional-output/**/*'
 

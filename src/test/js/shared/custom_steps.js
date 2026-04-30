@@ -1,5 +1,6 @@
 const TestData = require('../config/test_data');
 const randomData = require('./random_data');
+const {container} = require('codeceptjs');
 
 module.exports = function() {
   return actor({
@@ -39,6 +40,13 @@ module.exports = function() {
         await this.executeScript(({name, value}) => {
             window.document.cookie = `${name}=${value};path=/`;
         }, {name: cookieName, value: cookieValue});
+    },
+    addReportContext: function(context) {
+        const allure = container.plugins('allure');
+
+        if (allure) {
+            allure.addAttachment('Context', String(context), 'text/plain');
+        }
     }
   })
 }
