@@ -111,4 +111,50 @@
         <cve>CVE-2026-22748</cve>
     </suppress>
 
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-40977 requires the
+    ApplicationPidFileWriter feature, or equivalent PID-file configuration such as spring.pid.file.
+    This application starts via SpringApplication.run without registering ApplicationPidFileWriter,
+    and the codebase plus checked Docker/Helm configuration do not set spring.pid.file,
+    application.pid, or equivalent PID-file startup options.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.boot:.*$</gav>
+        <cve>CVE-2026-40977</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-40975 requires use of
+    ${random.value} as a secret, or similar ${random.int}/${random.long} usage in a security
+    context. The checked codebase and manifests do not use ${random.value}, ${random.int},
+    ${random.long}, or ${random.uuid} in application configuration, and secrets are sourced
+    externally rather than generated from Spring Boot's random value property source.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.boot:.*$</gav>
+        <cve>CVE-2026-40975</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-40973 requires use of the
+    vulnerable ApplicationTemp path in a context such as server.servlet.session.persistent=true
+    across restarts. This application does not enable server.servlet.session.persistent and uses
+    Redis-backed Spring Session instead of persisted servlet-container sessions.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.boot:.*$</gav>
+        <cve>CVE-2026-40973</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-40972 applies to remote
+    Spring Boot DevTools when a remote secret is configured. This codebase only includes
+    spring-boot-devtools as a test dependency and does not configure spring.devtools.remote.secret
+    or other remote DevTools settings in the checked code or manifests.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.boot:.*$</gav>
+        <cve>CVE-2026-40972</cve>
+    </suppress>
+
 </suppressions>
