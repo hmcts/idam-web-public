@@ -79,6 +79,43 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-22740 applies to WebFlux
+    server multipart processing, where large multipart parts are written to temp files by the
+    reactive stack. This application is a servlet-based Spring Boot application using
+    spring-boot-starter-web, embedded Tomcat, and Zuul; the checked codebase does not use
+    spring-boot-starter-webflux, WebFlux handlers, or reactive multipart request processing.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-22740</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-22741 requires static
+    resource chain caching together with encoded resource resolution for precompressed assets.
+    The checked codebase does not configure resourceChain/addResourceHandlers, does not use
+    EncodedResourceResolver or related spring.resources/spring.web.resources chain settings, and
+    does not ship precompressed static assets such as .gz or .br files under the served static
+    resource locations.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-22741</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-22745 requires a Spring
+    MVC or WebFlux application to serve static resources from filesystem-backed locations on a
+    Windows platform. The checked codebase serves bundled classpath static resources, does not
+    configure file: resource locations or custom filesystem-backed ResourceHandlers, and the
+    primary deployment artifacts in this repository target Linux containers/Kubernetes.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-22745</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisory for CVE-2026-22737 requires ScriptTemplate
     views (for example JRuby or Jython) together with a /** mapping that renders an implicit view.
     This application uses JSP views under /WEB-INF/jsp and does not configure ScriptTemplate view
