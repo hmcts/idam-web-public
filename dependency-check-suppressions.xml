@@ -173,6 +173,18 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-40974 applies to
+    Cassandra SSL auto-configuration, where Spring Boot establishes an SSL connection to
+    Cassandra without TLS hostname verification. This application does not depend on
+    Cassandra/DataStax, does not use spring-boot-starter-data-cassandra, and the checked
+    codebase/manifests do not configure spring.cassandra.* or spring.data.cassandra.* properties.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.boot:.*$</gav>
+        <cve>CVE-2026-40974</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisory for CVE-2026-40973 requires use of the
     vulnerable ApplicationTemp path in a context such as server.servlet.session.persistent=true
     across restarts. This application does not enable server.servlet.session.persistent and uses
