@@ -45,6 +45,17 @@
     </suppress>
 
     <!--
+    False positive: CVE-2026-42582 applies to io.netty:netty-codec-http3 <= 4.2.12.Final.
+    This project is on Netty 4.1.133.Final and Dependency Check is matching the generic
+    netty CPE against non-HTTP/3 artifacts. Netty 4.1.133.Final is the Netty 4.1 security
+    release that includes the CVE-2026-42582 fix.
+    -->
+    <suppress>
+        <gav regex="true">^io\.netty:netty-(buffer|codec|common|handler|resolver|transport|transport-native-unix-common):4\.1\.133\.Final$</gav>
+        <cve>CVE-2026-42582</cve>
+    </suppress>
+
+    <!--
     Spring's advisory for CVE-2026-22732 lists 5.7.22 as the fixed 5.7.x release, but that line is
     enterprise-support-only. This application applies Spring's documented workaround by forcing eager
     header writing in both security configurations, which addresses the vulnerable behavior while the
