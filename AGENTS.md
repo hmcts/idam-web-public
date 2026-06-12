@@ -8,7 +8,7 @@ Plan code changes and summarise them for confirmation before applying them.
 
 `idam-web-public` is expected to be replaced soon and is effectively in maintenance mode. Avoid large framework migrations or speculative dependency upgrades unless the user explicitly asks for them.
 
-Spring upgrade paths are limited because this is a JSP-based UI project on Spring Boot 2.7 / Spring Framework 5.3.x. Moving to Spring Boot 3 / Framework 6 is not a simple dependency bump: it brings Jakarta namespace changes and compatibility work across JSP, servlet, Spring MVC, Spring Security, embedded Tomcat, and related tag libraries. For Spring CVEs, first check whether a public compatible fix exists. If the only fix requires commercial Spring 5.3.x artifacts or a Spring Boot 3 / Framework 6 migration, assess application reachability and prefer a documented suppression when the vulnerable feature is not used.
+Spring upgrade paths are limited because this is a JSP-based UI project on Spring Boot 2.7 / Spring Framework 5.3.x. Moving to Spring Boot 3 / Framework 6 is not a simple dependency bump: it brings Jakarta namespace changes and compatibility work across JSP, servlet, Spring MVC, Spring Security, embedded Tomcat, and related tag libraries. For Spring CVEs, first check whether a public compatible fix exists. If the only fix requires commercial Spring 5.3.x artifacts or a Spring Boot 3 / Framework 6 migration, assess application reachability and suppress only when the advisory preconditions are demonstrably unreachable in this application and document the evidence in the suppression rationale.
 
 ## Dependency-Check / Spring CVE Triage
 
