@@ -18,7 +18,8 @@ Before changing dependencies or suppressions:
 - For Spring CVEs, check the official Spring advisory and fixed versions first.
 - Do not assume a Spring Framework override is safe just because a fixed version exists. Confirm public availability and compatibility with Spring Boot 2.7 first.
 - Prefer suppression only after confirming that the advisory preconditions are not reachable in this application.
-
+- If a publicly available, Spring Boot 2.7-compatible fix exists, prefer upgrading to the fixed version rather than adding a suppression. Suppressions are only appropriate when no compatible public fix exists or when the fixed version would require a disproportionate framework migration.
+- For non-Spring CVEs, prefer a compatible public upgrade where available. Add suppressions only when the finding is a false positive, the vulnerable code path is demonstrably unreachable, or the upgrade is incompatible/high-risk for this maintenance-mode application. Document the evidence in the suppression rationale.
 Useful checks for Spring CVE reachability:
 
 - Runtime Spring versions: `GRADLE_USER_HOME=/tmp/idam-gradle-home ./gradlew dependencies --configuration runtimeClasspath`
