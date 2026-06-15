@@ -48,6 +48,17 @@
     </suppress>
 
     <!--
+    False positive: CVE-2026-42582 applies to io.netty:netty-codec-http3
+    4.2.0.Final through 4.2.12.Final and is fixed in 4.2.13.Final. This project is
+    on Netty 4.1.135.Final and does not depend on netty-codec-http3; Dependency-Check
+    is matching the generic netty CPE against non-HTTP/3 Netty artifacts.
+    -->
+    <suppress>
+        <gav regex="true">^io\.netty:netty-(buffer|codec|common|handler|resolver|transport|transport-native-unix-common):4\.1\.135\.Final$</gav>
+        <cve>CVE-2026-42582</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisories for CVE-2026-40988,
     CVE-2026-41003, and CVE-2026-41694 require Spring Security SAML service-provider
     functionality, such as spring-security-saml2-service-provider, SAML login/logout,
