@@ -48,14 +48,32 @@
     </suppress>
 
     <!--
-    False positive: CVE-2026-42582 applies to io.netty:netty-codec-http3 <= 4.2.12.Final.
-    This project is on Netty 4.1.133.Final and Dependency Check is matching the generic
-    netty CPE against non-HTTP/3 artifacts. Netty 4.1.133.Final is the Netty 4.1 security
-    release that includes the CVE-2026-42582 fix.
+    False positive: CVE-2026-42582 applies to io.netty:netty-codec-http3
+    4.2.0.Final through 4.2.12.Final and is fixed in 4.2.13.Final. This project is
+    on Netty 4.1.135.Final and does not depend on netty-codec-http3; Dependency-Check
+    is matching the generic netty CPE against non-HTTP/3 Netty artifacts.
     -->
     <suppress>
-        <gav regex="true">^io\.netty:netty-(buffer|codec|common|handler|resolver|transport|transport-native-unix-common):4\.1\.133\.Final$</gav>
+        <gav regex="true">^io\.netty:netty-(buffer|codec|common|handler|resolver|transport|transport-native-unix-common):4\.1\.135\.Final$</gav>
         <cve>CVE-2026-42582</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisories for CVE-2026-40988,
+    CVE-2026-41003, and CVE-2026-41694 require Spring Security SAML service-provider
+    functionality, such as spring-security-saml2-service-provider, SAML login/logout,
+    or attacker-influenced RelyingPartyRegistration values. The checked codebase does
+    not depend on spring-security-saml2-service-provider and has no SAML configuration
+    or RelyingPartyRegistration usage. The fixed Spring Security 5.7.x and 5.8.x
+    versions are enterprise-support-only; public OSS fixes require moving to Spring
+    Security 6.5+ / Spring Boot 3, which is disproportionate for this JSP Spring Boot
+    2.7 maintenance-mode application.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.security:spring-security-.*$</gav>
+        <cve>CVE-2026-40988</cve>
+        <cve>CVE-2026-41003</cve>
+        <cve>CVE-2026-41694</cve>
     </suppress>
 
     <!--
