@@ -100,6 +100,18 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41838 applies to the
+    spring-websocket module when WebSocket session IDs interact with inadequate authorization rules.
+    The checked codebase does not depend on spring-websocket and does not configure Spring WebSocket,
+    STOMP, SockJS, WebSocketHandler, or @EnableWebSocket. The only websocket artifact found is
+    Tomcat's embedded websocket support.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41838</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisory for CVE-2026-22740 applies to WebFlux
     server multipart processing, where large multipart parts are written to temp files by the
     reactive stack. This application is a servlet-based Spring Boot application using
@@ -109,6 +121,28 @@
     <suppress>
         <gav regex="true">^.*org\.springframework:.*$</gav>
         <cve>CVE-2026-22740</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41840 applies to WebFlux
+    multipart request processing. This application is a servlet-based Spring Boot application using
+    spring-boot-starter-web, embedded Tomcat, and Zuul; the checked codebase does not use
+    spring-boot-starter-webflux, WebFlux handlers, or multipart request processing.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41840</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41847 requires Spring
+    WebFlux, the Kotlin Router DSL, and a filter that passes a modified or replaced ServerRequest to
+    the next handler function. This application is servlet-based, does not use WebFlux, and contains
+    no Kotlin Router DSL, RouterFunction, ServerRequestWrapper, or reactive handler functions.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41847</cve>
     </suppress>
 
     <!--
@@ -137,6 +171,33 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisories for CVE-2026-41841, CVE-2026-41842,
+    and CVE-2026-41843 require static resource handler configurations this application does not use.
+    CVE-2026-41841 requires several resource handlers, at least one authenticated resource handler,
+    and a shared resource cache. CVE-2026-41842 and CVE-2026-41843 require filesystem-backed static
+    resources plus versioned resources support. The checked codebase does not configure
+    addResourceHandlers/resourceChain/versioned resources, does not use file: resource locations,
+    and serves bundled classpath static assets.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41841</cve>
+        <cve>CVE-2026-41842</cve>
+        <cve>CVE-2026-41843</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41844 requires a Spring MVC
+    or WebFlux /** mapping where the view name is not explicitly specified, allowing crafted
+    redirect: or forward: view-name prefixes. The checked controllers do not define a /** mapping;
+    mappings are explicit and redirect view names are fixed application paths.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41844</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisory for CVE-2026-22737 requires ScriptTemplate
     views (for example JRuby or Jython) together with a /** mapping that renders an implicit view.
     This application uses JSP views under /WEB-INF/jsp and does not configure ScriptTemplate view
@@ -145,6 +206,55 @@
     <suppress>
         <gav regex="true">^.*org\.springframework:.*$</gav>
         <cve>CVE-2026-22737</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41845 requires use of
+    JavaScriptUtils.javaScriptEscape(), which may incorrectly escape attacker-controlled content.
+    The checked codebase does not use JavaScriptUtils, javaScriptEscape, or equivalent Spring
+    JavaScript escaping helpers.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41845</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41846 requires Spring MVC
+    JSP form tags where cssClass, cssErrorClass, or cssStyle attributes are populated from
+    user-supplied values. This application uses JSP form tags, but the checked JSP/tag files do not
+    use cssClass, cssErrorClass, or cssStyle attributes on form:* tags.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41846</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41848 requires an
+    attacker-supplied pattern to be passed directly or indirectly to AntPathMatcher match,
+    matchStart, or extractUriTemplateVariables. The checked codebase does not use AntPathMatcher or
+    PathMatcher directly, and Spring MVC/Security route patterns are static application literals.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41848</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisories for CVE-2026-41849, CVE-2026-41850,
+    CVE-2026-41851, and CVE-2026-41852 require accepting and evaluating untrusted or
+    user-controlled SpEL expressions; CVE-2026-41851 also requires caching parsed SpEL expressions.
+    The checked codebase does not use ExpressionParser, SpelExpressionParser, parseExpression, or
+    any custom user-controlled SpEL evaluation. The only SpEL usage found is static application-owned
+    JSP spring:eval expressions and normal @Value property binding.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41849</cve>
+        <cve>CVE-2026-41850</cve>
+        <cve>CVE-2026-41851</cve>
+        <cve>CVE-2026-41852</cve>
     </suppress>
 
     <!--
