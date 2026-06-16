@@ -9,7 +9,7 @@
   "devDependencies": {
     "@codeceptjs/allure-legacy": "^1.0.2",
     "allure-commandline": "^2.27.0",
-    "chai": "^4.5.0",
+    "chai": "^6.0.0",
     "codeceptjs": "^3.6.4",
     "deep-equal-in-any-order": "^2.0.0",
     "html_codesniffer": "^2.5.1",
