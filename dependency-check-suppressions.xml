@@ -146,6 +146,21 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41853 requires a Spring MVC
+    or WebFlux application that accepts multipart requests, together with a WAF or proxy that parses
+    multipart content and performs checks based on it. This application is servlet-based but does not
+    expose multipart request handling: the checked codebase does not use MultipartFile, Part,
+    @RequestPart, multipart/form-data, MultipartResolver, spring.servlet.multipart configuration, or
+    WebFlux PartEvent processing. The Spring Framework 5.3.x fixed version is enterprise-support-only;
+    public OSS fixes require moving to Spring Framework 6.2+ / Spring Boot 3, which is disproportionate
+    for this JSP Spring Boot 2.7 maintenance-mode application.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41853</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisory for CVE-2026-41847 requires Spring
     WebFlux, the Kotlin Router DSL, and a filter that passes a modified or replaced ServerRequest to
     the next handler function. This application is servlet-based, does not use WebFlux, and contains
