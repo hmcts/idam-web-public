@@ -867,38 +867,61 @@ class IdamHelper extends Helper {
     }
 
     async  getToken() {
-        try {
-            // Check if TestData.TOKEN is not empty or null
-
-            if (TestData.FUNCTIONAL_TEST_TOKEN && TestData.FUNCTIONAL_TEST_TOKEN.trim() !== "") {
-                return TestData.FUNCTIONAL_TEST_TOKEN;
-            }
-            console.log("FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET " + TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET);
-
-            const response = await fetch(`${TestData.IDAM_API}/o/token`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    grant_type: 'client_credentials',
-                    client_id: 'idam-functional-test-service',
-                    client_secret: TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET,
-                    scope: 'profile roles',
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch token');
-            }
-
-            const tokenData = await response.json();
-            TestData.FUNCTIONAL_TEST_TOKEN = tokenData.access_token;
-            return tokenData.access_token; // Assuming token is in the 'access_token' field
-        } catch (error) {
-            console.trace('Error fetching token:', error);
-            throw error;
+        if (TestData.FUNCTIONAL_TEST_TOKEN && TestData.FUNCTIONAL_TEST_TOKEN.trim() !== "") {
+            return TestData.FUNCTIONAL_TEST_TOKEN;
         }
+
+        if (!TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET) {
+            throw new Error('FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET is required to fetch a functional test token');
+        }
+
+        const tokenUrl = `${TestData.IDAM_API}/o/token`;
+        const maxAttempts = 3;
+        let lastError;
+
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                const response = await fetch(tokenUrl, {
+                    agent: agent,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        grant_type: 'client_credentials',
+                        client_id: 'idam-functional-test-service',
+                        client_secret: TestData.FUNCTIONAL_TEST_SERVICE_CLIENT_SECRET,
+                        scope: 'profile roles',
+                    }),
+                });
+
+                if (!response.ok) {
+                    const error = new Error(`Failed to fetch token from ${tokenUrl}; response status ${response.status}`);
+                    error.status = response.status;
+                    throw error;
+                }
+
+                const tokenData = await response.json();
+                if (!tokenData.access_token) {
+                    throw new Error(`Token response from ${tokenUrl} did not include access_token`);
+                }
+
+                TestData.FUNCTIONAL_TEST_TOKEN = tokenData.access_token;
+                return tokenData.access_token;
+            } catch (error) {
+                lastError = error;
+
+                if (attempt >= maxAttempts || (error.status && error.status < 500)) {
+                    console.trace(`Error fetching token from ${tokenUrl}:`, error);
+                    throw error;
+                }
+
+                console.log(`Token fetch attempt ${attempt} failed; retrying. Error: ${error.message}`);
+                await this.sleep(attempt * 1000);
+            }
+        }
+
+        throw lastError;
     }
 
     async createServiceUsingTestingSupportService(serviceName, serviceClientSecret, roleNames, token, scope = [], ssoProviders = [],mfaTurnedOn = false,redirectUrl = null) {
