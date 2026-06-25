@@ -546,6 +546,13 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
+"@playwright/test@1.60.0":
+  version "1.60.0"
+  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.60.0.tgz#e696c31427e8882851235cd556dc2490c3206d97"
+  integrity sha512-O71yZIbAh/PxDMNGns37GHBIfrVkEVyn+AXyIa5dOTfb4/xNvRWV+Vv/NMbNCtODB/pO7vLlF2OTmMVLhmr7Ag==
+  dependencies:
+    playwright "1.60.0"
+
 "@puppeteer/browsers@2.10.4":
   version "2.10.4"
   resolved "https://registry.yarnpkg.com/@puppeteer/browsers/-/browsers-2.10.4.tgz#9f8923b206f7932a06d32271b14bbea3368b38f2"
