@@ -5,6 +5,5 @@
     "local>hmcts/.github//renovate/automerge-all"
   ],
   "ignoreDeps": ["org.pitest:pitest", "com.nimbusds:nimbus-jose-jwt", "info.solidsoft.pitest:info.solidsoft.pitest.gradle.plugin"],
-  "baseBranch":  "preview",
   "schedule": "after 4pm and before 7pm every weekday"
 }
