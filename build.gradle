@@ -203,30 +203,59 @@ allprojects {
     description = 'Executes functional tests against a running instance'
   }
 
+  def commandWithProjectNode = { List<String> command ->
+    [
+      'bash',
+      '-lc',
+      '''
+        set -e
+
+        if [ -f .nvmrc ]; then
+          export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+          if [ -s "$NVM_DIR/nvm.sh" ]; then
+            . "$NVM_DIR/nvm.sh"
+          fi
+
+          if command -v nvm >/dev/null 2>&1; then
+            nvm install --no-progress
+            nvm use
+          else
+            echo "nvm is not available; using node from PATH"
+          fi
+        fi
+
+        echo "Using node $(node --version)"
+        echo "Using yarn $(yarn --version)"
+        exec "$@"
+      '''.stripIndent(),
+      'node-command'
+    ] + command
+  }
+
   task yarnInstall(type: Exec) {
     workingDir '.'
     environment 'PUPPETEER_SKIP_DOWNLOAD', 'true'
-    commandLine 'yarn', 'install'
+    commandLine commandWithProjectNode(['yarn', 'install'])
   }
 
   task playwrightInstall(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
-    commandLine 'node_modules/.bin/playwright', 'install', 'chromium', 'firefox', 'webkit'
+    commandLine commandWithProjectNode(['node_modules/.bin/playwright', 'install', 'chromium', 'firefox', 'webkit'])
   }
 
   task playwrightInstallChromium(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
-    commandLine 'node_modules/.bin/playwright', 'install', 'chromium'
+    commandLine commandWithProjectNode(['node_modules/.bin/playwright', 'install', 'chromium'])
   }
 
   task notifyClientInstall(type: Exec) {
     workingDir '.'
-    commandLine 'yarn', 'add', 'notifications-node-client'
+    commandLine commandWithProjectNode(['yarn', 'add', 'notifications-node-client'])
   }
 
   task codeceptSmoke(type: Exec, dependsOn: ':playwrightInstallChromium') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi', '-c', 'codecept.smoke.conf.js'
+    commandLine commandWithProjectNode(['node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi', '-c', 'codecept.smoke.conf.js'])
   }
 
   task codeceptSmokeReport(type: Exec) {
@@ -244,12 +273,12 @@ allprojects {
 
       hasAllure && hasResults
     }
-    commandLine 'yarn', 'test-smoke-report'
+    commandLine commandWithProjectNode(['yarn', 'test-smoke-report'])
   }
 
   task codeceptFunctional(type: Exec, dependsOn: ':playwrightInstallChromium') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
+    commandLine commandWithProjectNode(['node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'])
   }
 
   task codeceptFunctionalReport(type: Exec) {
@@ -267,7 +296,7 @@ allprojects {
 
       hasAllure && hasResults
     }
-    commandLine 'yarn', 'test-functional-report'
+    commandLine commandWithProjectNode(['yarn', 'test-functional-report'])
   }
 
   task crossbrowser(dependsOn: ':codeceptFunctionalCrossBrowser') {
@@ -277,7 +306,7 @@ allprojects {
 
   task codeceptFunctionalCrossBrowser(type: Exec, dependsOn: ':playwrightInstall') {
     workingDir '.'
-    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'codecept.crossbrowser.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
+    commandLine commandWithProjectNode(['node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'codecept.crossbrowser.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'])
   }
 
   task codeceptFunctionalCrossBrowserReport(type: Exec) {
@@ -296,7 +325,7 @@ allprojects {
 
       hasAllure && hasResults
     }
-    commandLine 'yarn', 'test-crossbrowser-report'
+    commandLine commandWithProjectNode(['yarn', 'test-crossbrowser-report'])
   }
 
 }
