@@ -211,10 +211,11 @@ allprojects {
         set -e
 
         if [ -f .nvmrc ]; then
-          export NVM_DIR="${NVM_DIR:-/home/jenkinsssh/.nvm}"
+          echo "Selecting Node version from .nvmrc: $(cat .nvmrc)"
 
           if [ -s /opt/nvm/nvm.sh ]; then
-            . /opt/nvm/nvm.sh
+            export NVM_DIR='/home/jenkinsssh/.nvm'
+            . /opt/nvm/nvm.sh || true
           elif [ -s "$NVM_DIR/nvm.sh" ]; then
             . "$NVM_DIR/nvm.sh"
           elif [ -s "$HOME/.nvm/nvm.sh" ]; then
@@ -223,7 +224,7 @@ allprojects {
           fi
 
           if command -v nvm >/dev/null 2>&1; then
-            nvm install --no-progress
+            nvm install
             nvm use
           else
             echo "nvm is not available; using node from PATH"
