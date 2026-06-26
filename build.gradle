@@ -205,6 +205,7 @@ allprojects {
 
   task yarnInstall(type: Exec) {
     workingDir '.'
+    environment 'PUPPETEER_SKIP_DOWNLOAD', 'true'
     commandLine 'yarn', 'install'
   }
 
