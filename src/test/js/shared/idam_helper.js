@@ -324,6 +324,7 @@ class IdamHelper extends Helper {
 
     async getEmailFromNotifyUsingTestingSupportService(accessToken, emailAddress) {
         return fetch(`${TestData.IDAM_TESTING_SUPPORT_API}/test/idam/notifications/latest/${emailAddress}`, {
+            agent: agent,
             method: 'GET',
             headers: {'Authorization': 'Bearer ' + accessToken}
         }).then(response => {
