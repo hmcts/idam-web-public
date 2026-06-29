@@ -8,7 +8,6 @@
   },
   "devDependencies": {
     "@codeceptjs/allure-legacy": "^1.0.2",
-    "@playwright/test": "1.60.0",
     "allure-commandline": "^2.27.0",
     "chai": "^6.0.0",
     "codeceptjs": "^3.6.4",
