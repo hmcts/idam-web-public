@@ -877,6 +877,7 @@ class IdamHelper extends Helper {
 
             const response = await fetch(`${TestData.IDAM_API}/o/token`, {
                 method: 'POST',
+                agent: agent,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
