@@ -4,11 +4,10 @@
   "repository": "git@github.com:hmcts/idam-web-public.git",
   "license": "MIT",
   "engines": {
-    "node": ">=20 <24 || >=24.18.0"
+    "node": ">=18"
   },
   "devDependencies": {
     "@codeceptjs/allure-legacy": "^1.0.2",
-    "@playwright/test": "1.60.0",
     "allure-commandline": "^2.27.0",
     "chai": "^6.0.0",
     "codeceptjs": "^3.6.4",

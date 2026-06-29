@@ -203,66 +203,29 @@ allprojects {
     description = 'Executes functional tests against a running instance'
   }
 
-  def commandWithProjectNode = { List<String> command ->
-    [
-      'bash',
-      '-lc',
-      '''
-        set -e
-
-        if [ -f .nvmrc ]; then
-          echo "Selecting Node version from .nvmrc: $(cat .nvmrc)"
-
-          if [ -s /opt/nvm/nvm.sh ]; then
-            export NVM_DIR='/home/jenkinsssh/.nvm'
-            . /opt/nvm/nvm.sh || true
-          elif [ -s "$NVM_DIR/nvm.sh" ]; then
-            . "$NVM_DIR/nvm.sh"
-          elif [ -s "$HOME/.nvm/nvm.sh" ]; then
-            export NVM_DIR="$HOME/.nvm"
-            . "$NVM_DIR/nvm.sh"
-          fi
-
-          if command -v nvm >/dev/null 2>&1; then
-            nvm install
-            nvm use
-          else
-            echo "nvm is not available; using node from PATH"
-          fi
-        fi
-
-        echo "Using node $(node --version)"
-        echo "Using yarn $(yarn --version)"
-        exec "$@"
-      '''.stripIndent(),
-      'node-command'
-    ] + command
-  }
-
   task yarnInstall(type: Exec) {
     workingDir '.'
-    environment 'PUPPETEER_SKIP_DOWNLOAD', 'true'
-    commandLine commandWithProjectNode(['yarn', 'install'])
+    commandLine 'yarn', 'install'
   }
 
   task playwrightInstall(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
-    commandLine commandWithProjectNode(['node_modules/.bin/playwright', 'install', 'chromium', 'firefox', 'webkit'])
+    commandLine 'node_modules/.bin/playwright', 'install', 'chromium', 'firefox', 'webkit'
   }
 
   task playwrightInstallChromium(type: Exec, dependsOn: ':yarnInstall') {
     workingDir '.'
-    commandLine commandWithProjectNode(['node_modules/.bin/playwright', 'install', 'chromium'])
+    commandLine 'node_modules/.bin/playwright', 'install', 'chromium'
   }
 
   task notifyClientInstall(type: Exec) {
     workingDir '.'
-    commandLine commandWithProjectNode(['yarn', 'add', 'notifications-node-client'])
+    commandLine 'yarn', 'add', 'notifications-node-client'
   }
 
   task codeceptSmoke(type: Exec, dependsOn: ':playwrightInstallChromium') {
     workingDir '.'
-    commandLine commandWithProjectNode(['node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi', '-c', 'codecept.smoke.conf.js'])
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@smoke', '--verbose', '--reporter', 'mocha-multi', '-c', 'codecept.smoke.conf.js'
   }
 
   task codeceptSmokeReport(type: Exec) {
@@ -280,12 +243,12 @@ allprojects {
 
       hasAllure && hasResults
     }
-    commandLine commandWithProjectNode(['yarn', 'test-smoke-report'])
+    commandLine 'yarn', 'test-smoke-report'
   }
 
   task codeceptFunctional(type: Exec, dependsOn: ':playwrightInstallChromium') {
     workingDir '.'
-    commandLine commandWithProjectNode(['node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'])
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run', '--grep', '@functional', '--verbose', '--reporter', 'mocha-multi'
   }
 
   task codeceptFunctionalReport(type: Exec) {
@@ -303,7 +266,7 @@ allprojects {
 
       hasAllure && hasResults
     }
-    commandLine commandWithProjectNode(['yarn', 'test-functional-report'])
+    commandLine 'yarn', 'test-functional-report'
   }
 
   task crossbrowser(dependsOn: ':codeceptFunctionalCrossBrowser') {
@@ -313,7 +276,7 @@ allprojects {
 
   task codeceptFunctionalCrossBrowser(type: Exec, dependsOn: ':playwrightInstall') {
     workingDir '.'
-    commandLine commandWithProjectNode(['node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'codecept.crossbrowser.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'])
+    commandLine 'node_modules/codeceptjs/bin/codecept.js', 'run-multiple', '--all', '--config', 'codecept.crossbrowser.conf.js', '--grep', '@crossbrowser', '--verbose', '--debug', '--steps', '--reporter', 'mocha-multi'
   }
 
   task codeceptFunctionalCrossBrowserReport(type: Exec) {
@@ -332,7 +295,7 @@ allprojects {
 
       hasAllure && hasResults
     }
-    commandLine commandWithProjectNode(['yarn', 'test-crossbrowser-report'])
+    commandLine 'yarn', 'test-crossbrowser-report'
   }
 
 }
