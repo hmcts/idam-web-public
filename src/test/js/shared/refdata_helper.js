@@ -3,17 +3,11 @@ const TestData = require('../config/test_data');
 const testConfig = require('../config/test_data.js');
 const fetch = require('node-fetch');
 const Http = require('http');
-const Https = require('https');
 const uuid = require('uuid');
 
-const httpAgent = new Http.Agent({
+const agent = new Http.Agent({
     keepAlive: false
 });
-const httpsAgent = new Https.Agent({
-    keepAlive: false,
-    rejectUnauthorized: false
-});
-const agent = parsedUrl => parsedUrl.protocol === 'http:' ? httpAgent : httpsAgent;
 
 class RefDataHelper extends Helper {
 
