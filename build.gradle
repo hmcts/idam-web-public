@@ -149,11 +149,6 @@ allprojects {
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.118'
 
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.22'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.118'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.118'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.118'
-
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.22'
     implementation group: 'org.pitest', name: 'pitest', version: '1.16.3'
 
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.15.0'

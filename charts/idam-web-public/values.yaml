@@ -2,7 +2,7 @@ java:
   postgresql:
     enabled: false
   releaseNameOverride: idam-web-public
-  image: hmctsprod.azurecr.io/idam/web-public:preview
+  image: hmctsprod.azurecr.io/idam/web-public:latest
   ingressHost: "idam-web-public.service.core-compute-{{ .Values.global.environment }}.internal"
   replicas: 4
   applicationPort: 8080

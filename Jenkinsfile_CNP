@@ -40,23 +40,30 @@ withPipeline(type, product, component) {
     disableLegacyDeployment()
     syncBranchesWithMaster(branchesToSync)
 
-    onPR() {
-        Map<String, String> vaultEnvironmentOverrides = ['aat':'preview']
-        overrideVaultEnvironments(vaultEnvironmentOverrides)
-        env.NONPROD_ENVIRONMENT_NAME = 'preview'
-    }
     loadVaultSecrets(secrets)
 
     before('smoketest:preview') {
-        env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
-        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
+        env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
+        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.aat.platform.hmcts.net"
+        println """\
+                Running PR preview smoke tests against AAT dependencies.
+                Using IDAMAPI: ${env.IDAMAPI}
+                Using TESTING_SUPPORT_API_URL: ${env.TESTING_SUPPORT_API_URL}""".stripIndent()
     }
 
     before('functionalTest:preview') {
-        env.IDAMAPI = "https://idam-api.preview.platform.hmcts.net"
-        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.preview.platform.hmcts.net"
+        env.RPE_AUTH_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+        env.REF_DATA_URL = "http://rd-professional-api-aat.service.core-compute-aat.internal"
+        env.IDAMAPI = "https://idam-api.aat.platform.hmcts.net"
+        env.TESTING_SUPPORT_API_URL = "https://idam-testing-support-api.aat.platform.hmcts.net"
         env.TESTS_FOR_ACCESSIBILITY = false
         env.WAIT_FOR_ACTION_TIMEOUT = 1500
+        println """\
+                Running PR preview functional tests against AAT dependencies.
+                Using RPE_AUTH_URL: ${env.RPE_AUTH_URL}
+                Using REF_DATA_URL: ${env.REF_DATA_URL}
+                Using IDAMAPI: ${env.IDAMAPI}
+                Using TESTING_SUPPORT_API_URL: ${env.TESTING_SUPPORT_API_URL}""".stripIndent()
     }
 
     before('smoketest:aat') {
