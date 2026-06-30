@@ -130,9 +130,5 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, params.S
         reportName           : "Functional Test Report"
     ]
   }
-  
-  // Production image deployment is handled by Flux outside this repository.
-  before('buildinfra:idam-prod') {
-      error('Stopping pipeline before Prod stages')
-  }
+    
 }
