@@ -2,7 +2,18 @@ let Helper = codecept_helper;
 const TestData = require('../config/test_data');
 const testConfig = require('../config/test_data.js');
 const fetch = require('node-fetch');
+const Http = require('http');
+const Https = require('https');
 const uuid = require('uuid');
+
+const httpAgent = new Http.Agent({
+    keepAlive: false
+});
+const httpsAgent = new Https.Agent({
+    keepAlive: false,
+    rejectUnauthorized: false
+});
+const agent = parsedUrl => parsedUrl.protocol === 'http:' ? httpAgent : httpsAgent;
 
 class RefDataHelper extends Helper {
 
@@ -15,6 +26,7 @@ class RefDataHelper extends Helper {
             microservice: 'rd_professional_api'
         };
         return fetch(`${TestData.RPE_AUTH_URL}/testing-support/lease`, {
+            agent: agent,
             method: 'POST',
             body: JSON.stringify(payload),
             headers: {'Content-Type': 'application/json'},
@@ -49,6 +61,7 @@ class RefDataHelper extends Helper {
 
     createOrganisation(payload, serviceToken, authToken) {
         return fetch(`${TestData.REF_DATA_URL}/refdata/internal/v1/organisations`, {
+            agent: agent,
             method: 'POST',
             body: JSON.stringify(payload),
             headers: {
@@ -68,6 +81,7 @@ class RefDataHelper extends Helper {
 
     updateOrganisation(organisationId, payload, serviceToken, authToken) {
         return fetch(`${TestData.REF_DATA_URL}/refdata/internal/v1/organisations/${organisationId}`, {
+            agent: agent,
             method: 'PUT',
             body: JSON.stringify(payload),
             headers: {
@@ -90,6 +104,7 @@ class RefDataHelper extends Helper {
             mfa: mfaType
         };
         return fetch(`${TestData.REF_DATA_URL}/refdata/internal/v1/organisations/${organisationId}/mfa`, {
+            agent: agent,
             method: 'PUT',
             body: JSON.stringify(payload),
             headers: {
@@ -118,6 +133,7 @@ class RefDataHelper extends Helper {
               resendInvite: false
         };
         return fetch(`${TestData.REF_DATA_URL}/refdata/internal/v1/organisations/${organisationId}/users/`, {
+            agent: agent,
             method: 'POST',
             body: JSON.stringify(payload),
             headers: {
@@ -137,6 +153,7 @@ class RefDataHelper extends Helper {
 
     deleteOrganisation(organisationId, serviceToken, authToken) {
         return fetch(`${TestData.REF_DATA_URL}/refdata/internal/v1/organisations/${organisationId}`, {
+            agent: agent,
             method: 'DELETE',
             headers: {
                 'ServiceAuthorization': 'Bearer ' + serviceToken,
