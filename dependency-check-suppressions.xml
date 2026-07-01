@@ -319,9 +319,11 @@
     <!--
     Temporary suppression for Kotlin CVE-2026-53914. NVD lists Kotlin 2.4.20 as the fixed
     version, but org.jetbrains.kotlin:kotlin-stdlib:2.4.20 is not published to Maven Central.
+    The build has been bumped to the latest stable Kotlin release, 2.4.0, but OWASP
+    Dependency Check still requires a temporary suppression.
     -->
     <suppress>
-        <gav regex="true">^org\.jetbrains\.kotlin:kotlin-stdlib:2\.2\.21$</gav>
+        <gav regex="true">^org\.jetbrains\.kotlin:kotlin-stdlib:2\.4\.0$</gav>
         <cve>CVE-2026-53914</cve>
     </suppress>
 
