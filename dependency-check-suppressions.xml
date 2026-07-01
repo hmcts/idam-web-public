@@ -306,6 +306,62 @@
     </suppress>
 
     <!--
+    Temporary suppression for CVE-2026-54515 only. Jackson was bumped from 2.18.3 to 2.18.8,
+    which resolves CVE-2026-54512, CVE-2026-54513, and CVE-2026-54514 on the current
+    maintenance line. NVD lists 2.18.9 as the fixed 2.18.x version for CVE-2026-54515,
+    but jackson-databind 2.18.9 is not published to Maven Central.
+    -->
+    <suppress>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:2\.18\.8$</gav>
+        <cve>CVE-2026-54515</cve>
+    </suppress>
+
+    <!--
+    Temporary suppression for Kotlin CVE-2026-53914. NVD lists Kotlin 2.4.20 as the fixed
+    version, but org.jetbrains.kotlin:kotlin-stdlib:2.4.20 is not published to Maven Central.
+    -->
+    <suppress>
+        <gav regex="true">^org\.jetbrains\.kotlin:kotlin-stdlib:2\.2\.21$</gav>
+        <cve>CVE-2026-53914</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41855 requires use of
+    JMS MappingJackson2MessageConverter or JacksonJsonMessageConverter in an untrusted JMS
+    environment. The checked codebase does not use JMS, JmsTemplate, @JmsListener, or either
+    vulnerable converter. The listed fixed Spring Framework 5.3.x version is not published to
+    Maven Central.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework:.*$</gav>
+        <cve>CVE-2026-41855</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring Security's advisory for CVE-2026-47838 requires
+    X.509 authentication with SubjectDnX509PrincipalExtractor handling attacker-supplied
+    certificate CN values. The checked codebase does not configure X.509 authentication or use
+    SubjectDnX509PrincipalExtractor. Public Spring Security 5.7/5.8 fixed artifacts are not
+    available on Maven Central for this Spring Boot 2.7 maintenance application.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.security:spring-security-.*$</gav>
+        <cve>CVE-2026-47838</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring Security's advisory for CVE-2026-41706 requires
+    CookieRequestCache or CookieServerRequestCache storing an absolute pre-authentication URL in
+    a cookie. The checked codebase does not configure either cookie request cache. Public Spring
+    Security 5.7/5.8 fixed artifacts are not available on Maven Central for this Spring Boot 2.7
+    maintenance application.
+    -->
+    <suppress>
+        <gav regex="true">^.*org\.springframework\.security:spring-security-.*$</gav>
+        <cve>CVE-2026-41706</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisory for CVE-2026-40977 requires the
     ApplicationPidFileWriter feature, or equivalent PID-file configuration such as spring.pid.file.
     This application starts via SpringApplication.run without registering ApplicationPidFileWriter,
