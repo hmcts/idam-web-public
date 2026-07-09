@@ -421,4 +421,17 @@
         <cve>CVE-2026-40972</cve>
     </suppress>
 
+    <!--
+    False positive: these CVEs apply to Apache HttpComponents Core 5 artifacts
+    org.apache.httpcomponents.core5:httpcore5 and httpcore5-h2, not the legacy
+    org.apache.httpcomponents:httpcore 4.x line. Keep this scoped to the exact
+    GAV reported by OWASP Dependency Check.
+    -->
+    <suppress>
+        <gav regex="true">^org\.apache\.httpcomponents:httpcore:4\.4\.16$</gav>
+        <cve>CVE-2026-54399</cve>
+        <cve>CVE-2026-54428</cve>
+    </suppress>
+
+
 </suppressions>
