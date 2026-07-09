@@ -146,7 +146,7 @@ allprojects {
     implementation group: 'org.apache.httpcomponents', name: 'httpcore'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.119'
-    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.119'
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.120'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.119'
 
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.23'
