@@ -53,7 +53,7 @@ allprojects {
   ext['netty.version'] = '4.1.135.Final' // CVE-2026-33871, CVE-2026-33870
   ext['jackson.version'] = '2.18.8'
   ext['spring-framework.version'] = '5.3.39'
-  ext['log4j2.version'] = '2.25.4'
+  ext['log4j2.version'] = '2.25.5'
   ext['kotlin.version'] = '2.4.0'
   ext['tomcat.version'] = '9.0.119' // Fixes CVE-2026-53404, CVE-2026-55956, CVE-2026-55955, CVE-2026-55276, CVE-2026-53434, CVE-2026-50229
 
