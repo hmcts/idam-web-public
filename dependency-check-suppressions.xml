@@ -268,6 +268,22 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41839 requires a WebFlux
+    application with a compromised subdomain that can exchange a known session ID for an
+    authenticated user's session. This application is servlet-based Spring MVC with JSP views,
+    spring-boot-starter-web, embedded Tomcat, Zuul, and Redis-backed Spring Session; the checked
+    codebase does not use Spring WebFlux server handlers/configuration, WebSession, WebFilter,
+    ServerWebExchange, RouterFunction, ServerRequest, or spring-boot-starter-webflux. Spring's
+    listed 5.3.x fixed version is enterprise-support-only; public OSS fixes require moving to
+    Spring Framework 6.2+ / Spring Boot 3, which is disproportionate for this JSP Spring Boot 2.7
+    maintenance-mode application.
+    -->
+    <suppress>
+        <gav regex="true">^org\.springframework:spring-(aop|beans|context|context-support|core|expression|jcl|jdbc|oxm|tx|web|webmvc):5\.3\.39$</gav>
+        <cve>CVE-2026-41839</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisories for CVE-2026-41849, CVE-2026-41850,
     CVE-2026-41851, and CVE-2026-41852 require accepting and evaluating untrusted or
     user-controlled SpEL expressions; CVE-2026-41851 also requires caching parsed SpEL expressions.
