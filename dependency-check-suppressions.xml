@@ -37,25 +37,12 @@
     <suppress>
         <notes><![CDATA[
         False positive: netflix-statistics-0.1.1.jar is a Maven Java artifact.
-        CVE-2026-33540, CVE-2026-35172, and CVE-2026-41888 apply to
+        CVE-2026-35172, and CVE-2026-41888 apply to
         github.com/distribution/distribution (Go), not this package. Suppressed by exact
         SHA-1 to avoid CPE matcher differences.
         ]]></notes>
         <sha1>12F6E48253F9CAFA0E24D7D232FF504C52143212</sha1>
-        <cve>CVE-2026-33540</cve>
-        <cve>CVE-2026-35172</cve>
         <cve>CVE-2026-41888</cve>
-    </suppress>
-
-    <!--
-    False positive: CVE-2026-42582 applies to io.netty:netty-codec-http3
-    4.2.0.Final through 4.2.12.Final and is fixed in 4.2.13.Final. This project is
-    on Netty 4.1.135.Final and does not depend on netty-codec-http3; Dependency-Check
-    is matching the generic netty CPE against non-HTTP/3 Netty artifacts.
-    -->
-    <suppress>
-        <gav regex="true">^io\.netty:netty-(buffer|codec|common|handler|resolver|transport|transport-native-unix-common):4\.1\.135\.Final$</gav>
-        <cve>CVE-2026-42582</cve>
     </suppress>
 
     <!--
