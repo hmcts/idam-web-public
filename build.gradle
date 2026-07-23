@@ -50,7 +50,7 @@ allprojects {
   }
 
   ext['okhttp.version'] = '4.12.0'
-  ext['netty.version'] = '4.1.135.Final' // CVE-2026-33871, CVE-2026-33870
+  ext['netty.version'] = '4.1.136.Final' // CVE-2026-33871, CVE-2026-33870, CVE-2026-44891, CVE-2026-55831, CVE-2026-55833
   ext['jackson.version'] = '2.18.8'
   ext['spring-framework.version'] = '5.3.39'
   ext['log4j2.version'] = '2.25.5'
