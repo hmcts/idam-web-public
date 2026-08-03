@@ -59,6 +59,18 @@
     </suppress>
 
     <!--
+    False positive: CVE-2026-56816 concerns Netty's HTTP/3 Http3FrameCodec.
+    This application does not depend on netty-codec-http3 and has no HTTP/3
+    or QUIC usage. Dependency-Check is matching the generic Netty CPE against
+    the ordinary Netty 4.1.136.Final artifacts used by this application.
+    Suppress only the exact artifacts reported by the nightly build.
+    -->
+    <suppress>
+        <gav regex="true">^io\.netty:netty-(buffer|codec|common|handler|resolver|transport|transport-native-unix-common):4\.1\.136\.Final$</gav>
+        <cve>CVE-2026-56816</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisories for CVE-2026-40988,
     CVE-2026-41003, and CVE-2026-41694 require Spring Security SAML service-provider
     functionality, such as spring-security-saml2-service-provider, SAML login/logout,
