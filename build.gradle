@@ -55,7 +55,7 @@ allprojects {
   ext['spring-framework.version'] = '5.3.39'
   ext['log4j2.version'] = '2.25.5'
   ext['kotlin.version'] = '2.4.0'
-  ext['tomcat.version'] = '9.0.120' // Fixes CVE-2026-53404, CVE-2026-55956, CVE-2026-55955, CVE-2026-55276, CVE-2026-53434, CVE-2026-50229, CVE-2026-59084, CVE-2026-59083
+  ext['tomcat.version'] = '9.0.120' // CVE-2026-59084, CVE-2026-59083
 
   repositories {
     mavenCentral()
