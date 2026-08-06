@@ -135,6 +135,20 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. CVE-2026-66299 is a denial-of-service issue in
+    Tomcat's WebSocket chat example. Apache Tomcat states that users who remove the examples
+    web application are not affected. idam-web-public does not deploy the Tomcat examples web
+    application and the codebase contains no application WebSocket usage. Tomcat 9.0.121 is the
+    announced fixed release, but it is not yet available, so keep this suppression limited to
+    the exact Tomcat 9.0.120 artifacts reported by Dependency-Check and replace it with an
+    upgrade when 9.0.121 is available.
+    -->
+    <suppress>
+        <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed-(core|jasper|websocket):9\.0\.120$</gav>
+        <cve>CVE-2026-66299</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring's advisory for CVE-2026-22740 applies to WebFlux
     server multipart processing, where large multipart parts are written to temp files by the
     reactive stack. This application is a servlet-based Spring Boot application using
