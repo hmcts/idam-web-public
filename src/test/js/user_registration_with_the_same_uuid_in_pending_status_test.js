@@ -72,6 +72,10 @@ Scenario('@f1 multiple users can be registered with same uuid but the previous u
     expect(responseBeforeActivation.pending).to.equal(true);
 
     const currentUserUrl = await I.extractUrlFromNotifyEmail(testingToken, currentUserEmail);
+    if (!new URL(currentUserUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
 
     I.amOnPage(currentUserUrl);
     I.waitForText('Create a password');

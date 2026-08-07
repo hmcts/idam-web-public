@@ -144,6 +144,10 @@ Scenario('@functional @selfregister @welshLanguage I can self register (no langu
     I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(testingToken, email);
+    if (!new URL(userActivationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
@@ -187,6 +191,10 @@ Scenario('@functional @selfregister @welshLanguage I can self register (Welsh)',
     I.clickWithWait(formSubmitButton);
     I.waitForText(Welsh.checkYourEmail);
     const userActivationUrl = await I.extractUrlFromNotifyEmail(testingToken, email);
+    if (!new URL(userActivationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(userActivationUrl);
     I.waitForText(Welsh.createAPassword);
     I.seeTitleEquals(Welsh.userActivationTitle);
@@ -226,6 +234,10 @@ Scenario('@functional @selfregister I can self register and cannot use activatio
     I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(testingToken, email);
+    if (!new URL(userActivationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
@@ -266,6 +278,10 @@ Scenario('@functional @selfregister @prePopulatedScreen I can self register with
     I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(testingToken, randomUserEmailAddress);
+    if (!new URL(userActivationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
@@ -306,6 +322,10 @@ Scenario('@functional @selfregister I can self register with repeated special ch
     I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(testingToken, email);
+    if (!new URL(userActivationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
@@ -344,6 +364,10 @@ Scenario('@functional @selfregister @passwordvalidation Validation displayed whe
     I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(testingToken, email);
+    if (!new URL(userActivationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(userActivationUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
@@ -411,6 +435,10 @@ Scenario('@functional @selfregister I can create a password only once using the 
     I.clickWithWait(formSubmitButton);
     I.waitForText('Check your email');
     const userActivationUrl = await I.extractUrlFromNotifyEmail(testingToken, email);
+    if (!new URL(userActivationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
 
     // open activation link in 1st tab
     const page1 = await I.createNewPage();

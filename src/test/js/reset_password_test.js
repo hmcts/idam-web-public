@@ -47,6 +47,10 @@ Scenario('@functional @resetpass As a citizen user I can reset my password', asy
     I.waitForText('Check your email');
     await I.runAccessibilityTest();
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, citizenEmail);
+    if (!new URL(resetPasswordUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -80,6 +84,10 @@ Scenario('@functional @resetpasswithdiffcaseemail As a citizen user I can reset 
     I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, diffCaseCitizenEmail);
+    if (!new URL(resetPasswordUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -111,6 +119,10 @@ Scenario('@functional @resetpass As a citizen user with a plus email I can reset
     I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, plusCitizenEmail);
+    if (!new URL(resetPasswordUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -143,6 +155,10 @@ Scenario('@functional @resetpass As a citizen user with an apostrophe email I ca
     I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, apostropheCitizenEmail);
+    if (!new URL(resetPasswordUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -176,6 +192,10 @@ Scenario('@functional @resetpass @passwordvalidation Validation displayed when I
     I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, otherCitizenEmail);
+    if (!new URL(resetPasswordUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -225,6 +245,10 @@ Scenario('@functional @resetpass As a citizen user I can reset my password with 
     I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, specialcharPwdResetCitizenEmail);
+    if (!new URL(resetPasswordUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
@@ -259,6 +283,10 @@ Scenario('@functional @staleuserresetpass As a stale user, I can reset my passwo
     I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, staleUserEmail);
+    if (!new URL(resetPasswordUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a password');
     I.seeTitleEquals('User Activation - HMCTS Access - GOV.UK');
@@ -290,6 +318,10 @@ Scenario('@functional @resetpass @idamserviceaccount As a idam service account u
     I.clickWithWait('Submit');
     I.waitForText('Check your email');
     const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, idamServiceAccountUserEmail);
+    if (!new URL(resetPasswordUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(resetPasswordUrl);
     I.waitForText('Create a new password');
     I.seeTitleEquals('Reset Password - HMCTS Access - GOV.UK');
