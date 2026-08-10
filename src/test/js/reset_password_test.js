@@ -317,15 +317,10 @@ Scenario('@functional @resetpass @idamserviceaccount As a idam service account u
     I.fillField('#email', idamServiceAccountUserEmail);
     I.clickWithWait('Submit');
     I.waitForText('Check your email');
-    let resetPasswordUrl;
-    try {
-        resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, idamServiceAccountUserEmail);
-    } catch (error) {
-        if (error.message === `Email not found in Notify for ${idamServiceAccountUserEmail}`) {
-            I.say('Ending test as no email is sent for IDAM service accounts');
-            return;
-        }
-        throw error;
+    const resetPasswordUrl = await I.extractUrlFromNotifyEmail(accessToken, idamServiceAccountUserEmail, true);
+    if (!resetPasswordUrl) {
+        I.say('Ending test as no email is sent for IDAM service accounts');
+        return;
     }
     if (!new URL(resetPasswordUrl).searchParams.has('code')) {
         I.say("Ending test at reception of new style email");
