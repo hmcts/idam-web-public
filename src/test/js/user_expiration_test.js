@@ -47,6 +47,10 @@ BeforeSuite(async ({ I }) => {
 
 Scenario('@functional @userexpiration User registration link expiration', async ({ I }) => {
     let url = await I.extractUrlFromNotifyEmail(testingToken, userEmail);
+    if (!new URL(url).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }

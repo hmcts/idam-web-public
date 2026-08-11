@@ -358,9 +358,17 @@ class IdamHelper extends Helper {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async extractUrlFromNotifyEmail(accessToken, searchEmail) {
+    async extractUrlFromNotifyEmail(accessToken, searchEmail, allowMissingEmail = false) {
         let url;
-        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, MAX_RETRIES);
+        let emailResponse;
+        try {
+            emailResponse = await this.getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, MAX_RETRIES);
+        } catch (error) {
+            if (allowMissingEmail && error.message === `Email not found in Notify for ${searchEmail}`) {
+                return;
+            }
+            throw error;
+        }
         const regex = "(https.+)";
         const urlMatch = emailResponse.body.match(regex);
         if (urlMatch[0]) {

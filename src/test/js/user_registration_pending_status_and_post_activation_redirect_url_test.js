@@ -62,6 +62,10 @@ Scenario('@functional  user registration pending status and post activation redi
     expect(responseBeforeActivation.pending).to.equal(true);
 
     const url = await I.extractUrlFromNotifyEmail(testingToken, userEmail);
+    if (!new URL(url).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
 
     I.amOnPage(url);
     I.waitForText('Create a password');

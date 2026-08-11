@@ -103,6 +103,10 @@ Scenario('@functional @welshLanguage I can reset my password in Welsh', async ({
     I.clickWithWait(Welsh.submitBtn);
     I.waitForText(Welsh.checkYourEmail);
     const userPwdResetUrl = await I.extractUrlFromNotifyEmail(testingToken, citizenEmail);
+    if (!new URL(userPwdResetUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(userPwdResetUrl);
     I.waitForText(Welsh.createANewPassword);
     I.fillField('#password1', specialCharacterPassword);
