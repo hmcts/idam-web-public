@@ -54,7 +54,7 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
     let userInfo = await I.getUserInfo(accessToken);
-    expect(userInfo.scops).to.deep.equal(["openid", "profile", "roles", "custom-test-scope"]);
+    expect(userInfo.scope).to.deep.equal(["custom-test-scope"]);
 
     I.stopRedirectRequestTracking();
 
