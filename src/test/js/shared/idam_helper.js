@@ -719,25 +719,6 @@ class IdamHelper extends Helper {
         })
     }
 
-    grantRoleToUser(roleName, accessToken) {
-        return fetch(`${TestData.IDAM_API}/account/role`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify({
-                "name": roleName
-            }),
-            headers: {
-                'Content-type': 'application/json',
-                'Authorization': 'Bearer ' + accessToken
-            }
-        }).then((response) => {
-            if (response.status != 201) {
-                console.log('Error granting role', response.status);
-                throw new Error('Failed to grant role ' + roleName + ' to user ' + userEmail + ' response is:' + response.status);
-            }
-        });
-    }
-
     registerUserWithRoles(bearerToken, userEmail, userFirstName, userLastName, userRoles) {
         const data = {
             email: userEmail,
