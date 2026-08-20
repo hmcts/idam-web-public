@@ -1,5 +1,6 @@
 const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
+const jwt_decode = require('jwt-decode');
 
 const deepEqualInAnyOrder = require('deep-equal-in-any-order');
 const chai = require('chai');
@@ -53,8 +54,8 @@ Scenario('@functional @loginuserwithscope As a service, I can request a custom s
     let {code} = await I.waitForRedirectWithCodeTo(TestData.SERVICE_REDIRECT_URI);
     let accessToken = await I.getAccessToken(code, serviceName, TestData.SERVICE_REDIRECT_URI, serviceClientSecret);
 
-    let userInfo = await I.getUserInfo(accessToken);
-    expect(userInfo.scope).to.deep.equal(["custom-test-scope"]);
+    const decodedAccessToken = jwt_decode(accessToken);
+    expect(decodedAccessToken.scope).to.deep.equal([customScope]);
 
     I.stopRedirectRequestTracking();
 
