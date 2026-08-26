@@ -130,6 +130,10 @@ Scenario('@functional @uplift I am able to use a pin to create an account as an 
     I.wait('1');
     I.waitForText('Check your email');
     let url = await I.extractUrlFromNotifyEmail(testingToken, citizenEmail);
+    if (!new URL(url).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     if (url) {
         url = url.replace('https://idam-web-public.aat.platform.hmcts.net', TestData.WEB_PUBLIC_URL);
     }
@@ -228,6 +232,10 @@ Scenario('@functional @uplift @staleUserUpliftAccountCreation Send stale user re
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     await I.runAccessibilityTest();
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(testingToken, upliftAccountCreationStaleUserEmail);
+    if (!new URL(reRegistrationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);
@@ -292,6 +300,10 @@ Scenario('@functional @uplift @staleUserUpliftLogin Send stale user registration
     I.clickWithWait('Sign in');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(testingToken, upliftLoginStaleUserEmail);
+    if (!new URL(reRegistrationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);

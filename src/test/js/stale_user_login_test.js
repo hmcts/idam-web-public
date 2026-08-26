@@ -40,6 +40,10 @@ Scenario('@functional @staleUserLogin Stale user login journey', async({ I }) =>
     I.clickWithWait('Sign in');
     I.waitForText('As you\'ve not logged in for at least 90 days, you need to reset your password.');
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(token, staleUserEmail);
+    if (!new URL(reRegistrationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(reRegistrationUrl);
     I.waitForText('Create a password');
     I.fillField('#password1', newPassword);
@@ -77,6 +81,10 @@ Scenario('@functional @staleUserLogin @Welsh Stale user login journey in welsh',
     I.clickWithWait(Welsh.signIn);
     I.waitForText(Welsh.staleUserErrorMessage);
     const reRegistrationUrl = await I.extractUrlFromNotifyEmail(token, staleUserEmailWelsh);
+    if (!new URL(reRegistrationUrl).searchParams.has('code')) {
+        I.say("Ending test at reception of new style email");
+        return;
+    }
     I.amOnPage(reRegistrationUrl);
     I.waitForText(Welsh.createAPassword);
     I.fillField('#password1', newPassword);

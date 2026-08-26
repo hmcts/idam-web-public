@@ -358,9 +358,17 @@ class IdamHelper extends Helper {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async extractUrlFromNotifyEmail(accessToken, searchEmail) {
+    async extractUrlFromNotifyEmail(accessToken, searchEmail, allowMissingEmail = false) {
         let url;
-        let emailResponse = await this.getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, MAX_RETRIES);
+        let emailResponse;
+        try {
+            emailResponse = await this.getEmailFromNotifyWithMaxRetries(accessToken, searchEmail, MAX_RETRIES);
+        } catch (error) {
+            if (allowMissingEmail && error.message === `Email not found in Notify for ${searchEmail}`) {
+                return;
+            }
+            throw error;
+        }
         const regex = "(https.+)";
         const urlMatch = emailResponse.body.match(regex);
         if (urlMatch[0]) {
@@ -709,25 +717,6 @@ class IdamHelper extends Helper {
             }
             return response.json();
         })
-    }
-
-    grantRoleToUser(roleName, accessToken) {
-        return fetch(`${TestData.IDAM_API}/account/role`, {
-            agent: agent,
-            method: 'POST',
-            body: JSON.stringify({
-                "name": roleName
-            }),
-            headers: {
-                'Content-type': 'application/json',
-                'Authorization': 'Bearer ' + accessToken
-            }
-        }).then((response) => {
-            if (response.status != 201) {
-                console.log('Error granting role', response.status);
-                throw new Error('Failed to grant role ' + roleName + ' to user ' + userEmail + ' response is:' + response.status);
-            }
-        });
     }
 
     registerUserWithRoles(bearerToken, userEmail, userFirstName, userLastName, userRoles) {
