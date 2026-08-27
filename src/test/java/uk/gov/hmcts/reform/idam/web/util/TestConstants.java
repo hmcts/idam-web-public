@@ -182,7 +182,7 @@ public class TestConstants {
     public static final String REDIRECTURI = "redirectUri";
     public static final String NONCE_VALUE = "eshfwrhr09123rksdfnsad";
     public static final String PROMPT_VALUE = "login";
-    public static final String CUSTOM_SCOPE = "manage-roles";
+    public static final String CUSTOM_SCOPE = "custom-scope";
     public static final String CODE_CHALLENGE = "j0SphbKM8YhKykPFvWhCCNQqs3VPwiJpAEPg0VuHf9A";
     public static final String CODE_CHALLENGE_METHOD = "S256";
     public static final String INSECURE_SESSION_COOKE = IDAM_SESSION_COOKIE_NAME + "=A_TASTY_TREAT";
