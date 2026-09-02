@@ -382,6 +382,25 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-59313 requires Spring MVC's
+    functional web framework with RouterFunction/ServerResponse.sse() sending plain-text SSE data
+    controlled by an attacker to other users. CVE-2026-59314 requires building Content-Disposition
+    header values from untrusted input on a connector that does not reject malicious header
+    characters, or using untrusted input as a part Content-Disposition in outbound multipart request
+    bodies. This application uses annotation-based Spring MVC with JSP views on embedded Tomcat,
+    contains no RouterFunction/ServerResponse.sse()/SseEmitter/text-event-stream handlers, and does
+    not build Content-Disposition headers or outbound multipart request bodies. The listed Spring
+    Framework 5.3.x fixed version is enterprise-support-only; public OSS fixes require moving to
+    Spring Framework 7.0+ / Spring Boot 4, which is disproportionate for this JSP Spring Boot 2.7
+    maintenance-mode application.
+    -->
+    <suppress>
+        <gav regex="true">^org\.springframework:spring-(aop|beans|context|context-support|core|expression|jcl|jdbc|oxm|tx|web|webmvc):5\.3\.39$</gav>
+        <cve>CVE-2026-59313</cve>
+        <cve>CVE-2026-59314</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring Security's advisory for CVE-2026-47838 requires
     X.509 authentication with SubjectDnX509PrincipalExtractor handling attacker-supplied
     certificate CN values. The checked codebase does not configure X.509 authentication or use
