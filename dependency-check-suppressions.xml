@@ -401,6 +401,66 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisories for CVE-2026-47891, CVE-2026-47892,
+    and CVE-2026-47893 require Spring WebFlux server functionality such as WebFlux XML decoding,
+    functional endpoints, or WebFlux WebSocket handling. CVE-2026-59280 requires FreeMarker
+    template resolution through SpringTemplateLoader. CVE-2026-59282 requires Spring data binding
+    onto a target object containing a self-populating List implementation with nested sub-properties.
+    CVE-2026-59283 requires SimpleEvaluationContext with SpEL compilation enabled. This application
+    is annotation-based Spring MVC with JSP views on embedded Tomcat, contains no WebFlux handlers,
+    RouterFunction, ServerRequest, Spring WebSocket, FreeMarker/SpringTemplateLoader, self-populating
+    List request model properties, SimpleEvaluationContext, SpelParserConfiguration, or
+    spring.expression.compiler.mode configuration. The listed Spring Framework 5.3.x fixed version
+    is enterprise-support-only; public OSS fixes require moving to Spring Framework 7.0+ / Spring
+    Boot 4, which is disproportionate for this JSP Spring Boot 2.7 maintenance-mode application.
+    -->
+    <suppress>
+        <gav regex="true">^org\.springframework:spring-(aop|beans|context|context-support|core|expression|jcl|jdbc|oxm|tx|web|webmvc):5\.3\.39$</gav>
+        <cve>CVE-2026-47891</cve>
+        <cve>CVE-2026-47892</cve>
+        <cve>CVE-2026-47893</cve>
+        <cve>CVE-2026-59280</cve>
+        <cve>CVE-2026-59282</cve>
+        <cve>CVE-2026-59283</cve>
+    </suppress>
+
+    <!--
+    Not exploitable as rendered in this application. Spring's advisory for CVE-2026-59281 requires
+    obtaining an HTML-escaping Errors instance and rendering field errors through no-argument
+    getFieldErrors()/getFieldError() accessors in a way that emits attacker-controlled content.
+    This application has defaultHtmlEscape enabled and uses Spring's JSP binding-error support, but
+    the checked pages do not render attacker-controlled rejectedValue or defaultMessage content from
+    the affected accessors. The login page only inspects field/code metadata from errors.fieldErrors
+    and renders field-specific form:errors for static validation messages; forgotpassword.jsp renders
+    message-bundle-backed validation messages for the scalar email field. The listed Spring Framework
+    5.3.x fixed version is enterprise-support-only; public OSS fixes require moving to Spring
+    Framework 7.0+ / Spring Boot 4, which is disproportionate for this JSP Spring Boot 2.7
+    maintenance-mode application.
+    -->
+    <suppress>
+        <gav regex="true">^org\.springframework:spring-(aop|beans|context|context-support|core|expression|jcl|jdbc|oxm|tx|web|webmvc):5\.3\.39$</gav>
+        <cve>CVE-2026-59281</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring Security's advisory for CVE-2026-59270 requires the
+    embedded UnboundID LDAP server through UnboundIdContainer or spring.ldap.embedded.* properties.
+    CVE-2026-59276 requires use of timing-sensitive components such as DigestAuthenticationFilter,
+    KeyBasedPersistenceTokenService, Password4j encoders, or InMemoryOAuth2AuthorizationService in
+    an OAuth2 authorization server. The checked runtime classpath does not include spring-security-ldap
+    or unboundid-ldapsdk, and the codebase/manifests do not configure embedded LDAP, HTTP Digest auth,
+    KeyBasedPersistenceTokenService, Password4j encoders, Spring Authorization Server, or
+    InMemoryOAuth2AuthorizationService. The listed Spring Security 5.7.x/5.8.x fixed versions are
+    enterprise-support-only; public OSS fixes require moving to Spring Security 7.0+ / Spring Boot 4,
+    which is disproportionate for this JSP Spring Boot 2.7 maintenance-mode application.
+    -->
+    <suppress>
+        <gav regex="true">^org\.springframework\.security:spring-security-(acl|config|core|crypto|data|oauth2-client|oauth2-core|oauth2-jose|oauth2-resource-server|taglibs|web):(5\.7\.11|5\.8\.16)$</gav>
+        <cve>CVE-2026-59270</cve>
+        <cve>CVE-2026-59276</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring Security's advisory for CVE-2026-47838 requires
     X.509 authentication with SubjectDnX509PrincipalExtractor handling attacker-supplied
     certificate CN values. The checked codebase does not configure X.509 authentication or use
