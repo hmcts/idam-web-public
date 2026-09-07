@@ -552,7 +552,7 @@
     maintenance-mode JSP application.
     -->
     <suppress>
-        <gav regex="true">^org\.springframework\.boot:spring-boot-autoconfigure:2\.7\.18$</gav>
+        <gav regex="true">^org\.springframework\.boot:.*:2\.7\.18$</gav>
         <cve>CVE-2026-41001</cve>
     </suppress>
 
@@ -566,7 +566,7 @@
     migration for this maintenance-mode JSP application.
     -->
     <suppress>
-        <gav regex="true">^org\.springframework\.security:spring-security-crypto:5\.7\.11$</gav>
+        <gav regex="true">^org\.springframework\.security:spring-security-(acl|config|core|crypto|data|oauth2-client|oauth2-core|oauth2-jose|oauth2-resource-server|taglibs|web):(5\.7\.11|5\.8\.16)$</gav>
         <cve>CVE-2026-47842</cve>
     </suppress>
 
