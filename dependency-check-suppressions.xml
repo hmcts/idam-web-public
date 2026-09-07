@@ -543,6 +543,34 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-41001 requires the
+    embedded Artemis message broker to be auto-configured without an explicit data directory.
+    The checked runtime classpath does not contain Artemis, and the codebase and application
+    configuration do not use spring-boot-starter-artemis, ArtemisEmbeddedConfigurationFactory,
+    or spring.artemis.* properties. Spring Boot 2.7.34 is enterprise-support-only; upgrading to
+    a public fixed release would require a disproportionate Spring Boot 3/4 migration for this
+    maintenance-mode JSP application.
+    -->
+    <suppress>
+        <gav regex="true">^org\.springframework\.boot:spring-boot-autoconfigure:2\.7\.18$</gav>
+        <cve>CVE-2026-41001</cve>
+    </suppress>
+
+    <!--
+    Not exploitable in this application. Spring Security's advisory for CVE-2026-47842 requires
+    AesBytesEncryptor with its two-argument constructor, a null IV generator with CBC mode, or an
+    affected Encryptors factory. The checked codebase does not use AesBytesEncryptor, BytesEncryptor,
+    TextEncryptor, CipherAlgorithm, IvGenerator, or Encryptors.standard/stronger/text/delux, and it
+    does not configure encrypted Spring Cloud properties. Spring Security 5.7.26 is
+    enterprise-support-only; public fixed releases require a disproportionate Spring Boot 3/4
+    migration for this maintenance-mode JSP application.
+    -->
+    <suppress>
+        <gav regex="true">^org\.springframework\.security:spring-security-crypto:5\.7\.11$</gav>
+        <cve>CVE-2026-47842</cve>
+    </suppress>
+
+    <!--
     False positive: these CVEs apply to Apache HttpComponents Core 5 artifacts
     org.apache.httpcomponents.core5:httpcore5 and httpcore5-h2, not the legacy
     org.apache.httpcomponents:httpcore 4.x line. Keep this scoped to the exact
