@@ -4,10 +4,10 @@ const TestData = require('./config/test_data');
 const randomData = require('./shared/random_data');
 let isEnvtPerftest = TestData.WEB_PUBLIC_URL.includes("perftest");
 
-if (isEnvtPerftest){
-    xFeature('moj login tests');
-} else {
+if (TestData.RUN_MOJ_FUNCTIONAL_TESTS && !isEnvtPerftest) {
     Feature('moj login tests');
+} else {
+    xFeature('moj login tests');
 }
 
 let serviceNames = [];
