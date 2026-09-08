@@ -143,5 +143,17 @@ For the versions available, see the tags on this repository.
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
 
 
-# Functional test reports 
-functional-output folder required to generate the reports, so the folder with the test file created as empty folder is not allowed to push to git. 
+# Functional test reports
+functional-output folder required to generate the reports, so the folder with the test file created as empty folder is not allowed to push to git.
+
+## MoJ functional tests
+
+The MoJ login functional tests are disabled by default. To include them in a local functional test run:
+
+```bash
+RUN_MOJ_FUNCTIONAL_TESTS=true ./gradlew functional
+```
+
+The CNP pipeline uses the same `RUN_MOJ_FUNCTIONAL_TESTS` environment variable and defaults it to
+`false`. The nightly and nightly sandbox pipelines expose a `runMojFunctionalTests` checkbox, which
+is also disabled by default.

@@ -15,6 +15,7 @@ module.exports = {
     MOJ_TEST_USER_USERNAME: 'sso_justice_test_user@testjusticeuk.onmicrosoft.com',
     MOJ_TEST_USER_SSO_ID: 'baa672b9-a5f3-4606-8aa5-9e60444a3b31',
     MOJ_TEST_USER_PASSWORD: process.env.MOJ_TEST_USER_PASSWORD,
+    RUN_MOJ_FUNCTIONAL_TESTS: process.env.RUN_MOJ_FUNCTIONAL_TESTS === 'true',
     TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
     TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
     RPE_AUTH_URL: process.env.RPE_AUTH_URL,
