@@ -14,7 +14,7 @@ properties([
         booleanParam(name: 'skipSecurityScanTests', defaultValue: true, description: 'Runs on sandbox env only, tick the checkbox for skip'),
         booleanParam(name: 'skipMutationTests', defaultValue: true, description: 'Tick the checkbox for skip'),
         booleanParam(name: 'skipFullFunctionalTests', defaultValue: false, description: 'Tick the checkbox for skip'),
-        booleanParam(name: 'runMojFunctionalTests', defaultValue: false, description: 'Run MoJ login functional tests'),
+        booleanParam(name: 'runMojFunctionalTests', defaultValue: true, description: 'Run MoJ login functional tests'),
         booleanParam(name: 'skipCrossBrowserTests', defaultValue: true, description: 'Tick the checkbox for skip'),
         booleanParam(name: 'skipFortifyTests', defaultValue: true, description: 'Tick the checkbox for skip'),
     ])
