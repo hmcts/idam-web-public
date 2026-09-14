@@ -9,7 +9,7 @@ def product = "idam"
 def component = "web-public"
 
 env.NO_SKIP_IMG_BUILD = 'true'
-env.RUN_MOJ_FUNCTIONAL_TESTS = env.RUN_MOJ_FUNCTIONAL_TESTS ?: 'false'
+env.RUN_MOJ_FUNCTIONAL_TESTS = env.RUN_MOJ_FUNCTIONAL_TESTS ?: 'true'
 
 def secrets = [
     'idam-idam-${env}': [
