@@ -473,6 +473,27 @@
     </suppress>
 
     <!--
+    Not exploitable in this application. Spring's advisory for CVE-2026-47884 requires XsltView
+    with an implicit view name from a /** mapping; CVE-2026-47886 requires accepting and evaluating
+    untrusted SpEL expressions with BigDecimal or BigInteger values reachable in the evaluation
+    context; CVE-2026-47887 requires UrlFileNameViewController mapped at the end of a path without
+    a configured prefix; CVE-2026-47888 requires a Spring RSocket application. This application is
+    annotation-based Spring MVC with JSP views on embedded Tomcat, contains no XsltView,
+    UrlFileNameViewController, RSocket, or custom user-controlled SpEL evaluation, and the only
+    spring:eval expressions are static application-owned JSP expressions. The listed Spring
+    Framework 5.3.x fixed version is enterprise-support-only; public OSS fixes require moving to
+    Spring Framework 7.0+ / Spring Boot 4, which is disproportionate for this JSP Spring Boot 2.7
+    maintenance-mode application.
+    -->
+    <suppress>
+        <gav regex="true">^org\.springframework:spring-(aop|beans|context|context-support|core|expression|jcl|jdbc|oxm|tx|web|webmvc):5\.3\.39$</gav>
+        <cve>CVE-2026-47884</cve>
+        <cve>CVE-2026-47886</cve>
+        <cve>CVE-2026-47887</cve>
+        <cve>CVE-2026-47888</cve>
+    </suppress>
+
+    <!--
     Not exploitable in this application. Spring Security's advisory for CVE-2026-41706 requires
     CookieRequestCache or CookieServerRequestCache storing an absolute pre-authentication URL in
     a cookie. The checked codebase does not configure either cookie request cache. Public Spring
