@@ -20,7 +20,7 @@ properties([
     ])
 ])
 
-@Library("Infrastructure@2.10.1") _
+@Library("Infrastructure@2.11.0") _
 import uk.gov.hmcts.contino.GradleBuilder
 
 GradleBuilder builder = new GradleBuilder(this, 'jenkins-library')
