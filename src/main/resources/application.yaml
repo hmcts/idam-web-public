@@ -100,7 +100,7 @@ strategic:
     authorize: authenticate
     loginWithPin: pin
     uplift: login/uplift
-    forgotPassword: forgotPassword
+    forgotPassword: forgotPasswordDetails
     resetPassword: resetPassword
     validateResetPasswordToken: validateResetPasswordToken
     users: users
