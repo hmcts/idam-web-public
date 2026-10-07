@@ -1,1 +1,8 @@
+pluginManagement {
+  repositories {
+    maven { url = 'https://artifactory.platform.hmcts.net/artifactory/maven-remotes' }
+    gradlePluginPortal()
+  }
+}
+
 rootProject.name = 'idam-web-public'
