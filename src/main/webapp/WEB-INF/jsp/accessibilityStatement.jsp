@@ -35,10 +35,6 @@
                 <spring:message code="public.accessibility.statement.text_0016"/>
                 <a href='mailto: <spring:message code="public.accessibility.statement.text_adoption_email"/>'><spring:message code="public.accessibility.statement.text_adoption_email" /></a>
             </li>
-            <li>
-                <spring:message code="public.accessibility.statement.text_0017"/>
-                <a href='tel: <spring:message code="public.accessibility.statement.text_adoption_phone"/>'><spring:message code="public.accessibility.statement.text_adoption_phone" /></a>
-            </li>
         </ul>
 
         <h3 class="heading-small"><spring:message code="public.accessibility.statement.text_ccmcc_title" /></h3>
