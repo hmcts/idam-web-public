@@ -16,11 +16,11 @@ java:
           alias: app-insights-connection-string
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
-        - name: redis-hostname
+        - name: managed-redis-hostname
           alias: spring.redis.host
-        - name: redis-key
+        - name: managed-redis-key
           alias: spring.redis.password
-        - name: redis-port
+        - name: managed-redis-port
           alias: spring.redis.port
         - name: sso-client-id
           alias: spring.security.oauth2.client.registration.oidc.client-id
