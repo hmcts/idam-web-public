@@ -44,7 +44,6 @@ public class StrategicConfigurationProperties {
         private String details;
         private String services;
         private String health;
-        private String evaluatePolicies;
     }
 
     @Data
