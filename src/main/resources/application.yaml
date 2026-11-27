@@ -114,7 +114,6 @@ strategic:
     details: details
     services: services
     health: health
-    evaluatePolicies: api/v1/policies/evaluate
   policies:
     applicationName: HmctsPolicySet
     privateIpsFilterPattern: "10\\.\\d+\\.\\d+\\.\\d+"
